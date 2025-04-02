@@ -1,11 +1,13 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-function Button({ value }) {
+function Button({ value, to }) {
   return (
-	<button 
+	<Link 
+		to={to}
 		className="!bg-blue-700 !border-blue-600 text-white !text-lg !rounded-xl !py-1">
 		{value}
-	</button>
+	</Link>
   )
 }
 

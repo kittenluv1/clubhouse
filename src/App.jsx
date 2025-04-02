@@ -1,14 +1,22 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './pages/home'
-import Header from './components/Header'
+import Layout from "./pages/Layout";
+import SearchResults from "./pages/SearchResults";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <Home/>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/results" element={
+            <Layout>
+              <SearchResults/>
+            </Layout>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
