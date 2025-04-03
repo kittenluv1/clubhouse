@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:5000", // Redirect API calls to Express server
+        target: "http://localhost:5001", // Redirect API calls to Express server
         changeOrigin: true,
         secure: false,
       },
