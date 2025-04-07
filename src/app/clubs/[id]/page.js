@@ -1,5 +1,5 @@
 export default async function ClubPage({ params }) {
-	const { id } = await params; // Get the ID from the URL
+	const { id } = await params;
   
 	return (
 	  <div className="border p-4 mb-4 rounded shadow-md">
