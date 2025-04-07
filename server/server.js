@@ -1,5 +1,10 @@
 const express = require('express');
 const app = express();
+const PORT=5001; 
+
+app.get("/", (req, res) => { 
+	res.send("API is running..."); 
+}); 
 
 app.get("/api", async (req, res) => {
 	try {
@@ -19,4 +24,6 @@ app.get("/api", async (req, res) => {
 	}
 });
 
-app.listen(5000, () => {console.log("Server started on port 5000")});
+app.listen(PORT, () => {
+	console.log(`Server is running on http://localhost:${PORT}`);
+  });
