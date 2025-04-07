@@ -21,7 +21,7 @@ function ResultsPage() {
         <p>Loading...</p>
       ) : (
         data.orgList.map((club, i) => (
-          <div key={i}>
+          <div key={i} className="border p-4 mb-4 rounded shadow-md">
             <h3>{club.OrganizationName}</h3>
             <p>{club.OrganizationDescription}</p>
             <p>Email: <a href={`mailto:${club.OrganizationEmail}`}>{club.OrganizationEmail}</a></p>
