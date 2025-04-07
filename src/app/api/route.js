@@ -22,10 +22,29 @@ export async function GET(req) {
 	  }
   
 	  const data = await response.json();
-	  const orgList = data.orgList;
+
+		// make data into the correct format for supabase
+		const orgList = data.orgList;
+
+		// Sanitize a single object by removing null characters
+		function sanitizeObject(obj) {
+			const sanitizedObj = {};
+			for (const key in obj) {
+			if (typeof obj[key] === "string") {
+				// Remove null characters from strings
+				sanitizedObj[key] = obj[key].replace(/\u0000/g, "");
+			} else {
+				sanitizedObj[key] = obj[key];
+			}
+			}
+			return sanitizedObj;
+		}
+		
+		// Sanitize the entire orgList array
+		const sanitizedOrgList = orgList.map(sanitizeObject);
 
 		// // Insert data into the Supabase database
-		// const { error } = await supabase.from("clubs").insert(orgList);
+		// const { error } = await supabase.from("clubs").insert(sanitizedOrgList);
 
 		// if (error) {
 		// console.error("Error inserting data into Supabase:", error);
