@@ -14,6 +14,8 @@ pnpm dev
 bun dev
 ```
 
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
 ## Environment Variables
 
 This project requires environment variables to be set up for local development.
@@ -22,8 +24,6 @@ This project requires environment variables to be set up for local development.
    ```bash
    cp .env.example .env.local
    ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
