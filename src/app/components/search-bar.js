@@ -12,7 +12,7 @@ function SearchBar({ width, height }) {
 		placeholder="Search for a club"
 		value={value}
 		onChange={e => setValue(e.target.value)}
-		className={`border-2 border-blue-400 bg-white rounded-3xl p-1 pl-4 ${width} ${height}`}>
+		className={`border-2 border-blue-400 bg-white text-black rounded-3xl p-1 pl-4 ${width} ${height}`}>
 	</input>
   )
 }

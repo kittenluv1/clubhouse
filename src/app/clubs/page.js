@@ -5,14 +5,13 @@ import React, { useEffect, useState } from 'react';
 function ResultsPage() {
 	const [data, setData] = useState({ orgList: [] });
 
+  console.log("hi im before use effect")
+
 	useEffect(() => {
-		fetch("/api").then(
-			response => response.json()
-		).then(
-			jsonData => {
-				setData(jsonData)
-			}
-		)
+		fetch("/api")
+    .then(response => response.json())
+    .then(jsonData => {console.log("Fetched data:", jsonData); setData(jsonData)})
+    .catch(err => console.error("Failed to fetch API:", err));
 	}, [])
 
   return (
