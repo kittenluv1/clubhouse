@@ -3,20 +3,27 @@ import { supabaseServer } from "../lib/server-db";
 
 export async function GET(req) {
 	const url = new URL(req.url);
-	const id = url.pathname.split("/").pop(); // Extract the last segment of the path (the id)
-	console.log(id);
+	const name = url.pathname.split("/").pop(); // Extract the last segment of the path (the id)
+	console.log("Club name search:", name);
 
 	try {
 		let data, error;
 
+		// ({ data, error } = await supabase
+		// 	.from('clubs')
+		// 	.select('*'));
+
 		// If there's an "id" provided, fetch specific data for that ID
-		if (id && id !== "") {
+		if (name && name !== "") {
 		// Fetch a single club by id
 		({ data, error } = await supabase
-			.from('clubs')
-			.select('*')
-			.eq('id', id) // Use the ID to filter for a specific club
-			.single());
+			// .from('clubs')
+			// .select('*')
+			// .eq('id', id) // Use the ID to filter for a specific club
+			// .single());
+			.from("clubs")
+			.select("*")
+			.ilike("OrganizationName", `%${name}%`)); // case-insensitive partial match
 		} else {
 		// If no id, fetch all clubs
 		({ data, error } = await supabase
@@ -34,6 +41,7 @@ export async function GET(req) {
 			throw new Error(`Response status: ${data.status}`);
 		} else {
 			console.log("success")
+			// console.log(data)
 		}
 
 	  return new Response(JSON.stringify({ orgList: data }, null, 2), { status: 200 });
