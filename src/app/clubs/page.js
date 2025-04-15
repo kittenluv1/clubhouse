@@ -1,45 +1,51 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
-function ResultsPage() {
-	const [data, setData] = useState({ orgList: [] });
+export default function AllClubsPage() {
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  console.log("hi im before use effect")
+  useEffect(() => {
+    fetch("/api/clubs")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setClubs(data.orgList || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching clubs:", err);
+        setError("Failed to load clubs");
+        setLoading(false);
+      });
+  }, []);
 
-	useEffect(() => {
-		fetch("/api")
-    .then(response => response.json())
-    .then(jsonData => {console.log("Fetched data:", jsonData); setData(jsonData)})
-    .catch(err => console.error("Failed to fetch API:", err));
-	}, [])
+  if (loading) return <p className="p-4">Loading clubs...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
+  if (clubs.length === 0) return <p className="p-4">No clubs found</p>;
 
   return (
-	<div>
-      {data.orgList.length === 0 ? (
-        <p>Loading...</p>
-      ) : (
-        data.orgList.map((club, i) => (
-          <div key={i} className="border p-4 mb-4 rounded shadow-md">
-            <h3>{club.OrganizationName}</h3>
-            <p>{club.OrganizationDescription}</p>
-            <p>Email: <a href={`mailto:${club.OrganizationEmail}`}>{club.OrganizationEmail}</a></p>
-            <p>Website: <a href={club.OrganizationWebSite} target="_blank" rel="noopener noreferrer">{club.OrganizationWebSite}</a></p>
-            <p>Category: {club.Category1Name} - {club.Category2Name}</p>
-            <div>
-              <strong>Signatures:</strong>
-              <ul>
-                <li>{club.Sig1Name}</li>
-                <li>{club.Sig2Name}</li>
-                <li>{club.Sig3Name}</li>
-              </ul>
-            </div>
-            <div dangerouslySetInnerHTML={{ __html: club.SocialMediaLink }} />
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">All Clubs</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {clubs.map((club) => (
+          <div key={club.id} className="border p-4 rounded shadow">
+            <h2 className="text-xl font-semibold">{club.OrganizationName}</h2>
+            <p className="text-sm text-gray-600 mt-1">{club.Category1Name}</p>
+            <Link 
+              href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
+              className="text-blue-500 hover:underline mt-2 inline-block"
+            >
+              View Details
+            </Link>
           </div>
-        ))
-      )}
-	</div>
-  )
+        ))}
+      </div>
+    </div>
+  );
 }
-
-export default ResultsPage

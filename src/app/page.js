@@ -11,7 +11,9 @@ function Home() {
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
-      router.push(`/clubs/${encodeURIComponent(searchTerm)}`);
+      // Properly encode the search term for URL
+      const encodedSearch = encodeURIComponent(searchTerm.trim());
+      router.push(`/clubs/${encodedSearch}`);
     }
   };
 
