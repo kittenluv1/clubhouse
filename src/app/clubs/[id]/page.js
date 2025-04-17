@@ -13,11 +13,11 @@ export default function ClubPage() {
   useEffect(() => {
     if (!id) return;
     
-     // Ensure the ID is properly encoded for the API request
-    const encodedId = encodeURIComponent(id);
+     // decode the id so it works with the DB
+     const decodedId = decodeURIComponent(id);
     
     // Fetch the club data
-    fetch(`/api/clubs/${encodedId}`)
+    fetch(`/api/clubs/${decodedId}`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         return res.json();
