@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Google from '../components/google-sign-in';
+import Google from '../components/sign-in/google-sign-in';
 import { supabase } from '../lib/db';
-import LoginButton from '../components/login-button';
+import LoginButton from '../components/sign-in/login-button';
 
 function SignInPage() {
   // if userEmail is not null, user is signed in
@@ -24,7 +24,7 @@ function SignInPage() {
     fetchUserSession();
 
     // Listen for auth state changes (e.g., sign in or sign out)
-    const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setUserEmail(session.user.email); // Update email when signed in
         console.log("Auth state changed: SIGNED IN", session.user.email);
@@ -36,9 +36,9 @@ function SignInPage() {
 
     // Cleanup the listener when the component unmounts
     return () => {
-      subscription.unsubscribe();
+      data.subscription.unsubscribe();
     };
-  }, []); // Empty dependency array ensures this runs only once
+  }, []); 
 
   return (
     <div>

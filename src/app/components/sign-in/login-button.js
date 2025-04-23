@@ -1,7 +1,7 @@
 import React from 'react'
-import { supabase } from '../lib/db';
+import { supabase } from '../../lib/db';
 import { useState, useEffect } from 'react';
-import Button from './button';
+import Button from '../button';
 import { useRouter } from 'next/navigation';
 
 function LoginButton() {
@@ -24,7 +24,7 @@ function LoginButton() {
       fetchUserSession();
 
       // Listen for auth state changes (e.g., sign in or sign out)
-      const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (session) {
           setLoggedin(true);
         } else {
@@ -33,7 +33,7 @@ function LoginButton() {
   
       // Cleanup the listener when the component unmounts
       return () => {
-        subscription.unsubscribe();
+        data.subscription.unsubscribe();
       };
   
     }, []);

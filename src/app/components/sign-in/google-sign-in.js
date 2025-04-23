@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 import { useEffect } from "react";
-import { supabase } from "../lib/db";
+import { supabase } from "../../lib/db";
 
 export default function GoogleSignIn({ userEmail }) {
 
@@ -65,7 +65,7 @@ export default function GoogleSignIn({ userEmail }) {
           }
         }
       />
-      <div id="google-button" />
+      <div id="google-button" className="flex font-mono"/>
     </>
   );
 }
