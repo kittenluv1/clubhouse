@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Google from '../components/sign-in/google-sign-in';
+import GoogleSignIn from '../components/sign-in/google-sign-in';
 import { supabase } from '../lib/db';
 import LoginButton from '../components/sign-in/login-button';
 
@@ -42,7 +42,7 @@ We take community integrity seriously — every review helps build a reliable re
       </div>
     ) : (
       <div>
-        <Google userEmail={userEmail}/>
+        <GoogleSignIn userEmail={userEmail}/>
       </div>
     )}
 

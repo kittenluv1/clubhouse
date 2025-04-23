@@ -1,10 +1,11 @@
 "use client"; 
 
 import Script from "next/script";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../lib/db";
 
 export default function GoogleSignIn({ userEmail }) {
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
@@ -31,24 +32,19 @@ export default function GoogleSignIn({ userEmail }) {
   }
 
   useEffect(() => {
+    console.log("Google Sign-In effect triggered");
     window.handleCredentialResponse = async function (response) {
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: "google",
         token: response.credential,
       });
-
-      if (error) {
-        console.error("Error signing in with Google:", error);
-      } else {
-        console.log("User signed in successfully:", data);
-      }
     };
 
     if (window.google) {
       renderGoogleButton();
     }
 
-  }, [userEmail]); // Re-run when user signs in/out
+  }, [isScriptLoaded, userEmail]); // Re-run when user signs in/out
 
   return (
     <>
@@ -58,14 +54,17 @@ export default function GoogleSignIn({ userEmail }) {
         onLoad={() => { 
           if (window.google) {
             console.log("Google Sign-In script loaded");
-            renderGoogleButton(); 
+            setIsScriptLoaded(true);
+            // renderGoogleButton(); 
             // Google One Tap
             // window.google.accounts.id.prompt();
             }
           }
         }
       />
-      <div id="google-button" className="flex font-mono"/>
+      {isScriptLoaded && (
+        <div id="google-button"/>
+      )}
     </>
   );
 }
