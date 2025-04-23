@@ -2,17 +2,15 @@
 
 import { useRouter } from 'next/navigation';
 
-function Button({ value, to }) {
+// must pass in either a to or onClick prop
+// if none are passed in, redirect to "/"
+function Button({ value = "Click Me", to = "/", onClick = null, border = false }) {
 	const router = useRouter();
-
-	const handleClick = () => {
-		router.push(to); // Replace '/your-route' with the desired path
-	};
 
   return (
 	<button 
-		onClick={handleClick}
-		className="!bg-blue-700 !border-blue-600 text-white !text-lg !rounded-xl !py-1">
+		onClick={() => onClick ? onClick() : router.push(to)}
+		className={`bg-white text-lg rounded-4xl p-3 ${border ? "border border-black" : ""}`}>
 		{value}
 	</button>
   )
