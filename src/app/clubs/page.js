@@ -50,7 +50,7 @@ export default function AllClubsPage() {
       <h1 className="font-[var(--font-inter)] font-normal text-[16px] mb-4">Search results for 'All Clubs'</h1>
       <div className="flex flex-col justify-center items-center gap-[40px] mt-6">
       {clubs.map((club) => (
-    <ClubCard key={`${club.id}-${club.OrganizationName}`} club={club} />
+    <ClubCard key={`${club.OrganizationID}-${club.OrganizationName}`} club={club} />
   ))}
       </div>
 
