@@ -5,30 +5,22 @@ import Button from '../button';
 import { useRouter } from 'next/navigation';
 
 function LoginButton() {
-    // if userEmail is not null, user is signed in
+    // login button that changes based on whether the user is logged in or not
+    // if logged in, show sign out button, else show sign in button
     const [isLoggedin, setLoggedin] = useState(false);
     const router = useRouter();
   
     useEffect(() => {
-      // check if user is signed in
-      const fetchUserSession = async () => {
-        const { data: { session }, error } = await supabase.auth.getSession();
-  
-        if (error) {
-          console.error("Error fetching session:", error);
-        } else if (session) {
-          setLoggedin(true);
-        }
-      };
-
-      fetchUserSession();
-
       // Listen for auth state changes (e.g., sign in or sign out)
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (session) {
           setLoggedin(true);
+          console.log("Login button:", event);
         } else {
-          setLoggedin(false);}
+          setLoggedin(false);
+          console.log("Login button:", event);
+        }
+
       });
   
       // Cleanup the listener when the component unmounts
@@ -43,6 +35,7 @@ function LoginButton() {
         if (error) {
           console.error("Error signing out:", error.message);
         } else {
+          setLoggedin(false);
           console.log("User signed out successfully");
         }
       } 
@@ -50,9 +43,9 @@ function LoginButton() {
   return (
     <div>
       {isLoggedin ? (
-          <button onClick={handleSignOut} className="bg-amber-400">Sign Out</button>
+          <Button value="Sign Out" onClick={handleSignOut} border="true"></Button>
         ) : (
-          <button onClick={() => router.push('/sign-in')} className="bg-amber-400">Sign In</button>
+          <Button value="Sign In" to="/sign-in" border="true"></Button>
         )
     }
     </div>

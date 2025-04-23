@@ -10,27 +10,14 @@ function SignInPage() {
   const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
-    // Fetch the current session to get the user's email
-    const fetchUserSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Error fetching session:", error);
-      } else if (session) {
-        setUserEmail(session.user.email);
-      }
-    };
-
-    fetchUserSession();
-
     // Listen for auth state changes (e.g., sign in or sign out)
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setUserEmail(session.user.email); // Update email when signed in
-        console.log("Auth state changed: SIGNED IN", session.user.email);
+        console.log("Auth state changed:", event, session.user.email);
       } else {
         setUserEmail(null); // Clear email when signed out
-        console.log("Auth state changed: SIGNED OUT");
+        console.log("Auth state changed:", event);
       }
     });
 
