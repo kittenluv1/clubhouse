@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import ClubCard from "../components/clubCard";
 
 export default function AllClubsPage() {
   const [clubs, setClubs] = useState([]);
@@ -46,21 +46,12 @@ export default function AllClubsPage() {
   if (clubs.length === 0) return <p className="p-4">No clubs found</p>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">All Clubs</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {clubs.map((club) => (
-          <div key={`${club.id}-${club.OrganizationName}`} className="border p-4 rounded shadow">
-            <h2 className="text-xl font-semibold">{club.OrganizationName}</h2>
-            <p className="text-sm text-gray-600 mt-1">{club.Category1Name}</p>
-            <Link 
-              href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
-              className="text-blue-500 hover:underline mt-2 inline-block"
-            >
-              View Details
-            </Link>
-          </div>
-        ))}
+    <div className="p-[80px]">
+      <h1 className="font-[var(--font-inter)] font-normal text-[16px] mb-4">Search results for 'All Clubs'</h1>
+      <div className="flex flex-col justify-center items-center gap-[40px] mt-6">
+      {clubs.map((club) => (
+    <ClubCard key={`${club.id}-${club.OrganizationName}`} club={club} />
+  ))}
       </div>
 
       {/* Change Pages */}
