@@ -34,8 +34,8 @@ export default function GoogleSignIn() {
               client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
               callback: window.handleCredentialResponse,
               ux_mode: "popup", // or "popup"
-              // login_uri: "http://localhost:3000/sign-in", // where to send users after login
-              use_fedcm_for_prompt: true, // Enable FedCM
+              // login_uri: "http://localhost:3000/sign-in", // where to send users after login - this was not working
+              use_fedcm_for_prompt: true,
             });
 
             window.google.accounts.id.renderButton(
