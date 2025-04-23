@@ -6,16 +6,17 @@ import Link from "next/link";
 
 export default function ClubPage() {
   const { id } = useParams(); // This gets the id from the URL
+
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!id) return;
-    
-     // decode the id so it works with the DB
-     const decodedId = decodeURIComponent(id);
-    
+
+    // decode the id so it works with the DB
+    const decodedId = decodeURIComponent(id);
+
     // Fetch the club data
     fetch(`/api/clubs/${decodedId}`)
       .then((res) => {
@@ -63,7 +64,7 @@ export default function ClubPage() {
       {club.OrganizationWebSite && (
         <p className="mt-1">
           Website:{" "}
-          
+
           <a href={club.OrganizationWebSite}
             target="_blank"
             rel="noopener noreferrer"
