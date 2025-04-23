@@ -129,20 +129,22 @@ export default function ReviewPage() {
     };
 
     return (
+        <div className="w-full min-h-screen bg-gray-50 p-4 md:p-8 flex justify-center overflow-x-hidden">
+        <div className="w-full px-8">
         <div className="flex flex-col w-full h-full justify-center">
-            <div className="absolute top-0 right-0 w-full flex justify-end p-5 pr-25 space-x-5">
+        <div className="flex justify-end w-full px-6 py-4 space-x-4">
                 <Button value="Review a Club" to="/"/>
-                <Button value="Sign In" to="/" />
-            </div>
-            <div className="text-xl font-bold text-blue-700">Review A Club</div>
-            <p className="text text-white-700 ">
-                Your review is completely anonymous, so feel free to be honest! 
+                <Button value="Sign In" to="/"/>
+        </div>
+            <div className="text-6xl font-bold text-blue-700">Review A Club</div>
+            <p className="text text-white-700">
+            Your review is completely anonymous, so feel free to be honest! 
                 Your insights help other students get a better sense of what the club is really like. 
                 Be real, respectful, and specific—your voice makes a difference.
             </p>
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Club Name */}
-                <div>
+                <div className="w-full md:w-1/2">
                     <label className="block text-lg font-bold text-gray-700 mb-2">Club Name *</label>
                     <div className="mb-4">
                         <SearchableDropdown 
@@ -203,18 +205,17 @@ export default function ReviewPage() {
                 {/* Ratings */}
                 <div>
                     <label className="block text-lg font-bold text-gray-700 mb-4">Rank the Following...</label>
-                    <div className='flex-row'>
-                        <div className="space-y-6 w-1/2">
-                            <div>
+                    <div className='flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 w-full'>
+                            <div className="flex-1 min-w-[180px]">
                                 <div className="flex justify-between mb-1">
-                                    <label className="text-sm font-medium text-gray-700">
+                                    <label className="text-sm font-medium text-gray-700 text-center mb-1">
                                         Time Commitment
                                     </label>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-gray-500 mb-1">
                                         {timeCommitment}
                                     </span>
-                                </div>
-                                <div className="flex items-center gap-2">
+                                </div>                                
+                                <div className="flex items-center gap-2 w-full">
                                     <span className="text-xs text-gray-500">Low</span>
                                     <input 
                                         type="range" 
@@ -228,8 +229,8 @@ export default function ReviewPage() {
                                     <span className="text-xs text-gray-500">High</span>
                                 </div>
                             </div>
-                            
-                            <div>
+
+                            <div className="flex-1 min-w-[180px]">
                                 <div className="flex justify-between mb-1">
                                     <label className="text-sm font-medium text-gray-700">
                                         Diversity
@@ -253,7 +254,7 @@ export default function ReviewPage() {
                                 </div>
                             </div>
                             
-                            <div>
+                            <div className="flex-1 min-w-[180px]">
                                 <div className="flex justify-between mb-1">
                                     <label className="text-sm font-medium text-gray-700">
                                         Social Community
@@ -277,7 +278,7 @@ export default function ReviewPage() {
                                 </div>
                             </div>
                             
-                            <div>
+                            <div className="flex-1 min-w-[180px]">
                                 <div className="flex justify-between mb-1">
                                     <label className="text-sm font-medium text-gray-700">
                                         Competitiveness
@@ -301,7 +302,7 @@ export default function ReviewPage() {
                                 </div>
                             </div>
                             
-                            <div>
+                            <div className="flex-1 min-w-[180px]">
                                 <div className="flex justify-between mb-1">
                                     <label className="text-sm font-medium text-gray-700">
                                         Overall Satisfaction
@@ -324,7 +325,6 @@ export default function ReviewPage() {
                                     <span className="text-xs text-gray-500">Excellent</span>
                                 </div>
                             </div>
-                        </div>
                     </div>
                 </div>
                 
@@ -365,6 +365,8 @@ export default function ReviewPage() {
                     </button>
                 </div>
             </form>
+        </div>
+        </div>
         </div>
     );
 }

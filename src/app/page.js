@@ -15,8 +15,13 @@ function Home() {
   return (
     <div className="flex flex-col w-full h-full justify-center items-center">
       <div className="absolute top-0 right-0 w-full flex justify-end p-5 pr-25 space-x-5">
+<<<<<<< HEAD
         <Button value="Review a Club" to="/review"/>
         <Button value="Sign In" to="/" />
+=======
+        <Button value="Review a Club" to="/"/>
+        <Button value="Sign In" to="/sign-in"/>
+>>>>>>> 09314f03dd7f0ec9b539345c08525b6a492817dd
       </div>
       <h2 className="text-8xl font-bold text-blue-700 my-10">BruinSphere</h2>
       <div className="flex flex-col space-y-2 w-2/5 max-w-l">
