@@ -13,6 +13,12 @@ function Home() {
     }
   };
 
+  const handleCategoryClick = (category) => {
+    if (searchRef.current) {
+      searchRef.current.triggerSearch(category, true);
+    }
+  }
+
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
