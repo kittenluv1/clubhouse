@@ -35,12 +35,12 @@ export default function ReviewPage() {
         try {
             const { data, error } = await supabase
                 .from('clubs')
-                .select('id')
-                .eq('name', club)
+                .select('OrganizationID')
+                .eq('OrganizationName', club)
                 .single();
                 
             if (error) throw error;
-            setClubId(data.id);
+            setClubId(data.OrganizationID);
         } catch (error) {
             console.error('Error fetching club ID:', error);
             setError('Club not found.');
@@ -137,7 +137,7 @@ export default function ReviewPage() {
                 <Button value="Sign In" to="/"/>
         </div>
             <div className="text-6xl font-bold text-blue-700">Review A Club</div>
-            <p className="text text-white-700">
+            <p className="text text-gray-700">
             Your review is completely anonymous, so feel free to be honest! 
                 Your insights help other students get a better sense of what the club is really like. 
                 Be real, respectful, and specific—your voice makes a difference.
@@ -332,7 +332,7 @@ export default function ReviewPage() {
                 <div>
                     <label className="block text-lg font-bold text-gray-700 mb-2">Review *</label>
                     <textarea 
-                        className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         placeholder="Write your review here..."
                         value={reviewText}
                         onChange={(e) => setReviewText(e.target.value)}

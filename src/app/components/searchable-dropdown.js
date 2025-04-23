@@ -3,8 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-// Replace these with your actual Supabase URL and anon key
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -12,8 +10,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const SearchableDropdown = ({  
     placeholder = "search for your club here...",
-    tableName = "clubs", // The table name in your Supabase database
-    nameColumn = "name", // The column name that contains the club names
+    tableName = "clubs", 
+    nameColumn = "OrganizationName", 
     onSelect = () => {},
     required = true
     }) => {
