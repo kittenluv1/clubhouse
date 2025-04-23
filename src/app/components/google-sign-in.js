@@ -4,11 +4,34 @@ import Script from "next/script";
 import { useEffect } from "react";
 import { supabase } from "../lib/db";
 
-export default function GoogleSignIn() {
+export default function GoogleSignIn({ userEmail }) {
+
+  // Render the Google Sign-In button (called on render & auth state change)
+  const renderGoogleButton = () => {
+    console.log("RENDERING BUTTON");
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        callback: window.handleCredentialResponse,
+        ux_mode: "popup",
+        use_fedcm_for_prompt: true,
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-button"),
+        {
+          theme: "outline",
+          size: "large",
+          text: "signin_with",
+          shape: "pill",
+          logo_alignment: "left",
+        }
+      );
+    }
+  }
 
   useEffect(() => {
     window.handleCredentialResponse = async function (response) {
-      console.log("Google token:", response.credential);
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: "google",
         token: response.credential,
@@ -20,39 +43,27 @@ export default function GoogleSignIn() {
         console.log("User signed in successfully:", data);
       }
     };
-  }, []);
+
+    if (window.google) {
+      renderGoogleButton();
+    }
+
+  }, [userEmail]); // Re-run when user signs in/out
 
   return (
     <>
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={() => {
+        onLoad={() => { 
           if (window.google) {
-            console.log("Current Origin:", window.location.origin);
-            window.google.accounts.id.initialize({
-              client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-              callback: window.handleCredentialResponse,
-              ux_mode: "popup", // or "popup"
-              // login_uri: "http://localhost:3000/sign-in", // where to send users after login - this was not working
-              use_fedcm_for_prompt: true,
-            });
-
-            window.google.accounts.id.renderButton(
-              document.getElementById("google-button"),
-              {
-                theme: "outline",
-                size: "large",
-                text: "signin_with",
-                shape: "pill",
-                logo_alignment: "left",
-              }
-            );
-
+            console.log("Google Sign-In script loaded");
+            renderGoogleButton(); 
             // Google One Tap
             // window.google.accounts.id.prompt();
+            }
           }
-        }}
+        }
       />
       <div id="google-button" />
     </>
