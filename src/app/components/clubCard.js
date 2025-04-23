@@ -35,7 +35,7 @@ export default function ClubCard({ club }) {
             <ClubTags category={club.Category1Name} />
             <ClubTags category={club.Category2Name} />
         </div>
-        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">{club.description}</p>
+        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">{club.OrganizationDscription}</p>
 
         <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">Reviewed by ... students</p>
         </Link>
