@@ -3,12 +3,20 @@ import { supabaseServer } from "../../lib/server-db";
 
 export async function GET(req) {
 	try {
-		const { data, error } = await supabase
-		.from("clubs")
-		.select("*")
-		.limit(50); //temporary limit
+		// get the page number from URL
+		const pageParam = req.nextUrl.searchParams.get("page");
+		const pageNum = pageParam ? parseInt(pageParam, 10) : 1; // default display page is first page
+		const pageSize = 10; // show only 10 cards per page
 
-		
+		// calculate indices of 'data' to be returned (i.e. 10 per page)
+		const startIndex = (pageNum - 1) * pageSize;
+		const endIndex = startIndex + pageSize - 1;
+
+		const { data, count, error } = await supabase
+		.from("clubs")
+		.select("*", { count: "exact" }) // gets how many rows were fetched (used for total page count!)
+		.range(startIndex, endIndex)
+
 		if (error) {
 			console.error("Supabase error:", error);
 			return new Response(
@@ -17,10 +25,15 @@ export async function GET(req) {
 			);
 		} else {
 			console.log("success")
+			console.log(count, "total number of rows")
 			// console.log(data)
 		}
+		
+		// round up to nearest whole number; accounts for last page having < 10 items
+		const totalNumPages = Math.ceil(count / pageSize);
 
-	  return new Response(JSON.stringify({ orgList: data }, null, 2), { status: 200 });
+	// returns the club data, current page number, and total number of pages for search
+	  return new Response(JSON.stringify({ orgList: data, currPage: pageNum, totalNumPages }, null, 2), { status: 200 });
 
 	} catch (error) {
 	  console.error("Error fetching data:", error);
