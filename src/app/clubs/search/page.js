@@ -37,11 +37,15 @@ export default function SearchResultsPage() {
   }, [query, currPage]);
 
   const handleNextPage = () => {
-    if (currPage < pageTotal) setCurrPage(currPage + 1);
+    if (currPage < pageTotal) {
+      setCurrPage(currPage + 1);
+    }
   };
 
   const handlePreviousPage = () => {
-    if (currPage > 1) setCurrPage(currPage - 1);
+    if (currPage > 1) {
+      setCurrPage(currPage - 1);
+    }
   };
 
   if (loading) return <p className="p-4">Loading search results...</p>;
