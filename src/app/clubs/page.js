@@ -52,7 +52,7 @@ export default function AllClubsPage() {
     if (currPage < pageTotal) setCurrPage(p => p + 1);
   };
 
-  // 渲染状态
+  // fetching
   if (loading) return <p className="p-4">Loading clubs...</p>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;
   if (clubs.length === 0) {
