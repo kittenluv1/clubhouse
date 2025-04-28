@@ -7,13 +7,24 @@ const SearchBar = forwardRef(({ width, height }, ref) => {
   const [localSearch, setLocalSearch] = useState('');
   const router = useRouter();
 
-  const handleSearch = () => {
-    const term = localSearch.trim();
-    if (term !== '') {
-      const encoded = encodeURIComponent(term);
+  //enable search by category
+  const handleSearch = (overrideTerm, byCategory = false) => {
+    // Use the overrideTerm if provided, otherwise fall back to the input’s value
+    const term = (overrideTerm ?? localSearch).trim();
+    if (!term) return;
+    // Keep the input in sync
+    setLocalSearch(term);
+    // Encode for URL
+    const encoded = encodeURIComponent(term);
+    if (byCategory) {
+      // Category search: /clubs?category=Term
+      router.push(`/clubs?category=${encoded}`);
+    } else {
+      // Name search: /clubs/Term
       router.push(`/clubs/${encoded}`);
     }
   };
+
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
