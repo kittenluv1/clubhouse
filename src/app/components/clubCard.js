@@ -17,7 +17,7 @@ export default function ClubCard({ club }) {
         >
         <div className="flex flex-row justify-between items-center">
             <h2 className="font-[var(--font-inter)] font-medium text-[28px] text-black">
-                {club.name}
+                {club.OrganizationName}
             </h2>
             <div className="relative w-[61.33px] h-[68.7px]">
             <Image
@@ -35,7 +35,7 @@ export default function ClubCard({ club }) {
             <ClubTags category={club.Category1Name} />
             <ClubTags category={club.Category2Name} />
         </div>
-        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">{club.description}</p>
+        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">{club.OrganizationDescription}</p>
 
         <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">Reviewed by ... students</p>
         </Link>
