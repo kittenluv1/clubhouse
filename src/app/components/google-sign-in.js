@@ -1,4 +1,4 @@
-// "use client"; 
+"use client"; 
 
 import Script from "next/script";
 import { useState, useEffect } from "react";
@@ -7,7 +7,7 @@ import { supabase } from "../lib/db";
 export default function GoogleSignIn() {
   // null (logged out), string (logged in), or INVALID (invalid email)
   const [userEmail, setUserEmail] = useState(null);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(true); 
   // const [isButtonReady, setIsButtonReady] = useState(false);
 
   // Render the Google Sign-In button (called on render & auth state change)
