@@ -1,13 +1,13 @@
 ALTER TABLE clubs
 -- Add columns to 'clubs' table that stores the total sum of satisfaction ratings, total number of reviews
-ADD COLUMN satisfaction_sum INTEGER DEFAULT 0,
+ADD COLUMN satisfaction_sum FLOAT DEFAULT 0,
 ADD COLUMN total_num_reviews INTEGER DEFAULT 0,
 -- Automatically calculates the average satisfaction rating based on the total sum of satisfaction ratings and total number of reviews
 ADD COLUMN average_satisfaction FLOAT GENERATED ALWAYS AS (
   CASE
     WHEN total_num_reviews = 0 THEN NULL
     -- Rounds to 2 decimal places
-    ELSE ROUND(satisfaction_sum::NUMERIC / total_num_reviews, 2)
+    ELSE ROUND((satisfaction_sum / total_num_reviews)::NUMERIC, 2)
   END
 ) STORED;
 
