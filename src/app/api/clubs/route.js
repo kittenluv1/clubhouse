@@ -12,9 +12,25 @@ export async function GET(req) {
 		const startIndex = (pageNum - 1) * pageSize;
 		const endIndex = startIndex + pageSize - 1;
 
+		// get the sort type from URL
+		const sortType = req.nextUrl.searchParams.get("sort") || "Highest Rating";
+		// default sort type
+		let sortBy = "average_satisfaction"
+		let ascending = false; // default is descending order
+
+		if (sortType === "reviews"){
+			sortBy = "total_num_reviews";
+		}
+		// alphabetic order needs to go in ascending order
+		else if (sortType === "alphabetical") {
+			sortBy = "OrganizationName";
+			ascending = true;
+		}
+
 		const { data, count, error } = await supabase
 		.from("clubs")
 		.select("*", { count: "exact" }) // gets how many rows were fetched (used for total page count!)
+		.order(sortBy, { ascending, nullsFirst: false }) // sort based on user-chosen type
 		.range(startIndex, endIndex)
 
 		if (error) {
