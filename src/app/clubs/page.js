@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import ClubCard from "../../components/clubCard";
+import ClubCard from "../components/clubCard";
 
 export default function AllClubsPage() {
   const searchParams = useSearchParams();
