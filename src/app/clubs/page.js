@@ -14,19 +14,20 @@ export default function AllClubsPage() {
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
+  const [sortType, setSortType] = useState("rating");
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
     // API URL，nameParam and categoryParam
-    let url = `/api/clubs?page=${currPage}`;
+    let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
     if (nameParam) {
-      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}`;
+      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}&sort=${sortType}`;
     } else if (categoryParam) {
-      url = `/api/categories/${encodeURIComponent(categoryParam)}`;
+      url = `/api/categories/${encodeURIComponent(categoryParam)}&page=${currPage}&sort=${sortType}`;
     } else {
-      url = `/api/clubs?page=${currPage}`;
+      url = `/api/clubs?page=${currPage}&sort=${sortType}`;
     }
 
     fetch(url)
@@ -43,13 +44,18 @@ export default function AllClubsPage() {
         setError("Failed to load clubs");
       })
       .finally(() => setLoading(false));
-  }, [currPage, nameParam, categoryParam]);
+  }, [currPage, nameParam, categoryParam, sortType]);
 
   const handlePreviousPage = () => {
     if (currPage > 1) setCurrPage(p => p - 1);
   };
   const handleNextPage = () => {
     if (currPage < pageTotal) setCurrPage(p => p + 1);
+  };
+
+  const handleSortChange = (e) => {
+    setSortType(e.target.value);
+    setCurrPage(1);
   };
 
   // fetching
@@ -69,11 +75,27 @@ export default function AllClubsPage() {
 
   return (
     <div className="p-[80px] space-y-6">
+      <div className="flex justify-between items-center mb-6">
       <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
         {title}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-row items-center gap-2">
+        <label>Sort by:</label>
+        <select
+          id="sort"
+          value={sortType}
+          onChange={handleSortChange}
+          className="border rounded px-2 py-1"
+        >
+          <option value="rating">Highest Rating</option>
+          <option value="reviews">Most Reviewed</option>
+          <option value="alphabetical">A-Z</option>
+        </select>
+      </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
         {clubs.map(club => (
           <ClubCard
             key={`${club.OrganizationID}-${club.OrganizationName}`}
