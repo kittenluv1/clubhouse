@@ -33,10 +33,6 @@ function Home() {
 
   return (
     <div className="flex flex-col w-full h-full justify-center items-center">
-      <div className="absolute top-0 right-0 w-full flex justify-end p-5 pr-25 space-x-5">
-        <Button value="Review a Club" to="/review" />
-        <Button value="Sign In" to="/sign-in" />
-      </div>
       <h2 className="text-8xl font-bold text-blue-700 my-10">ClubHouse</h2>
       <div className="flex flex-col space-y-2 w-4/7 max-w-l">
         <SearchBar ref={searchRef} width="w-full" height="h-13" />

@@ -1,9 +1,4 @@
-"use client";
-
-import { useState, useEffect } from 'react';
-import GoogleSignIn from '../../components/google-sign-in';
-import { supabase } from '../../lib/db';
-import LoginButton from '../../components/login-button';
+import GoogleSignIn from '../components/google-sign-in';
 
 function SignInPage() {
 

@@ -10,7 +10,7 @@ function Button({ value = "Click Me", to = "/", onClick = null, border = false }
   return (
 	<button 
 		onClick={() => onClick ? onClick() : router.push(to)}
-		className={`bg-white text-lg rounded-4xl p-3 self-center ${border ? "border border-black" : ""}`}>
+		className={`bg-white text-lg rounded-4xl p-3 self-center text-nowrap ${border ? "border border-black" : ""}`}>
 		{value}
 	</button>
   )
