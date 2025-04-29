@@ -35,7 +35,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
       router.push(`/clubs/search?q=${encoded}`);
 
     }
-  }));
+  };
 
   useEffect(() => {
     const fetchClubNames = async () => {
