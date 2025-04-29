@@ -18,12 +18,22 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
   const dropdownRef = useRef(null);
   const router = useRouter();
 
-  useImperativeHandle(ref, () => ({
-    triggerSearch: () => {
-      if (inputValue.trim() !== "") {
-        const encoded = encodeURIComponent(inputValue.trim());
-        router.push(`/clubs/search?q=${encoded}`);
-      }
+  //enable search by category
+  const handleSearch = (overrideTerm, byCategory = false) => {
+    // Use the overrideTerm if provided, otherwise fall back to the input’s value
+    const term = (overrideTerm ?? localSearch).trim();
+    if (!term) return;
+    // Keep the input in sync
+    setLocalSearch(term);
+    // Encode for URL
+    const encoded = encodeURIComponent(term);
+    if (byCategory) {
+      // Category search: /clubs?category=Term
+      router.push(`/clubs?category=${encoded}`);
+    } else {
+      // Name search: /clubs/Term
+      router.push(`/clubs/search?q=${encoded}`);
+
     }
   }));
 
@@ -57,6 +67,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
