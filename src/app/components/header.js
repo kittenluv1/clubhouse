@@ -1,8 +1,10 @@
+"use client";
+
 import React from 'react'
 import SearchBar from './search-bar'
 import SearchableDropdown from './searchable-dropdown';
 import Button from './button';
-import { FaFaceDizzy } from "react-icons/fa6";
+import LoginButton from './login-button';
 
 function Header() {
   return (
@@ -10,7 +12,7 @@ function Header() {
 		<Button value="BruinSphere" to="/"/>
 		<SearchBar width="w-1/3" height="h-13"/>
 		<Button value="Review a Club" to="/review"/>
-		<FaFaceDizzy className="text-white h-full w-auto"/>
+		<LoginButton/>
 	</div>
   )
 }

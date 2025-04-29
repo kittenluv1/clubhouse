@@ -1,14 +1,12 @@
 import React from 'react'
-import { supabase } from '../../lib/db';
+import { supabase } from '../lib/db';
 import { useState, useEffect } from 'react';
-import Button from '../button';
-import { useRouter } from 'next/navigation';
+import Button from './button';
 
 function LoginButton() {
     // login button that changes based on whether the user is logged in or not
     // if logged in, show sign out button, else show sign in button
     const [isLoggedin, setLoggedin] = useState(false);
-    const router = useRouter();
   
     useEffect(() => {
       // Listen for auth state changes (e.g., sign in or sign out)
