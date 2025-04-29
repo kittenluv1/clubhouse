@@ -48,7 +48,7 @@ export default function GoogleSignIn() {
       if (data?.user) {
         const email = data.user.email;
 
-      if (!(email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu'))) {
+        if (!(email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu'))) {
         console.log("NOT A UCLA EMAIL");
         
         try {
@@ -111,7 +111,7 @@ export default function GoogleSignIn() {
     <>
       <Script
         src="https://accounts.google.com/gsi/client"
-        strategy="beforeInteractive"
+        strategy="afterInteractive"
         onLoad={() => { 
           if (window.google) {
             console.log("Google Sign-In script loaded");
