@@ -1,5 +1,6 @@
 import React from 'react'
 import SearchBar from './search-bar'
+import SearchableDropdown from './searchable-dropdown';
 import Button from './button';
 import { FaFaceDizzy } from "react-icons/fa6";
 
