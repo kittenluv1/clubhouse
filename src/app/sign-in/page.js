@@ -8,7 +8,7 @@ function SignInPage() {
       <p>To keep reviews accurate and trustworthy, only verified UCLA students can contribute.</p>
       <p>While your name will remain anonymous, we securely store your email to help protect against spam and misuse. </p>
       <p>We take community integrity seriously — every review helps build a reliable resource for Bruins, by Bruins.</p>
-      <div className="my-10 h-20">
+      <div className="my-10 0 h-30 flex-none">
         <GoogleSignIn/>
       </div>
     </div>
