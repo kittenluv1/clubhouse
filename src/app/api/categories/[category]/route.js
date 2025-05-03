@@ -1,32 +1,37 @@
 // app/api/categories/[category]/route.js   (or pages/api/categories/[category].js)
-
 import { supabase } from '../../../lib/db'; // adjust as needed
 
 export async function GET(request, { params }) {
-  // 1) Pull page & pageSize out of the URL
-  const { searchParams } = new URL(request.url);
-  const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-  const pageSize = Math.max(1, parseInt(searchParams.get('pageSize') || '10', 10));
-
-  // 2) Decode the category path param
-  const raw = params.category;
-  const category = decodeURIComponent(raw).trim();
-
-  // 3) Compute Supabase “range” (inclusive):
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
   try {
+    // 1) Pull page & pageSize out of the URL
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const sortType = searchParams.get("sort") || "Highest Rating";
+    const pageSize = Math.max(1, parseInt(searchParams.get('pageSize') || '10', 10));
+
+    const raw = params.category; // 2) Decode the category path param
+    const category = decodeURIComponent(raw).trim();
+
+    const from = (page - 1) * pageSize; // 3) Compute Supabase “range” (inclusive):
+    const to = from + pageSize - 1;     
+
+    // default sort type
+    let sortBy = "average_satisfaction"
+    let ascending = false; // default is descending order
+    if (sortType === "reviews"){
+      sortBy = "total_num_reviews";
+    }
+    else if (sortType === "alphabetical") { 
+      sortBy = "OrganizationName";
+      ascending = true; // alphabetic order needs to go in ascending order
+    }
+
     // 4) Run a single query that both fetches rows and returns a count:
     const { data, count, error } = await supabase
       .from('clubs')
-      .select(
-        `*`,
-        { count: 'exact' }           // <-- tell Supabase you need the total count
-      )
-      .or(
-        `Category1Name.ilike.%${category}%,Category2Name.ilike.%${category}%`
-      )
+      .select(`*`, { count: 'exact' })           // <-- tell Supabase you need the total count
+      .or(`Category1Name.ilike.%${category}%,Category2Name.ilike.%${category}%`)
+      .order(sortBy, { ascending, nullsFirst: false})
       .range(from, to);             // <-- apply limit/offset in one go
 
     if (error) {

@@ -17,17 +17,18 @@ export default function ClubCard({ club }) {
         >
         <div className="flex flex-row justify-between items-center">
             <h2 className="font-[var(--font-inter)] font-medium text-[28px] text-black">
-                {club.name}
+                {club.OrganizationName}
             </h2>
-            <div className="relative w-[61.33px] h-[68.7px]">
+            <div className="relative">
             <Image
                 src="/clubRating.png"
                 alt="Club Icon"
-                fill
+                width={61.33}
+                height={68.7}
                 className="object-contain"
             />
             <p className="absolute top-3/5 left-1/2 transform -translate-x-1/2 -translate-y-[52%] text-black font-[var(--font-inter)] text-[28px] font-medium leading-none">
-                4.8
+                {club.average_satisfaction ? club.average_satisfaction : "N/A"}
             </p>
             </div>
         </div>
@@ -35,9 +36,9 @@ export default function ClubCard({ club }) {
             <ClubTags category={club.Category1Name} />
             <ClubTags category={club.Category2Name} />
         </div>
-        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">{club.description}</p>
+        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">{club.OrganizationDescription}</p>
 
-        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">Reviewed by ... students</p>
+        <p className="font-[var(--font-inter)] font-normal text-[16px] text-black">Reviewed by {club.total_num_reviews} students</p>
         </Link>
     );
 }

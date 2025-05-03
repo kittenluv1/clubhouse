@@ -7,8 +7,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("Supabase URL or Service Role Key is missing.");
-    return new Response(JSON.stringify({ error: "Server configuration error" }), { status: 500 });
+    throw new Error("Supabase URL or Anon Key is missing.");
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Button from '../components/button';
 import SearchableDropdown from '../components/searchable-dropdown';
 import {QuarterDropdown, YearDropdown} from '../components/dropdowns';
@@ -29,6 +29,19 @@ export default function ReviewPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+      // Listen for auth state changes (e.g., sign in or sign out)
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!session) {
+          window.location.href = "./sign-in";
+        }
+      });
+      return () => {
+        data.subscription.unsubscribe();
+      };
+  
+    }, []);
 
     const handleClubSelect = async (club) => {
         setSelectedClub(club);

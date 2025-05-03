@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ClubCard from "../components/clubCard";
 
-export default function AllClubsPage() {
+function AllClubsPage() {
   const searchParams = useSearchParams();
   const nameParam = searchParams.get("name") ?? null;
   const singleCategoryParam = searchParams.get("category") ?? null;
@@ -15,6 +15,7 @@ export default function AllClubsPage() {
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
+  const [sortType, setSortType] = useState("rating");
 
   useEffect(() => {
     setLoading(true);
@@ -56,6 +57,11 @@ export default function AllClubsPage() {
     if (currPage < pageTotal) setCurrPage(p => p + 1);
   };
 
+  const handleSortChange = (e) => {
+    setSortType(e.target.value);
+    setCurrPage(1);
+  };
+
   // === Conditional Display ===
   if (loading) return <p className="p-4">Loading clubs...</p>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;
@@ -74,11 +80,27 @@ export default function AllClubsPage() {
 
   return (
     <div className="p-[80px] space-y-6">
-      <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
-        {title}
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
+          {title}
+        </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-row items-center gap-2">
+          <label>Sort by:</label>
+          <select
+            id="sort"
+            value={sortType}
+            onChange={handleSortChange}
+            className="border rounded px-2 py-1"
+          >
+            <option value="rating">Highest Rating</option>
+            <option value="reviews">Most Reviewed</option>
+            <option value="alphabetical">A-Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
         {clubs.map(club => (
           <ClubCard
             key={`${club.OrganizationID}-${club.OrganizationName}`}
@@ -108,4 +130,12 @@ export default function AllClubsPage() {
       </div>
     </div>
   );
+}
+
+export default function ClubsPage() {
+  return (
+    <Suspense fallback={<p className="p-4">Loading...</p>}>
+      <AllClubsPage />
+    </Suspense>
+  )
 }
