@@ -23,7 +23,7 @@ const SearchBar = forwardRef(({ width, height }, ref) => {
       // Name search: /clubs/Term
       router.push(`/clubs/${encoded}`);
     }
-  };
+  }
 
 
   const handleKeyDown = (e) => {
