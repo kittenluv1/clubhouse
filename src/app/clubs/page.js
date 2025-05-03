@@ -6,8 +6,9 @@ import ClubCard from "../components/clubCard";
 
 export default function AllClubsPage() {
   const searchParams = useSearchParams();
-  const nameParam = searchParams.get("name");
-  const categoryParam = searchParams.get("category");
+  const nameParam = searchParams.get("name") ?? null;
+  const singleCategoryParam = searchParams.get("category") ?? null;
+  const multiCategoriesParam = searchParams.get("categories") ?? null;
 
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,16 +20,18 @@ export default function AllClubsPage() {
     setLoading(true);
     setError(null);
 
-    // API URL，nameParam and categoryParam
+    // 1) Build URL based on param
     let url = `/api/clubs?page=${currPage}`;
+
     if (nameParam) {
       url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}`;
-    } else if (categoryParam) {
-      url = `/api/categories/${encodeURIComponent(categoryParam)}`;
-    } else {
-      url = `/api/clubs?page=${currPage}`;
+    } else if (multiCategoriesParam) {
+      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}`;
+    } else if (singleCategoryParam) {
+      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}`;
     }
 
+    // 2) Fetch and update state
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -43,29 +46,31 @@ export default function AllClubsPage() {
         setError("Failed to load clubs");
       })
       .finally(() => setLoading(false));
-  }, [currPage, nameParam, categoryParam]);
+  }, [currPage, nameParam, singleCategoryParam, multiCategoriesParam]);
 
   const handlePreviousPage = () => {
     if (currPage > 1) setCurrPage(p => p - 1);
   };
+
   const handleNextPage = () => {
     if (currPage < pageTotal) setCurrPage(p => p + 1);
   };
 
-  // fetching
+  // === Conditional Display ===
   if (loading) return <p className="p-4">Loading clubs...</p>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;
   if (clubs.length === 0) {
-    const keyword = nameParam ?? categoryParam ?? "All Clubs";
+    const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
     return <p className="p-4">No clubs found for “{keyword}”</p>;
   }
 
-  // result list
   const title = nameParam
     ? `Search results for “${nameParam}”`
-    : categoryParam
-      ? `Clubs in “${categoryParam}”`
-      : "All Clubs";
+    : multiCategoriesParam
+      ? `Clubs in “${multiCategoriesParam.replaceAll(",", ", ")}”`
+      : singleCategoryParam
+        ? `Clubs in “${singleCategoryParam}”`
+        : "All Clubs";
 
   return (
     <div className="p-[80px] space-y-6">
@@ -82,7 +87,6 @@ export default function AllClubsPage() {
         ))}
       </div>
 
-      {/* page control */}
       <div className="flex justify-center items-center gap-4 mt-6">
         <button
           onClick={handlePreviousPage}
