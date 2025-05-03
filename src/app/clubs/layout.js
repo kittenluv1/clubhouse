@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import SharedLayout from '../sign-in/layout'; // ✅ your outer layout
 import Filter from '../components/filter'; // ✅ your filter popup
 
 export default function ClubsLayout({ children }) {
@@ -33,7 +32,7 @@ export default function ClubsLayout({ children }) {
 
 
   return (
-    <SharedLayout>
+    <>
       <div className="relative mt-10 ">
         <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center px-15 py-0 gap-2 sm:gap-0">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -84,6 +83,6 @@ export default function ClubsLayout({ children }) {
         {/* Main club page content */}
         <div className="px-6">{children}</div>
       </div>
-    </SharedLayout>
+    </>
   );
 }
