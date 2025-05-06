@@ -8,7 +8,6 @@ export default function GoogleSignIn() {
   // null (logged out), string (logged in), or INVALID (invalid email)
   const [userEmail, setUserEmail] = useState(null);
   const [loading, setLoading] = useState(true); 
-  // const [isButtonReady, setIsButtonReady] = useState(false);
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
@@ -32,8 +31,6 @@ export default function GoogleSignIn() {
           logo_alignment: "left",
         }
       );
-
-      // setIsButtonReady(true); 
     }
   }
 
@@ -123,7 +120,6 @@ export default function GoogleSignIn() {
         }
       />
       {/* BUG: BUTTON INITIALLY RENDERS WITH NO ACCOUNT AND THEN FILLS IN USER ACC INFO */}
-      {/* {isButtonReady ? ( */}
       <div>
         {loading ? (
           <p>LOADING...</p>
@@ -137,14 +133,7 @@ export default function GoogleSignIn() {
         ) : (
           <div id="google-button"/>
         )}  
-      </div>
-      {/* // ) : (
-      //   <div>
-      //     NO BUTTON YET
-      //     <div id="google-button" className="hidden"/>
-      //   </div>
-      // )} */}
-        
+      </div>        
     </>
   );
 }
