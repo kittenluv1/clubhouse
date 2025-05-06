@@ -119,19 +119,19 @@ export default function GoogleSignIn() {
           }
         }
       />
-      {/* BUG: BUTTON INITIALLY RENDERS WITH NO ACCOUNT AND THEN FILLS IN USER ACC INFO */}
+      {/* BUG: BUTTON RENDERS A BIT SLOW */}
       <div>
         {loading ? (
           <p>LOADING...</p>
         ) : userEmail === "INVALID" ? (
           <div className="flex flex-col items-center justify-center gap-3">
-            <div id="google-button"/>
             <p>Invalid email. Please sign in with a valid UCLA email.</p>
+            <div id="google-button" className="hide-google-loading"/>
           </div>
         ) : userEmail ? (
           <p>You are signed in as <b>{userEmail}</b></p>
         ) : (
-          <div id="google-button"/>
+          <div id="google-button" className="hide-google-loading"/>
         )}  
       </div>        
     </>
