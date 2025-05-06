@@ -48,7 +48,7 @@ export default function GoogleSignIn() {
         const email = data.user.email;
 
         if ((email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu'))) {
-          setLoading(false);
+          setUserEmail(email);
         } else {
           console.log("NOT A UCLA EMAIL");
 
@@ -69,13 +69,14 @@ export default function GoogleSignIn() {
               console.log("User deleted successfully:", result.message);
               await supabase.auth.signOut(); // sign out the user
               setUserEmail("INVALID"); // display invalid email message
-              setLoading(false); 
             }
           } catch (error) {
             console.error("Error deleting user:", error.message);
           }
       }    
     }
+
+    setLoading(false);
   };
 
     if (window.google) {
