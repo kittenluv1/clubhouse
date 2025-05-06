@@ -18,22 +18,32 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
   const dropdownRef = useRef(null);
   const router = useRouter();
 
-  //enable search by category
+  useImperativeHandle(ref, () => ({
+    triggerSearch: (overrideTerm, byCategory = false) => {
+      handleSearch(overrideTerm, byCategory);
+    }
+  }));
+
+  //search logic
   const handleSearch = (overrideTerm, byCategory = false) => {
-    // Use the overrideTerm if provided, otherwise fall back to the input’s value
-    const term = (overrideTerm ?? localSearch).trim();
+    // Use the overrideTerm if provided, otherwise fall back to the input's value
+    const term = (overrideTerm !== undefined ? overrideTerm : inputValue).trim();
     if (!term) return;
+    
     // Keep the input in sync
-    setLocalSearch(term);
+    if (!byCategory) {
+      setInputValue(term);
+    }
+    
     // Encode for URL
     const encoded = encodeURIComponent(term);
+    
     if (byCategory) {
       // Category search: /clubs?category=Term
       router.push(`/clubs?category=${encoded}`);
     } else {
-      // Name search: /clubs/Term
-      router.push(`/clubs/search?q=${encoded}`);
-
+      // Name search: /clubs?name=Term
+      router.push(`/clubs?name=${encoded}`);
     }
   };
 
@@ -68,13 +78,9 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      const encoded = encodeURIComponent(inputValue.trim());
-      if (encoded !== "") {
-        router.push(`/clubs/search?q=${encoded}`);
-      }
+      handleSearch();
     }
   };
 
