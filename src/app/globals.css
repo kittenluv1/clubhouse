@@ -34,3 +34,9 @@ button{
   height: 100%;
   box-sizing: border-box;
 }
+
+@layer utilities {
+  .hide-google-loading > div > div:first-child {
+    display: none;
+  }
+}
