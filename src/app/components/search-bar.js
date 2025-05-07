@@ -1,5 +1,5 @@
 "use client";
-// imports
+// importe
 import React, {
   useState,
   useEffect,
