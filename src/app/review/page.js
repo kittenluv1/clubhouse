@@ -145,12 +145,9 @@ export default function ReviewPage() {
         <div className="w-full min-h-screen bg-gray-50 p-4 md:p-8 flex justify-center overflow-x-hidden">
         <div className="w-full px-8">
         <div className="flex flex-col w-full h-full justify-center">
-        <div className="flex justify-end w-full px-6 py-4 space-x-4">
-                <Button value="Review a Club" to="/"/>
-                <Button value="Sign In" to="/"/>
-        </div>
+
             <div className="text-6xl font-bold text-blue-700">Review A Club</div>
-            <p className="text text-gray-700">
+            <p className="py-6 text text-gray-700">
             Your review is completely anonymous, so feel free to be honest! 
                 Your insights help other students get a better sense of what the club is really like. 
                 Be real, respectful, and specific—your voice makes a difference.
