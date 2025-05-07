@@ -62,8 +62,17 @@ function AllClubsPage() {
     setCurrPage(1);
   };
 
-  // === Conditional Display ===
-  if (loading) return <p className="p-4">Loading clubs...</p>;
+  // fetching
+  if (loading) {
+    return (
+      <div className="p-[80px] space-y-6">
+      <div className="flex justify-center items-center gap-4 mt-6 text-[16px]">
+        <p className="p-4">Loading clubs...</p>
+
+      </div>
+      </div>
+    );
+  }
   if (error) return <p className="p-4 text-red-500">{error}</p>;
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
