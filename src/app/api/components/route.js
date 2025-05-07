@@ -1,9 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+import { supabaseServer } from '../../lib/server-db';
 
 export async function DELETE(req) {
     try {
@@ -12,7 +7,7 @@ export async function DELETE(req) {
             return new Response(JSON.stringify({ error: "User ID is required" }), { status: 400 });
         }
 
-        const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+        const { error } = await supabaseServer.auth.admin.deleteUser(userId);
         
         if (error) {
             console.error("Error deleting user:", error.message);

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ClubCard from "../components/clubCard";
 
-export default function AllClubsPage() {
+function AllClubsPage() {
   const searchParams = useSearchParams();
   const nameParam = searchParams.get("name");
   const categoryParam = searchParams.get("category");
@@ -21,11 +21,11 @@ export default function AllClubsPage() {
     setError(null);
 
     // API URL，nameParam and categoryParam
-    let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
+    let url;
     if (nameParam) {
       url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}&sort=${sortType}`;
     } else if (categoryParam) {
-      url = `/api/categories/${encodeURIComponent(categoryParam)}&page=${currPage}&sort=${sortType}`;
+      url = `/api/categories/${encodeURIComponent(categoryParam)}?page=${currPage}&sort=${sortType}`;
     } else {
       url = `/api/clubs?page=${currPage}&sort=${sortType}`;
     }
@@ -126,4 +126,12 @@ export default function AllClubsPage() {
       </div>
     </div>
   );
+}
+
+export default function ClubsPage() {
+  return (
+    <Suspense fallback={<p className="p-4">Loading...</p>}>
+      <AllClubsPage />
+    </Suspense>
+  )
 }
