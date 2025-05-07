@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "BruinSphere",
+  title: "clubhouse",
   description: "Bruinwalk for Clubs",
 };
 
