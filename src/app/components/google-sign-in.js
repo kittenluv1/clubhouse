@@ -7,8 +7,7 @@ import { supabase } from "../lib/db";
 export default function GoogleSignIn() {
   // null (logged out), string (logged in), or INVALID (invalid email)
   const [userEmail, setUserEmail] = useState(null);
-  const [loading, setLoading] = useState(true); 
-  // const [isButtonReady, setIsButtonReady] = useState(false);
+  const [loading, setLoading] = useState(false); 
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
@@ -32,8 +31,6 @@ export default function GoogleSignIn() {
           logo_alignment: "left",
         }
       );
-
-      // setIsButtonReady(true); 
     }
   }
 
@@ -45,35 +42,41 @@ export default function GoogleSignIn() {
         token: response.credential,
       });
 
+      setLoading(true); 
+
       if (data?.user) {
         const email = data.user.email;
 
-        if (!(email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu'))) {
-        console.log("NOT A UCLA EMAIL");
-        
-        try {
-          const response = await fetch("/api/components", {
-            method: "DELETE", 
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: data.user.id }), // send user ID to delete
-          })
+        if ((email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu'))) {
+          setUserEmail(email);
+        } else {
+          console.log("NOT A UCLA EMAIL");
 
-          const result = await response.json();
+          try {
+            const response = await fetch("/api/components", {
+              method: "DELETE", 
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ userId: data.user.id }), // send user ID to delete
+            })
 
-          if (!response.ok) {
-            console.error("Error deleting user:", result.error);
-          } else {
-            console.log("User deleted successfully:", result.message);
-            await supabase.auth.signOut(); // sign out the user
-            setUserEmail("INVALID"); // display invalid email message
+            const result = await response.json();
+
+            if (!response.ok) {
+              console.error("Error deleting user:", result.error);
+            } else {
+              console.log("User deleted successfully:", result.message);
+              await supabase.auth.signOut(); // sign out the user
+              setUserEmail("INVALID"); // display invalid email message
+            }
+          } catch (error) {
+            console.error("Error deleting user:", error.message);
           }
-        } catch (error) {
-          console.error("Error deleting user:", error.message);
-        }
-      }
+      }    
     }
+
+    setLoading(false);
   };
 
     if (window.google) {
@@ -85,11 +88,11 @@ export default function GoogleSignIn() {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        setLoading(true); 
+        // setLoading(true); 
         setUserEmail(session.user.email); // Update email when signed in
         console.log("Auth state changed:", event, session.user.email);
       } else {
-        setLoading(true); 
+        // setLoading(true); 
         setUserEmail(null); // Clear email when signed out
         console.log("Auth state changed:", event);
       }
@@ -101,12 +104,6 @@ export default function GoogleSignIn() {
     };
   }, []); 
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-
-    return () => clearTimeout(timer);
-  }, [loading]); 
-
   return (
     <>
       <Script
@@ -116,35 +113,28 @@ export default function GoogleSignIn() {
           if (window.google) {
             console.log("Google Sign-In script loaded");
             renderGoogleButton(); 
+            setLoading(false); 
             // Google One Tap
             // window.google.accounts.id.prompt();
             }
           }
         }
       />
-      {/* BUG: BUTTON INITIALLY RENDERS WITH NO ACCOUNT AND THEN FILLS IN USER ACC INFO */}
-      {/* {isButtonReady ? ( */}
+      {/* BUG: BUTTON RENDERS A BIT SLOW */}
       <div>
         {loading ? (
           <p>LOADING...</p>
         ) : userEmail === "INVALID" ? (
           <div className="flex flex-col items-center justify-center gap-3">
-            <div id="google-button"/>
-            <p>Invalid email. Please sign in with a valid UCLA email.</p>
+            <p>Please sign in with a valid UCLA email.</p>
+            <div id="google-button" className="hide-google-loading"/>
           </div>
         ) : userEmail ? (
           <p>You are signed in as <b>{userEmail}</b></p>
         ) : (
-          <div id="google-button"/>
+          <div id="google-button" className="hide-google-loading"/>
         )}  
-      </div>
-      {/* // ) : (
-      //   <div>
-      //     NO BUTTON YET
-      //     <div id="google-button" className="hidden"/>
-      //   </div>
-      // )} */}
-        
+      </div>        
     </>
   );
 }
