@@ -2,7 +2,6 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import SearchBar from './components/search-bar';
-import Button from './components/button';
 
 function Home() {
   const searchRef = useRef();
