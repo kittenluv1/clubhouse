@@ -126,7 +126,7 @@ export default function GoogleSignIn() {
           <p>LOADING...</p>
         ) : userEmail === "INVALID" ? (
           <div className="flex flex-col items-center justify-center gap-3">
-            <p>Invalid email. Please sign in with a valid UCLA email.</p>
+            <p>Please sign in with a valid UCLA email.</p>
             <div id="google-button" className="hide-google-loading"/>
           </div>
         ) : userEmail ? (
