@@ -21,11 +21,11 @@ function AllClubsPage() {
     setError(null);
 
     // API URL，nameParam and categoryParam
-    let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
+    let url;
     if (nameParam) {
       url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}&sort=${sortType}`;
     } else if (categoryParam) {
-      url = `/api/categories/${encodeURIComponent(categoryParam)}&page=${currPage}&sort=${sortType}`;
+      url = `/api/categories/${encodeURIComponent(categoryParam)}?page=${currPage}&sort=${sortType}`;
     } else {
       url = `/api/clubs?page=${currPage}&sort=${sortType}`;
     }
