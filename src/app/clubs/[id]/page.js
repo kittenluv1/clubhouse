@@ -65,64 +65,57 @@ export default function ClubPage() {
   if (!club) return <p className="p-4">No club found with the name: {id}</p>;
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center py-10 px-4"
-      style={{ backgroundColor: "#FEF8F8" }}
-    >
-      <div className="max-w-4xl w-full flex flex-col md:flex-row items-start gap-8">
+    <div className="border p-4 rounded shadow-md m-5">
+      <Link 
+              href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
+              className="block"
+      >
+        <h3 className="text-2xl font-bold">{club.OrganizationName}</h3>
+      </Link>
+      
+      <p className="mt-2">{club.OrganizationDescription}</p>
+      {club.OrganizationEmail && (
+        <p className="mt-1">
+          Email:{" "}
+          <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
+            {club.OrganizationEmail}
+          </a>
+        </p>
+      )}
+      {club.OrganizationWebSite && (
+        <p className="mt-1">
+          Website:{" "}
 
-        {/*CLUB NAME + DESCRIPTION*/}
-        <div className="flex-1">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">{club.OrganizationName}</h1>
-          <p className="mt-4 text-gray-700 text-base text-s">{club.OrganizationDescription}</p>
-          {club.OrganizationEmail && (
-            <p className="mt-1">
-              Email:{" "}
-              <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
-                {club.OrganizationEmail}
-              </a>
-            </p>
-          )}
-          {club.OrganizationWebSite && (
-            <p className="mt-1">
-              Website:{" "}
+          <a href={club.OrganizationWebSite}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            {club.OrganizationWebSite}
+          </a>
+        </p>
+      )}
+      <p className="mt-1">
+        Category: {club.Category1Name}
+        {club.Category2Name ? ` - ${club.Category2Name}` : ''}
+      </p>
 
-              <a href={club.OrganizationWebSite}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline"
-              >
-                {club.OrganizationWebSite}
-              </a>
-            </p>
-          )}
-
-          {/* FILTER TAGS */}
-          <div className="mt-4 flex gap-2">
-            <span className="bg-transparent border border-black text-gray-700 rounded-full px-4 py-2 text-l font-medium">
-              {club.Category1Name}
-            </span>
-            {club.Category2Name && (
-              <span className="bg-transparent border border-black text-gray-700 rounded-full px-4 py-2 text-l font-medium">
-                {club.Category2Name}
-              </span>
-            )}
-          </div>
-
-          {(club.Sig1Name || club.Sig2Name || club.Sig3Name) && (
-            <div className="mt-3">
-              <strong>Signatures:</strong>
-              <ul className="list-disc list-inside">
-                {club.Sig1Name && <li>{club.Sig1Name}</li>}
-                {club.Sig2Name && <li>{club.Sig2Name}</li>}
-                {club.Sig3Name && <li>{club.Sig3Name}</li>}
-              </ul>
-            </div>
-          )}
+      {(club.Sig1Name || club.Sig2Name || club.Sig3Name) && (
+        <div className="mt-3">
+          <strong>Signatures:</strong>
+          <ul className="list-disc list-inside">
+            {club.Sig1Name && <li>{club.Sig1Name}</li>}
+            {club.Sig2Name && <li>{club.Sig2Name}</li>}
+            {club.Sig3Name && <li>{club.Sig3Name}</li>}
+          </ul>
         </div>
-      </div>
+      )}
 
-      <div className="mt-8">
+      {club.SocialMediaLink && (
+        <div className="mt-3" dangerouslySetInnerHTML={{ __html: club.SocialMediaLink }} />
+      )}
+
+      <div className="mt-4">
         <Link href="/clubs" className="text-blue-500 hover:underline">
           Back to all clubs
         </Link>

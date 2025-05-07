@@ -13,10 +13,8 @@ function LoginButton() {
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (session) {
           setLoggedin(true);
-          console.log("Login button:", event);
         } else {
           setLoggedin(false);
-          console.log("Login button:", event);
         }
 
       });

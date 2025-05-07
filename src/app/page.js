@@ -2,10 +2,10 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import SearchBar from './components/search-bar';
-import Button from './components/button';
 
 function Home() {
   const searchRef = useRef();
+  const [categories, setCategories] = useState([]);
 
   const handleSearchClick = () => {
     if (searchRef.current) {
@@ -13,19 +13,21 @@ function Home() {
     }
   };
 
-  const handleCategoryClick = (category) => {
+  const handleCategoryClick = (byCategory) => {
     if (searchRef.current) {
-      searchRef.current.triggerSearch(category, true);
+      searchRef.current.triggerSearch(byCategory, true);
     }
   }
 
-  const [categories, setCategories] = useState([]);
-
   useEffect(() => {
     async function loadCategories() {
-      const res = await fetch('/api/categories')
-      if (!res.ok) throw new Error('could not load categories')
-      setCategories(await res.json())
+      try {
+        const res = await fetch('/api/categories')
+        if (!res.ok) throw new Error('could not load categories')
+        setCategories(await res.json())
+      } catch (err) {
+        console.error('Error loading categories:', error);
+      }
     }
     loadCategories()
   }, [])
