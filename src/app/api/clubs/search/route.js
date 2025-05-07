@@ -18,11 +18,27 @@ export async function GET(req) {
     const startIndex = (pageNum - 1) * pageSize;
     const endIndex = startIndex + pageSize - 1;
 
+    // get the sort type from URL
+		const sortType = searchParams.get("sort");
+		// default sort type
+		let sortBy = "average_satisfaction"
+		let ascending = false; // default is descending order
+
+		if (sortType === "mostReviewed"){
+			sortBy = "total_num_reviews";
+		}
+		// alphabetic order needs to go in ascending order
+		else if (sortType === "alpha") {
+			sortBy = "OrganizationName";
+			ascending = true;
+		}
+
     //Fetch the total count of matching clubs (for pagination)
     const { count, error: countError } = await supabase
       .from("clubs")
       .select("*", { count: "exact" })
-      .ilike("OrganizationName", `%${name}%`);
+      .ilike("OrganizationName", `%${name}%`)
+      .order(sortBy, { ascending , nullFirst: false}) ;// sort based on user-chosen type
 
     if (countError) {
       console.error("Supabase error:", countError);
@@ -34,6 +50,7 @@ export async function GET(req) {
       .from("clubs")
       .select("*")
       .ilike("OrganizationName", `%${name}%`)
+      .order(sortBy, { ascending , nullFirst: false})// sort based on user-chosen type
       .range(startIndex, endIndex);  
 
     if (error) {
