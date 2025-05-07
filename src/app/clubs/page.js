@@ -143,6 +143,7 @@ function AllClubsPage() {
 
 function ClubsPage() {
   return (
+    // wrap search params in suspense to avoid build error
     <Suspense fallback={<p className="p-4">Loading...</p>}>
       <AllClubsPage />
     </Suspense>
