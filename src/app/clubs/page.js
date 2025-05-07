@@ -128,10 +128,12 @@ function AllClubsPage() {
   );
 }
 
-export default function ClubsPage() {
+function ClubsPage() {
   return (
     <Suspense fallback={<p className="p-4">Loading...</p>}>
       <AllClubsPage />
     </Suspense>
   )
 }
+
+export default ClubsPage;
