@@ -1,9 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Filter from '../components/filter'; // ✅ your filter popup
 
-export default function ClubsLayout({ children }) {
+function ClubsLayoutContent({ children }) {
   const router = useRouter();
 
   const [showFilter, setShowFilter] = useState(false);
@@ -94,5 +94,13 @@ export default function ClubsLayout({ children }) {
         <div className="px-6">{children}</div>
       </div>
     </>
+  );
+}
+
+export default function ClubsLayout({ children }) {
+  return (
+    <Suspense fallback={<p className="p-4">Loading...</p>}>
+      <ClubsLayoutContent>{children}</ClubsLayoutContent>
+    </Suspense>
   );
 }
