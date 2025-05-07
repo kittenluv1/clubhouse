@@ -44,7 +44,7 @@ function Home() {
         >
           Search
         </button>
-        <div className="flex flex-wrap gap-3 justify-center mt-4">
+        <div className="flex flex-wrap gap-3 justify-center mt-4 mb-40">
           {categories.map(cat => (
             <button
               key={cat.id}
