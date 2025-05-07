@@ -19,6 +19,19 @@ export default function ClubsLayout({ children }) {
     setShowFilter(false); // Close the filter popup
   };
 
+  const handleRemoveTag = (tagToRemove) => {
+    const updatedTags = selectedTags.filter((tag) => tag !== tagToRemove);
+    setSelectedTags(updatedTags);
+
+    if (updatedTags.length > 0) {
+      const encoded = encodeURIComponent(updatedTags.join(','));
+      router.push(`/clubs?categories=${encoded}`);
+    } else {
+      router.push('/clubs'); // fallback to all clubs
+    }
+  };
+
+
   return (
     <SharedLayout>
       <div className="relative mt-10 ">
@@ -31,19 +44,25 @@ export default function ClubsLayout({ children }) {
               Search by Category
             </button>
 
-            {/* ✅ Show selected tags */}
             {selectedTags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
-                {selectedTags.map(tag => (
-                  <span
+                {selectedTags.map((tag) => (
+                  <div
                     key={tag}
-                    className="bg-green-100 border border-green-400 text-black px-3 py-1 rounded-full text-sm"
+                    className="flex items-center bg-green-100 text-black border border-green-400 px-3 py-1 rounded-full text-sm"
                   >
-                    {tag}
-                  </span>
+                    <span>{tag}</span>
+                    <button
+                      onClick={() => handleRemoveTag(tag)}
+                      className="ml-2 font-bold hover:text-green-600"
+                    >
+                      ×
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
+
           </div>
 
           <div>

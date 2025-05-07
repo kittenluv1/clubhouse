@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import TagButton from './tagButton'; // or wherever it's defined
+import TagButton from './tagButton'; // adjust path if needed
 
 const TAGS = {
   Arts: ['Film', 'Music', 'Dance', 'Media', 'Theater'],
@@ -17,8 +17,11 @@ export default function Filter({ onSearch, onClose }) {
     );
   };
 
+  const clearAll = () => setSelectedTags([]);
+
   return (
-    <div>
+    <div className="p-4">
+      {/* Tag Groups */}
       {Object.entries(TAGS).map(([group, tags]) => (
         <div key={group} className="mb-4">
           <h4 className="font-semibold mb-2">{group}</h4>
@@ -35,6 +38,36 @@ export default function Filter({ onSearch, onClose }) {
         </div>
       ))}
 
+      {/* Selected Tags */}
+      {selectedTags.length > 0 && (
+        <div className="mb-4">
+          <h4 className="font-semibold mb-2">Selected Tags:</h4>
+          <div className="flex flex-wrap gap-2">
+            {selectedTags.map((tag) => (
+              <div
+                key={tag}
+                className="flex items-center bg-[#6E9461] text-white px-3 py-1 rounded-full"
+              >
+                <span>{tag}</span>
+                <button
+                  onClick={() => toggleTag(tag)}
+                  className="ml-2 text-white hover:text-gray-200"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={clearAll}
+            className="mt-2 text-sm text-blue-600 hover:underline"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
+
+      {/* Control Buttons */}
       <div className="flex justify-between">
         <button className="text-gray-600" onClick={onClose}>
           Cancel
