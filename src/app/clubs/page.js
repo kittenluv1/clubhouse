@@ -141,13 +141,10 @@ function AllClubsPage() {
   );
 }
 
-function ClubsPage() {
+export default function ClubsPage() {
   return (
-    // wrap search params in suspense to avoid build error
     <Suspense fallback={<p className="p-4">Loading...</p>}>
       <AllClubsPage />
     </Suspense>
   )
 }
-
-export default ClubsPage;
