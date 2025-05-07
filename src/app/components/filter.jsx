@@ -2,10 +2,32 @@
 import { useState } from 'react';
 import TagButton from './tagButton'; // adjust path if needed
 
-const TAGS = {
-  Arts: ['Film', 'Music', 'Dance', 'Media', 'Theater'],
-  Cultural: ['Asian', 'African American', 'Latino/Latina'],
-  Professional: ['Business', 'Dental', 'Law', 'Theater'],
+const GROUPED_TAGS = {
+  "🎓 Academic & Pre-Professional": [
+    "Academic", "Business", "Career Planning", "Dental", "Educational",
+    "Engineering", "Honor Societies", "Journals", "Law", "Leadership",
+    "Medical", "Pre-Professional", "Technology"
+  ],
+  "🌎 Cultural & Identity-Based": [
+    "Cultural", "African American", "Asian", "Asian Pacific Islander",
+    "Latino/Latina", "Ethnic", "International Students", "Out-of-state Students"
+  ],
+  "🌈 Community & Advocacy": [
+    "Community Service", "Social Activism", "Service", "LGBTQI",
+    "GSA Affiliated", "Transfer Students", "Faculty/Staff"
+  ],
+  "🎭 Arts & Media": [
+    "Arts", "Dance", "Film", "Music", "Media", "Theater"
+  ],
+  "🧘 Health & Wellness": [
+    "Fitness", "Health and Wellness", "Self Improvement", "Sports", "Martial Arts"
+  ],
+  "⛪ Spiritual & Religious": [
+    "Religious", "Spiritual"
+  ],
+  "🏛️ Campus Life & Social": [
+    "Greek Life", "Student Government", "Social", "Spirit/Booster", "Recreation"
+  ]
 };
 
 export default function Filter({ onSearch, onClose }) {
@@ -20,9 +42,9 @@ export default function Filter({ onSearch, onClose }) {
   const clearAll = () => setSelectedTags([]);
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-h-[70vh] overflow-y-auto">
       {/* Tag Groups */}
-      {Object.entries(TAGS).map(([group, tags]) => (
+      {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
         <div key={group} className="mb-4">
           <h4 className="font-semibold mb-2">{group}</h4>
           <div className="flex flex-wrap gap-2">
