@@ -4,20 +4,35 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
-export default function ClubPage() {
-  const { id } = useParams(); // This gets the id from the URL
+function RatingBar({ label, value }) {
+  return (
+    <div className="flex flex-col items-start w-48">
+      <div className="flex justify-between w-full mb-1">
+        <span className="text-xs font-medium text-gray-600">{label}</span>
+        <span className="text-xs font-semibold text-green-700">{value.toFixed(1)}</span>
+      </div>
+      <div className="w-full h-2 bg-gray-200 rounded-full">
+        <div
+          className="h-2 rounded-full"
+          style={{
+            width: `${(value / 5) * 100}%`,
+            background: "#33B864",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
+export default function ClubPage() {
+  const { id } = useParams();
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!id) return;
-
-    // decode the id so it works with the DB
     const decodedId = decodeURIComponent(id);
-
-    // Fetch the club data
     fetch(`/api/clubs/${decodedId}`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
@@ -25,28 +40,28 @@ export default function ClubPage() {
       })
       .then((data) => {
         if (data.orgList && data.orgList.length > 0) {
-          setClub(data.orgList[0]); // Take the first matching club
+          setClub(data.orgList[0]);
         } else {
           setError(`No club found with name containing: ${id}`);
         }
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Fetch error:", err);
         setError("Failed to fetch club data");
         setLoading(false);
       });
   }, [id]);
 
   if (loading) return <p className="p-4">Loading...</p>;
-  if (error) return (
-    <div className="p-4">
-      <p className="text-red-500">{error}</p>
-      <Link href="/clubs" className="text-blue-500 hover:underline mt-4 inline-block">
-        View all clubs
-      </Link>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="p-4">
+        <p className="text-red-500">{error}</p>
+        <Link href="/clubs" className="text-blue-500 hover:underline mt-4 inline-block">
+          View all clubs
+        </Link>
+      </div>
+    );
   if (!club) return <p className="p-4">No club found with the name: {id}</p>;
 
   return (
