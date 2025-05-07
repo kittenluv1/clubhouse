@@ -51,7 +51,13 @@ export default function ClubPage() {
 
   return (
     <div className="border p-4 rounded shadow-md m-5">
-      <h3 className="text-2xl font-bold">{club.OrganizationName}</h3>
+      <Link 
+              href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
+              className="block"
+      >
+        <h3 className="text-2xl font-bold">{club.OrganizationName}</h3>
+      </Link>
+      
       <p className="mt-2">{club.OrganizationDescription}</p>
       {club.OrganizationEmail && (
         <p className="mt-1">
