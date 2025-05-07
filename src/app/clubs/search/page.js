@@ -50,12 +50,12 @@ export default function SearchResultsPage() {
 
   if (loading) return <p className="p-4">Loading search results...</p>;
   if (error) return <p className="p-4 text-red-500">{error}</p>;
-  if (clubs.length === 0) return <p className="p-4">No clubs found for "{query}"</p>;
+  if (clubs.length === 0) return <p className="p-4">No clubs found for &quot;{query}&quot;</p>;
 
   return (
     <div className="p-[80px]">
       <h1 className="font-[var(--font-inter)] font-normal text-[16px] mb-4">
-        Search results for '{query}'
+        Search results for &quot;{query}&quot;
       </h1>
 
       <div className="flex flex-col justify-center items-center gap-[40px] mt-6">
