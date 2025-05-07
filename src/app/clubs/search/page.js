@@ -1,10 +1,10 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import ClubCard from '@/app/components/clubCard';
 
-export default function SearchResultsPage() {
+function SearchResultsPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   
@@ -74,5 +74,13 @@ export default function SearchResultsPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<p className="p-4">Loading...</p>}>
+      <SearchResultsPage />
+    </Suspense>
   );
 }
