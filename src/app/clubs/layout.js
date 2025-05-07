@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Filter from '../components/filter'; // ✅ your filter popup
 
 export default function ClubsLayout({ children }) {
@@ -8,6 +8,16 @@ export default function ClubsLayout({ children }) {
 
   const [showFilter, setShowFilter] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]); // ✅ new state
+
+  const searchParams = useSearchParams();
+  const nameParam = searchParams.get("name");
+
+  useEffect(() => {
+    if (nameParam) {
+      setSelectedTags([]); // ✅ clear selected tags if searching by name
+    }
+  }, [nameParam]);
+
 
   const handleSearch = (tags) => {
     if (!tags || tags.length === 0) return;
