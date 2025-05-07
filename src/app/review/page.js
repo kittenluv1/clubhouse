@@ -142,13 +142,13 @@ export default function ReviewPage() {
     };
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-4 md:p-8 flex justify-center overflow-x-hidden">
-        <div className="w-full px-8">
+        <div className="w-full min-h-screen bg-gray-50 p-4 md:p-20 flex justify-center overflow-x-hidden">
+
         <div className="flex flex-col w-full h-full justify-center">
-        <div className="flex justify-end w-full px-6 py-4 space-x-4">
+        {/* <div className="flex justify-end w-full px-6 py-4 space-x-4">
                 <Button value="Review a Club" to="/"/>
                 <Button value="Sign In" to="/"/>
-        </div>
+        </div> */}
             <div className="text-6xl font-bold text-blue-700">Review A Club</div>
             <p className="text text-gray-700">
             Your review is completely anonymous, so feel free to be honest! 
@@ -380,7 +380,7 @@ export default function ReviewPage() {
             </form>
         </div>
         </div>
-        </div>
+        
     );
 }
 

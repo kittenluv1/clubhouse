@@ -86,7 +86,7 @@ function AllClubsPage() {
           id="sort"
           value={sortType}
           onChange={handleSortChange}
-          className="border rounded px-2 py-1"
+          className="border-1 rounded-[30px] bg-[#f9daea] px-2 py-2"
         >
           <option value="rating">Highest Rating</option>
           <option value="reviews">Most Reviewed</option>
