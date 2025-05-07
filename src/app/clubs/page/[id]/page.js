@@ -53,16 +53,6 @@ export default function ClubPage() {
   }, [id]);
 
   if (loading) return <p className="p-4">Loading...</p>;
-  if (error)
-    return (
-      <div className="p-4">
-        <p className="text-red-500">{error}</p>
-        <Link href="/clubs" className="text-blue-500 hover:underline mt-4 inline-block">
-          View all clubs
-        </Link>
-      </div>
-    );
-  if (!club) return <p className="p-4">No club found with the name: {id}</p>;
 
   return (
     <div
@@ -75,14 +65,6 @@ export default function ClubPage() {
         <div className="flex-1">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900">{club.OrganizationName}</h1>
           <p className="mt-4 text-gray-700 text-base text-s">{club.OrganizationDescription}</p>
-          {club.OrganizationEmail && (
-            <p className="mt-1">
-              Email:{" "}
-              <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
-                {club.OrganizationEmail}
-              </a>
-            </p>
-          )}
           {club.OrganizationWebSite && (
             <p className="mt-1">
               Website:{" "}
@@ -109,19 +91,21 @@ export default function ClubPage() {
             )}
           </div>
 
-          {(club.Sig1Name || club.Sig2Name || club.Sig3Name) && (
-            <div className="mt-3">
-              <strong>Signatures:</strong>
-              <ul className="list-disc list-inside">
-                {club.Sig1Name && <li>{club.Sig1Name}</li>}
-                {club.Sig2Name && <li>{club.Sig2Name}</li>}
-                {club.Sig3Name && <li>{club.Sig3Name}</li>}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
-
+    <div>
+        <div className="justify-center">
+            <h>
+                Student Reviews 
+            </h>
+            <p>
+                Have something to say? Share your experience...
+            </p>
+            <div className="col-span-2 flex justify-center">
+			    <Button value="Review a Club" onClick={attemptReview}/>
+		    </div>
+        </div>
+    </div>
       <div className="mt-8">
         <Link href="/clubs" className="text-blue-500 hover:underline">
           Back to all clubs
