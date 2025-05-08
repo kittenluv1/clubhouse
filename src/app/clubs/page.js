@@ -90,23 +90,23 @@ function AllClubsPage() {
   return (
     <div className="p-[80px] space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
-          {title}
-        </h1>
+      <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
+        {title}
+      </h1>
 
-        <div className="flex flex-row items-center gap-2">
-          <label>Sort by:</label>
-          <select
-            id="sort"
-            value={sortType}
-            onChange={handleSortChange}
-            className="border rounded px-2 py-1"
-          >
-            <option value="rating">Highest Rating</option>
-            <option value="reviews">Most Reviewed</option>
-            <option value="alphabetical">A-Z</option>
-          </select>
-        </div>
+      <div className="flex flex-row items-center gap-2">
+        <label>Sort by:</label>
+        <select
+          id="sort"
+          value={sortType}
+          onChange={handleSortChange}
+          className="border-1 rounded-[30px] bg-[#f9daea] px-2 py-2"
+        >
+          <option value="rating">Highest Rating</option>
+          <option value="reviews">Most Reviewed</option>
+          <option value="alphabetical">A-Z</option>
+        </select>
+      </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
