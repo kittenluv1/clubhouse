@@ -276,7 +276,7 @@ export default function ClubDetailsPage() {
                   </span>
                 </div>
                 <p className="text-gray-800 mb-4">
-                    "{review.review_text}"
+                    &quot;{review.review_text}&quot;
                 </p>
               </div>
             ))}
