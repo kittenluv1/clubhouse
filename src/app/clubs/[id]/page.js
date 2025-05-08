@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+function getCategories(club) {
+  return [
+    club.Category1Name,
+    club.Category2Name,
+    club.Category3Name,
+    club.Category4Name,
+    club.Category5Name,
+  ].filter(Boolean);
+}
+
 function RatingBar({ label, value }) {
   return (
     <div className="flex flex-col items-start w-48">
@@ -64,16 +74,31 @@ export default function ClubPage() {
     );
   if (!club) return <p className="p-4">No club found with the name: {id}</p>;
 
+  const categories = getCategories(club);
+
   return (
-    <div className="border p-4 rounded shadow-md m-5">
-      <Link 
-              href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
-              className="block"
+    <div className="bg-gray-100 rounded-x1 p-6 m-6 flex-col rounded m-10">
+      <Link
+        href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
+        className="block"
       >
-        <h3 className="text-2xl font-bold">{club.OrganizationName}</h3>
+        <h3 className="text-2xl pb-4 font-bold">{club.OrganizationName}</h3>
       </Link>
+
+      <div className="flex gap-2 pb-4">
+        {categories.map((cat, idx) => (
+          <span
+            key={idx}
+            className="bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-sm font-bold"
+          >
+            {cat}
+          </span>
+        ))}
+      </div>
+
+      <p className="text-sm text-gray-800 pb-">{club.OrganizationDescription}</p>
       
-      <p className="mt-2">{club.OrganizationDescription}</p>
+      {/* 
       {club.OrganizationEmail && (
         <p className="mt-1">
           Email:{" "}
@@ -82,6 +107,7 @@ export default function ClubPage() {
           </a>
         </p>
       )}
+
       {club.OrganizationWebSite && (
         <p className="mt-1">
           Website:{" "}
@@ -95,10 +121,6 @@ export default function ClubPage() {
           </a>
         </p>
       )}
-      <p className="mt-1">
-        Category: {club.Category1Name}
-        {club.Category2Name ? ` - ${club.Category2Name}` : ''}
-      </p>
 
       {(club.Sig1Name || club.Sig2Name || club.Sig3Name) && (
         <div className="mt-3">
@@ -110,10 +132,12 @@ export default function ClubPage() {
           </ul>
         </div>
       )}
+    
 
       {club.SocialMediaLink && (
         <div className="mt-3" dangerouslySetInnerHTML={{ __html: club.SocialMediaLink }} />
       )}
+      */}
 
       <div className="mt-4">
         <Link href="/clubs" className="text-blue-500 hover:underline">
