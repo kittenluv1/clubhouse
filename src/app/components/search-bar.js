@@ -1,5 +1,5 @@
 "use client";
-
+// importe
 import React, {
   useState,
   useEffect,
@@ -45,7 +45,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
       // Name search: /clubs?name=Term
       router.push(`/clubs?name=${encoded}`);
     }
-  };
+  }
 
   useEffect(() => {
     const fetchClubNames = async () => {

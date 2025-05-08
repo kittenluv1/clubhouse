@@ -185,10 +185,9 @@ export default function ReviewPage() {
     };
 
     return (
-        <div className="w-full min-h-screen bg-gray-50 p-4 md:p-8 flex justify-center overflow-x-hidden">
-        <div className="w-full px-8">
-        <div className="flex flex-col w-full h-full justify-center">
+        <div className="w-full min-h-screen bg-gray-50 p-4 md:p-20 flex justify-center overflow-x-hidden">
 
+        <div className="flex flex-col w-full h-full justify-center">
             <div className="text-6xl font-bold text-blue-700">Review A Club</div>
             <p className="py-6 text text-gray-700">
             Your review is completely anonymous, so feel free to be honest! 
@@ -436,6 +435,6 @@ export default function ReviewPage() {
             </form>
         </div>
         </div>
-        </div>
+        
     );
 }
