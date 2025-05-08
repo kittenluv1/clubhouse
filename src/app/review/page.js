@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
-import Button from '../components/button';
 import SearchableDropdown from '../components/searchable-dropdown';
 import {QuarterDropdown, YearDropdown} from '../components/dropdowns';
 import { createClient } from '@supabase/supabase-js';
@@ -10,6 +9,24 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
+    if (!startQuarter || !startYear || !endQuarter || !endYear) return true;
+    
+    const startYearNum = parseInt(startYear);
+    const endYearNum = parseInt(endYear);
+    
+    if (endYearNum > startYearNum) return true;
+    
+    if (endYearNum === startYearNum) {
+        const quarters = ['Winter', 'Spring', 'Fall'];
+        const startQuarterIndex = quarters.indexOf(startQuarter);
+        const endQuarterIndex = quarters.indexOf(endQuarter);
+        
+        return endQuarterIndex >= startQuarterIndex;
+    }
+    return false;
+};
 
 export default function ReviewPage() {
     const [selectedClub, setSelectedClub] = useState('');
@@ -28,6 +45,7 @@ export default function ReviewPage() {
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+    const [dateError, setDateError] = useState(null);
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
@@ -40,8 +58,16 @@ export default function ReviewPage() {
       return () => {
         data.subscription.unsubscribe();
       };
-  
     }, []);
+
+    useEffect(() => {
+        if (startQuarter && startYear && endQuarter && endYear) {
+            const isValid = isEndDateValid(startQuarter, startYear, endQuarter, endYear);
+            setDateError(isValid ? null : 'End date cannot be earlier than start date');
+        } else {
+            setDateError(null);
+        }
+    }, [startQuarter, startYear, endQuarter, endYear]);
 
     const handleClubSelect = async (club) => {
         setSelectedClub(club);
@@ -52,7 +78,10 @@ export default function ReviewPage() {
                 .eq('OrganizationName', club)
                 .single();
                 
-            if (error) throw error;
+            if (error) {
+                console.error('Full error object:', error);
+                throw new Error(`${error.message}${error.details ? ' - ' + error.details : ''}${error.hint ? ' - ' + error.hint : ''}`);
+            }
             setClubId(data.OrganizationID);
         } catch (error) {
             console.error('Error fetching club ID:', error);
@@ -80,6 +109,13 @@ export default function ReviewPage() {
         e.preventDefault();
         setError(null);
         setSuccess(false);
+        setDateError(null);
+        
+        if (!isEndDateValid(startQuarter, startYear, endQuarter, endYear)) {
+            setDateError('End date cannot be earlier than start date');
+            return;
+        }
+        
         setIsSubmitting(true);
         
         try {
@@ -107,12 +143,18 @@ export default function ReviewPage() {
                 is_anon: isAnonymous,
                 updated_at: updatedAt,
             };
-            
+            console.log(clubId, 'clubID');
+            console.log("Sending review data to Supabase:", reviewData);
             const { data, error } = await supabase
                 .from('reviews')
-                .insert(reviewData);
-                
-            if (error) throw error;
+                .insert(reviewData)
+                .select(); 
+
+            
+            if (error) {
+                console.error('Full error object:', error);
+                throw new Error(`${error.message}${error.details ? ' - ' + error.details : ''}${error.hint ? ' - ' + error.hint : ''}`);
+            }
             
             setSuccess(true);
             resetForm();
@@ -139,22 +181,32 @@ export default function ReviewPage() {
         setOverallSatisfaction(null);
         setReviewText('');
         setIsAnonymous(true);
+        setDateError(null);
     };
 
     return (
         <div className="w-full min-h-screen bg-gray-50 p-4 md:p-20 flex justify-center overflow-x-hidden">
 
         <div className="flex flex-col w-full h-full justify-center">
-        {/* <div className="flex justify-end w-full px-6 py-4 space-x-4">
-                <Button value="Review a Club" to="/"/>
-                <Button value="Sign In" to="/"/>
-        </div> */}
             <div className="text-6xl font-bold text-blue-700">Review A Club</div>
-            <p className="text text-gray-700">
+            <p className="py-6 text text-gray-700">
             Your review is completely anonymous, so feel free to be honest! 
                 Your insights help other students get a better sense of what the club is really like. 
                 Be real, respectful, and specific—your voice makes a difference.
             </p>
+            
+            {success && (
+                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    Review submitted successfully! Thank you for your contribution.
+                </div>
+            )}
+            
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Club Name */}
                 <div className="w-full md:w-1/2">
@@ -212,6 +264,9 @@ export default function ReviewPage() {
                                 />
                             </div>
                         </div>
+                        {dateError && (
+                            <p className="text-red-500 text-sm mt-2">{dateError}</p>
+                        )}
                     </div>
                 </div>
                 
@@ -371,7 +426,7 @@ export default function ReviewPage() {
                 <div className="flex justify-end">
                     <button
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || dateError}
                         className="bg-blue-700 border-blue-600 text-white text-lg rounded-xl py-2 px-6 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
                     >
                         {isSubmitting ? 'Submitting...' : 'Submit Review'}
@@ -383,4 +438,3 @@ export default function ReviewPage() {
         
     );
 }
-
