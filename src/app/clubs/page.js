@@ -22,14 +22,14 @@ function AllClubsPage() {
     setError(null);
 
     // 1) Build URL based on param
-    let url = `/api/clubs?page=${currPage}`;
+    let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
 
     if (nameParam) {
-      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}`;
+      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}&sort=${sortType}`;
     } else if (multiCategoriesParam) {
-      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}`;
+      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}&sort=${sortType}`;
     } else if (singleCategoryParam) {
-      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}`;
+      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}&sort=${sortType}`;
     }
 
     // 2) Fetch and update state
@@ -47,7 +47,7 @@ function AllClubsPage() {
         setError("Failed to load clubs");
       })
       .finally(() => setLoading(false));
-  }, [currPage, nameParam, singleCategoryParam, multiCategoriesParam]);
+  }, [currPage, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
 
   const handlePreviousPage = () => {
     if (currPage > 1) setCurrPage(p => p - 1);
