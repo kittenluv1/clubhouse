@@ -39,10 +39,10 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
     const encoded = encodeURIComponent(term);
     
     if (byCategory) {
-      // Category search: /clubs?category=Term
+      // Category search: 
       router.push(`/clubs?category=${encoded}`);
     } else {
-      // Name search: /clubs?name=Term
+      // Name search: 
       router.push(`/clubs?name=${encoded}`);
     }
   }
@@ -85,8 +85,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
   };
 
   const handleOptionClick = (option) => {
-    const encoded = encodeURIComponent(option);
-    router.push(`/clubs/${encoded}`);
+    router.push(`/clubs/details/${encodeURIComponent(option)}`);
   };
 
   return (

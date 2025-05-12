@@ -3,16 +3,16 @@ import { supabase } from "../../../../lib/db";  // Adjust import path as needed
 export async function GET(request, context) {
     // Get the name directly from the route params
     const { params } = context;
-    const id = params.id;
+    const name = params.name;
     
-    console.log("Club ID search:", id);
+    console.log("Club name search:", name);
   
     try {
       // Search for clubs with a name that partially matches the search term
       const { data, error } = await supabase
         .from("clubs")
         .select("*")
-        .eq("OrganizationID", id);
+        .eq("OrganizationName", name);
   
       if (error) {
         console.error("Supabase error:", error);
