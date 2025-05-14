@@ -5,6 +5,7 @@ import SearchableDropdown from '../components/searchable-dropdown';
 import {QuarterDropdown, YearDropdown} from '../components/dropdowns';
 import CustomSlider from '../components/custom-slider';
 import { createClient } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -49,6 +50,7 @@ export default function ReviewPage() {
     const [error, setError] = useState(null);
     const [dateError, setDateError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
       // Listen for auth state changes (e.g., sign in or sign out)
@@ -106,7 +108,7 @@ export default function ReviewPage() {
     const handleEndYearChange = (e) => {
         setEndYear(e.target.value);
     };
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -146,6 +148,7 @@ export default function ReviewPage() {
                 updated_at: updatedAt,
                 is_current_member: isMember,
             };
+
             console.log(clubId, 'clubID');
             console.log("Sending review data to Supabase:", reviewData);
             const { data, error } = await supabase
@@ -153,13 +156,13 @@ export default function ReviewPage() {
                 .insert(reviewData)
                 .select(); 
 
-            
             if (error) {
                 console.error('Full error object:', error);
                 throw new Error(`${error.message}${error.details ? ' - ' + error.details : ''}${error.hint ? ' - ' + error.hint : ''}`);
             }
             
             setSuccess(true);
+            router.push('/review/thankyou');
             resetForm();
             
         } catch (error) {
