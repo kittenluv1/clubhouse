@@ -47,7 +47,7 @@ export default function GoogleSignIn() {
       if (data?.user) {
         const email = data.user.email;
 
-        if ((email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu'))) {
+        if ((email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu') || email === 'clubhouseucla@gmail.com')) {
           setUserEmail(email);
         } else {
           console.log("NOT A UCLA EMAIL");
