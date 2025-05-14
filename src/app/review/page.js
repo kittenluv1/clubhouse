@@ -151,7 +151,7 @@ export default function ReviewPage() {
             console.log(clubId, 'clubID');
             console.log("Sending review data to Supabase:", reviewData);
             const { data, error } = await supabase
-                .from('reviews')
+                .from('pending_reviews')
                 .insert(reviewData)
                 .select(); 
 
@@ -159,7 +159,35 @@ export default function ReviewPage() {
                 console.error('Full error object:', error);
                 throw new Error(`${error.message}${error.details ? ' - ' + error.details : ''}${error.hint ? ' - ' + error.hint : ''}`);
             }
-            
+            if (data) {
+                try {
+                    const response = await fetch('https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-review-email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            record: {
+                                id: data[0].id,
+                                club_id: data[0].club_id,
+                                overall_satisfaction: data[0].overall_satisfaction,
+                                review_text: data[0].review_text,
+                            },
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to call edge function: ${response.statusText}`);
+                    }
+
+                    console.log('Edge function called successfully');
+                } catch (error) {
+                    console.error('Error calling edge function:', error);
+                    setError('Failed to send approval email. Please try again.');
+                }
+            }
+
+
             setSuccess(true);
             router.push('/review/thankyou');
             resetForm();

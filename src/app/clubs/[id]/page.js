@@ -42,6 +42,7 @@ export default function ClubPage() {
 
   useEffect(() => {
     if (!id) return;
+    console.log("beep boop");
     const decodedId = decodeURIComponent(id);
     fetch(`/api/clubs/${decodedId}`)
       .then((res) => {

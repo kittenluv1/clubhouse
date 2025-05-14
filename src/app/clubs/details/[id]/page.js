@@ -4,11 +4,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export default function ClubDetailsPage() {
   const { id } = useParams();
   
@@ -19,41 +15,24 @@ export default function ClubDetailsPage() {
 
   useEffect(() => {
     if (!id) return;
-
-    const fetchClubData = async () => {
-      try {
-        setLoading(true);
-        
-        const decodedId = decodeURIComponent(id);
-        console.log("Decoded ID:", decodedId);
-        const response = await fetch(`/api/clubs/details/${id}`);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        
-        const data = await response.json();
+    const decodedId = decodeURIComponent(id);
+    fetch(`/api/clubs/${decodedId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
         if (data.orgList && data.orgList.length > 0) {
-          const clubData = data.orgList[0];
-          setClub(clubData);
-          
-          const { data: reviewsData, error: reviewsError } = await supabase
-            .from('reviews')
-            .select('*')
-            .eq('club_id', clubData.OrganizationID)
-            .order('created_at', { ascending: false });
-            
-          if (reviewsError) throw reviewsError;
-          setReviews(reviewsData);
+          setClub(data.orgList[0]);
         } else {
           setError(`No club found with name containing: ${id}`);
         }
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to fetch club data");
-      } finally {
         setLoading(false);
-      }
-    };
-
-    fetchClubData();
+      })
+      .catch((err) => {
+        setError("Failed to fetch club data", err);
+        setLoading(false);
+      });
   }, [id]);
 
   const formatDate = (dateString) => {

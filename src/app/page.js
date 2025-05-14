@@ -63,9 +63,10 @@ function Home() {
     loadCategories()
   }, [])
 
-
+//<div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
   return (
     <div className="flex flex-col w-full h-full justify-center items-center">
+      <div className="absolute top-0 left-0 h-1/2 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
       <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">ClubHouse</h2>
       <div className="flex flex-col space-y-2 w-5/8 max-w-l">
         <SearchBar ref={searchRef} width="w-full" height="h-13" />

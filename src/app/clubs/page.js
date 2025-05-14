@@ -1,38 +1,46 @@
-"use client";
+'use client';
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import ClubCard from "../components/clubCard";
+import Filter from "../components/filter";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
   const nameParam = searchParams.get("name") ?? null;
   const singleCategoryParam = searchParams.get("category") ?? null;
   const multiCategoriesParam = searchParams.get("categories") ?? null;
+  // const sortType = searchParams.get("sort") ?? "rating";
 
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
-  const [sortType, setSortType] = useState("rating");
+  const [sortType, setSortType] = useState('rating');
+
+  const router = useRouter();
+  
+  // Get initial selected tags from URL if any
+  const initialSelectedTags = multiCategoriesParam 
+    ? multiCategoriesParam.split(',') 
+    : [];
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    // 1) Build URL based on param
-    let url = `/api/clubs?page=${currPage}`;
+    let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
 
     if (nameParam) {
-      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}`;
+      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}&sort=${sortType}`;
     } else if (multiCategoriesParam) {
-      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}`;
+      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}&sort=${sortType}`;
     } else if (singleCategoryParam) {
-      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}`;
+      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}&sort=${sortType}`;
     }
 
-    // 2) Fetch and update state
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -47,7 +55,7 @@ function AllClubsPage() {
         setError("Failed to load clubs");
       })
       .finally(() => setLoading(false));
-  }, [currPage, nameParam, singleCategoryParam, multiCategoriesParam]);
+  }, [currPage, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
 
   const handlePreviousPage = () => {
     if (currPage > 1) setCurrPage(p => p - 1);
@@ -58,58 +66,64 @@ function AllClubsPage() {
   };
 
   const handleSortChange = (e) => {
-    setSortType(e.target.value);
-    setCurrPage(1);
-  };
+    const newSort = e.target.value;
+    setSortType(newSort);
+  }
 
-  // fetching
   if (loading) {
     return (
       <div className="p-[80px] space-y-6">
-      <div className="flex justify-center items-center gap-4 mt-6 text-[16px]">
-        <p className="p-4">Loading clubs...</p>
-
-      </div>
+        <div className="flex justify-center items-center gap-4 mt-6 text-[16px]">
+          <p className="p-4">Loading clubs...</p>
+        </div>
       </div>
     );
   }
+
   if (error) return <p className="p-4 text-red-500">{error}</p>;
+
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
-    return <p className="p-4">No clubs found for “{keyword}”</p>;
+    return <p className="p-4">No clubs found for &quot;{keyword}&quot;</p>;
   }
 
   const title = nameParam
-    ? `Search results for “${nameParam}”`
+    ? `Search results for "${nameParam}"`
     : multiCategoriesParam
-      ? `Clubs in “${multiCategoriesParam.replaceAll(",", ", ")}”`
+      ? `Clubs in "${multiCategoriesParam.replaceAll(",", ", ")}"`
       : singleCategoryParam
-        ? `Clubs in “${singleCategoryParam}”`
+        ? `Clubs in "${singleCategoryParam}"`
         : "All Clubs";
 
   return (
     <div className="p-[80px] space-y-6">
+      {/* Improved layout with better spacing */}
       <div className="flex justify-between items-center mb-6">
+        {/* Use the enhanced self-contained Filter component */}
+        <Filter initialSelectedTags={initialSelectedTags}/>
+
+        {/* Sort selector with more space and no text wrapping */}
+        <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
+          <label className=" font-medium text-black">Sort by:</label>
+            <select
+              id="sort"
+              value={sortType}
+              onChange={handleSortChange}
+              className="text-black font-medium"
+            >
+            <option value="rating">Highest Rated</option>
+            <option value="reviews">Most Reviewed</option>
+            <option value="alphabetical">A–Z</option>
+          </select>
+        </div>
+      </div>
+
       <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
         {title}
       </h1>
 
-      <div className="flex flex-row items-center gap-2">
-        <label>Sort by:</label>
-        <select
-          id="sort"
-          value={sortType}
-          onChange={handleSortChange}
-          className="border-1 rounded-[30px] bg-[#f9daea] px-2 py-2"
-        >
-          <option value="rating">Highest Rating</option>
-          <option value="reviews">Most Reviewed</option>
-          <option value="alphabetical">A-Z</option>
-        </select>
-      </div>
-      </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-16">
         {clubs.map(club => (
           <ClubCard
             key={`${club.OrganizationID}-${club.OrganizationName}`}
@@ -118,11 +132,11 @@ function AllClubsPage() {
         ))}
       </div>
 
-      <div className="flex justify-center items-center gap-4 mt-6">
+      <div className="flex justify-center items-center gap-4 mt-16">
         <button
           onClick={handlePreviousPage}
           disabled={currPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
         >
           Previous
         </button>
@@ -132,7 +146,7 @@ function AllClubsPage() {
         <button
           onClick={handleNextPage}
           disabled={currPage === pageTotal}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
         >
           Next
         </button>
@@ -141,12 +155,4 @@ function AllClubsPage() {
   );
 }
 
-function ClubsPage() {
-  return (
-    <Suspense fallback={<p className="p-4">Loading...</p>}>
-      <AllClubsPage />
-    </Suspense>
-  )
-}
-
-export default ClubsPage;
+export default AllClubsPage;

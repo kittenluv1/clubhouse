@@ -39,10 +39,10 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
     const encoded = encodeURIComponent(term);
     
     if (byCategory) {
-      // Category search: /clubs?category=Term
+      // Category search: 
       router.push(`/clubs?category=${encoded}`);
     } else {
-      // Name search: /clubs?name=Term
+      // Name search: 
       router.push(`/clubs?name=${encoded}`);
     }
   }
@@ -85,8 +85,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
   };
 
   const handleOptionClick = (option) => {
-    const encoded = encodeURIComponent(option);
-    router.push(`/clubs/${encoded}`);
+    router.push(`/clubs/details/${encodeURIComponent(option)}`);
   };
 
   return (
@@ -101,7 +100,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
         onFocus={() => setIsOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder="Search for a club..."
-        className={`border-2 border-blue-400 bg-white text-black rounded-3xl p-2 pl-4 ${height} w-full`}
+        className={`border-1 border-[#272727] bg-white text-black rounded-3xl p-2 pl-4 ${height} w-full`}
       />
 
       {isOpen && filteredOptions.length > 0 && (
