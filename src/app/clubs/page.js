@@ -85,7 +85,7 @@ function AllClubsPage() {
   
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
-    return <p className="p-4">No clubs found for "{keyword}"</p>;
+    return <p className="p-4">No clubs found for &quot;{keyword}&quot;</p>;
   }
 
   const title = nameParam
