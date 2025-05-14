@@ -39,7 +39,7 @@ const CustomSlider = ({
         
         {/* Thumb */}
         <div 
-          className="absolute top-1/2 w-4 h-4 bg-white border border-gray-300 rounded-full shadow-md transform -translate-y-1/2 -translate-x-1/2 z-10"
+          className="absolute top-1/2 w-5 h-5 bg-white border border-gray-300 rounded-full shadow-md transform -translate-y-1/2 -translate-x-1/2 z-10"
           style={{ left: `${calculateFillPercentage()}%` }}
         ></div>
         
@@ -56,17 +56,17 @@ const CustomSlider = ({
       </div>
       
       {/* Labels */}
-      <div className="flex w-full text-xs mt-1">
+      <div className="flex w-full text-xs mt-3">
         {/* Number labels */}
-        <div className="flex justify-between w-full text-gray-500 px-1">
+        <div className="flex justify-between w-full text-green-800">
           {[1, 2, 3, 4, 5].map((num) => (
-            <div key={num} className="flex flex-col items-center">
+            <div key={num} className="flex flex-col items-center ">
               <span>{num}</span>
               {num === 1 && (
-                <span className="text-gray-500">{lowLabel}</span>
+                <span className="text-green-800 mt-2">{lowLabel}</span>
               )}
               {num === 5 && (
-                <span className="text-gray-500">{highLabel}</span>
+                <span className="text-green-800 mt-2">{highLabel}</span>
               )}
             </div>
           ))}
