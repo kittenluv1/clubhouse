@@ -146,7 +146,6 @@ export default function ReviewPage() {
                 review_text: reviewText,
                 is_anon: isAnonymous,
                 updated_at: updatedAt,
-                is_current_member: isMember,
             };
 
             console.log(clubId, 'clubID');
@@ -199,7 +198,7 @@ export default function ReviewPage() {
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
-                        className="text-2xl focus:outline-none"
+                        className="text-4xl focus:outline-none"
                     >
                         {star <= (rating || 0) ? "★" : "☆"}
                     </button>
@@ -210,18 +209,12 @@ export default function ReviewPage() {
 
     return (
         <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-green-50 p-4 md:p-12">
-            <div className="max-w-4xl mx-auto">
-                <div className="font-dm-sans text-3xl font-bold text-blue-700 mb-2">Review a Club</div>
-                <p className="font-dm-sans text-sm text-gray-600 mb-8">
+            <div className="max-w-4xl mx-auto font-dm-sans">
+                <div className="text-5xl font-bold mt-8 mb-8">Review a Club</div>
+                <p className="text mb-12">
                     Your review is completely anonymous, so feel free to be honest! Your insights help other students get a better sense of what the club is really like. 
                     Be real, respectful, and specific—your voice makes a difference.
                 </p>
-                
-                {success && (
-                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                        Review submitted successfully! Thank you for your contribution.
-                    </div>
-                )}
                 
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -232,7 +225,7 @@ export default function ReviewPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Club Name */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Club Name <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Club Name <span className="text-red-500">*</span></label>
                         <div className="relative">
                             <SearchableDropdown 
                                 tableName="clubs"  
@@ -244,9 +237,9 @@ export default function ReviewPage() {
                     </div>
                     
                     {/* Membership dates */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 mt-12 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-bold text-gray-700 mb-1">
                                 Club Membership Start Date <span className="text-red-500">*</span>
                             </label>
                             <div className="flex space-x-2">
@@ -270,7 +263,7 @@ export default function ReviewPage() {
                         </div>
                         
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-bold text-gray-700 mb-1">
                                 Club Membership End Date <span className="text-red-500">*</span>
                             </label>
                             <div className="flex space-x-2">
@@ -306,24 +299,23 @@ export default function ReviewPage() {
                             onChange={(e) => setIsMember(e.target.checked)}
                             className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                         />
-                        <label htmlFor="member" className="ml-2 block text-sm text-gray-700">
+                        <label htmlFor="member" className="font-bold ml-2 block text-sm text-gray-700">
                             I am currently a member
                         </label>
                     </div>
                     
                     {/* Ratings */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-4">Rank the Following... <span className="text-red-500">*</span></label>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <label className="block text-sm font-bold text-gray-700 mt-10 mb-4">Rank the Following... <span className="text-red-500">*</span></label>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                             <div className="flex flex-col items-center space-y-1">
-                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-                                    {/* Timer/Clock SVG icon for Time Commitment */}
+                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mb-4">
+                                    {/* Timer/Clock SVG icon */}
                                     <svg width="40" height="42" viewBox="0 0 40 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M20 5.1582C28.2843 5.1582 35 12.0872 35 20.6338C34.9998 29.1802 28.2841 36.1084 20 36.1084C11.7159 36.1084 5.00024 29.1802 5 20.6338C5 12.0872 11.7157 5.1582 20 5.1582ZM20 10.1768C19.4477 10.1768 19 10.6245 19 11.1768V20.3838C19.0002 21.0739 19.5598 21.6338 20.25 21.6338H25.833L25.9355 21.6289C26.4397 21.5777 26.8328 21.1514 26.833 20.6338C26.833 20.116 26.4398 19.6899 25.9355 19.6387L25.833 19.6338H21V11.1768C21 10.6245 20.5523 10.1768 20 10.1768Z" fill="#222222"/>
                                     </svg>
-
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">Time Commitment</span>
+                                <span className="text-xs font-medium text-green-800 mb-3">Time Commitment</span>
                                 <div className="relative w-full">
                                     <CustomSlider
                                         value={timeCommitment}
@@ -335,14 +327,14 @@ export default function ReviewPage() {
                             </div>
 
                             <div className="flex flex-col items-center space-y-1">
-                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mb-2">
+                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mb-4">
                                     {/* Diversity SVG icon */}
                                     <svg width="40" height="42" viewBox="0 0 40 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path fillRule="evenodd" clipRule="evenodd" d="M13.28 5.64725C15.3866 4.64367 17.6796 4.12479 20 4.12661C22.8114 4.12612 25.5732 4.88986 28.0075 6.34092C30.4417 7.79198 32.4624 9.87912 33.8659 12.3922H32.3899C31.0899 12.3922 30.0359 12.908 30.0359 14.2491C30.0359 14.93 30.0359 18.4582 25.984 18.3922C22.04 18.3922 22.04 14.8186 22.04 14.2491C22.04 11.3007 20.466 10.8447 18.536 10.2814C17.788 10.0648 16.988 9.83161 16.204 9.4334C14.196 8.40794 13.508 6.99252 13.28 5.64725ZM8 4.12661C5.67633 5.93163 3.75794 8.23308 2.37601 10.8736C0.812309 13.8733 -0.00416438 17.227 1.5972e-05 20.633C1.5972e-05 31.5457 8.212 40.4798 18.608 41.2164L18.716 41.2246C19.4851 41.2754 20.2563 41.2802 21.026 41.2391H21.03C22.0381 41.1867 23.041 41.0556 24.03 40.8471C25.5907 40.516 27.1074 39.9937 28.548 39.2913C33.0677 37.0797 36.6245 33.2072 38.5219 28.4322C39.5048 25.9573 40.0069 23.3075 39.9999 20.633C40.0016 18.893 39.7899 17.1599 39.3699 15.4747C38.2612 11.0449 35.7568 7.12081 32.2505 4.31958C28.7441 1.51835 24.4347 -0.00114436 20 1.84345e-05C15.6716 -0.00596058 11.4592 1.44263 8 4.12661ZM34.7439 27.056C34.2576 26.9037 33.7522 26.8259 33.2439 26.8249H32.8099C31.0042 26.8249 29.2723 27.5648 27.9953 28.8819C26.7182 30.199 26.0005 31.9854 26 33.8484V35.9405C29.9402 34.2896 33.0848 31.0957 34.7439 27.056ZM20.228 37.1393H20C17.1814 37.1396 14.4128 36.3718 11.9743 34.9136C9.53582 33.4554 7.51397 31.3585 6.1134 28.8352C4.71282 26.3119 3.98322 23.4516 3.99843 20.5439C4.01364 17.6362 4.77311 14.7842 6.2 12.2766C8.1 13.3929 9.042 15.4479 9.86999 17.2595C10.288 18.1694 10.676 19.0195 11.144 19.657C12.224 21.1261 13.27 21.7595 14.326 22.3971C15.366 23.0264 16.42 23.6619 17.526 25.1124C20.406 28.8779 20.364 34.1207 20.226 37.1372L20.228 37.1393Z" fill="black"/>
                                     </svg>
 
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">Diversity</span>
+                                <span className="text-xs font-medium text-green-800 mb-3">Diversity</span>
                                 <div className="relative w-full">
                                     <CustomSlider
                                         value={diversityRating}
@@ -354,7 +346,7 @@ export default function ReviewPage() {
                             </div>
                             
                             <div className="flex flex-col items-center space-y-1">
-                                <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center mb-2">
+                                <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center mb-4">
                                     {/* Social Community SVG icon */}
                                     <svg width="40" height="41" viewBox="0 0 40 41" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="20.0002" cy="15.4999" r="6.66667" fill="#33363F"/>
@@ -366,7 +358,7 @@ export default function ReviewPage() {
                                     </svg>
 
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">Social Community</span>
+                                <span className="text-xs font-medium text-green-800 mb-3">Social Community</span>
                                 <div className="relative w-full">
                                     <CustomSlider
                                         value={socialCommunity}
@@ -378,14 +370,14 @@ export default function ReviewPage() {
                             </div>
                             
                             <div className="flex flex-col items-center space-y-1">
-                                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mb-2">
+                                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mb-4">
                                     {/* Competitiveness SVG icon */}
                                     <svg width="40" height="42" viewBox="0 0 40 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M8.88889 17.8822V9.17036H4.44444V11.463C4.44444 12.9149 4.85185 14.224 5.66667 15.3902C6.48148 16.5563 7.55555 17.387 8.88889 17.8822ZM31.1111 17.8822C32.4444 17.3855 33.5185 16.554 34.3333 15.3879C35.1481 14.2217 35.5556 12.9134 35.5556 11.463V9.17036H31.1111V17.8822ZM17.7778 36.6815V29.5744C15.963 29.1541 14.343 28.3616 12.9178 27.197C11.4926 26.0324 10.4459 24.5705 9.77778 22.8113C7 22.4674 4.6763 21.2164 2.80667 19.0583C0.937037 16.9002 0.00148148 14.3684 0 11.463V9.17036C0 7.90944 0.435556 6.83039 1.30667 5.93322C2.17778 5.03606 3.2237 4.58671 4.44444 4.58518H8.88889C8.88889 3.32426 9.32444 2.24521 10.1956 1.34804C11.0667 0.450876 12.1126 0.00152839 13.3333 0H26.6667C27.8889 0 28.9356 0.449348 29.8067 1.34804C30.6778 2.24674 31.1126 3.32579 31.1111 4.58518H35.5556C36.7778 4.58518 37.8244 5.03453 38.6956 5.93322C39.5667 6.83192 40.0015 7.91097 40 9.17036V11.463C40 14.3669 39.0644 16.8987 37.1933 19.0583C35.3222 21.2179 32.9985 22.4689 30.2222 22.8113C29.5556 24.5689 28.5096 26.0308 27.0844 27.197C25.6593 28.3632 24.0385 29.1556 22.2222 29.5744V36.6815H28.8889C29.5185 36.6815 30.0467 36.9015 30.4733 37.3417C30.9 37.7819 31.1126 38.326 31.1111 38.974C31.1096 39.6221 30.8963 40.167 30.4711 40.6087C30.0459 41.0504 29.5185 41.2697 28.8889 41.2666H11.1111C10.4815 41.2666 9.95407 41.0465 9.52889 40.6064C9.1037 40.1662 8.89037 39.6221 8.88889 38.974C8.88741 38.326 9.10074 37.7819 9.52889 37.3417C9.95704 36.9015 10.4844 36.6815 11.1111 36.6815H17.7778Z" fill="black"/>
                                     </svg>
 
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">Competitiveness</span>
+                                <span className="text-xs font-medium text-green-800 mb-3">Competitiveness</span>
                                 <div className="relative w-full">
                                     <CustomSlider
                                         value={competitiveness}
@@ -400,7 +392,7 @@ export default function ReviewPage() {
                     
                     {/* Satisfaction Stars */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-bold text-gray-700 mt-10 mb-5">
                             How satisfied are you with your club experience?
                         </label>
                         <StarRating 
@@ -411,9 +403,9 @@ export default function ReviewPage() {
                     
                     {/* Review Text */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Club Review <span className="text-red-500">*</span></label>
+                        <label className="block text-sm font-bold text-gray-700 mb-3">Your Club Review <span className="text-red-500">*</span></label>
                         <textarea 
-                            className="w-full h-32 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 text-sm"
+                            className="w-full h-32 p-3 border bg-white rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 text-sm"
                             placeholder="Write your review here..."
                             value={reviewText}
                             onChange={(e) => setReviewText(e.target.value)}
