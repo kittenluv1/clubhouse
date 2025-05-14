@@ -3,12 +3,6 @@ import "./globals.css";
 import React from 'react'
 import Header from './components/header'
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-});
-
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
