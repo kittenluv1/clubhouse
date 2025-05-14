@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import ClubCard from "../components/clubCard";
+import Filter from "../components/filter";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -16,6 +18,13 @@ function AllClubsPage() {
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
+
+  const router = useRouter();
+  
+  // Get initial selected tags from URL if any
+  const initialSelectedTags = multiCategoriesParam 
+    ? multiCategoriesParam.split(',') 
+    : [];
 
   useEffect(() => {
     setLoading(true);
@@ -69,24 +78,46 @@ function AllClubsPage() {
 
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
-    return <p className="p-4">No clubs found for “{keyword}”</p>;
+    return <p className="p-4">No clubs found for &quot;{keyword}&quot;</p>;
   }
 
   const title = nameParam
-    ? `Search results for “${nameParam}”`
+    ? `Search results for "${nameParam}"`
     : multiCategoriesParam
-      ? `Clubs in “${multiCategoriesParam.replaceAll(",", ", ")}”`
+      ? `Clubs in "${multiCategoriesParam.replaceAll(",", ", ")}"`
       : singleCategoryParam
-        ? `Clubs in “${singleCategoryParam}”`
+        ? `Clubs in "${singleCategoryParam}"`
         : "All Clubs";
 
   return (
     <div className="p-[80px] space-y-6">
+      {/* Improved layout with better spacing */}
+      <div className="flex justify-between items-start mb-6">
+        {/* Use the enhanced self-contained Filter component */}
+        <Filter initialSelectedTags={initialSelectedTags}/>
+
+        {/* Sort selector with more space and no text wrapping */}
+        <div className="flex items-center gap-2 flex-shrink-0 ml-4 mt-[3%]">
+          <label htmlFor="sort" className="whitespace-nowrap">Sort by:</label>
+          <select
+            id="sort"
+            value={sortType}
+            onChange={handleSortChange}
+            className="border-1 rounded-[30px] bg-[#f9daea] px-2 py-2"
+          >
+            <option value="rating">Highest Rating</option>
+            <option value="reviews">Most Reviewed</option>
+            <option value="alphabetical">A-Z</option>
+          </select>
+        </div>
+      </div>
+
       <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
         {title}
       </h1>
 
-      <div className="grid grid-cols-1 gap-16">
+
+      <div className="grid grid-cols-1 gap-6">
         {clubs.map(club => (
           <ClubCard
             key={`${club.OrganizationID}-${club.OrganizationName}`}
