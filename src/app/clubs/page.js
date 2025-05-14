@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
 import ClubCard from "../components/clubCard";
 import Filter from "../components/filter";
 
@@ -10,13 +11,13 @@ function AllClubsPage() {
   const nameParam = searchParams.get("name") ?? null;
   const singleCategoryParam = searchParams.get("category") ?? null;
   const multiCategoriesParam = searchParams.get("categories") ?? null;
+  const sortType = searchParams.get("sort") ?? "rating";
 
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
-  const [sortType, setSortType] = useState("rating");
 
   const router = useRouter();
   
@@ -29,18 +30,16 @@ function AllClubsPage() {
     setLoading(true);
     setError(null);
 
-    // 1) Build URL based on param
-    let url = `/api/clubs?page=${currPage}`;
+    let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
 
     if (nameParam) {
-      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}`;
+      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}&sort=${sortType}`;
     } else if (multiCategoriesParam) {
-      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}`;
+      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}&sort=${sortType}`;
     } else if (singleCategoryParam) {
-      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}`;
+      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}&sort=${sortType}`;
     }
 
-    // 2) Fetch and update state
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -55,7 +54,7 @@ function AllClubsPage() {
         setError("Failed to load clubs");
       })
       .finally(() => setLoading(false));
-  }, [currPage, nameParam, singleCategoryParam, multiCategoriesParam]);
+  }, [currPage, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
 
   const handlePreviousPage = () => {
     if (currPage > 1) setCurrPage(p => p - 1);
@@ -65,12 +64,6 @@ function AllClubsPage() {
     if (currPage < pageTotal) setCurrPage(p => p + 1);
   };
 
-  const handleSortChange = (e) => {
-    setSortType(e.target.value);
-    setCurrPage(1);
-  };
-
-  // fetching
   if (loading) {
     return (
       <div className="p-[80px] space-y-6">
@@ -80,9 +73,9 @@ function AllClubsPage() {
       </div>
     );
   }
-  
+
   if (error) return <p className="p-4 text-red-500">{error}</p>;
-  
+
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
     return <p className="p-4">No clubs found for &quot;{keyword}&quot;</p>;
@@ -123,6 +116,7 @@ function AllClubsPage() {
         {title}
       </h1>
 
+
       <div className="grid grid-cols-1 gap-6">
         {clubs.map(club => (
           <ClubCard
@@ -132,11 +126,11 @@ function AllClubsPage() {
         ))}
       </div>
 
-      <div className="flex justify-center items-center gap-4 mt-6">
+      <div className="flex justify-center items-center gap-4 mt-16">
         <button
           onClick={handlePreviousPage}
           disabled={currPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
         >
           Previous
         </button>
@@ -146,7 +140,7 @@ function AllClubsPage() {
         <button
           onClick={handleNextPage}
           disabled={currPage === pageTotal}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
         >
           Next
         </button>
@@ -155,12 +149,4 @@ function AllClubsPage() {
   );
 }
 
-function ClubsPage() {
-  return (
-    <Suspense fallback={<p className="p-4">Loading...</p>}>
-      <AllClubsPage />
-    </Suspense>
-  )
-}
-
-export default ClubsPage;
+export default AllClubsPage;

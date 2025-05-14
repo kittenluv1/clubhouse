@@ -5,7 +5,7 @@ export async function GET(req) {
 		// get the page number, page param, and sort from URL
 		const name = req.nextUrl.searchParams.get("name");
 		const pageParam = req.nextUrl.searchParams.get("page");
-		const sortType = req.nextUrl.searchParams.get("sort") || "Highest Rating";
+		const sortType = req.nextUrl.searchParams.get("sort") || "rating";
 		const pageNum = pageParam ? parseInt(pageParam, 10) : 1; // default display page is first page
 		const pageSize = 10; // show only 10 cards per page
 		const startIndex = (pageNum - 1) * pageSize; // calculate indices of 'data' to be returned (i.e. 10 per page)
