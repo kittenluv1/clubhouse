@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
 import React from 'react'
 import Header from './components/header'
@@ -17,6 +17,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-dm-sans',
 });
 
 export const metadata = {

@@ -46,7 +46,7 @@ export const YearDropdown = ({
   
   // Generate array of years
   const years = [];
-  for (let year = startYear; year <= endYear; year++) {
+  for (let year = endYear; year >= startYear; year--) {
     years.push(year.toString());
   }
   
