@@ -57,7 +57,7 @@ function ClubsLayoutContent({ children }) {
 
   return (
     <div className="relative mt-10">
-      <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center px-15 py-0 gap-2 sm:gap-0">
+      <div className="px-[100px] flex flex-col sm:flex-row sm:justify-between items-start sm:items-center px-15 py-0 gap-2 sm:gap-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <button
             className="bg-[#FFD8EB] border border-pink-300 font-bold px-4 py-2 rounded-full"
