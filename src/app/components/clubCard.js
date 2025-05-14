@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function ClubTags({category}) {
     return (
-        <span className="font-[var(--font-inter)] font-normal text-[16px] text-black border-3 border-[#92ab83] bg-[#cedcc7] px-[16px] py-[8px] rounded-full">
+        <span className="font-[var(--font-inter)] font-normal text-[16px] text-black border-1 border-[#272727] bg-[#7AA8F5] px-[16px] py-[8px] rounded-full">
             {category}
         </span>
     );
@@ -13,7 +13,7 @@ export default function ClubCard({ club }) {
     return (
         <Link 
             href={`/clubs/details/${encodeURIComponent(club.OrganizationName)}`}
-            className="p-[40px] rounded-[12px] w-full bg-[#FFFFFF] space-y-[20px] hover:shadow-lg transition-all duration-200"
+            className="p-[40px] rounded-[12px] w-full bg-[#FFFFFF] space-y-[20px] hover:shadow-lg transition-all duration-200 border border-[#000000]"
 
         >
         <div className="flex flex-row justify-between items-center">

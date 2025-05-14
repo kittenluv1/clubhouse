@@ -1,14 +1,8 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Filter from '../components/filter'; // ✅ your filter popup
+import { useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 function ClubsLayoutContent({ children }) {
-  const router = useRouter();
-
-  const [showFilter, setShowFilter] = useState(false);
-  const [selectedTags, setSelectedTags] = useState([]); // ✅ new state
-
   const searchParams = useSearchParams();
   const nameParam = searchParams.get("name");
 
@@ -18,34 +12,15 @@ function ClubsLayoutContent({ children }) {
     }
   }, [nameParam]);
 
-
-  const handleSearch = (tags) => {
-    if (!tags || tags.length === 0) return;
-
-    const encoded = encodeURIComponent(tags.join(','));
-    setSelectedTags(tags); // ✅ update selectedTags for display
-    router.push(`/clubs?categories=${encoded}`);
-    setShowFilter(false); // Close the filter popup
-  };
-
-  const handleRemoveTag = (tagToRemove) => {
-    const updatedTags = selectedTags.filter((tag) => tag !== tagToRemove);
-    setSelectedTags(updatedTags);
-
-    if (updatedTags.length > 0) {
-      const encoded = encodeURIComponent(updatedTags.join(','));
-      router.push(`/clubs?categories=${encoded}`);
-    } else {
-      router.push('/clubs'); // fallback to all clubs
-    }
-  };
-
-
   return (
     <>
-      <div className="relative mt-10 ">
+      <div className="relative">
+        {/* Gradient background that covers start and middle parts */}
+        <div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
+        <div className="absolute top-1/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] via-[#F1FFE8] to-[#FFFFFF] -z-10" />
+
         {/* Main club page content */}
-        <div className="px-6">{children}</div>
+        <div className="px-6 relative z-10">{children}</div>
       </div>
     </>
   );

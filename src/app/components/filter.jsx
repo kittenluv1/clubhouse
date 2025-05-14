@@ -98,11 +98,11 @@ export default function Filter({ initialSelectedTags = [] }) {
   };
 
   return (
-    <div className="relative max-w-[60%]">
+    <div className="relative max-w-[60%] mt-[3%]">
       <div className="flex items-start gap-2">
         {/* Filter Button */}
         <button
-          className="flex-shrink-0 bg-[#FFD8EB] border border-pink-300 font-bold px-4 py-2 rounded-full whitespace-nowrap"
+          className="flex-shrink-0 bg-[#FFB0D8] border border-[#000000] font-bold px-4 py-2 rounded-full whitespace-nowrap"
           onClick={() => setShowFilter(true)}
         >
           Search by Category
@@ -115,7 +115,7 @@ export default function Filter({ initialSelectedTags = [] }) {
               {selectedTags.map((tag) => (
                 <div
                   key={tag}
-                  className="flex-shrink-0 flex items-center bg-green-100 text-black border border-green-400 px-3 py-1 rounded-full text-sm"
+                  className="flex-shrink-0 flex items-center bg-[#7AA8F5] text-black border border-[#272727] px-3 py-2 rounded-full text-sm text-black"
                 >
                   <span>{tag}</span>
                   <button

@@ -101,10 +101,10 @@ function AllClubsPage() {
       {/* Improved layout with better spacing */}
       <div className="flex justify-between items-start mb-6">
         {/* Use the enhanced self-contained Filter component */}
-        <Filter initialSelectedTags={initialSelectedTags} />
+        <Filter initialSelectedTags={initialSelectedTags}/>
 
         {/* Sort selector with more space and no text wrapping */}
-        <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+        <div className="flex items-center gap-2 flex-shrink-0 ml-4 mt-[3%]">
           <label htmlFor="sort" className="whitespace-nowrap">Sort by:</label>
           <select
             id="sort"

@@ -100,7 +100,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
         onFocus={() => setIsOpen(true)}
         onKeyDown={handleKeyDown}
         placeholder="Search for a club..."
-        className={`border-2 border-blue-400 bg-white text-black rounded-3xl p-2 pl-4 ${height} w-full`}
+        className={`border-1 border-[#272727] bg-white text-black rounded-3xl p-2 pl-4 ${height} w-full`}
       />
 
       {isOpen && filteredOptions.length > 0 && (
