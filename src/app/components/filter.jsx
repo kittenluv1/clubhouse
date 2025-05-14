@@ -98,7 +98,7 @@ export default function Filter({ initialSelectedTags = [] }) {
   };
 
   return (
-    <div className="relative max-w-[60%] mt-[3%]">
+    <div className="relative max-w-[60%]">
       <div className="flex items-start gap-2">
         {/* Filter Button */}
         <button

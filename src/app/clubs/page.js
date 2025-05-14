@@ -98,7 +98,7 @@ function AllClubsPage() {
   return (
     <div className="p-[80px] space-y-6">
       {/* Improved layout with better spacing */}
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex justify-between items-center mb-6">
         {/* Use the enhanced self-contained Filter component */}
         <Filter initialSelectedTags={initialSelectedTags}/>
 
