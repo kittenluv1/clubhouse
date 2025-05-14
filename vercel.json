@@ -1,0 +1,8 @@
+{
+  "cron": [
+    {
+      "path": "/api/update-db",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
