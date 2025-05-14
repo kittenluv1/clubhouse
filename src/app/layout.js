@@ -1,7 +1,13 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
 import React from 'react'
 import Header from './components/header'
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -28,11 +34,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${inter.variable} antialiased flex flex-col min-h-screen`}
       >
         <Header />
         <main className="grow">{children}</main>
-        <footer className="bg-gray-200 h-auto py-15 px-30 mt-20">
+        <footer className="bg-gray-200 h-auto py-15 px-30 mt-20 bg-gradient-to-b from-[#FFFFFF] to-[#DCE8FF] -z-10">
           <h3 className="text-lg mb-5">Have questions or feedback? Want to collaborate?</h3>
           <p>We’d love to hear from you!</p>
           <p>Whether you’re a student with suggestions, a club rep hoping to update your listing, or just curious about how we verify reviews — reach out anytime.</p>
