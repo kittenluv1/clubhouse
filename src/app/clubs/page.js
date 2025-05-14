@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ClubCard from "../components/clubCard";
 
@@ -9,19 +9,18 @@ function AllClubsPage() {
   const nameParam = searchParams.get("name") ?? null;
   const singleCategoryParam = searchParams.get("category") ?? null;
   const multiCategoriesParam = searchParams.get("categories") ?? null;
+  const sortType = searchParams.get("sort") ?? "rating";
 
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
-  const [sortType, setSortType] = useState("rating");
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    // 1) Build URL based on param
     let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
 
     if (nameParam) {
@@ -32,7 +31,6 @@ function AllClubsPage() {
       url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}&sort=${sortType}`;
     }
 
-    // 2) Fetch and update state
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -57,23 +55,18 @@ function AllClubsPage() {
     if (currPage < pageTotal) setCurrPage(p => p + 1);
   };
 
-  const handleSortChange = (e) => {
-    setSortType(e.target.value);
-    setCurrPage(1);
-  };
-
-  // fetching
   if (loading) {
     return (
       <div className="p-[80px] space-y-6">
-      <div className="flex justify-center items-center gap-4 mt-6 text-[16px]">
-        <p className="p-4">Loading clubs...</p>
-
-      </div>
+        <div className="flex justify-center items-center gap-4 mt-6 text-[16px]">
+          <p className="p-4">Loading clubs...</p>
+        </div>
       </div>
     );
   }
+
   if (error) return <p className="p-4 text-red-500">{error}</p>;
+
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
     return <p className="p-4">No clubs found for “{keyword}”</p>;
@@ -89,25 +82,9 @@ function AllClubsPage() {
 
   return (
     <div className="p-[80px] space-y-6">
-      <div className="flex justify-between items-center mb-6">
       <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
         {title}
       </h1>
-
-      <div className="flex flex-row items-center gap-2">
-        <label>Sort by:</label>
-        <select
-          id="sort"
-          value={sortType}
-          onChange={handleSortChange}
-          className="border-1 rounded-[30px] bg-[#f9daea] px-2 py-2"
-        >
-          <option value="rating">Highest Rating</option>
-          <option value="reviews">Most Reviewed</option>
-          <option value="alphabetical">A-Z</option>
-        </select>
-      </div>
-      </div>
 
       <div className="grid grid-cols-1 gap-6">
         {clubs.map(club => (
@@ -122,7 +99,7 @@ function AllClubsPage() {
         <button
           onClick={handlePreviousPage}
           disabled={currPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
         >
           Previous
         </button>
@@ -132,7 +109,7 @@ function AllClubsPage() {
         <button
           onClick={handleNextPage}
           disabled={currPage === pageTotal}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
         >
           Next
         </button>
@@ -141,12 +118,4 @@ function AllClubsPage() {
   );
 }
 
-function ClubsPage() {
-  return (
-    <Suspense fallback={<p className="p-4">Loading...</p>}>
-      <AllClubsPage />
-    </Suspense>
-  )
-}
-
-export default ClubsPage;
+export default AllClubsPage;
