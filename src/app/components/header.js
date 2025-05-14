@@ -3,12 +3,14 @@
 import React from 'react'
 import SearchBar from './search-bar'
 import Button from './button';
+import { useRouter } from 'next/navigation';
 import LoginButton from './login-button';
 import { supabase } from '../lib/db';
 import { usePathname } from 'next/navigation';
 
 function Header() {
   const pathname = usePathname(); 
+  const router = useRouter();
 
   const attemptReview = async () => {
 	// check if user is logged in
@@ -28,7 +30,16 @@ function Header() {
   return (
 	<div className="grid grid-cols-13 w-full gap-4 p-3 bg-[#E0ECFD] border-b-2 border-[#272727]">
 		<div className="col-span-2 col-start-2 flex justify-center mt-8 mb-4">
-			<Button value="ClubHouse" to="/"/>
+			<button
+			onClick={() => (router.push("/"))}
+			className={`p-3 self-center text-nowrap flex items-center gap-2`}
+			>
+				<img
+				src={"/ClubHouse Logo.png"}
+				alt="ClubHouse Logo"
+				className="object-cover"
+				/>
+			</button>
 		</div>
 		<div className="col-span-6 mt-8 mb-4">
 			{pathname !== "/" && <SearchBar width="w-full" height="h-13"/>}

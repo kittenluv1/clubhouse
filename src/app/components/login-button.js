@@ -37,14 +37,15 @@ function LoginButton() {
       } 
 
   return (
-    <div>
+    <>
       {isLoggedin ? (
           <Button value="Sign Out" onClick={handleSignOut} border="true"></Button>
         ) : (
           <Button value="Sign In" to="/sign-in" border="true"></Button>
         )
     }
-    </div>
+    </>
+
   )
 }
 
