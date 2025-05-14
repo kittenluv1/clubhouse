@@ -123,7 +123,7 @@ function AllClubsPage() {
       </h1>
 
 
-      <div className="grid grid-cols-1 gap-16">
+      <div className="grid grid-cols-1 gap-12">
         {clubs.map(club => (
           <ClubCard
             key={`${club.OrganizationID}-${club.OrganizationName}`}

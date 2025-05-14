@@ -13,7 +13,7 @@ export default function ClubCard({ club }) {
     return (
         <Link 
             href={`/clubs/details/${encodeURIComponent(club.OrganizationName)}`}
-            className="px-[40px] py-[40px] rounded-[12px] w-full bg-[#FFFFFF] space-y-[20px] border transform transition-[padding,transform,box-shadow] duration-50  hover:drop-shadow-[12px_12px_0_#B1D49D] hover:translate-x-[12px] hover:translate-y-[8px]"
+            className="px-[40px] py-[40px] rounded-[12px] w-full bg-[#FFFFFF] space-y-[20px] border transform transition-[padding,transform,box-shadow] duration-50  hover:drop-shadow-[12px_12px_0_#B1D49D]"
             >
        
             <h2 className="font-[var(--font-dm-sans)] font-bold text-[28px] text-black">
