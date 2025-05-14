@@ -11,13 +11,14 @@ function AllClubsPage() {
   const nameParam = searchParams.get("name") ?? null;
   const singleCategoryParam = searchParams.get("category") ?? null;
   const multiCategoriesParam = searchParams.get("categories") ?? null;
-  const sortType = searchParams.get("sort") ?? "rating";
+  // const sortType = searchParams.get("sort") ?? "rating";
 
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
+  const [sortType, setSortType] = useState('rating');
 
   const router = useRouter();
   
@@ -64,6 +65,11 @@ function AllClubsPage() {
     if (currPage < pageTotal) setCurrPage(p => p + 1);
   };
 
+  const handleSortChange = (e) => {
+    const newSort = e.target.value;
+    setSortType(newSort);
+  }
+
   if (loading) {
     return (
       <div className="p-[80px] space-y-6">
@@ -97,17 +103,17 @@ function AllClubsPage() {
         <Filter initialSelectedTags={initialSelectedTags}/>
 
         {/* Sort selector with more space and no text wrapping */}
-        <div className="flex items-center gap-2 flex-shrink-0 ml-4 mt-[3%]">
-          <label htmlFor="sort" className="whitespace-nowrap">Sort by:</label>
-          <select
-            id="sort"
-            value={sortType}
-            onChange={handleSortChange}
-            className="border-1 rounded-[30px] bg-[#f9daea] px-2 py-2"
-          >
-            <option value="rating">Highest Rating</option>
+        <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
+          <label className=" font-medium text-black">Sort by:</label>
+            <select
+              id="sort"
+              value={sortType}
+              onChange={handleSortChange}
+              className="text-black font-medium"
+            >
+            <option value="rating">Highest Rated</option>
             <option value="reviews">Most Reviewed</option>
-            <option value="alphabetical">A-Z</option>
+            <option value="alphabetical">A–Z</option>
           </select>
         </div>
       </div>
@@ -117,7 +123,7 @@ function AllClubsPage() {
       </h1>
 
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-16">
         {clubs.map(club => (
           <ClubCard
             key={`${club.OrganizationID}-${club.OrganizationName}`}
