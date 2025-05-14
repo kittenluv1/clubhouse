@@ -26,17 +26,17 @@ function Header() {
   }
 
   return (
-	<div className="grid grid-cols-13 w-full gap-4 p-3">
-		<div className="col-span-2 col-start-2 flex justify-center">
+	<div className="grid grid-cols-13 w-full gap-4 p-3 bg-[#E0ECFD] border-b-2 border-[#272727]">
+		<div className="col-span-2 col-start-2 flex justify-center mt-8 mb-4">
 			<Button value="ClubHouse" to="/"/>
 		</div>
-		<div className="col-span-6">
+		<div className="col-span-6 mt-8 mb-4">
 			{pathname !== "/" && <SearchBar width="w-full" height="h-13"/>}
 		</div>
-		<div className="col-span-2 flex justify-center">
+		<div className="col-span-2 flex justify-center mt-8 mb-4">
 			<Button value="Review a Club" onClick={attemptReview}/>
 		</div>
-		<div className="flex justify-center">
+		<div className="flex justify-center mt-8 mb-4">
 			<LoginButton/>
 		</div>
 	</div>
