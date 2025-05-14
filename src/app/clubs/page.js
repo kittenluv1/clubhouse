@@ -86,7 +86,7 @@ function AllClubsPage() {
         {title}
       </h1>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-16">
         {clubs.map(club => (
           <ClubCard
             key={`${club.OrganizationID}-${club.OrganizationName}`}
@@ -95,7 +95,7 @@ function AllClubsPage() {
         ))}
       </div>
 
-      <div className="flex justify-center items-center gap-4 mt-6">
+      <div className="flex justify-center items-center gap-4 mt-16">
         <button
           onClick={handlePreviousPage}
           disabled={currPage === 1}
