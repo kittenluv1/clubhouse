@@ -1,7 +1,7 @@
 {
-  "cron": [
+  "crons": [
     {
-      "path": "/api/update-db",
+      "path": "/api",
       "schedule": "0 0 * * *"
     }
   ]
