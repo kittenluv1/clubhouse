@@ -7,6 +7,16 @@ export async function GET(req) {
     }
 
     try {
+
+    // API TO GET CLUB SPORTS DATA - IMPLEMENT IN THE FUTURE
+    //   const response = await fetch("https://sa.ucla.edu/RCO/Public/SearchOrganizations", {
+    //   "headers": {
+    //     "content-type": `application/json`,
+    //   },
+    //   "body": "{\"catValueStringText\":\"All Categories\",\"searchString\":\"\",\"catValueString\":-1}",
+    //   "method": "POST",
+    // })
+
       const response = await fetch("https://sa.ucla.edu/RCO/Public/SearchOrganizations", {
         method: "POST",
       });
@@ -17,35 +27,33 @@ export async function GET(req) {
  
       const data = await response.json();
 
-      const orgList = data.orgList;
+      // const orgList = data.orgList;
 
-      // Sanitize a single object by removing null characters
-      function sanitizeObject(obj) {
-          const sanitizedObj = {};
-          for (const key in obj) {
-            if (typeof obj[key] === "string") {
-                // Remove null characters from strings
-                sanitizedObj[key] = obj[key].replace(/\u0000/g, "");
-            } else {
-                sanitizedObj[key] = obj[key];
-            }
-          }
-          return sanitizedObj;
-        }
+      // // Sanitize a single object by removing null characters
+      // function sanitizeObject(obj) {
+      //     const sanitizedObj = {};
+      //     for (const key in obj) {
+      //       if (typeof obj[key] === "string") {
+      //           // Remove null characters from strings
+      //           sanitizedObj[key] = obj[key].replace(/\u0000/g, "");
+      //       } else {
+      //           sanitizedObj[key] = obj[key];
+      //       }
+      //     }
+      //     return sanitizedObj;
+      //   }
        
-        // Sanitize the entire orgList array
-        const sanitizedOrgList = orgList.map(sanitizeObject);
+      //   // Sanitize the entire orgList array
+      //   const sanitizedOrgList = orgList.map(sanitizeObject);
 
-        // Insert data into the Supabase database
-        /* TO DO: SCHEDULE A CRON JOB TO MAKE THIS RUN ONCE A DAY */
-        const { error } = await supabase.from("clubs").upsert(sanitizedOrgList, { onClifct: "OrganizationID"});
+      //   // Insert data into the Supabase database
+      //   const { error } = await supabase.from("clubs").upsert(sanitizedOrgList, { onClifct: "OrganizationID"});
 
-        if (error) {
-          console.error("Error inserting data into Supabase:", error);
-          return new Response(JSON.stringify({ error: "Failed to insert data into database" }), { status: 500 });
-        }
+      //   if (error) {
+      //     console.error("Error inserting data into Supabase:", error);
+      //     return new Response(JSON.stringify({ error: "Failed to insert data into database" }), { status: 500 });
+      //   }
 
-      console.log("club data updated successfully in Supabase");
       return new Response(JSON.stringify(data, null, 2), { status: 200 });
     } catch (error) {
       console.error("Error fetching data:", error);
