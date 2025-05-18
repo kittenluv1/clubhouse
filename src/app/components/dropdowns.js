@@ -5,7 +5,7 @@ import React from 'react';
 export const QuarterDropdown = ({ 
   value = '', 
   onChange, 
-  placeholder = 'select quarter',
+  placeholder = 'Select quarter',
   required = false
 }) => {
   const quarters = ['Fall', 'Winter', 'Spring'];
@@ -15,7 +15,7 @@ export const QuarterDropdown = ({
       <select
         value={value}
         onChange={onChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-full text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+        className="w-full px-3 py-2 border rounded-full text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
         required={required}
       >
         <option value="" disabled>{placeholder}</option>
@@ -36,7 +36,7 @@ export const QuarterDropdown = ({
 export const YearDropdown = ({ 
   value = '', 
   onChange, 
-  placeholder = 'select year',
+  placeholder = 'Select year',
   required = false,
   yearRange = 10
 }) => {
@@ -46,7 +46,7 @@ export const YearDropdown = ({
   
   // Generate array of years
   const years = [];
-  for (let year = startYear; year <= endYear; year++) {
+  for (let year = endYear; year >= startYear; year--) {
     years.push(year.toString());
   }
   
@@ -55,7 +55,7 @@ export const YearDropdown = ({
       <select
         value={value}
         onChange={onChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-full text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+        className="w-full px-3 py-2 border rounded-full text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
         required={required}
       >
         <option value="" disabled>{placeholder}</option>

@@ -7,6 +7,16 @@ export async function GET(req) {
     }
 
     try {
+
+    // API TO GET CLUB SPORTS DATA - IMPLEMENT IN THE FUTURE
+    //   const response = await fetch("https://sa.ucla.edu/RCO/Public/SearchOrganizations", {
+    //   "headers": {
+    //     "content-type": `application/json`,
+    //   },
+    //   "body": "{\"catValueStringText\":\"All Categories\",\"searchString\":\"\",\"catValueString\":-1}",
+    //   "method": "POST",
+    // })
+
       const response = await fetch("https://sa.ucla.edu/RCO/Public/SearchOrganizations", {
         method: "POST",
       });
@@ -37,7 +47,6 @@ export async function GET(req) {
         const sanitizedOrgList = orgList.map(sanitizeObject);
 
         // Insert data into the Supabase database
-        /* TO DO: SCHEDULE A CRON JOB TO MAKE THIS RUN ONCE A DAY */
         const { error } = await supabase.from("clubs").upsert(sanitizedOrgList, { onClifct: "OrganizationID"});
 
         if (error) {
@@ -45,7 +54,6 @@ export async function GET(req) {
           return new Response(JSON.stringify({ error: "Failed to insert data into database" }), { status: 500 });
         }
 
-      console.log("club data updated successfully in Supabase");
       return new Response(JSON.stringify(data, null, 2), { status: 200 });
     } catch (error) {
       console.error("Error fetching data:", error);

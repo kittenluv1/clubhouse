@@ -4,6 +4,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { supabase } from "@/app/lib/db";
 import { createClient } from '@supabase/supabase-js';
 import { AiFillStar } from 'react-icons/ai';
 
@@ -17,24 +18,42 @@ export default function ClubDetailsPage() {
 
   useEffect(() => {
     if (!id) return;
-    const decodedId = decodeURIComponent(id);
-    fetch(`/api/clubs/${decodedId}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
+
+     const fetchClubData = async () => {
+      try {
+        setLoading(true);
+
+        const decodedId = decodeURIComponent(id);
+        console.log("Decoded ID:", decodedId);
+        const response = await fetch(`/api/clubs/details/${id}`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+
         if (data.orgList && data.orgList.length > 0) {
-          setClub(data.orgList[0]);
-        } else {
+          const clubData = data.orgList[0];
+          setClub(clubData);
+
+          const { data: reviewsData, error: reviewsError } = await supabase
+            .from('reviews')
+            .select('*')
+            .eq('club_id', clubData.OrganizationID)
+            .order('created_at', { ascending: false });
+
+          if (reviewsError) throw reviewsError;
+          setReviews(reviewsData);
+          } else {
           setError(`No club found with name containing: ${id}`);
         }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to fetch club data");
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        setError("Failed to fetch club data", err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchClubData();
   }, [id]);
 
   const formatDate = (dateString) => {

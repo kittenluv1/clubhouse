@@ -9,7 +9,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const SearchableDropdown = ({  
-    placeholder = "search for your club here...",
+    placeholder = "Search for your club here...",
     tableName = "clubs", 
     nameColumn = "OrganizationName", 
     onSelect = () => {},
@@ -94,7 +94,7 @@ const SearchableDropdown = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="w-full px-3 py-2 border border-gray-300 rounded-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white border rounded-full font-dm-sans focus:outline-none focus:ring-2 focus:ring-blue-500"
           required={required}
         />
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
