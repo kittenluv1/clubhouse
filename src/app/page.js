@@ -69,7 +69,7 @@ function Home() {
       <div className="absolute top-0 left-0 h-1/2 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
       <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">
         <img 
-        src={"/Logo 2.png"}
+        src={"/Logo Big 2.png"}
         alt="ClubHouse Logo"
         className="object-cover"
         />
