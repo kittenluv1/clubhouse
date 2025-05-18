@@ -80,7 +80,7 @@ export default function ClubDetailsPage() {
     <div className="max-w-6xl mx-auto px-4 py-8">
 
       {/* Club Information */}
-      <div className="border-2 rounded-lg p-10 flex flex-col md:flex-row gap-8 mb-10"
+      <div className="border-2 rounded-lg p-10 flex flex-col md:flex-row gap-8 mb-10 bg-white"
         style={{ boxShadow: '6px 6px 0px rgba(200,221,190,255)' }}
       >
         {/* left side of the box */}
