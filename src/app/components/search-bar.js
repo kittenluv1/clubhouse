@@ -104,7 +104,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
       />
 
       {isOpen && filteredOptions.length > 0 && (
-        <ul className="absolute z-10 mt-1 w-full bg-white shadow-md max-h-60 rounded-md overflow-auto text-sm">
+        <ul className="absolute z-20 mt-1 w-full bg-white shadow-md max-h-60 rounded-md overflow-auto text-sm">
           {filteredOptions.map((option, idx) => (
             <li
               key={idx}
@@ -118,7 +118,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
       )}
 
       {isOpen && inputValue && filteredOptions.length === 0 && (
-        <div className="absolute z-10 mt-1 w-full bg-white shadow-md rounded-md py-2 px-4 text-sm text-gray-500">
+        <div className="absolute z-20 mt-1 w-full bg-white shadow-md rounded-md py-2 px-4 text-sm text-gray-500">
           No clubs found matching &quot;{inputValue}&quot;
         </div>
       )}
