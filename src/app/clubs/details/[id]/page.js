@@ -15,6 +15,9 @@ export default function ClubDetailsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const anonymousNames = ['BaddieAtBplat', 'SunsetRecLover', 'PicnicAtJanns', 'kittenluv1', 'iLovePeony', 'deneveDining',
+    'supabaseSupreme', 'CanyonPoint...'];
+  const randomAnonName = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
 
   useEffect(() => {
     if (!id) return;
@@ -283,7 +286,7 @@ export default function ClubDetailsPage() {
               >
                 <div className="flex justify-between mb-2">
                   <h3 className="text-2xl font-bold">
-                    {review.is_anon ? 'Anonymous' : 'Student'}
+                    {review.is_anon ? `Anonymous ${randomAnonName}` : 'Student'}
                   </h3>
                   <div className="font-bold text-[#666dbc]">
                     Reviewed on {formatDate(review.created_at)}
