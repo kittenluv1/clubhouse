@@ -63,13 +63,12 @@ function Home() {
     loadCategories()
   }, [])
 
-//<div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
   return (
-    <div className="relative">
-      <div className="absolute top-0 left-0 h-3/4 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
-      {/* <div className="absolute top-2/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] to-[#DFF1F1] -z-10"/> */}
+    <div className="relative ">
+      <div className="absolute top-0 left-0 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
+      <div className="absolute bottom-0 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF] -z-10"/>
 
-      <div className="flex flex-col w-full h-full justify-center items-center">
+      <div className="flex flex-col w-full h-full justify-center items-center pb-120">
         <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">
           <img 
           src={"/Logo Big 2.png"}
