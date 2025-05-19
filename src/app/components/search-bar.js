@@ -90,7 +90,37 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
 
   return (
     <div className={`relative ${width}`} ref={dropdownRef}>
-      <input
+      <div className="relative flex items-center">
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
+          onKeyDown={handleKeyDown}
+          placeholder="Search for a club..."
+          className={`border-1 border-[#272727] bg-white text-black rounded-3xl p-2 pl-4 pr-10 ${height} w-full shadow-md`}
+        />
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pr-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+      </div>
+      {/* <input
         type="text"
         value={inputValue}
         onChange={(e) => {
@@ -101,7 +131,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
         onKeyDown={handleKeyDown}
         placeholder="Search for a club..."
         className={`border-1 border-[#272727] bg-white text-black rounded-3xl p-2 pl-4 ${height} w-full`}
-      />
+      /> */}
 
       {isOpen && filteredOptions.length > 0 && (
         <ul className="absolute z-20 mt-1 w-full bg-white shadow-md max-h-60 rounded-md overflow-auto text-sm">

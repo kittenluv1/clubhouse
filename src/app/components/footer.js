@@ -6,10 +6,11 @@ export default function Footer() {
 
     return (
         <>
-        <div>
-            {pathname === "/" && <div className="mb-80"/>}
-        </div>
-        <footer className="bg-gray-200 h-auto py-15 px-30 mt-20 bg-gradient-to-b from-[#FFFFFF] to-[#DCE8FF] -z-10">
+        <>
+            {pathname === "/" && <div className="mb-120 bg-[#DFF1F1]"/>}
+        </>
+        <div className="border"/>
+        <footer className=" h-auto py-15 px-30 bg-[#DFF1F1] -z-10">
           <h3 className="text-lg mb-5">Have questions or feedback? Want to collaborate?</h3>
           <p>We’d love to hear from you!</p>
           <p>Whether you’re a student with suggestions, a club rep hoping to update your listing, or just curious about how we verify reviews — reach out anytime.</p>

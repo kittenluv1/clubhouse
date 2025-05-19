@@ -65,36 +65,34 @@ function Home() {
 
 //<div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
   return (
-    <div className="relative flex flex-col w-full h-full justify-center items-center">
-      <div className="absolute top-0 left-0 h-1/2 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
-      <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">
-        <img 
-        src={"/Logo Big 2.png"}
-        alt="ClubHouse Logo"
-        className="object-cover"
-        />
-      </h2>
-      <div className="flex flex-col space-y-2 w-5/8 max-w-l">
-        <SearchBar ref={searchRef} width="w-full" height="h-13" />
-        <button
-          onClick={handleSearchClick}
-          className="self-end !bg-blue-700 !border-blue-600 text-white !text-lg !rounded-xl !py-1 px-4"
-        >
-          Search
-        </button>
-        <div className="flex flex-wrap gap-3 justify-center mt-4">
-          {Object.entries(GROUP_CATEGORY_MAP).map(([group, categoryList]) => (
-            <button
-              key={group}
-              onClick={() => {
-                const encoded = encodeURIComponent(categoryList.join(','));
-                router.push(`/clubs?categories=${encoded}`);
-              }}
-              className="px-6 py-3 border-2 rounded-full text-lg shadow-md hover:bg-[#B1D49D] transition"
-            >
-              {group}
-            </button>
-          ))}
+    <div className="relative">
+      <div className="absolute top-0 left-0 h-3/4 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
+      {/* <div className="absolute top-2/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] to-[#DFF1F1] -z-10"/> */}
+
+      <div className="flex flex-col w-full h-full justify-center items-center">
+        <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">
+          <img 
+          src={"/Logo Big 2.png"}
+          alt="ClubHouse Logo"
+          className="object-cover"
+          />
+        </h2>
+        <div className="flex flex-col space-y-2 w-5/8 max-w-l items-center">
+          <SearchBar ref={searchRef} width="w-1/2" height="h-13"/>
+          <div className="flex flex-wrap gap-3 justify-center mt-4">
+            {Object.entries(GROUP_CATEGORY_MAP).map(([group, categoryList]) => (
+              <button
+                key={group}
+                onClick={() => {
+                  const encoded = encodeURIComponent(categoryList.join(','));
+                  router.push(`/clubs?categories=${encoded}`);
+                }}
+                className="px-6 py-3 border-1 rounded-full text-lg shadow-lg hover:bg-[#B1D49D] transition"
+              >
+                {group}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
