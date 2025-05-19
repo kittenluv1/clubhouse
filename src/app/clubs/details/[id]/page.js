@@ -5,8 +5,20 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/app/lib/db";
-import { createClient } from '@supabase/supabase-js';
-import { AiFillStar } from 'react-icons/ai';
+import { AiFillStar } from 'react-icons/ai'; import { useMemo } from "react";
+
+const anonymousNames = ['BaddieAtBplate', 'SunsetRecLover', 'PicnicAtJanns', 'kittenluv1', 'ILovePeony', 'DeneveDining',
+  'BigYatesFan', 'WhoAtCanyonPoint'];
+
+// shuffle for array
+function shuffle(array) {
+  const arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 export default function ClubDetailsPage() {
   const { id } = useParams();
@@ -15,14 +27,18 @@ export default function ClubDetailsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const anonymousNames = ['BaddieAtBplat', 'SunsetRecLover', 'PicnicAtJanns', 'kittenluv1', 'iLovePeony', 'deneveDining',
-    'supabaseSupreme', 'CanyonPoint...'];
   const randomAnonName = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
+  const shuffledNames = useMemo(
+    () => shuffle(anonymousNames),
+    [reviews.length] // re-shuffle if the number of reviews changes
+  );
+
+
 
   useEffect(() => {
     if (!id) return;
 
-     const fetchClubData = async () => {
+    const fetchClubData = async () => {
       try {
         setLoading(true);
 
@@ -45,7 +61,7 @@ export default function ClubDetailsPage() {
 
           if (reviewsError) throw reviewsError;
           setReviews(reviewsData);
-          } else {
+        } else {
           setError(`No club found with name containing: ${id}`);
         }
       } catch (err) {
@@ -286,7 +302,7 @@ export default function ClubDetailsPage() {
               >
                 <div className="flex justify-between mb-2">
                   <h3 className="text-2xl font-bold">
-                    {review.is_anon ? `Anonymous ${randomAnonName}` : 'Student'}
+                    {`Anonymous ${shuffledNames[index % shuffledNames.length]}`}
                   </h3>
                   <div className="font-bold text-[#666dbc]">
                     Reviewed on {formatDate(review.created_at)}
