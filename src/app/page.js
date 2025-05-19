@@ -64,7 +64,7 @@ function Home() {
   }, [])
 
   return (
-    <div className="relative ">
+    <div className="relative w-full min-h-[100vh]">
       <div className="absolute top-0 left-0 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
       <div className="absolute bottom-0 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF] -z-10"/>
 

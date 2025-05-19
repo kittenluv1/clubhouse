@@ -120,18 +120,6 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
           </svg>
         </div>
       </div>
-      {/* <input
-        type="text"
-        value={inputValue}
-        onChange={(e) => {
-          setInputValue(e.target.value);
-          setIsOpen(true);
-        }}
-        onFocus={() => setIsOpen(true)}
-        onKeyDown={handleKeyDown}
-        placeholder="Search for a club..."
-        className={`border-1 border-[#272727] bg-white text-black rounded-3xl p-2 pl-4 ${height} w-full`}
-      /> */}
 
       {isOpen && filteredOptions.length > 0 && (
         <ul className="absolute z-20 mt-1 w-full bg-white shadow-md max-h-60 rounded-md overflow-auto text-sm">
