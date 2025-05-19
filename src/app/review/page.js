@@ -34,7 +34,6 @@ export default function ReviewPage() {
     const [selectedClub, setSelectedClub] = useState('');
     const [clubId, setClubId] = useState(null);
     const [startQuarter, setStartQuarter] = useState('');
-    const [startYear, setStartYear] = useState('');
     const [endQuarter, setEndQuarter] = useState('');
     const [endYear, setEndYear] = useState('');
     const [timeCommitment, setTimeCommitment] = useState(3);
