@@ -136,7 +136,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
       )}
 
       {isOpen && inputValue && filteredOptions.length === 0 && (
-        <div className="absolute z-20 mt-1 w-full bg-white shadow-md rounded-md py-2 px-4 text-sm text-gray-500">
+        <div className="absolute z-20 mt-1 w-full bg-white shadow-md rounded-md py-2 px-4 text-sm text-gray-500 overflow-hidden whitespace-nowrap text-ellipsis">
           No clubs found matching &quot;{inputValue}&quot;
         </div>
       )}
