@@ -121,15 +121,14 @@ function AllClubsPage() {
           {title}
         </h1>
 
-
-        <div className="grid grid-cols-1 gap-16">
-          {clubs.map(club => (
-            <ClubCard
-              key={`${club.OrganizationID}-${club.OrganizationName}`}
-              club={club}
-            />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 gap-12">
+        {clubs.map(club => (
+          <ClubCard
+            key={`${club.OrganizationID}-${club.OrganizationName}`}
+            club={club}
+          />
+        ))}
+      </div>
 
         <div className="flex justify-center items-center gap-4 mt-16">
           <button
