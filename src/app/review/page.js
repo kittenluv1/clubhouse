@@ -5,7 +5,7 @@ import SearchableDropdown from '../components/searchable-dropdown';
 import {QuarterYearDropdown} from '../components/dropdowns';
 import CustomSlider from '../components/custom-slider';
 import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -30,15 +30,19 @@ const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
     return false;
 };
 
+// Helper function to determine the current quarter
 const getCurrentQuarter = () => {
-    const month = new Date().getMonth() + 1; 
+    const month = new Date().getMonth() + 1; // JavaScript months are 0-indexed
     
+    // Fall: September to December (9-12)
     if (month >= 9 && month <= 12) {
         return 'Fall';
     }
+    // Winter: January to March (1-3)
     else if (month >= 1 && month <= 3) {
         return 'Winter';
     }
+    // Spring: April to August (4-8)
     else {
         return 'Spring';
     }
@@ -66,8 +70,21 @@ export default function ReviewPage() {
     const [dateError, setDateError] = useState(null);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
+      // Check for club and clubId parameters from URL
+      const clubParam = searchParams.get('club');
+      const clubIdParam = searchParams.get('clubId');
+      
+      if (clubParam) {
+        setSelectedClub(decodeURIComponent(clubParam));
+      }
+      
+      if (clubIdParam) {
+        setClubId(clubIdParam);
+      }
+      
       // Listen for auth state changes (e.g., sign in or sign out)
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (!session) {
@@ -77,7 +94,7 @@ export default function ReviewPage() {
       return () => {
         data.subscription.unsubscribe();
       };
-    }, []);
+    }, [searchParams]);
 
     useEffect(() => {
         if (startQuarter && startYear && endQuarter && endYear) {
@@ -88,22 +105,27 @@ export default function ReviewPage() {
         }
     }, [startQuarter, startYear, endQuarter, endYear]);
 
+    // Handle checkbox changes
     const handleMembershipCheckbox = (e) => {
         const isChecked = e.target.checked;
         
         if (isChecked) {
+            // Save current end date values before replacing them
             if (endQuarter && endYear) {
                 setSavedEndQuarter(endQuarter);
                 setSavedEndYear(endYear);
             }
             
+            // Set to current quarter and year
             setEndQuarter(getCurrentQuarter());
             setEndYear(new Date().getFullYear().toString());
         } else {
+            // Restore saved values if they exist
             if (savedEndQuarter && savedEndYear) {
                 setEndQuarter(savedEndQuarter);
                 setEndYear(savedEndYear);
             } else {
+                // Clear the fields if no saved values
                 setEndQuarter('');
                 setEndYear('');
             }
@@ -115,6 +137,13 @@ export default function ReviewPage() {
     const handleClubSelect = async (club) => {
         setSelectedClub(club);
         try {
+            // If the clubId was already provided from URL parameters, use that
+            if (searchParams.get('clubId') && !clubId) {
+                setClubId(searchParams.get('clubId'));
+                return;
+            }
+            
+            // Otherwise fetch the club ID from the database
             const { data, error } = await supabase
                 .from('clubs')
                 .select('OrganizationID')
@@ -141,12 +170,14 @@ export default function ReviewPage() {
     };
 
     const handleEndQuarterChange = (e) => {
+        // Only update if not currently a member
         if (!isMember) {
             setEndQuarter(e.target.value);
         }
     };
 
     const handleEndYearChange = (e) => {
+        // Only update if not currently a member
         if (!isMember) {
             setEndYear(e.target.value);
         }
@@ -358,18 +389,20 @@ export default function ReviewPage() {
                     </div>
                     
                     
-                   {/* Ratings */}
+                    
+                    
+                    {/* Ratings */}
                     <div className="mt-20">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-                            <div className="flex flex-col items-center">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <div className="flex flex-col items-center space-y-1">
                                 <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                                     {/* Timer/Clock SVG icon */}
                                     <svg width="40" height="42" viewBox="0 0 40 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M20 5.1582C28.2843 5.1582 35 12.0872 35 20.6338C34.9998 29.1802 28.2841 36.1084 20 36.1084C11.7159 36.1084 5.00024 29.1802 5 20.6338C5 12.0872 11.7157 5.1582 20 5.1582ZM20 10.1768C19.4477 10.1768 19 10.6245 19 11.1768V20.3838C19.0002 21.0739 19.5598 21.6338 20.25 21.6338H25.833L25.9355 21.6289C26.4397 21.5777 26.8328 21.1514 26.833 20.6338C26.833 20.116 26.4398 19.6899 25.9355 19.6387L25.833 19.6338H21V11.1768C21 10.6245 20.5523 10.1768 20 10.1768Z" fill="#222222"/>
                                     </svg>
                                 </div>
-                                <span className="text-xs font-medium text-green-800 mt-5 mb-5">Time Commitment</span>
-                                <div className="w-full max-w-xs">
+                                <span className="text-xs font-medium text-green-800 mt-6 mb-6">Time Commitment</span>
+                                <div className="relative w-full">
                                     <CustomSlider
                                         value={timeCommitment}
                                         onChange={(val) => setTimeCommitment(val)}
@@ -379,15 +412,16 @@ export default function ReviewPage() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-center">
+                            <div className="flex flex-col items-center space-y-1">
                                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                                     {/* Diversity SVG icon */}
                                     <svg width="40" height="42" viewBox="0 0 40 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path fillRule="evenodd" clipRule="evenodd" d="M13.28 5.64725C15.3866 4.64367 17.6796 4.12479 20 4.12661C22.8114 4.12612 25.5732 4.88986 28.0075 6.34092C30.4417 7.79198 32.4624 9.87912 33.8659 12.3922H32.3899C31.0899 12.3922 30.0359 12.908 30.0359 14.2491C30.0359 14.93 30.0359 18.4582 25.984 18.3922C22.04 18.3922 22.04 14.8186 22.04 14.2491C22.04 11.3007 20.466 10.8447 18.536 10.2814C17.788 10.0648 16.988 9.83161 16.204 9.4334C14.196 8.40794 13.508 6.99252 13.28 5.64725ZM8 4.12661C5.67633 5.93163 3.75794 8.23308 2.37601 10.8736C0.812309 13.8733 -0.00416438 17.227 1.5972e-05 20.633C1.5972e-05 31.5457 8.212 40.4798 18.608 41.2164L18.716 41.2246C19.4851 41.2754 20.2563 41.2802 21.026 41.2391H21.03C22.0381 41.1867 23.041 41.0556 24.03 40.8471C25.5907 40.516 27.1074 39.9937 28.548 39.2913C33.0677 37.0797 36.6245 33.2072 38.5219 28.4322C39.5048 25.9573 40.0069 23.3075 39.9999 20.633C40.0016 18.893 39.7899 17.1599 39.3699 15.4747C38.2612 11.0449 35.7568 7.12081 32.2505 4.31958C28.7441 1.51835 24.4347 -0.00114436 20 1.84345e-05C15.6716 -0.00596058 11.4592 1.44263 8 4.12661ZM34.7439 27.056C34.2576 26.9037 33.7522 26.8259 33.2439 26.8249H32.8099C31.0042 26.8249 29.2723 27.5648 27.9953 28.8819C26.7182 30.199 26.0005 31.9854 26 33.8484V35.9405C29.9402 34.2896 33.0848 31.0957 34.7439 27.056ZM20.228 37.1393H20C17.1814 37.1396 14.4128 36.3718 11.9743 34.9136C9.53582 33.4554 7.51397 31.3585 6.1134 28.8352C4.71282 26.3119 3.98322 23.4516 3.99843 20.5439C4.01364 17.6362 4.77311 14.7842 6.2 12.2766C8.1 13.3929 9.042 15.4479 9.86999 17.2595C10.288 18.1694 10.676 19.0195 11.144 19.657C12.224 21.1261 13.27 21.7595 14.326 22.3971C15.366 23.0264 16.42 23.6619 17.526 25.1124C20.406 28.8779 20.364 34.1207 20.226 37.1372L20.228 37.1393Z" fill="black"/>
                                     </svg>
+
                                 </div>
-                                <span className="text-xs font-medium text-green-800 mt-5 mb-5">Diversity</span>
-                                <div className="w-full max-w-xs">
+                                <span className="text-xs font-medium text-green-800 mt-6 mb-6">Diversity</span>
+                                <div className="relative w-full">
                                     <CustomSlider
                                         value={diversityRating}
                                         onChange={(val) => setDiversityRating(val)}
@@ -397,7 +431,7 @@ export default function ReviewPage() {
                                 </div>
                             </div>
                             
-                            <div className="flex flex-col items-center">
+                            <div className="flex flex-col items-center space-y-1">
                                 <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
                                     {/* Social Community SVG icon */}
                                     <svg width="40" height="41" viewBox="0 0 40 41" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -408,9 +442,10 @@ export default function ReviewPage() {
                                     <path d="M11.6665 22.1667C13.1429 22.1667 14.2973 22.7024 15.2007 23.4998C12.6895 25.1302 11.3929 27.9844 10.7212 30.4998H6.105C5.51337 30.4998 5.05891 29.9917 5.17628 29.4119C5.63345 27.1536 7.15397 22.1668 11.6665 22.1667Z" fill="#33363F"/>
                                     <path d="M19.9998 23.8333C26.7064 23.8333 28.0156 30.3101 28.2712 32.8388C28.3267 33.3883 27.8855 33.8333 27.3332 33.8333H12.6665C12.1142 33.8333 11.673 33.3883 11.7285 32.8388C11.9841 30.3101 13.2933 23.8333 19.9998 23.8333Z" fill="#33363F"/>
                                     </svg>
+
                                 </div>
-                                <span className="text-xs font-medium text-green-800 mt-5 mb-5">Social Community</span>
-                                <div className="w-full max-w-xs">
+                                <span className="text-xs font-medium text-green-800 mt-6 mb-6">Social Community</span>
+                                <div className="relative w-full">
                                     <CustomSlider
                                         value={socialCommunity}
                                         onChange={(val) => setSocialCommunity(val)}
