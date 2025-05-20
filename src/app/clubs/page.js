@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import ClubCard from "../components/clubCard";
 import Filter from "../components/filter";
+import ErrorScreen from "../components/ErrorScreen";
+import LoadingScreen from "../components/LoadingScreen";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -70,17 +72,9 @@ function AllClubsPage() {
     setSortType(newSort);
   }
 
-  if (loading) {
-    return (
-      <div className="p-[80px] space-y-6">
-        <div className="flex justify-center items-center gap-4 mt-6 text-[16px]">
-          <p className="p-4">Loading clubs...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return (LoadingScreen());
 
-  if (error) return <p className="p-4 text-red-500">{error}</p>;
+  if (error) return <ErrorScreen error={error} />;
 
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";
@@ -96,32 +90,36 @@ function AllClubsPage() {
         : "All Clubs";
 
   return (
-    <div className="p-[80px] space-y-6">
-      {/* Improved layout with better spacing */}
-      <div className="flex justify-between items-center mb-6">
-        {/* Use the enhanced self-contained Filter component */}
-        <Filter initialSelectedTags={initialSelectedTags}/>
+    <>
+      {/* Gradient background that covers start and middle parts */}
+      <div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"/>
+      <div className="absolute top-1/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] via-[#F1FFE8] to-[#FFFFFF] -z-10" />
+      <div className="absolute top-2/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] to-[#DFF1F1] -z-10" />
+      <div className="p-[80px] space-y-6">
+        {/* Improved layout with better spacing */}
+        <div className="flex justify-between items-center mb-6">
+          {/* Use the enhanced self-contained Filter component */}
+          <Filter initialSelectedTags={initialSelectedTags}/>
 
-        {/* Sort selector with more space and no text wrapping */}
-        <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
-          <label className=" font-medium text-black">Sort by:</label>
-            <select
-              id="sort"
-              value={sortType}
-              onChange={handleSortChange}
-              className="text-black font-medium"
-            >
-            <option value="rating">Highest Rated</option>
-            <option value="reviews">Most Reviewed</option>
-            <option value="alphabetical">A–Z</option>
-          </select>
+          {/* Sort selector with more space and no text wrapping */}
+          <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
+            <label className=" font-medium text-black">Sort by:</label>
+              <select
+                id="sort"
+                value={sortType}
+                onChange={handleSortChange}
+                className="text-black font-medium"
+              >
+              <option value="rating">Highest Rated</option>
+              <option value="reviews">Most Reviewed</option>
+              <option value="alphabetical">A–Z</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
-        {title}
-      </h1>
-
+        <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
+          {title}
+        </h1>
 
       <div className="grid grid-cols-1 gap-12">
         {clubs.map(club => (
@@ -132,26 +130,28 @@ function AllClubsPage() {
         ))}
       </div>
 
-      <div className="flex justify-center items-center gap-4 mt-16">
-        <button
-          onClick={handlePreviousPage}
-          disabled={currPage === 1}
-          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
-        >
-          Previous
-        </button>
-        <span>
-          Page {currPage} of {pageTotal}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currPage === pageTotal}
-          className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
-        >
-          Next
-        </button>
+        <div className="flex justify-center items-center gap-4 mt-16">
+          <button
+            onClick={handlePreviousPage}
+            disabled={currPage === 1}
+            className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
+          >
+            Previous
+          </button>
+          <span>
+            Page {currPage} of {pageTotal}
+          </span>
+          <button
+            onClick={handleNextPage}
+            disabled={currPage === pageTotal}
+            className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
+          >
+            Next
+          </button>
+        </div>
       </div>
-    </div>
+    </>
+    
   );
 }
 

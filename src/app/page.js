@@ -63,32 +63,35 @@ function Home() {
     loadCategories()
   }, [])
 
-//<div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
   return (
-    <div className="flex flex-col w-full h-full justify-center items-center">
-      <div className="absolute top-0 left-0 h-1/2 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
-      <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">ClubHouse</h2>
-      <div className="flex flex-col space-y-2 w-5/8 max-w-l">
-        <SearchBar ref={searchRef} width="w-full" height="h-13" />
-        <button
-          onClick={handleSearchClick}
-          className="self-end !bg-blue-700 !border-blue-600 text-white !text-lg !rounded-xl !py-1 px-4"
-        >
-          Search
-        </button>
-        <div className="flex flex-wrap gap-3 justify-center mt-4">
-          {Object.entries(GROUP_CATEGORY_MAP).map(([group, categoryList]) => (
-            <button
-              key={group}
-              onClick={() => {
-                const encoded = encodeURIComponent(categoryList.join(','));
-                router.push(`/clubs?categories=${encoded}`);
-              }}
-              className="px-6 py-3 border rounded-full text-lg shadow-md hover:bg-blue-50 transition"
-            >
-              {group}
-            </button>
-          ))}
+    <div className="relative w-full min-h-[100vh]">
+      <div className="absolute top-0 left-0 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
+      <div className="absolute bottom-0 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF] -z-10"/>
+
+      <div className="flex flex-col w-full h-full justify-center items-center pb-120">
+        <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">
+          <img 
+          src={"/Logo New.png"}
+          alt="ClubHouse Logo"
+          className="object-cover"
+          />
+        </h2>
+        <div className="flex flex-col space-y-2 w-5/8 max-w-l items-center">
+          <SearchBar ref={searchRef} width="w-1/2" height="h-13"/>
+          <div className="flex flex-wrap gap-3 justify-center mt-4">
+            {Object.entries(GROUP_CATEGORY_MAP).map(([group, categoryList]) => (
+              <button
+                key={group}
+                onClick={() => {
+                  const encoded = encodeURIComponent(categoryList.join(','));
+                  router.push(`/clubs?categories=${encoded}`);
+                }}
+                className="px-6 py-3 border-1 rounded-full text-lg shadow-lg hover:bg-[#B1D49D] transition"
+              >
+                {group}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
