@@ -171,7 +171,7 @@ export default function ReviewPage() {
               body: JSON.stringify({
                 record: {
                   id: data[0].id,
-                  club_id: data[0].club_id,
+                  club_name: data[0].club_name,
                   overall_satisfaction: data[0].overall_satisfaction,
                   review_text: data[0].review_text,
                 },
