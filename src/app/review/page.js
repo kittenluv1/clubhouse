@@ -32,17 +32,14 @@ const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
 
 // Helper function to determine the current quarter
 const getCurrentQuarter = () => {
-    const month = new Date().getMonth() + 1; // JavaScript months are 0-indexed
+    const month = new Date().getMonth() + 1; 
     
-    // Fall: September to December (9-12)
     if (month >= 9 && month <= 12) {
         return 'Fall';
     }
-    // Winter: January to March (1-3)
     else if (month >= 1 && month <= 3) {
         return 'Winter';
     }
-    // Spring: April to August (4-8)
     else {
         return 'Spring';
     }
@@ -64,37 +61,28 @@ export default function ReviewPage() {
     const [overallSatisfaction, setOverallSatisfaction] = useState(null);
     const [reviewText, setReviewText] = useState('');
     const [isMember, setIsMember] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
     
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [dateError, setDateError] = useState(null);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
-    const searchParams = useSearchParams();
 
     useEffect(() => {
-      // Check for club and clubId parameters from URL
-      const clubParam = searchParams.get('club');
-      const clubIdParam = searchParams.get('clubId');
-      
-      if (clubParam) {
-        setSelectedClub(decodeURIComponent(clubParam));
-      }
-      
-      if (clubIdParam) {
-        setClubId(clubIdParam);
-      }
-      
-      // Listen for auth state changes (e.g., sign in or sign out)
-      const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        if (!session) {
-          window.location.href = "./sign-in";
-        }
-      });
-      return () => {
-        data.subscription.unsubscribe();
-      };
-    }, [searchParams]);
+        // Get the current authenticated user
+        const getUser = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (user) {
+                setCurrentUser(user);
+                console.log("Current user:", user);
+            } else if (error) {
+                console.error('Error getting user:', error);
+            }
+        };
+        
+        getUser();
+    }, []);
 
     useEffect(() => {
         if (startQuarter && startYear && endQuarter && endYear) {
@@ -105,27 +93,21 @@ export default function ReviewPage() {
         }
     }, [startQuarter, startYear, endQuarter, endYear]);
 
-    // Handle checkbox changes
     const handleMembershipCheckbox = (e) => {
         const isChecked = e.target.checked;
         
         if (isChecked) {
-            // Save current end date values before replacing them
             if (endQuarter && endYear) {
                 setSavedEndQuarter(endQuarter);
                 setSavedEndYear(endYear);
             }
-            
-            // Set to current quarter and year
             setEndQuarter(getCurrentQuarter());
             setEndYear(new Date().getFullYear().toString());
         } else {
-            // Restore saved values if they exist
             if (savedEndQuarter && savedEndYear) {
                 setEndQuarter(savedEndQuarter);
                 setEndYear(savedEndYear);
             } else {
-                // Clear the fields if no saved values
                 setEndQuarter('');
                 setEndYear('');
             }
@@ -137,13 +119,6 @@ export default function ReviewPage() {
     const handleClubSelect = async (club) => {
         setSelectedClub(club);
         try {
-            // If the clubId was already provided from URL parameters, use that
-            if (searchParams.get('clubId') && !clubId) {
-                setClubId(searchParams.get('clubId'));
-                return;
-            }
-            
-            // Otherwise fetch the club ID from the database
             const { data, error } = await supabase
                 .from('clubs')
                 .select('OrganizationID')
@@ -170,14 +145,12 @@ export default function ReviewPage() {
     };
 
     const handleEndQuarterChange = (e) => {
-        // Only update if not currently a member
         if (!isMember) {
             setEndQuarter(e.target.value);
         }
     };
 
     const handleEndYearChange = (e) => {
-        // Only update if not currently a member
         if (!isMember) {
             setEndYear(e.target.value);
         }
@@ -202,12 +175,16 @@ export default function ReviewPage() {
             if (!endQuarter || !endYear) throw new Error('Please select an end date');
             if (!reviewText) throw new Error('Please write a review');
             
-            let userId = null;
+            if (overallSatisfaction === null) throw new Error('Please rate your overall satisfaction');
+
+            let userId = currentUser?.id || null;
+            let userEmail = currentUser?.email || null;
             let updatedAt = null;
 
             const reviewData = {
                 club_id: clubId,
                 user_id: userId,
+                user_email: userEmail,
                 membership_start_quarter: startQuarter,
                 membership_start_year: parseInt(startYear),
                 membership_end_quarter: endQuarter,
@@ -222,7 +199,10 @@ export default function ReviewPage() {
             };
 
             console.log(clubId, 'clubID');
+            console.log("Current user ID:", userId);
+            console.log("Current user email:", userEmail);
             console.log("Sending review data to Supabase:", reviewData);
+            
             const { data, error } = await supabase
                 .from('pending_reviews')
                 .insert(reviewData)
@@ -232,6 +212,7 @@ export default function ReviewPage() {
                 console.error('Full error object:', error);
                 throw new Error(`${error.message}${error.details ? ' - ' + error.details : ''}${error.hint ? ' - ' + error.hint : ''}`);
             }
+            
             if (data) {
                 try {
                     const response = await fetch('https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-review-email', {
@@ -259,7 +240,6 @@ export default function ReviewPage() {
                     setError('Failed to send approval email. Please try again.');
                 }
             }
-
 
             setSuccess(true);
             router.push('/review/thankyou');
@@ -478,7 +458,7 @@ export default function ReviewPage() {
                     {/* Satisfaction Stars */}
                     <div>
                         <label className="block text-lg font-bold mt-20 mb-3">
-                            How satisfied are you with your club experience?
+                            How satisfied are you with your club experience? *
                         </label>
                         <StarRating 
                             rating={overallSatisfaction} 
