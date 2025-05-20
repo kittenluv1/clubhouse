@@ -22,6 +22,7 @@ function PendingCard({ review, handleApprove, handleReject }) {
                 <span className="text-yellow-400">★</span>
               </label>
             </div>
+
             <div className="flex flex-row gap-[4px]">
               <label>{review.membership_start_quarter}</label>
               <label>{review.membership_start_year}</label>
@@ -48,6 +49,12 @@ function PendingCard({ review, handleApprove, handleReject }) {
       </div>
 
       <div className="flex flex-col space-y-[12px]">
+        <div className="flex flex-row gap-[4px]">
+          <label className="font-bold">Club:</label>
+          <label className="font-[var(--font-dm-sans)] text-black">
+            {review.club_name}
+          </label>
+        </div>
         <div className="grid grid-cols-2">
           <div className="flex flex-col space-y-[4px]">
             <div className="flex flex-row gap-[4px]">
