@@ -32,7 +32,7 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
           </button>
           <button
             className="py-[12px] px-[32px]  rounded-full font-bold bg-[#FD81BF] hover:bg-[#FFD8EB]"
-            onClick={() => handleReject(review.id, review.club_name)}
+            onClick={() => handleReject(review)}
           >
             Remove
           </button>

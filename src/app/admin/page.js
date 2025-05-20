@@ -97,18 +97,53 @@ const Page = () => {
     }
   };
 
-  const handleReject = async (id, name) => {
-    const response = await fetch("/api/pendingReviews", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reviewID: id, approve: false }),
-    });
+  const handleReject = async (record) => {
+    try {
+      // Step 1: Disapprove the review in Supabase
+      const disproveRes = await fetch("/api/pendingReviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviewID: record.id, approve: false }),
+      });
 
-    if (response.ok) {
-      console.log("Review rejected");
+      if (!disproveRes.ok) {
+        console.error("Error disapproving review");
+        return;
+      }
+
+      // Step 2: Send disapproval email via Supabase Function
+      const emailRes = await fetch(
+        "https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-user-disapprove-email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            club_name: record.club_name,
+            membership_start_quarter: record.membership_start_quarter,
+            membership_start_year: record.membership_start_year,
+            membership_end_quarter: record.membership_end_quarter,
+            membership_end_year: record.membership_end_year,
+            time_commitment_rating: record.time_commitment_rating,
+            diversity_rating: record.diversity_rating,
+            social_community_rating: record.social_community_rating,
+            competitiveness_rating: record.competitiveness_rating,
+            overall_satisfaction: record.overall_satisfaction,
+            review: record.review_text,
+            // email: review.email,
+          }),
+        }
+      );
+
+      if (!emailRes.ok) {
+        const { error } = await emailRes.json().catch(() => ({}));
+        console.error("Error sending email:", error || emailRes.statusText);
+        return;
+      }
+
+      console.log("Review disapproved and email sent");
       fetchPendingReviews();
-    } else {
-      console.error("Error rejecting review");
+    } catch (error) {
+      console.error("Unexpected error:", error);
     }
   };
 
