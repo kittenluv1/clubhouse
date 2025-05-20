@@ -120,7 +120,7 @@ return (
       {/* Filter Button */}
         <button
           ref={buttonRef}
-          className="flex-shrink-0 bg-[#FFB0D8] border border-[#000000] font-bold px-4 py-2 rounded-full whitespace-nowrap"
+          className="flex-shrink-0 bg-[#F7FCFF] text-black border border-[#A2A2A2] font-bold px-4 py-2 rounded-full whitespace-nowrap"
           onClick={toggleFilter}
         >
           Search by Category
@@ -133,7 +133,7 @@ return (
               {selectedTags.map((tag) => (
                 <div
                     key={tag}
-                    className="flex items-center bg-[#B1D49D] text-black px-3 py-2 rounded-full border shadow-md"
+                    className="flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full shadow-md"
                 >
                   <span>{tag}</span>
                   <button
@@ -141,7 +141,7 @@ return (
                       className="ml-2"
                   >
                       <img
-                      src={"/Close X Alt.png"}
+                      src={"/Close X.png"}
                       alt="x"
                       className="object-cover"
                       width="20"
@@ -160,9 +160,9 @@ return (
         ref={filterRef} 
         className="absolute top-12 left-0 bg-white rounded-xl shadow-lg z-50 w-[300px] sm:w-[500px] max-w-3xl p-6"
       >
-        <div className="p-4 max-h-[70vh] overflow-y-auto">
+        <div className="p-4 max-h-[50vh] overflow-y-auto">
           {/* Control Buttons */}
-          <div className="flex justify-between mb-2">
+          {/* <div className="flex justify-between mb-2">
               <button className="bg-white text-md font-bold rounded-full px-4 py-2 self-center text-nowrap border border-black" onClick={handleClose}>
                 Cancel
               </button>
@@ -172,7 +172,7 @@ return (
               >
                 Search
               </button>
-          </div>
+          </div> */}
           
           {/* Selected Tags */}
           {tempSelectedTags.length > 0 && (
@@ -224,6 +224,19 @@ return (
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Control Buttons */}
+        <div className="flex pb-2 pt-4 justify-end">
+            <button className="text-md font-semibold px-4 py-2 self-center text-nowrap" onClick={handleClose}>
+              Cancel
+            </button>
+            <button
+              className="bg-[#5086E1] text-white text-md px-4 py-2 rounded-xl ml-2"
+              onClick={handleSearch}
+            >
+              Search
+            </button>
         </div>
       </div>
     )}
