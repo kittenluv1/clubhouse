@@ -6,6 +6,9 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/app/lib/db";
 
+import ErrorScreen from "@/app/components/ErrorScreen";
+import LoadingScreen from "@/app/components/LoadingScreen";
+
 export default function ClubDetailsPage() {
   const { id } = useParams();
   
@@ -79,17 +82,10 @@ export default function ClubDetailsPage() {
     if (numRating >= 2.0) return 'bg-yellow-500 text-white';
     return 'bg-red-600 text-white';
   };
-
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
   
-  if (error) return (
-    <div className="p-4">
-      <p className="text-red-500">{error}</p>
-      <Link href="/clubs" className="text-blue-500 hover:underline mt-4 inline-block">
-        View all clubs
-      </Link>
-    </div>
-  );
+  if (loading) return (LoadingScreen());
+
+  if (error) return <ErrorScreen error={error} />;
   
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 

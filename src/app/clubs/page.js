@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import ClubCard from "../components/clubCard";
 import Filter from "../components/filter";
+import ErrorScreen from "../components/ErrorScreen";
+import LoadingScreen from "../components/LoadingScreen";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -70,20 +72,9 @@ function AllClubsPage() {
     setSortType(newSort);
   }
 
-  if (loading) {
-    return (
-      <div className="w-full min-h-[100vh] flex justify-center items-center bg-[#DFEBFF] text-3xl">
-        <p>Loading clubs...</p>
-      </div>
-    );
-  }
+  if (loading) return (LoadingScreen());
 
-  if (error) 
-    return (
-      <div className="w-full min-h-[100vh] flex justify-center items-center bg-[#DFEBFF] text-3xl">
-        <p className="p-4 text-red-500">{error}</p>
-      </div>
-    );
+  if (error) return <ErrorScreen error={error} />;
 
   if (clubs.length === 0) {
     const keyword = nameParam ?? singleCategoryParam ?? multiCategoriesParam ?? "All Clubs";

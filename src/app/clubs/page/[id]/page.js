@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import LoadingScreen from "@/app/components/LoadingScreen";
+import ErrorScreen from "@/app/components/ErrorScreen";
 
 function RatingBar({ label, value }) {
     return (
@@ -52,7 +54,9 @@ export default function ClubPage() {
             });
     }, [id]);
 
-    if (loading) return <p className="p-4">Loading...</p>;
+    if (loading) return (LoadingScreen());
+
+    if (error) return <ErrorScreen error={error} />;
 
     return (
         <div
