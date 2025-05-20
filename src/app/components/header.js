@@ -31,17 +31,19 @@ function Header() {
 	<>
 		<div className="grid grid-cols-18 items-center w-full gap-4 pb-3 pt-8 bg-[#E0ECFD]">
 			<div className="col-span-4 flex justify-center">
-				<button
-				onClick={() => (router.push("/"))}
-				className={`p-3 self-center text-nowrap flex items-center gap-2`}
-				>
-					<img
-					src={"/Logo Bar 2.png"}
-					alt="ClubHouse Logo"
-					className="object-cover"
-					width="210"
-					/>
-				</button>
+				{pathname !== "/" &&
+					<button
+					onClick={() => (router.push("/"))}
+					className={`p-3 self-center text-nowrap flex items-center gap-2`}
+					>
+						<img
+						src={"/Logo Bar 2.png"}
+						alt="ClubHouse Logo"
+						className="object-cover"
+						width="210"
+						/>
+					</button>
+				}
 			</div>
 			<div className="col-span-9">
 				{pathname !== "/" && <SearchBar width="w-full" height="h-13"/>}

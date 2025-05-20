@@ -68,17 +68,17 @@ function Home() {
       <div className="absolute top-0 left-0 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
       <div className="absolute bottom-0 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF] -z-10"/>
 
-      <div className="flex flex-col w-full h-full justify-center items-center pb-120">
-        <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">
-          <img 
-          src={"/Logo New.png"}
+      <div className="flex flex-col w-full h-full justify-center items-center">
+        <h2 className="max-w-2xl p-10">
+          <img
+          src={"/clubhouse-logo-text.svg"}
           alt="ClubHouse Logo"
           className="object-cover"
           />
         </h2>
-        <div className="flex flex-col space-y-2 w-5/8 max-w-l items-center">
-          <SearchBar ref={searchRef} width="w-1/2" height="h-13"/>
-          <div className="flex flex-wrap gap-3 justify-center mt-4">
+        <div className="flex flex-col space-y-2 w-5/8 max-w-2xl items-center">
+          <SearchBar ref={searchRef} width="w-3/4" height="h-13"/>
+          <div className="flex flex-wrap gap-3 justify-center mt-4 px-20 p-10">
             {Object.entries(GROUP_CATEGORY_MAP).map(([group, categoryList]) => (
               <button
                 key={group}
