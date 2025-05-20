@@ -71,7 +71,7 @@ function Home() {
       <div className="flex flex-col w-full h-full justify-center items-center pb-120">
         <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">
           <img 
-          src={"/Logo Big 2.png"}
+          src={"/Logo New.png"}
           alt="ClubHouse Logo"
           className="object-cover"
           />
