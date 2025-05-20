@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import SearchableDropdown from '../components/searchable-dropdown';
-import {QuarterYearDropdown} from '../components/dropdowns';
+import { QuarterYearDropdown } from '../components/dropdowns';
 import CustomSlider from '../components/custom-slider';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
@@ -474,9 +474,9 @@ export default function ReviewPage() {
                         <button
                             type="submit"
                             disabled={isSubmitting || dateError}
-                            className="w-24 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-full transition duration-300 ease-in-out disabled:opacity-50"
+                            className="w-24 px-4 py-2 bg-gray-900 hover:bg-gray-600 text-white font-medium rounded-full transition duration-300 ease-in-out disabled:opacity-50"
                         >
-                            {isSubmitting ? 'Submitting...' : 'Submit'}
+                            Submit
                         </button>
                     </div>
                 </form>
