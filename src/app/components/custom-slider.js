@@ -1,9 +1,11 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 
 const CustomSlider = ({ 
   min = 1, 
   max = 5, 
-  step = 0.1, 
+  step = 0.5, 
   value, 
   onChange,
   lowLabel = "Low",
@@ -25,15 +27,17 @@ const CustomSlider = ({
     return ((sliderValue - min) / (max - min)) * 100;
   };
 
+  const steps = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+
   return (
-    <div className="w-full py-2">
-      <div className="relative w-full mb-2">
+    <div className="w-full] py-2">
+      <div className="relative mb-2">
         {/* Slider track */}
         <div className="absolute top-1/2 left-0 w-full h-4 bg-gray-200 rounded-full transform -translate-y-1/2"></div>
         
         {/* Filled portion */}
         <div 
-          className="absolute top-1/2 left-0 h-3 bg-green-800 rounded-full transform -translate-y-1/2" 
+          className="absolute top-1/2 left-0 h-3 bg-green-600 rounded-full transform -translate-y-1/2" 
           style={{ width: `${calculateFillPercentage()}%` }}
         ></div>
         
@@ -56,25 +60,35 @@ const CustomSlider = ({
       </div>
       
       {/* Labels */}
-      <div className="flex w-full text-xs mt-3">
-        {/* Number labels */}
-        <div className="flex justify-between w-full text-green-800">
-          {[1, 2, 3, 4, 5].map((num) => (
-            <div key={num} className="flex flex-col items-center ">
-              <span>{num}</span>
-              {num === 1 && (
-                <span className="text-green-800 mt-2">{lowLabel}</span>
-              )}
-              {num === 5 && (
-                <span className="text-green-800 mt-2">{highLabel}</span>
-              )}
-            </div>
-          ))}
+      <div className="flex flex-col w-full mt-3">
+        {/* Number markers with exact spacing */}
+        <div className="relative w-full flex h-6">
+          {steps.map((num) => {
+            const percentage = ((num - min) / (max - min)) * 100;
+            return (
+              <div 
+                key={num} 
+                className="absolute flex flex-col items-center text-xs text-green-800"
+                style={{ 
+                  left: `${percentage}%`, 
+                  transform: 'translateX(-50%)' 
+                }}
+              >
+                <span>{num}</span>
+                {num === min && (
+                  <span className="text-green-800 mt-2">{lowLabel}</span>
+                )}
+                {num === max && (
+                  <span className="text-green-800 mt-2">{highLabel}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
       
-      
-       <div className="text-center text-xs font-medium mt-1">
+      {/* Current value display */}
+      <div className="text-center text-xs font-medium mt-4">
         {sliderValue.toFixed(1)}
       </div> 
     </div>

@@ -63,20 +63,18 @@ function Home() {
     loadCategories()
   }, [])
 
-//<div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
   return (
-    <div className="flex flex-col w-full h-full justify-center items-center">
-      <div className="absolute top-0 left-0 h-1/2 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"></div>
-      <h2 className="text-8xl font-bold text-blue-700 my-10 text-center">ClubHouse</h2>
-      <div className="flex flex-col space-y-2 w-5/8 max-w-l">
-        <SearchBar ref={searchRef} width="w-full" height="h-13" />
-        <button
-          onClick={handleSearchClick}
-          className="self-end !bg-blue-700 !border-blue-600 text-white !text-lg !rounded-xl !py-1 px-4"
-        >
-          Search
-        </button>
-        <div className="flex flex-wrap gap-3 justify-center mt-4">
+    <div className="relative w-full flex flex-col justify-center items-center">
+      <h2 className="max-w-2xl p-10">
+        <img
+        src={"/clubhouse-logo-text.svg"}
+        alt="ClubHouse Logo"
+        className="object-cover"
+        />
+      </h2>
+      <div className="flex flex-col space-y-2 w-6/8 max-w-3xl items-center">
+        <SearchBar ref={searchRef} width="w-full" height="h-13"/>
+        <div className="flex flex-wrap gap-3 justify-center mt-4 px-20 p-10">
           {Object.entries(GROUP_CATEGORY_MAP).map(([group, categoryList]) => (
             <button
               key={group}
@@ -84,14 +82,19 @@ function Home() {
                 const encoded = encodeURIComponent(categoryList.join(','));
                 router.push(`/clubs?categories=${encoded}`);
               }}
-              className="px-6 py-3 border rounded-full text-lg shadow-md hover:bg-blue-50 transition"
+              className="px-6 py-3 border-1 rounded-full text-lg shadow-lg hover:bg-[#B1D49D] transition"
             >
               {group}
             </button>
           ))}
+          <button
+            onClick={() => router.push('/clubs?showCategories')}
+            className="bg-black text-white rounded-full px-6 py-3 ml-4 text-nowrap border-1 border-black
+              hover:bg-white transition hover:text-black"
+            >More Categories &gt;
+          </button>
+          </div>
         </div>
-      </div>
-
     </div>
   );
 }
