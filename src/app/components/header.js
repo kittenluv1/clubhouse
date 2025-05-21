@@ -60,7 +60,7 @@ function Header() {
 				<LoginButton/>
 			</div>
 		</div>
-		<>{pathname !== "/" && <div className="border"/>}</>
+		{/* <>{pathname !== "/" && <div className="border"/>}</> */}
 	</>
   )
 }

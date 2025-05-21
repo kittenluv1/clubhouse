@@ -114,7 +114,7 @@ function AllClubsPage() {
                 id="sort"
                 value={sortType}
                 onChange={handleSortChange}
-                className="text-black font-medium cursor-pointer outline-hidden"
+                className="text-black font-bold cursor-pointer outline-hidden"
               >
               <option value="rating">Highest Rated</option>
               <option value="reviews">Most Reviewed</option>
