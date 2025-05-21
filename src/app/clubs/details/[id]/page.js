@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useRef, useState, useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
 
@@ -32,6 +32,71 @@ const anonymousNames = [
 //   return arr;
 // }
 
+// DescriptionWithClamp component
+function DescriptionWithClamp({ description }) {
+  const [showFull, setShowFull] = useState(false);
+  const [isClamped, setIsClamped] = useState(true);
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    function checkClamp() {
+      if (ref.current) {
+        setIsClamped(ref.current.scrollHeight > ref.current.clientHeight);
+      }
+    }
+    checkClamp();
+    window.addEventListener('resize', checkClamp);
+    return () => window.removeEventListener('resize', checkClamp);
+  }, [description, showFull]);
+
+  useEffect(() => {
+    console.log("isClamped", isClamped);
+  }, [isClamped]);
+    useEffect(() => {
+    console.log("showFull", showFull);
+  }, [showFull]);
+
+  if (!description) {
+    return <p className="italic text-m mb-6">No description available for this club.</p>;
+  }
+  return (
+    <div>
+      <p
+        ref={ref}
+        className={`italic text-m transition-all duration-200 ${!showFull ? 'line-clamp-7' : ''}`}
+      >
+      {description}
+      </p>
+      {(!showFull && isClamped) && (
+        <>
+          {' '}
+          <button
+            className="text-blue-600 italic underline text-sm inline ml-1"
+            type="button"
+            onClick={() => setShowFull(true)}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          >
+            ...see more
+          </button>
+        </>
+      )}
+      {(showFull) && (
+        <>
+          {' '}
+          <button
+            className="text-blue-600 italic underline text-sm inline ml-1"
+            type="button"
+            onClick={() => setShowFull(false)}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          >
+            ...see less
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function ClubDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -40,13 +105,9 @@ export default function ClubDetailsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const randomAnonName = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
-  // const shuffledNames = useMemo(
-  //   () => shuffle(anonymousNames),
-  //   [reviews.length] // re-shuffle if the number of reviews changes
-  // );
-
-
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const descriptionRef = useRef(null);
+  const [isClamped, setIsClamped] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -166,12 +227,11 @@ export default function ClubDetailsPage() {
             />
           </div>
 
-          <p className="font-style: italic text-m mb-6">
-            {club.OrganizationDescription || 'No description available for this club.'}
-          </p>
+          {/* Description with clamp/expand */}
+          <DescriptionWithClamp description={club.OrganizationDescription} />
 
           {/* // Contact Information */}
-          <div className="mb-6">
+          <div className="mt-6 mb-6">
             {club.OrganizationEmail && (
               <p className="mt-1">
                 Email:{" "}
