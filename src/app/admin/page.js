@@ -131,7 +131,7 @@ const Page = () => {
             social_community_rating: record.social_community_rating,
             competitiveness_rating: record.competitiveness_rating,
             overall_satisfaction: record.overall_satisfaction,
-            review: record.review_text,
+            review_text: record.review_text,
             user_email: record.user_email,
           }),
         }
