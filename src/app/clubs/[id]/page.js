@@ -6,6 +6,7 @@ import Link from "next/link";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorScreen from "@/app/components/ErrorScreen";
 
+import { AiFillStar } from 'react-icons/ai';
 
 function getCategories(club) {
   return [
@@ -75,7 +76,7 @@ export default function ClubPage() {
   const categories = getCategories(club);
 
   return (
-    <div className="bg-gray-100 rounded-x1 p-6 m-6 flex-col rounded m-10">
+    <div className="border rounded-xl p-8 m-6 flex-col rounded m-10">
       <Link
         href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
         className="block"
@@ -87,15 +88,27 @@ export default function ClubPage() {
         {categories.map((cat, idx) => (
           <span
             key={idx}
-            className="bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-sm font-bold"
+            className="border bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-sm font-bold"
           >
             {cat}
           </span>
         ))}
       </div>
 
-      <p className="text-sm text-gray-800 pb-">{club.OrganizationDescription}</p>
-      
+      <p className="text-sm text-gray-800 pb-6">{club.OrganizationDescription}</p>
+
+      <div className="flex items-center">
+        <span className="font-semibold text-xl">
+          {club.average_satisfaction ? club.average_satisfaction.toFixed(1) : 'N/A'}
+        </span>
+        <AiFillStar className="text-yellow-400 text-xl mr-2" />
+        <h2 className="font-semibold text-x">satisfaction rating</h2>
+      </div>
+      <p className="font-style: italic">from {club.total_num_reviews || reviews.length || 0} trusted students</p>
+
+
+
+
       {/* 
       {club.OrganizationEmail && (
         <p className="mt-1">
@@ -137,11 +150,13 @@ export default function ClubPage() {
       )}
       */}
 
+      {/* 
       <div className="mt-4">
         <Link href="/clubs" className="text-blue-500 hover:underline">
           Back to all clubs
         </Link>
       </div>
+      */}
     </div>
   );
 }
