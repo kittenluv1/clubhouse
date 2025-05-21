@@ -45,28 +45,27 @@ const getCurrentQuarter = () => {
 };
 
 export default function ReviewPage() {
-  const [selectedClub, setSelectedClub] = useState("");
-  const [clubId, setClubId] = useState(null);
-  const [startQuarter, setStartQuarter] = useState("");
-  const [startYear, setStartYear] = useState("");
-  const [endQuarter, setEndQuarter] = useState("");
-  const [endYear, setEndYear] = useState("");
-  const [savedEndQuarter, setSavedEndQuarter] = useState("");
-  const [savedEndYear, setSavedEndYear] = useState("");
-  const [timeCommitment, setTimeCommitment] = useState(3);
-  const [diversityRating, setDiversityRating] = useState(3);
-  const [socialCommunity, setSocialCommunity] = useState(3);
-  const [competitiveness, setCompetitiveness] = useState(3);
-  const [overallSatisfaction, setOverallSatisfaction] = useState(null);
-  const [reviewText, setReviewText] = useState("");
-  const [isMember, setIsMember] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [dateError, setDateError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const router = useRouter();
+    const [selectedClub, setSelectedClub] = useState('');
+    const [clubId, setClubId] = useState(null);
+    const [startQuarter, setStartQuarter] = useState('');
+    const [startYear, setStartYear] = useState('');
+    const [endQuarter, setEndQuarter] = useState('');
+    const [endYear, setEndYear] = useState('');
+    const [savedEndQuarter, setSavedEndQuarter] = useState('');
+    const [savedEndYear, setSavedEndYear] = useState('');
+    const [timeCommitment, setTimeCommitment] = useState(3);
+    const [diversityRating, setDiversityRating] = useState(3);
+    const [socialCommunity, setSocialCommunity] = useState(3);
+    const [competitiveness, setCompetitiveness] = useState(3);
+    const [overallSatisfaction, setOverallSatisfaction] = useState(null);
+    const [reviewText, setReviewText] = useState('');
+    const [isMember, setIsMember] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState(null);
+    const [dateError, setDateError] = useState(null);
+    const [success, setSuccess] = useState(false);
+    const router = useRouter();
 
   useEffect(() => {
     const getUser = async () => {

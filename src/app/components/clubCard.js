@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function ClubTags({ category }) {
   return (
-    <span className="font-[var(--font-dm-sans)] font-medium text-[16px] text-black border border-black bg-[#ACC9FA] px-[16px] py-[8px] rounded-full">
+    <span className="font-medium text-[16px] text-black border border-black bg-[#ACC9FA] px-[16px] py-[8px] rounded-full">
       {category}
     </span>
   );
@@ -14,7 +14,7 @@ export default function ClubCard({ club }) {
       href={`/clubs/details/${encodeURIComponent(club.OrganizationName)}`}
       className="px-[40px] py-[40px] rounded-[12px] w-full bg-[#FFFFFF] space-y-[20px] border transform transition-[padding,transform,box-shadow] duration-50  hover:drop-shadow-[12px_12px_0_#B1D49D]"
     >
-      <h2 className="font-[var(--font-dm-sans)] font-bold text-[28px] text-black">
+      <h2 className="font-bold text-[28px] text-black">
         {club.OrganizationName}
       </h2>
 
@@ -22,13 +22,13 @@ export default function ClubCard({ club }) {
         <ClubTags category={club.Category1Name} />
         <ClubTags category={club.Category2Name} />
       </div>
-      <p className="font-[var(--font-dm-sans)] font-normal text-[16px] text-black line-clamp-4">
+      <p className="font-normal text-[16px] text-black line-clamp-4">
         {club.OrganizationDescription}
       </p>
 
       <div>
         <div className="flex flex-row items-center space-x-[8px]">
-          <label className="font-[var(--font-dm-sans)] font-bold text-[28px] text-black">
+          <label className="font-bold text-[28px] text-black">
             {club.average_satisfaction ? (
               <>
                 {club.average_satisfaction}
@@ -41,7 +41,7 @@ export default function ClubCard({ club }) {
               </>
             )}
           </label>
-          <label className="font-[var(--font-dm-sans)] font-bold text-[20px] text-black">
+          <label className="font-bold text-[20px] text-black">
             satisfaction rating
           </label>
         </div>

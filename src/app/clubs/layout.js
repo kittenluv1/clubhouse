@@ -1,6 +1,7 @@
 'use client';
-import { useState, useEffect, Suspense, cloneElement } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import LoadingScreen from '../components/LoadingScreen';
 
 function ClubsLayoutContent({ children }) {
   const searchParams = useSearchParams();
@@ -17,7 +18,7 @@ function ClubsLayoutContent({ children }) {
 
 export default function ClubsLayout({ children }) {
   return (
-    <Suspense fallback={<p className="p-4">Loading...</p>}>
+    <Suspense fallback={<LoadingScreen />}>
       <ClubsLayoutContent>{children}</ClubsLayoutContent>
     </Suspense>
   );

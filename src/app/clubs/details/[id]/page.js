@@ -1,9 +1,8 @@
 "use client";
 
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useRef, useState, useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { supabase } from "@/app/lib/db";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
@@ -11,17 +10,91 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from 'react-icons/ai'; import { useMemo } from "react";
 
-const anonymousNames = ['BaddieAtBplate', 'SunsetRecLover', 'PicnicAtJanns', 'kittenluv1', 'ILovePeony', 'DeneveDining',
-  'BigYatesFan', 'WhoAtCanyonPoint'];
+const anonymousNames = [
+  'Panda', 'Koala', 'Otter', 'Bunny', 'Duckling', 'Squirrel', 'Hedgehog', 'Fox', 'Penguin', 'Dolphin',
+  'Shark', 'Spider', 'Unicorn', 'Lemur', 'Platypus', 'Axolotl', 'Capybara', 'Narwhal', 'Sloth', 'SugarGlider',
+  'Newt', 'Hummingbird', 'Firefly', 'Mermaid', 'Saola', 'Quokka', 'Pangolin', 'Kitten', 'Student', 'Pencil',
+  'Crayon', 'Stapler', 'Ruler', 'Bruin', 'Fountain', 'Doodle', 'Notebook', 'Highlighter', 'Backpack',
+  'JoeBruin', 'Scribble', 'Origami', 'Flower', 'Acorn', 'Pebble', 'Dewdrop', 'Cloud', 'Sunbeam', 'Raindrop',
+  'Pinecone', 'Nymph', 'Faerie', 'Jackalope', 'Fern', 'Rose', 'Ivy', 'Clover', 'Twilight', 'Frost', 'Sprite',
+  'Seashell', 'Moss', 'Matcha', 'Sandwich', 'Bagel', 'Noodle', 'Cupcake', 'Marshmallow', 'Donut', 'Macaron',
+  'Cookie', 'Peach', 'Mochi', 'Taffy', 'Toast', 'Muffin', 'Taco', 'Dumpling', 'Rice', 'Omelet', 'Naan', 'Pizza',
+  'Boba', 'Latte', 'Lemonade', 'Smoothie', 'Espresso', 'Sushi', 'Acai', 'Panini', 'Salad', 'Dessert', 'Churro'
+];
 
-// shuffle for array
-function shuffle(array) {
-  const arr = array.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+// // shuffle for array
+// function shuffle(array) {
+//   const arr = array.slice();
+//   for (let i = arr.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [arr[i], arr[j]] = [arr[j], arr[i]];
+//   }
+//   return arr;
+// }
+
+// DescriptionWithClamp component
+function DescriptionWithClamp({ description }) {
+  const [showFull, setShowFull] = useState(false);
+  const [isClamped, setIsClamped] = useState(true);
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    function checkClamp() {
+      if (ref.current) {
+        setIsClamped(ref.current.scrollHeight > ref.current.clientHeight);
+      }
+    }
+    checkClamp();
+    window.addEventListener('resize', checkClamp);
+    return () => window.removeEventListener('resize', checkClamp);
+  }, [description, showFull]);
+
+  useEffect(() => {
+    console.log("isClamped", isClamped);
+  }, [isClamped]);
+    useEffect(() => {
+    console.log("showFull", showFull);
+  }, [showFull]);
+
+  if (!description) {
+    return <p className="italic text-m mb-6">No description available for this club.</p>;
   }
-  return arr;
+  return (
+    <div>
+      <p
+        ref={ref}
+        className={`italic text-m transition-all duration-200 ${!showFull ? 'line-clamp-7' : ''}`}
+      >
+      {description}
+      </p>
+      {(!showFull && isClamped) && (
+        <>
+          {' '}
+          <button
+            className="text-blue-600 italic underline text-sm inline ml-1"
+            type="button"
+            onClick={() => setShowFull(true)}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          >
+            ...see more
+          </button>
+        </>
+      )}
+      {(showFull) && (
+        <>
+          {' '}
+          <button
+            className="text-blue-600 italic underline text-sm inline ml-1"
+            type="button"
+            onClick={() => setShowFull(false)}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          >
+            ...see less
+          </button>
+        </>
+      )}
+    </div>
+  );
 }
 
 export default function ClubDetailsPage() {
@@ -32,13 +105,9 @@ export default function ClubDetailsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const randomAnonName = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
-  const shuffledNames = useMemo(
-    () => shuffle(anonymousNames),
-    [reviews.length] // re-shuffle if the number of reviews changes
-  );
-
-
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const descriptionRef = useRef(null);
+  const [isClamped, setIsClamped] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -112,6 +181,21 @@ export default function ClubDetailsPage() {
 
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
+  const attemptReview = async (href) => {
+    // check if user is logged in
+    // if not, redirect to sign in page
+    // else, redirect to review page with params
+    const { data: { session} } = await supabase.auth.getSession();
+  
+    if (session) {
+      console.log("GO TO REVIEWS", session);
+      window.location.href = href;
+    } else {
+      console.log("GO TO SIGN IN", session);
+      window.location.href = "/sign-in"; 
+    }
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
 
@@ -127,7 +211,7 @@ export default function ClubDetailsPage() {
           <div className="flex flex-wrap gap-2 mb-6">
             <TagButton 
               label={club.Category1Name} 
-              isSelected={false} 
+              isSelected={true} 
               onClick={() => {
                 const encoded = encodeURIComponent(club.Category1Name);
                 router.push(`/clubs?categories=${encoded}`);
@@ -135,7 +219,7 @@ export default function ClubDetailsPage() {
             />
             <TagButton 
               label={club.Category2Name} 
-              isSelected={false} 
+              isSelected={true} 
               onClick={() => {
                 const encoded = encodeURIComponent(club.Category2Name);
                 router.push(`/clubs?categories=${encoded}`);
@@ -143,9 +227,32 @@ export default function ClubDetailsPage() {
             />
           </div>
 
-          <p className="font-style: italic text-m mb-6">
-            {club.OrganizationDescription || 'No description available for this club.'}
-          </p>
+          {/* Description with clamp/expand */}
+          <DescriptionWithClamp description={club.OrganizationDescription} />
+
+          {/* // Contact Information */}
+          <div className="mt-6 mb-6">
+            {club.OrganizationEmail && (
+              <p className="mt-1">
+                Email:{" "}
+                <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
+                  {club.OrganizationEmail}
+                </a>
+              </p>
+            )}
+            {club.OrganizationWebSite && (
+              <p className="mt-1">
+                Website:{" "}
+                <a href={club.OrganizationWebSite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  {club.OrganizationWebSite}
+                </a>
+              </p>
+            )}
+          </div>
 
           {/* Overall Rating */}
           <div className="flex items-center">
@@ -239,32 +346,7 @@ export default function ClubDetailsPage() {
             </div>
           )}
         </div>
-
-        {/* 
-          // Contact Information
-          <div className="mb-6">
-            {club.OrganizationEmail && (
-              <p className="mt-1">
-                Email:{" "}
-                <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
-                  {club.OrganizationEmail}
-                </a>
-              </p>
-            )}
-            {club.OrganizationWebSite && (
-              <p className="mt-1">
-                Website:{" "}
-                <a href={club.OrganizationWebSite}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  {club.OrganizationWebSite}
-                </a>
-              </p>
-            )}
-          </div>
-          */}
+         
       </div>
 
       {club.SocialMediaLink && (
@@ -279,12 +361,14 @@ export default function ClubDetailsPage() {
       <div>
         <h2 className="text-4xl font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
         <p className="mb-6">Have something to say? Share your experience...</p>
-        <Link
-          href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
+        {/* 'Leave a Review'  button automatically redirects to sign in page if not signed in, */}
+        {/* instead of flashing Reviews page first */}
+        <button
+          onClick={() => attemptReview(`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`)}
           className="border inline-block px-6 py-2 bg-black rounded-lg text-white mb-12"
-        >
+          >
           Leave a Review
-        </Link>
+        </button>
 
         {/* Reviews List */}
         {reviews.length === 0 ? (
@@ -302,7 +386,7 @@ export default function ClubDetailsPage() {
               >
                 <div className="flex justify-between mb-2">
                   <h3 className="text-2xl font-bold">
-                    {`Anonymous ${shuffledNames[index % shuffledNames.length]}`}
+                    {`Anonymous ${anonymousNames[Math.floor(Math.random() * anonymousNames.length)]}`}
                   </h3>
                   <div className="font-bold text-[#666dbc]">
                     Reviewed on {formatDate(review.created_at)}
