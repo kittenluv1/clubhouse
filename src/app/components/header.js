@@ -92,7 +92,7 @@ function Header() {
           {isAdmin && (
             <button
               onClick={() => router.push("/admin")}
-              className="p-3 self-center text-nowrap flex items-center gap-2"
+              className="p-3 self-center text-nowrap flex items-center gap-3"
             >
               Admin
             </button>
