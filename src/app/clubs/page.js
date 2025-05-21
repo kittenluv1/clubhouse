@@ -103,13 +103,13 @@ function AllClubsPage() {
           <Filter initialSelectedTags={initialSelectedTags} show={filterParam}/>
 
           {/* Sort selector with more space and no text wrapping */}
-          <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
-            <label className="font-medium text-black">Sort by:</label>
+          <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2 cursor-pointer">
+            <label className="font-medium text-black cursor-pointer">Sort by:</label>
               <select
                 id="sort"
                 value={sortType}
                 onChange={handleSortChange}
-                className="text-black font-medium"
+                className="text-black font-medium cursor-pointer"
               >
               <option value="rating">Highest Rated</option>
               <option value="reviews">Most Reviewed</option>
