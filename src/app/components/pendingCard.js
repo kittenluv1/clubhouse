@@ -13,14 +13,9 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
                 <span className="text-yellow-400">★</span>
               </label>
             </div>
-
-            <div className="flex flex-row gap-[4px]">
-              <label>{review.membership_start_quarter}</label>
-              <label>{review.membership_start_year}</label>
-              {" - "}
-              <label>{review.membership_end_quarter}</label>
-              <label>{review.membership_end_year}</label>
-            </div>
+            <label className="font-[var(--font-dm-sans)] text-black">
+              {review.user_email}
+            </label>
           </div>
         </div>
         <div className="flex flex-row items-start gap-[8px]">
@@ -45,6 +40,16 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
           <label className="font-[var(--font-dm-sans)] text-black">
             {review.club_name}
           </label>
+        </div>
+        <div className="flex flex-row gap-[4px]">
+          <label className="font-bold">Duration:</label>
+          <div className="flex flex-row gap-[4px]">
+            <label>{review.membership_start_quarter}</label>
+            <label>{review.membership_start_year}</label>
+            {" - "}
+            <label>{review.membership_end_quarter}</label>
+            <label>{review.membership_end_year}</label>
+          </div>
         </div>
         <div className="grid grid-cols-2">
           <div className="flex flex-col space-y-[4px]">
