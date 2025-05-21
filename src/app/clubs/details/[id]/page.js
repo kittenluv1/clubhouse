@@ -125,6 +125,22 @@ export default function ClubDetailsPage() {
 
           {/* Categories/Tags */}
           <div className="flex flex-wrap gap-2 mb-6">
+            <TagButton 
+              label={club.Category1Name} 
+              isSelected={false} 
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category1Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }} 
+            />
+            <TagButton 
+              label={club.Category2Name} 
+              isSelected={false} 
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category2Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }} 
+            />
             {club.Category1Name && (
               <span className="border-1 px-4 py-1 bg-gray-200 rounded-full text-sm"
                 style={{ backgroundColor: '#acc9fa' }}
