@@ -76,8 +76,8 @@ function Home() {
           className="object-cover"
           />
         </h2>
-        <div className="flex flex-col space-y-2 w-5/8 max-w-2xl items-center">
-          <SearchBar ref={searchRef} width="w-3/4" height="h-13"/>
+        <div className="flex flex-col space-y-2 w-6/8 max-w-3xl items-center">
+          <SearchBar ref={searchRef} width="w-full" height="h-13"/>
           <div className="flex flex-wrap gap-3 justify-center mt-4 px-20 p-10">
             {Object.entries(GROUP_CATEGORY_MAP).map(([group, categoryList]) => (
               <button
@@ -91,6 +91,12 @@ function Home() {
                 {group}
               </button>
             ))}
+            <button
+              onClick={() => router.push('/clubs?showCategories')}
+              className="bg-black text-white rounded-full px-6 py-3 ml-4 text-nowrap border-1 border-black
+                hover:bg-white transition hover:text-black"
+            >More Categories &gt;
+            </button>
           </div>
         </div>
       </div>

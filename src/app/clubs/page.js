@@ -13,6 +13,7 @@ function AllClubsPage() {
   const nameParam = searchParams.get("name") ?? null;
   const singleCategoryParam = searchParams.get("category") ?? null;
   const multiCategoriesParam = searchParams.get("categories") ?? null;
+  const filterParam = searchParams.has("showCategories");
   // const sortType = searchParams.get("sort") ?? "rating";
 
   const [clubs, setClubs] = useState([]);
@@ -95,15 +96,15 @@ function AllClubsPage() {
       <div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"/>
       <div className="absolute top-1/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] via-[#F1FFE8] to-[#FFFFFF] -z-10" />
       <div className="absolute top-2/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] to-[#DFF1F1] -z-10" />
-      <div className="p-[80px] space-y-6">
+      <div className="p-20 pt-15 space-y-6">
         {/* Improved layout with better spacing */}
         <div className="flex justify-between items-center mb-6">
           {/* Use the enhanced self-contained Filter component */}
-          <Filter initialSelectedTags={initialSelectedTags}/>
+          <Filter initialSelectedTags={initialSelectedTags} show={filterParam}/>
 
           {/* Sort selector with more space and no text wrapping */}
           <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
-            <label className=" font-medium text-black">Sort by:</label>
+            <label className="font-medium text-black">Sort by:</label>
               <select
                 id="sort"
                 value={sortType}
@@ -117,7 +118,7 @@ function AllClubsPage() {
           </div>
         </div>
 
-        <h1 className="font-[var(--font-inter)] text-[16px] font-normal mb-4">
+        <h1 className="text-[16px] font-normal mb-4">
           {title}
         </h1>
 
