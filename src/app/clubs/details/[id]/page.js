@@ -260,12 +260,8 @@ export default function ClubDetailsPage() {
       <div>
         <h2 className="text-3xl font-bold mb-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
         <p className="mb-6">Have something to say? Share your experience...</p>
-        <Link 
-          href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
-          className="inline-block px-6 py-2 bg-gray-200 rounded-full text-gray-800 mb-12"
-        >
-          Leave a Review
-        </Link>
+        {/* 'Leave a Review'  button automatically redirects to sign in page if not signed in, */}
+        {/* instead of flashing Reviews page first */}
         <button
           onClick={() => attemptReview(`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`)}
           className="inline-block px-6 py-2 bg-gray-200 rounded-full text-gray-800 mb-12"
