@@ -75,7 +75,7 @@ export default function ClubPage() {
   const categories = getCategories(club);
 
   return (
-    <div className="bg-gray-100 rounded-x1 p-6 m-6 flex-col rounded m-10">
+    <div className="bg-gray-100 rounded-x1 p-6 flex-col rounded m-10">
       <Link
         href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
         className="block"
