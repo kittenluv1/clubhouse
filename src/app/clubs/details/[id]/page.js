@@ -141,20 +141,6 @@ export default function ClubDetailsPage() {
                 router.push(`/clubs?categories=${encoded}`);
               }} 
             />
-            {club.Category1Name && (
-              <span className="border-1 px-4 py-1 bg-gray-200 rounded-full text-sm"
-                style={{ backgroundColor: '#acc9fa' }}
-              >
-                {club.Category1Name}
-              </span>
-            )}
-            {club.Category2Name && (
-              <span className="border-1 px-4 py-1 bg-gray-200 rounded-full text-sm"
-                style={{ backgroundColor: '#acc9fa' }}
-              >
-                {club.Category2Name}
-              </span>
-            )}
           </div>
 
           <p className="font-style: italic text-m mb-6">
