@@ -120,7 +120,7 @@ return (
       {/* Filter Button */}
         <button
           ref={buttonRef}
-          className="flex-shrink-0 bg-[#F7FCFF] text-black border border-[#A2A2A2] font-bold px-4 py-2 rounded-full whitespace-nowrap"
+          className="flex-shrink-0 bg-[#FFF7D6] text-black border border-black rounded-full font-bold px-4 py-2 whitespace-nowrap"
           onClick={toggleFilter}
         >
           Search by Category
