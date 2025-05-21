@@ -291,7 +291,7 @@ export default function ReviewPage() {
     };
 
     return (
-        <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-green-50 p-4 md:p-12">
+        <div className="w-full p-4 md:p-12">
             <div className="max-w-7xl mx-auto font-dm-sans">
                 <div className="text-6xl font-bold mt-18 mb-18">Review a Club</div>
                 <div className="mb-16 max-w-6xl">

@@ -29,7 +29,7 @@ function Header() {
 
   return (
 	<>
-		<div className="grid grid-cols-18 items-center w-full gap-4 pb-3 pt-8 bg-[#E0ECFD]">
+		<div className="grid grid-cols-18 items-center w-full gap-4 pb-3 pt-8 bg-[#DFEBFF]">
 			<div className="col-span-4 flex justify-center">
 				{pathname !== "/" &&
 					<button
