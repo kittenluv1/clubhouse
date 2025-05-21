@@ -281,7 +281,7 @@ export default function ReviewPage() {
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
-                        className="text-4xl focus:outline-none"
+                        className="text-6xl focus:outline-none"
                     >
                         {star <= (rating || 0) ? "★" : "☆"}
                     </button>
