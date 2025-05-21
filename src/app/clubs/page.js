@@ -101,14 +101,14 @@ function AllClubsPage() {
       {/* <div className="absolute top-0 left-0 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF] -z-10"/>
       <div className="absolute top-1/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] via-[#F1FFE8] to-[#FFFFFF] -z-10" />
       <div className="absolute top-2/3 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] to-[#DFF1F1] -z-10" /> */}
-      <div className="p-20 pt-15 space-y-6">
+      <div className="p-20 pt-15 space-y-6 flex flex-col">
         {/* Improved layout with better spacing */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-start mb-6">
           {/* Use the enhanced self-contained Filter component */}
           <Filter initialSelectedTags={initialSelectedTags} show={filterParam}/>
 
           {/* Sort selector with more space and no text wrapping */}
-          <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2 cursor-pointer">
+          <div className=" flex-shrink-0 flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2 cursor-pointer">
             <label className="font-medium text-black cursor-pointer">Sort by:</label>
               <select
                 id="sort"

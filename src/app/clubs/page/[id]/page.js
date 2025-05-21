@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorScreen from "@/app/components/ErrorScreen";
-import TagButton from "@/app/components/tagButton";
 
 function RatingBar({ label, value }) {
     return (
