@@ -91,6 +91,21 @@ export default function ClubDetailsPage() {
   
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
+  const attemptReview = async (href) => {
+    // check if user is logged in
+    // if not, redirect to sign in page
+    // else, redirect to review page with params
+    const { data: { session} } = await supabase.auth.getSession();
+  
+    if (session) {
+      console.log("GO TO REVIEWS", session);
+      window.location.href = href;
+    } else {
+      console.log("GO TO SIGN IN", session);
+      window.location.href = "/sign-in"; 
+    }
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
 
@@ -251,6 +266,12 @@ export default function ClubDetailsPage() {
         >
           Leave a Review
         </Link>
+        <button
+          onClick={() => attemptReview(`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`)}
+          className="inline-block px-6 py-2 bg-gray-200 rounded-full text-gray-800 mb-12"
+          >
+          Leave a Review
+        </button>
 
         {/* Reviews List */}
         {reviews.length === 0 ? (

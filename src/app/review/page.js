@@ -79,6 +79,7 @@ export default function ReviewPage() {
                 console.log("Current user:", user);
             } else if (error) {
                 console.error('Error getting user:', error);
+                router.push('/sign-in');
             }
         };
         
