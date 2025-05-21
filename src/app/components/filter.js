@@ -4,29 +4,29 @@ import { useRouter } from 'next/navigation';
 import TagButton from './tagButton';
 
 const GROUPED_TAGS = {
-  "🎓 Academic & Pre-Professional": [
+  "Academic & Pre-Professional": [
     "Academic", "Business", "Career Planning", "Dental", "Educational",
     "Engineering", "Honor Societies", "Journals", "Law", "Leadership",
     "Medical", "Pre-Professional", "Technology"
   ],
-  "🌎 Cultural & Identity-Based": [
+  "Cultural & Identity-Based": [
     "Cultural", "African American", "Asian", "Asian Pacific Islander",
     "Latino/Latina", "Ethnic", "International Students", "Out-of-state Students"
   ],
-  "🌈 Community & Advocacy": [
+  "Community & Advocacy": [
     "Community Service", "Social Activism", "Service", "LGBTQI",
     "GSA Affiliated", "Transfer Students", "Faculty/Staff"
   ],
-  "🎭 Arts & Media": [
+  "Arts & Media": [
     "Arts", "Dance", "Film", "Music", "Media", "Theater"
   ],
-  "🧘 Health & Wellness": [
+  "Health & Wellness": [
     "Fitness", "Health and Wellness", "Self Improvement", "Sports", "Martial Arts"
   ],
-  "⛪ Spiritual & Religious": [
+  "Spiritual & Religious": [
     "Religious", "Spiritual"
   ],
-  "🏛️ Campus Life & Social": [
+  "Campus Life & Social": [
     "Greek Life", "Student Government", "Social", "Spirit/Booster", "Recreation"
   ]
 };
