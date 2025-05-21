@@ -67,21 +67,42 @@ export default function ReviewPage() {
     const [success, setSuccess] = useState(false);
     const router = useRouter();
 
-    useEffect(() => {
-        // Get the current authenticated user
-        const getUser = async () => {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            if (user) {
-                setCurrentUser(user);
-                console.log("Current user:", user);
-            } else if (error) {
-                console.error('Error getting user:', error);
-                router.push('/sign-in');
-            }
-        };
-        
-        getUser();
-    }, []);
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        setCurrentUser(user);
+        console.log("Current user:", user);
+      } else {
+        console.error("Error getting user or user not authenticated:", error);
+        window.location.href = "/sign-in";
+      }
+    };
+
+    getUser();
+
+    // subscribe to auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user) {
+          setCurrentUser(session.user);
+          console.log("User changed:", session.user);
+        } else {
+          setCurrentUser(null);
+          window.location.href = "/sign-in";
+        }
+      }
+    );
+
+    // cleanup
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (startQuarter && startYear && endQuarter && endYear) {
