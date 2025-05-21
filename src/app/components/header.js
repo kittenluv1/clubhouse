@@ -37,7 +37,7 @@ function Header() {
 					className={`p-3 self-center text-nowrap flex items-center gap-2`}
 					>
 						<img
-						src={"/Logo Bar 2.png"}
+						src={"/clubhouse-logo-text.svg"}
 						alt="ClubHouse Logo"
 						className="object-cover"
 						width="210"
