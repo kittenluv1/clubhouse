@@ -27,7 +27,7 @@ function shuffle(array) {
 export default function ClubDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
-  
+
   const [club, setClub] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -105,11 +105,11 @@ export default function ClubDetailsPage() {
     if (numRating >= 2.0) return 'bg-yellow-500 text-white';
     return 'bg-red-600 text-white';
   };
-  
+
   if (loading) return (LoadingScreen());
 
   if (error) return <ErrorScreen error={error} />;
-  
+
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
   return (
@@ -125,22 +125,6 @@ export default function ClubDetailsPage() {
 
           {/* Categories/Tags */}
           <div className="flex flex-wrap gap-2 mb-6">
-            <TagButton 
-              label={club.Category1Name} 
-              isSelected={false} 
-              onClick={() => {
-                const encoded = encodeURIComponent(club.Category1Name);
-                router.push(`/clubs?categories=${encoded}`);
-              }} 
-            />
-            <TagButton 
-              label={club.Category2Name} 
-              isSelected={false} 
-              onClick={() => {
-                const encoded = encodeURIComponent(club.Category2Name);
-                router.push(`/clubs?categories=${encoded}`);
-              }} 
-            />
             {club.Category1Name && (
               <span className="border-1 px-4 py-1 bg-gray-200 rounded-full text-sm"
                 style={{ backgroundColor: '#acc9fa' }}
@@ -281,13 +265,13 @@ export default function ClubDetailsPage() {
           */}
       </div>
 
-      {/* {club.SocialMediaLink && (
+      {club.SocialMediaLink && (
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-2">Social Media</h2>
           <div dangerouslySetInnerHTML={{ __html: club.SocialMediaLink }} />
         </div>
       )}
-      */}
+      
 
       {/* Reviews Section */}
       <div>
@@ -295,7 +279,7 @@ export default function ClubDetailsPage() {
         <p className="mb-6">Have something to say? Share your experience...</p>
         <Link
           href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
-          className="border inline-block px-6 py-2 bg-gray-200 rounded-full text-gray-800 mb-12"
+          className="border inline-block px-6 py-2 bg-black rounded-lg text-white mb-12"
         >
           Leave a Review
         </Link>
@@ -310,7 +294,7 @@ export default function ClubDetailsPage() {
             {reviews.map((review, index) => (
               <div
                 key={index}
-                className="bg-gray-50 rounded-lg p-8 border border-[#666dbc]"
+                className="bg-gray-50 rounded-lg p-8 border border-black"
                 style={{ boxShadow: '6px 6px 0px rgba(202,236,200,255)' }}
 
               >
@@ -324,7 +308,10 @@ export default function ClubDetailsPage() {
                 </div>
                 <div className="mb-4 font-semibold">
                   <span className="text-gray-600">
-                    Member from {formatMembership(review)}
+                    Member from{' '}
+                    <span className="text-[#666dbc]">
+                      {formatMembership(review)}
+                    </span>
                   </span>
                 </div>
                 <p className="text-gray-800 mb-2">
