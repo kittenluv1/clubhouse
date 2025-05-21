@@ -28,7 +28,11 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
   const handleSearch = (overrideTerm, byCategory = false) => {
     // Use the overrideTerm if provided, otherwise fall back to the input's value
     const term = (overrideTerm !== undefined ? overrideTerm : inputValue).trim();
-    if (!term) return;
+    // if the search term is empty, redirect to the clubs page
+    if (!term) 
+    {
+      router.push("/clubs");
+    };
     
     // Keep the input in sync
     if (!byCategory) {
