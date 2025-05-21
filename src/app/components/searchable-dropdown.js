@@ -13,7 +13,8 @@ const SearchableDropdown = ({
     tableName = "clubs", 
     nameColumn = "OrganizationName", 
     onSelect = () => {},
-    required = true
+    required = true,
+    placeholderColor = "#000" // Default to black, can be overridden
     }) => {
     const [inputValue, setInputValue] = useState('');
     const [filteredOptions, setFilteredOptions] = useState([]);
@@ -94,11 +95,14 @@ const SearchableDropdown = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="w-full px-3 py-2 bg-white border rounded-full font-dm-sans focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 bg-white border shadow-md rounded-full font-dm-sans focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-custom"
           required={required}
+          style={{
+            '--placeholder-color': placeholderColor
+          }}
         />
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <svg className="h-5 w-5 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="h-5 w-5" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
             <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
         </div>
@@ -118,7 +122,7 @@ const SearchableDropdown = ({
             <li
               key={index}
               onClick={() => handleOptionClick(option)}
-              className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100 text-gray-700"
+              className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-gray-100"
             >
               {option}
             </li>
@@ -127,10 +131,18 @@ const SearchableDropdown = ({
       )}
       
       {isOpen && inputValue && filteredOptions.length === 0 && !isLoading && (
-        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-3 px-3 text-sm text-gray-700">
+        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-3 px-3 text-sm">
           No clubs found matching &quot;{inputValue}&quot;
         </div>
       )}
+
+      {/* Add the CSS for the placeholder color */}
+      <style jsx>{`
+        .placeholder-custom::placeholder {
+          color: var(--placeholder-color) !important;
+          opacity: 1;
+        }
+      `}</style>
     </div>
   );
 };

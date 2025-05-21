@@ -2,6 +2,7 @@ import { Geist, Geist_Mono, Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
 import React from 'react'
 import Header from './components/header'
+import Footer from "./components/footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -38,18 +39,11 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${dmSans.variable} antialiased flex flex-col min-h-screen`}
       >
         <Header />
-        <main className="grow">{children}</main>
-        <footer className="bg-gray-200 h-auto py-15 px-30 mt-20 bg-gradient-to-b from-[#FFFFFF] to-[#DCE8FF] -z-10">
-          <h3 className="text-lg mb-5">Have questions or feedback? Want to collaborate?</h3>
-          <p>We’d love to hear from you!</p>
-          <p>Whether you’re a student with suggestions, a club rep hoping to update your listing, or just curious about how we verify reviews — reach out anytime.</p>
-          <br />
-          <p>Email: clubhouseucla@gmail.com</p>
-          <p>Instagram: INSTAGRAM</p>
-          <p>LinkedIn: LINKEDIN</p>
-          <br />
-          <p>Let’s build a more transparent, connected UCLA community — together.</p>
-        </footer>
+        <main className="min-h-screen relative">
+          <div className="absolute top-0 left-0 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
+          <div className="absolute bottom-0 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF] -z-10"/>
+          {children}</main>
+        <Footer />
       </body>
     </html>
   );

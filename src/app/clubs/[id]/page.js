@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import LoadingScreen from "@/app/components/LoadingScreen";
+import ErrorScreen from "@/app/components/ErrorScreen";
+
 import { AiFillStar } from 'react-icons/ai';
 
 function getCategories(club) {
@@ -64,17 +67,11 @@ export default function ClubPage() {
       });
   }, [id]);
 
-  if (loading) return <p className="p-4">Loading...</p>;
-  if (error)
-    return (
-      <div className="p-4">
-        <p className="text-red-500">{error}</p>
-        <Link href="/clubs" className="text-blue-500 hover:underline mt-4 inline-block">
-          View all clubs
-        </Link>
-      </div>
-    );
-  if (!club) return <p className="p-4">No club found with the name: {id}</p>;
+  if (loading) return (LoadingScreen());
+
+  if (error) return <ErrorScreen error={error} />;
+
+  if (!club) return (<p className="p-4">No club found with the name: {id}</p>);
 
   const categories = getCategories(club);
 

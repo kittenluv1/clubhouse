@@ -1,12 +1,14 @@
 import React from 'react'
 import { supabase } from '../lib/db';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Button from './button';
 
 function LoginButton() {
     // login button that changes based on whether the user is logged in or not
     // if logged in, show sign out button, else show sign in button
     const [isLoggedin, setLoggedin] = useState(false);
+    const router = useRouter();
   
     useEffect(() => {
       // Listen for auth state changes (e.g., sign in or sign out)
@@ -37,14 +39,22 @@ function LoginButton() {
       } 
 
   return (
-    <>
-      {isLoggedin ? (
-          <Button value="Sign Out" onClick={handleSignOut} border="true"></Button>
+    <div className="w-23">
+        {isLoggedin ? (
+          <button onClick={handleSignOut} 
+          className={"bg-[#FFA1CD] rounded-full w-full -3 px-4 py-2 self-center text-nowrap flex justify-center border-1 border-black hover:bg-black hover:text-white"}
+          >
+            Sign Out
+          </button>
         ) : (
-          <Button value="Sign In" to="/sign-in" border="true"></Button>
+          <button onClick={() => (router.push("/sign-in"))} 
+          className={"bg-[#FFA1CD] rounded-full w-full px-4 py-2 self-center text-nowrap flex justify-center border-1 border-black hover:bg-black hover:text-white"}
+          >
+            Sign in
+          </button>
         )
-    }
-    </>
+        }
+    </div>
 
   )
 }

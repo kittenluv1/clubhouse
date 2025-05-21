@@ -28,29 +28,40 @@ function Header() {
   }
 
   return (
-	<div className="grid grid-cols-13 w-full gap-4 p-3 bg-[#E0ECFD] border-b-2 border-[#272727]">
-		<div className="col-span-2 col-start-2 flex justify-center mt-8 mb-4">
-			<button
-			onClick={() => (router.push("/"))}
-			className={`p-3 self-center text-nowrap flex items-center gap-2`}
-			>
-				<img
-				src={"/ClubHouse Logo.png"}
-				alt="ClubHouse Logo"
-				className="object-cover"
-				/>
-			</button>
+	<>
+		<div className="grid grid-cols-18 items-center w-full gap-4 pb-3 pt-8 bg-[#DFEBFF]">
+			<div className="col-span-4 flex justify-center">
+				{pathname !== "/" &&
+					<button
+					onClick={() => (router.push("/"))}
+					className={`p-3 self-center text-nowrap flex items-center gap-2`}
+					>
+						<img
+						src={"/Logo Bar 2.png"}
+						alt="ClubHouse Logo"
+						className="object-cover"
+						width="210"
+						/>
+					</button>
+				}
+			</div>
+			<div className="col-span-9">
+				{pathname !== "/" && <SearchBar width="w-full" height="h-13"/>}
+			</div>
+			<div className="col-span-2 flex justify-center">
+				<button
+				onClick={attemptReview}
+				className={`p-3 self-center text-nowrap flex items-center gap-2`}
+				>
+					Add a Review
+				</button>
+			</div>
+			<div className="col-span-2 flex justify-center">
+				<LoginButton/>
+			</div>
 		</div>
-		<div className="col-span-6 mt-8 mb-4">
-			{pathname !== "/" && <SearchBar width="w-full" height="h-13"/>}
-		</div>
-		<div className="col-span-2 flex justify-center mt-8 mb-4">
-			<Button value="Review a Club" onClick={attemptReview}/>
-		</div>
-		<div className="flex justify-center mt-8 mb-4">
-			<LoginButton/>
-		</div>
-	</div>
+		{/* <>{pathname !== "/" && <div className="border"/>}</> */}
+	</>
   )
 }
 

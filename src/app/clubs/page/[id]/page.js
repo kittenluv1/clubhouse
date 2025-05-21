@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import LoadingScreen from "@/app/components/LoadingScreen";
+import ErrorScreen from "@/app/components/ErrorScreen";
+import TagButton from "@/app/components/tagButton";
 
 function RatingBar({ label, value }) {
     return (
@@ -52,7 +55,9 @@ export default function ClubPage() {
             });
     }, [id]);
 
-    if (loading) return <p className="p-4">Loading...</p>;
+    if (loading) return (LoadingScreen());
+
+    if (error) return <ErrorScreen error={error} />;
 
     return (
         <div
@@ -78,7 +83,7 @@ export default function ClubPage() {
                         </p>
                     )}
 
-                    {/* FILTER TAGS */}
+                    {/* FILTER TAGS */} 
                     <div className="mt-4 flex gap-2">
                         <span className="bg-transparent border border-black text-gray-700 rounded-full px-4 py-2 text-l font-medium">
                             {club.Category1Name}

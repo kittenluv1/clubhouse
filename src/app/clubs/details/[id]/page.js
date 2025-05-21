@@ -2,9 +2,13 @@
 
 import React from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/app/lib/db";
+
+import ErrorScreen from "@/app/components/ErrorScreen";
+import LoadingScreen from "@/app/components/LoadingScreen";
+import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from 'react-icons/ai'; import { useMemo } from "react";
 
 const anonymousNames = ['BaddieAtBplate', 'SunsetRecLover', 'PicnicAtJanns', 'kittenluv1', 'ILovePeony', 'DeneveDining',
@@ -22,7 +26,8 @@ function shuffle(array) {
 
 export default function ClubDetailsPage() {
   const { id } = useParams();
-
+  const router = useRouter();
+  
   const [club, setClub] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -100,18 +105,11 @@ export default function ClubDetailsPage() {
     if (numRating >= 2.0) return 'bg-yellow-500 text-white';
     return 'bg-red-600 text-white';
   };
+  
+  if (loading) return (LoadingScreen());
 
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
-
-  if (error) return (
-    <div className="p-4">
-      <p className="text-red-500">{error}</p>
-      <Link href="/clubs" className="text-blue-500 hover:underline mt-4 inline-block">
-        View all clubs
-      </Link>
-    </div>
-  );
-
+  if (error) return <ErrorScreen error={error} />;
+  
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
   return (
@@ -127,6 +125,22 @@ export default function ClubDetailsPage() {
 
           {/* Categories/Tags */}
           <div className="flex flex-wrap gap-2 mb-6">
+            <TagButton 
+              label={club.Category1Name} 
+              isSelected={false} 
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category1Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }} 
+            />
+            <TagButton 
+              label={club.Category2Name} 
+              isSelected={false} 
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category2Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }} 
+            />
             {club.Category1Name && (
               <span className="border-1 px-4 py-1 bg-gray-200 rounded-full text-sm"
                 style={{ backgroundColor: '#acc9fa' }}
