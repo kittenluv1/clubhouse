@@ -3,7 +3,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { supabase } from "@/app/lib/db";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
@@ -11,18 +10,27 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from 'react-icons/ai'; import { useMemo } from "react";
 
-const anonymousNames = ['BaddieAtBplate', 'SunsetRecLover', 'PicnicAtJanns', 'kittenluv1', 'ILovePeony', 'DeneveDining',
-  'BigYatesFan', 'WhoAtCanyonPoint'];
+const anonymousNames = [
+  'Panda', 'Koala', 'Otter', 'Bunny', 'Duckling', 'Squirrel', 'Hedgehog', 'Fox', 'Penguin', 'Dolphin',
+  'Shark', 'Spider', 'Unicorn', 'Lemur', 'Platypus', 'Axolotl', 'Capybara', 'Narwhal', 'Sloth', 'SugarGlider',
+  'Newt', 'Hummingbird', 'Firefly', 'Mermaid', 'Saola', 'Quokka', 'Pangolin', 'Kitten', 'Student', 'Pencil',
+  'Crayon', 'Stapler', 'Ruler', 'Bruin', 'Fountain', 'Doodle', 'Notebook', 'Highlighter', 'Backpack',
+  'JoeBruin', 'Scribble', 'Origami', 'Flower', 'Acorn', 'Pebble', 'Dewdrop', 'Cloud', 'Sunbeam', 'Raindrop',
+  'Pinecone', 'Nymph', 'Faerie', 'Jackalope', 'Fern', 'Rose', 'Ivy', 'Clover', 'Twilight', 'Frost', 'Sprite',
+  'Seashell', 'Moss', 'Matcha', 'Sandwich', 'Bagel', 'Noodle', 'Cupcake', 'Marshmallow', 'Donut', 'Macaron',
+  'Cookie', 'Peach', 'Mochi', 'Taffy', 'Toast', 'Muffin', 'Taco', 'Dumpling', 'Rice', 'Omelet', 'Naan', 'Pizza',
+  'Boba', 'Latte', 'Lemonade', 'Smoothie', 'Espresso', 'Sushi', 'Acai', 'Panini', 'Salad', 'Dessert', 'Churro'
+];
 
-// shuffle for array
-function shuffle(array) {
-  const arr = array.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
+// // shuffle for array
+// function shuffle(array) {
+//   const arr = array.slice();
+//   for (let i = arr.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [arr[i], arr[j]] = [arr[j], arr[i]];
+//   }
+//   return arr;
+// }
 
 export default function ClubDetailsPage() {
   const { id } = useParams();
@@ -33,10 +41,10 @@ export default function ClubDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const randomAnonName = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
-  const shuffledNames = useMemo(
-    () => shuffle(anonymousNames),
-    [reviews.length] // re-shuffle if the number of reviews changes
-  );
+  // const shuffledNames = useMemo(
+  //   () => shuffle(anonymousNames),
+  //   [reviews.length] // re-shuffle if the number of reviews changes
+  // );
 
 
 
@@ -162,6 +170,30 @@ export default function ClubDetailsPage() {
             {club.OrganizationDescription || 'No description available for this club.'}
           </p>
 
+          {/* // Contact Information */}
+          <div className="mb-6">
+            {club.OrganizationEmail && (
+              <p className="mt-1">
+                Email:{" "}
+                <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
+                  {club.OrganizationEmail}
+                </a>
+              </p>
+            )}
+            {club.OrganizationWebSite && (
+              <p className="mt-1">
+                Website:{" "}
+                <a href={club.OrganizationWebSite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  {club.OrganizationWebSite}
+                </a>
+              </p>
+            )}
+          </div>
+
           {/* Overall Rating */}
           <div className="flex items-center">
             <span className="font-semibold text-2xl">
@@ -254,32 +286,7 @@ export default function ClubDetailsPage() {
             </div>
           )}
         </div>
-
-        {/* 
-          // Contact Information
-          <div className="mb-6">
-            {club.OrganizationEmail && (
-              <p className="mt-1">
-                Email:{" "}
-                <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
-                  {club.OrganizationEmail}
-                </a>
-              </p>
-            )}
-            {club.OrganizationWebSite && (
-              <p className="mt-1">
-                Website:{" "}
-                <a href={club.OrganizationWebSite}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  {club.OrganizationWebSite}
-                </a>
-              </p>
-            )}
-          </div>
-          */}
+         
       </div>
 
       {club.SocialMediaLink && (
@@ -319,7 +326,7 @@ export default function ClubDetailsPage() {
               >
                 <div className="flex justify-between mb-2">
                   <h3 className="text-2xl font-bold">
-                    {`Anonymous ${shuffledNames[index % shuffledNames.length]}`}
+                    {`Anonymous ${anonymousNames[Math.floor(Math.random() * anonymousNames.length)]}`}
                   </h3>
                   <div className="font-bold text-[#666dbc]">
                     Reviewed on {formatDate(review.created_at)}
