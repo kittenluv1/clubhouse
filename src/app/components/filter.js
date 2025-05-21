@@ -31,8 +31,8 @@ const GROUPED_TAGS = {
   ]
 };
 
-export default function Filter({ initialSelectedTags = [] }) {
-const [showFilter, setShowFilter] = useState(false);
+export default function Filter({ initialSelectedTags = [], show=false }) {
+const [showFilter, setShowFilter] = useState(show);
 const [selectedTags, setSelectedTags] = useState(initialSelectedTags);
 const [tempSelectedTags, setTempSelectedTags] = useState(initialSelectedTags);
 const filterRef = useRef(null);
@@ -115,7 +115,7 @@ const handleRemoveTag = (tagToRemove) => {
 };
 
 return (
-  <div className="relative max-w-[60%]">
+  <div className="relative max-w-[80%]">
     <div className="flex items-start gap-2">
       {/* Filter Button */}
         <button
@@ -158,22 +158,10 @@ return (
     {showFilter && (
       <div 
         ref={filterRef} 
-        className="absolute top-12 left-0 bg-white rounded-xl shadow-lg z-50 w-[300px] sm:w-[500px] max-w-3xl p-6"
+        className="absolute top-12 left-0 bg-white rounded-xl shadow-lg z-50 w-lg lg:w-3xl p-6"
       >
         <div className="p-4 max-h-[50vh] overflow-y-auto">
-          {/* Control Buttons */}
-          {/* <div className="flex justify-between mb-2">
-              <button className="bg-white text-md font-bold rounded-full px-4 py-2 self-center text-nowrap border border-black" onClick={handleClose}>
-                Cancel
-              </button>
-              <button
-                className="bg-[#FFB0D8] text-md border border-black px-4 py-2 rounded-full font-bold "
-                onClick={handleSearch}
-              >
-                Search
-              </button>
-          </div> */}
-          
+
           {/* Selected Tags */}
           {tempSelectedTags.length > 0 && (
             <div className="mb-4">
@@ -182,7 +170,7 @@ return (
                   {tempSelectedTags.map((tag) => (
                     <div
                         key={tag}
-                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm text-black"
+                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm"
                     >
                       <span>{tag}</span>
                       <button

@@ -6,6 +6,7 @@ import { QuarterYearDropdown } from '../components/dropdowns';
 import CustomSlider from '../components/custom-slider';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -290,13 +291,16 @@ export default function ReviewPage() {
     };
 
     return (
-        <div className="w-full min-h-screen bg-gradient-to-b from-blue-50 to-green-50 p-4 md:p-12">
+        <div className="w-full p-4 md:p-12">
             <div className="max-w-7xl mx-auto font-dm-sans">
                 <div className="text-6xl font-bold mt-18 mb-18">Review a Club</div>
-                <p className="text mb-16 max-w-6xl">
-                    Your review is completely anonymous, so feel free to be honest! Your insights help other students get a better sense of what the club is really like. 
-                    Be real, respectful, and specific—your voice makes a difference.
-                </p>
+                <div className="mb-16 max-w-6xl">
+                    <p className="mb-8">
+                        Your review is completely anonymous, so feel free to be honest! Your insights help other students get a better sense of what the club is really like. 
+                        Be real, respectful, and specific—your voice makes a difference.
+                    </p>
+                    <p>Review our Community Guidelines for posting reviews <Link href="/community-guidelines" className="underline">here</Link>.</p>
+                </div>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Club Name */}

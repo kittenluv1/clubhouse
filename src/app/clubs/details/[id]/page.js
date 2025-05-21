@@ -2,15 +2,17 @@
 
 import React from "react";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/app/lib/db";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
+import TagButton from "@/app/components/tagButton";
 
 export default function ClubDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
   
   const [club, setClub] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -126,16 +128,22 @@ export default function ClubDetailsPage() {
           
           {/* Categories/Tags */}
           <div className="flex flex-wrap gap-2 mb-6">
-            {club.Category1Name && (
-              <span className="px-4 py-1 bg-gray-200 rounded-full text-sm">
-                {club.Category1Name}
-              </span>
-            )}
-            {club.Category2Name && (
-              <span className="px-4 py-1 bg-gray-200 rounded-full text-sm">
-                {club.Category2Name}
-              </span>
-            )}
+            <TagButton 
+              label={club.Category1Name} 
+              isSelected={false} 
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category1Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }} 
+            />
+            <TagButton 
+              label={club.Category2Name} 
+              isSelected={false} 
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category2Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }} 
+            />
           </div>
         </div>
         
