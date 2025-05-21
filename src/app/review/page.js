@@ -275,6 +275,23 @@ export default function ReviewPage() {
     }
   };
 
+    const StarRating = ({ rating, setRating }) => {
+        return (
+            <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        className="text-6xl focus:outline-none"
+                    >
+                        {star <= (rating || 0) ? "★" : "☆"}
+                    </button>
+                ))}
+            </div>
+        );
+    };
+
   const resetForm = () => {
     setSelectedClub("");
     setClubId(null);
