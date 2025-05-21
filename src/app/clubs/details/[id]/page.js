@@ -145,7 +145,7 @@ export default function ClubDetailsPage() {
           <div className="flex flex-wrap gap-2 mb-6">
             <TagButton 
               label={club.Category1Name} 
-              isSelected={false} 
+              isSelected={true} 
               onClick={() => {
                 const encoded = encodeURIComponent(club.Category1Name);
                 router.push(`/clubs?categories=${encoded}`);
@@ -153,7 +153,7 @@ export default function ClubDetailsPage() {
             />
             <TagButton 
               label={club.Category2Name} 
-              isSelected={false} 
+              isSelected={true} 
               onClick={() => {
                 const encoded = encodeURIComponent(club.Category2Name);
                 router.push(`/clubs?categories=${encoded}`);
