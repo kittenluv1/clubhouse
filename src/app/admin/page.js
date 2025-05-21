@@ -15,13 +15,8 @@ const Page = () => {
   const [numPending, setNumPending] = useState(0);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Check admin access before rendering
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
+    const checkSession = async (session) => {
       const email = session?.user?.email;
       if (email !== "clubhouseucla@gmail.com") {
         window.location.href = "./sign-in";
@@ -30,7 +25,22 @@ const Page = () => {
       }
     };
 
-    checkSession();
+    // Initial check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      checkSession(session);
+    });
+
+    // Subscribe to auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        checkSession(session);
+      }
+    );
+
+    // Cleanup
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const fetchPendingReviews = async () => {
