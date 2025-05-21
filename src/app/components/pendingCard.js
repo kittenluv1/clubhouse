@@ -25,16 +25,16 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
         </div>
         <div className="flex flex-row items-start gap-[8px]">
           <button
-            className="py-[12px] px-[32px] rounded-full font-bold hover:bg-[#B1D49D] bg-[#6E9461]"
+            className="py-[12px] px-[32px] rounded-full font-bold hover:bg-[#000000] border hover:text-white bg-[#B1D49D]"
             onClick={() => handleApprove(review)}
           >
             Approve
           </button>
           <button
-            className="py-[12px] px-[32px]  rounded-full font-bold bg-[#FD81BF] hover:bg-[#FFD8EB]"
+            className="py-[12px] px-[32px]  rounded-full font-bold bg-[#FFA1CD] border hover:text-white hover:bg-[#000000]"
             onClick={() => handleReject(review)}
           >
-            Remove
+            Reject
           </button>
         </div>
       </div>
