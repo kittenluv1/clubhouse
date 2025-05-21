@@ -26,7 +26,7 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
         <div className="flex flex-row items-start gap-[8px]">
           <button
             className="py-[12px] px-[32px] rounded-full font-bold hover:bg-[#B1D49D] bg-[#6E9461]"
-            onClick={() => handleApprove(review.id, review.club_name)}
+            onClick={() => handleApprove(review)}
           >
             Approve
           </button>
