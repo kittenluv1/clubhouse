@@ -45,6 +45,9 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
       // Name search: 
       router.push(`/clubs?name=${encoded}`);
     }
+
+    // close the dropdown
+    setIsOpen(false);
   }
 
   useEffect(() => {

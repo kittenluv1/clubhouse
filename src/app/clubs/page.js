@@ -31,7 +31,7 @@ function AllClubsPage() {
     : [];
 
   useEffect(() => {
-    setLoading(true);
+    // setLoading(true);
     setError(null);
 
     let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
@@ -59,6 +59,11 @@ function AllClubsPage() {
       })
       .finally(() => setLoading(false));
   }, [currPage, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
+
+  // handle page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currPage]);
 
   const handlePreviousPage = () => {
     if (currPage > 1) setCurrPage(p => p - 1);
@@ -109,7 +114,7 @@ function AllClubsPage() {
                 id="sort"
                 value={sortType}
                 onChange={handleSortChange}
-                className="text-black font-medium cursor-pointer"
+                className="text-black font-medium cursor-pointer outline-hidden"
               >
               <option value="rating">Highest Rated</option>
               <option value="reviews">Most Reviewed</option>
