@@ -6,6 +6,7 @@ import { QuarterYearDropdown } from "../components/dropdowns";
 import CustomSlider from "../components/custom-slider";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
