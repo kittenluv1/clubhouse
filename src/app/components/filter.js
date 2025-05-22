@@ -4,35 +4,35 @@ import { useRouter } from 'next/navigation';
 import TagButton from './tagButton';
 
 const GROUPED_TAGS = {
-  "🎓 Academic & Pre-Professional": [
+  "Academic & Pre-Professional": [
     "Academic", "Business", "Career Planning", "Dental", "Educational",
     "Engineering", "Honor Societies", "Journals", "Law", "Leadership",
     "Medical", "Pre-Professional", "Technology"
   ],
-  "🌎 Cultural & Identity-Based": [
+  "Cultural & Identity-Based": [
     "Cultural", "African American", "Asian", "Asian Pacific Islander",
     "Latino/Latina", "Ethnic", "International Students", "Out-of-state Students"
   ],
-  "🌈 Community & Advocacy": [
+  "Community & Advocacy": [
     "Community Service", "Social Activism", "Service", "LGBTQI",
     "GSA Affiliated", "Transfer Students", "Faculty/Staff"
   ],
-  "🎭 Arts & Media": [
+  "Arts & Media": [
     "Arts", "Dance", "Film", "Music", "Media", "Theater"
   ],
-  "🧘 Health & Wellness": [
+  "Health & Wellness": [
     "Fitness", "Health and Wellness", "Self Improvement", "Sports", "Martial Arts"
   ],
-  "⛪ Spiritual & Religious": [
+  "Spiritual & Religious": [
     "Religious", "Spiritual"
   ],
-  "🏛️ Campus Life & Social": [
+  "Campus Life & Social": [
     "Greek Life", "Student Government", "Social", "Spirit/Booster", "Recreation"
   ]
 };
 
-export default function Filter({ initialSelectedTags = [] }) {
-const [showFilter, setShowFilter] = useState(false);
+export default function Filter({ initialSelectedTags = [], show=false }) {
+const [showFilter, setShowFilter] = useState(show);
 const [selectedTags, setSelectedTags] = useState(initialSelectedTags);
 const [tempSelectedTags, setTempSelectedTags] = useState(initialSelectedTags);
 const filterRef = useRef(null);
@@ -115,12 +115,12 @@ const handleRemoveTag = (tagToRemove) => {
 };
 
 return (
-  <div className="relative max-w-[60%]">
+  <div className="relative max-w-[75%]">
     <div className="flex items-start gap-2">
       {/* Filter Button */}
         <button
           ref={buttonRef}
-          className="flex-shrink-0 bg-[#F7FCFF] text-black border border-[#A2A2A2] font-bold px-4 py-2 rounded-full whitespace-nowrap"
+          className="flex-shrink-0 bg-[#FFF7D6] text-black border border-black rounded-full font-bold px-4 py-2 whitespace-nowrap"
           onClick={toggleFilter}
         >
           Search by Category
@@ -158,22 +158,10 @@ return (
     {showFilter && (
       <div 
         ref={filterRef} 
-        className="absolute top-12 left-0 bg-white rounded-xl shadow-lg z-50 w-[300px] sm:w-[500px] max-w-3xl p-6"
+        className="absolute top-12 left-0 bg-white rounded-xl shadow-lg z-50 w-lg lg:w-3xl p-6"
       >
         <div className="p-4 max-h-[50vh] overflow-y-auto">
-          {/* Control Buttons */}
-          {/* <div className="flex justify-between mb-2">
-              <button className="bg-white text-md font-bold rounded-full px-4 py-2 self-center text-nowrap border border-black" onClick={handleClose}>
-                Cancel
-              </button>
-              <button
-                className="bg-[#FFB0D8] text-md border border-black px-4 py-2 rounded-full font-bold "
-                onClick={handleSearch}
-              >
-                Search
-              </button>
-          </div> */}
-          
+
           {/* Selected Tags */}
           {tempSelectedTags.length > 0 && (
             <div className="mb-4">
@@ -182,7 +170,7 @@ return (
                   {tempSelectedTags.map((tag) => (
                     <div
                         key={tag}
-                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm text-black"
+                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm"
                     >
                       <span>{tag}</span>
                       <button

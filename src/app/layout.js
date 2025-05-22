@@ -39,7 +39,10 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${dmSans.variable} antialiased flex flex-col min-h-screen`}
       >
         <Header />
-        <main className="grow">{children}</main>
+        <main className="min-h-screen relative">
+          <div className="absolute top-0 left-0 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
+          <div className="absolute bottom-0 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF] -z-10"/>
+          {children}</main>
         <Footer />
       </body>
     </html>

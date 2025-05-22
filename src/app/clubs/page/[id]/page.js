@@ -82,7 +82,7 @@ export default function ClubPage() {
                         </p>
                     )}
 
-                    {/* FILTER TAGS */}
+                    {/* FILTER TAGS */} 
                     <div className="mt-4 flex gap-2">
                         <span className="bg-transparent border border-black text-gray-700 rounded-full px-4 py-2 text-l font-medium">
                             {club.Category1Name}

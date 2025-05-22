@@ -39,22 +39,22 @@ function LoginButton() {
       } 
 
   return (
-    <>
+    <div className="w-23">
         {isLoggedin ? (
           <button onClick={handleSignOut} 
-          className={"bg-[#F6E18C] rounded-4xl px-3 py-1 self-center text-nowrap flex border-1 border-black hover:bg-black hover:text-white"}
+          className={"bg-[#FFA1CD] rounded-full w-full -3 px-4 py-2 self-center text-nowrap flex justify-center border-1 border-black hover:bg-black hover:text-white"}
           >
             Sign Out
           </button>
         ) : (
           <button onClick={() => (router.push("/sign-in"))} 
-          className={"bg-[#F6E18C] rounded-4xl px-3 py-1 self-center text-nowrap flex border-1 border-black hover:bg-black hover:text-white"}
+          className={"bg-[#FFA1CD] rounded-full w-full px-4 py-2 self-center text-nowrap flex justify-center border-1 border-black hover:bg-black hover:text-white"}
           >
             Sign in
           </button>
         )
         }
-    </>
+    </div>
 
   )
 }

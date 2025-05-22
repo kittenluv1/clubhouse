@@ -13,28 +13,23 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
                 <span className="text-yellow-400">★</span>
               </label>
             </div>
-
-            <div className="flex flex-row gap-[4px]">
-              <label>{review.membership_start_quarter}</label>
-              <label>{review.membership_start_year}</label>
-              {" - "}
-              <label>{review.membership_end_quarter}</label>
-              <label>{review.membership_end_year}</label>
-            </div>
+            <label className="font-[var(--font-dm-sans)] text-black">
+              {review.user_email}
+            </label>
           </div>
         </div>
         <div className="flex flex-row items-start gap-[8px]">
           <button
-            className="py-[12px] px-[32px] rounded-full font-bold hover:bg-[#B1D49D] bg-[#6E9461]"
-            onClick={() => handleApprove(review.id, review.club_name)}
+            className="py-[12px] px-[32px] rounded-full font-bold hover:bg-[#000000] border hover:text-white bg-[#B1D49D]"
+            onClick={() => handleApprove(review)}
           >
             Approve
           </button>
           <button
-            className="py-[12px] px-[32px]  rounded-full font-bold bg-[#FD81BF] hover:bg-[#FFD8EB]"
+            className="py-[12px] px-[32px]  rounded-full font-bold bg-[#FFA1CD] border hover:text-white hover:bg-[#000000]"
             onClick={() => handleReject(review)}
           >
-            Remove
+            Reject
           </button>
         </div>
       </div>
@@ -45,6 +40,16 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
           <label className="font-[var(--font-dm-sans)] text-black">
             {review.club_name}
           </label>
+        </div>
+        <div className="flex flex-row gap-[4px]">
+          <label className="font-bold">Duration:</label>
+          <div className="flex flex-row gap-[4px]">
+            <label>{review.membership_start_quarter}</label>
+            <label>{review.membership_start_year}</label>
+            {" - "}
+            <label>{review.membership_end_quarter}</label>
+            <label>{review.membership_end_year}</label>
+          </div>
         </div>
         <div className="grid grid-cols-2">
           <div className="flex flex-col space-y-[4px]">

@@ -15,13 +15,8 @@ const Page = () => {
   const [numPending, setNumPending] = useState(0);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Check admin access before rendering
   useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
+    const checkSession = async (session) => {
       const email = session?.user?.email;
       if (email !== "clubhouseucla@gmail.com") {
         window.location.href = "./sign-in";
@@ -30,7 +25,22 @@ const Page = () => {
       }
     };
 
-    checkSession();
+    // Initial check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      checkSession(session);
+    });
+
+    // Subscribe to auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        checkSession(session);
+      }
+    );
+
+    // Cleanup
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const fetchPendingReviews = async () => {
@@ -60,13 +70,13 @@ const Page = () => {
     setSortType(e.target.value);
   };
 
-  const handleApprove = async (id, name) => {
+  const handleApprove = async (record) => {
     try {
       // Step 1: Approve the review
       const approveRes = await fetch("/api/pendingReviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reviewID: id, approve: true }),
+        body: JSON.stringify({ reviewID: record.id, approve: true }),
       });
 
       if (!approveRes.ok) {
@@ -80,7 +90,10 @@ const Page = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ club_name: name }),
+          body: JSON.stringify({
+            club_name: record.club_name,
+            user_email: record.user_email,
+          }),
         }
       );
 
@@ -128,8 +141,8 @@ const Page = () => {
             social_community_rating: record.social_community_rating,
             competitiveness_rating: record.competitiveness_rating,
             overall_satisfaction: record.overall_satisfaction,
-            review: record.review_text,
-            // email: review.email,
+            review_text: record.review_text,
+            user_email: record.user_email,
           }),
         }
       );
