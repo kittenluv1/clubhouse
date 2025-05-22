@@ -10,17 +10,29 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from 'react-icons/ai'; import { useMemo } from "react";
 
-const anonymousNames = [
+const nouns = [
   'Panda', 'Koala', 'Otter', 'Bunny', 'Duckling', 'Squirrel', 'Hedgehog', 'Fox', 'Penguin', 'Dolphin',
   'Shark', 'Spider', 'Unicorn', 'Lemur', 'Platypus', 'Axolotl', 'Capybara', 'Narwhal', 'Sloth', 'SugarGlider',
-  'Newt', 'Hummingbird', 'Firefly', 'Mermaid', 'Saola', 'Quokka', 'Pangolin', 'Kitten', 'Student', 'Pencil',
-  'Crayon', 'Stapler', 'Ruler', 'Bruin', 'Fountain', 'Doodle', 'Notebook', 'Highlighter', 'Backpack',
-  'JoeBruin', 'Scribble', 'Origami', 'Flower', 'Acorn', 'Pebble', 'Dewdrop', 'Cloud', 'Sunbeam', 'Raindrop',
+  'Newt', 'Hummingbird', 'Firefly', 'Mermaid', 'Saola', 'Quokka', 'Pangolin', 'Kitten', 'Student', 'Bruin', 'Doodle', 'Notebook', 'Scribble', 'Origami', 
+  'Flower', 'Acorn', 'Pebble', 'Dewdrop', 'Cloud', 'Sunbeam', 'Raindrop', 'Fawn',
   'Pinecone', 'Nymph', 'Faerie', 'Jackalope', 'Fern', 'Rose', 'Ivy', 'Clover', 'Twilight', 'Frost', 'Sprite',
   'Seashell', 'Moss', 'Matcha', 'Sandwich', 'Bagel', 'Noodle', 'Cupcake', 'Marshmallow', 'Donut', 'Macaron',
   'Cookie', 'Peach', 'Mochi', 'Taffy', 'Toast', 'Muffin', 'Taco', 'Dumpling', 'Rice', 'Omelet', 'Naan', 'Pizza',
-  'Boba', 'Latte', 'Lemonade', 'Smoothie', 'Espresso', 'Sushi', 'Acai', 'Panini', 'Salad', 'Dessert', 'Churro'
+  'Boba', 'Latte', 'Lemonade', 'Smoothie', 'Espresso', 'Sushi', 'Açaí', 'Panini', 'Salad', 'Dessert', 'Churro'
 ];
+const verbs = [
+  'Pretty', 'Fast', 'Fluffy', 'Bubbly', 'Sunny', 'Zesty', 'Wiggly', 'Cheerful', 'Silky', 'Jolly', 'Breezy', 'Goofy', 
+  'Fuzzy', 'Squishy', 'Swift', 'Spirited', 'Wobbly', 'Mysterious', 'Anonymous', 'Silly', 'Curious', 'Fancy', 'Magical',
+  'Tiny', 'Cozy', 'Mellow', 'Dreamy', 'Gentle', 'Kind', 'Quiet', 'Wandering', 'Thoughtful', 'Shy', 'Bashful', 'Whispering',
+  'Nimble', 'Luminous', 'Daring', 'Radiant', 'Hyper', 'Solitary', 'Untamed', 'Obscure', 'Invisible', 'Subtle', 
+  'Abstract', 'Private', 'Creative', 'Adventurous', 'Brave', 'Noble', 'Clever', 'Witty', 'Earnest', 'Playful', 
+  'Humble', 'Wise', 'Peaceful', 'Charming', 'Serene'
+]
+const anonymousName = () => {
+  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+  const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
+  return `@${randomVerb}${randomNoun}`;
+}
 
 // // shuffle for array
 // function shuffle(array) {
@@ -386,7 +398,7 @@ export default function ClubDetailsPage() {
               >
                 <div className="flex justify-between mb-2">
                   <h3 className="text-2xl font-bold">
-                    {`Anonymous ${anonymousNames[Math.floor(Math.random() * anonymousNames.length)]}`}
+                    {anonymousName()}
                   </h3>
                   <div className="font-bold text-[#666dbc]">
                     Reviewed on {formatDate(review.created_at)}

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function ClubTags({ category }) {
   return (
-    <span className="font-medium text-[16px] text-black border border-black bg-[#ACC9FA] px-[16px] py-[8px] rounded-full">
+    <span className="font-medium text-[16px] text-black opacity-80 bg-gray-200 px-[16px] py-[8px] rounded-full">
       {category}
     </span>
   );
