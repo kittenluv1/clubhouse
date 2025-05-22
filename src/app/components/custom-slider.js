@@ -37,7 +37,7 @@ const CustomSlider = ({
         
         {/* Filled portion */}
         <div 
-          className="absolute top-1/2 left-0 h-3 bg-lime-500 rounded-full transform -translate-y-1/2" 
+          className="absolute top-1/2 left-0 h-3 bg-[#74C476] rounded-full transform -translate-y-1/2" 
           style={{ width: `${calculateFillPercentage()}%` }}
         ></div>
         
