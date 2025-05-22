@@ -29,18 +29,6 @@ function Home() {
     setRandomCategories(getRandomItems(CATEGORIES, 10));
   }, [])
 
-  const handleSearchClick = () => {
-    if (searchRef.current) {
-      searchRef.current.triggerSearch();
-    }
-  };
-
-  const handleCategoryClick = (byCategory) => {
-    if (searchRef.current) {
-      searchRef.current.triggerSearch(byCategory, true);
-    }
-  }
-
   // useEffect(() => {
   //   async function loadCategories() {
   //     try {
