@@ -58,7 +58,7 @@ function Header() {
       {pathname !== "/" ? (
         <button onClick={() => router.push("/")} className="flex items-center">
           <img
-            src="/Logo Bar 2.png"
+            src="/clubhouse-logo-text.svg"
             alt="ClubHouse Logo"
             className="object-cover"
             width="210"
