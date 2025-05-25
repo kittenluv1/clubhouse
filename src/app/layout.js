@@ -3,6 +3,7 @@ import "./globals.css";
 import React from 'react'
 import Header from './components/header'
 import Footer from "./components/footer";
+import Gradient from "./components/gradient";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,8 +41,7 @@ export default function RootLayout({ children }) {
       >
         <Header />
         <main className="min-h-screen relative">
-          <div className="absolute top-0 left-0 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF] -z-10"/>
-          <div className="absolute bottom-0 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF] -z-10"/>
+          <Gradient/>
           {children}</main>
         <Footer />
       </body>
