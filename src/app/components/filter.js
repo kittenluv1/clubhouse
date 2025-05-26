@@ -57,7 +57,11 @@ const GROUPED_TAGS = {
   ],
 };
 
-export default function Filter({ initialSelectedTags = [], show = false }) {
+export default function Filter({
+  initialSelectedTags = [],
+  show = false,
+  onInteraction = () => {},
+}) {
   const [showFilter, setShowFilter] = useState(show);
   const [selectedTags, setSelectedTags] = useState(initialSelectedTags);
   const [tempSelectedTags, setTempSelectedTags] = useState(initialSelectedTags);
@@ -76,6 +80,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
   const toggleFilter = (e) => {
     e.stopPropagation();
+    onInteraction();
     setShowFilter((prev) => !prev);
     if (showFilter) setTempSelectedTags(selectedTags);
   };
@@ -99,6 +104,17 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showFilter, selectedTags, isMobile]);
 
+  useEffect(() => {
+    if (isMobile && showFilter) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, showFilter]);
+
   const toggleTag = (tag) => {
     setTempSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
@@ -112,6 +128,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
   };
 
   const handleSearch = () => {
+    onInteraction();
     if (!tempSelectedTags.length) {
       router.push("/clubs");
     } else {
@@ -168,82 +185,93 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
       <AnimatePresence>
         {showFilter && isMobile && (
-          <motion.div
-            key="mobile-filter"
-            className="fixed right-0 bottom-0 left-0 z-50 max-h-[80vh] touch-pan-y overflow-y-auto rounded-t-2xl bg-white p-10 shadow-xl"
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0.05, bottom: 0 }}
-            onDragEnd={(event, info) => {
-              if (info.offset.y > 100) {
-                setShowFilter(false);
-                setTempSelectedTags(selectedTags);
-              }
-            }}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300" />
-            <div className="max-h-full p-4 pb-24">
-              {tempSelectedTags.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="mb-2 font-semibold">Selected Tags:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {tempSelectedTags.map((tag) => (
-                      <div
-                        key={tag}
-                        className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
-                      >
-                        <span>{tag}</span>
-                        <button onClick={() => toggleTag(tag)} className="ml-2">
-                          <img src="/Close X.png" alt="x" width="20" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={clearAll}
-                    className="mt-2 text-sm font-bold text-blue-600 hover:underline"
-                  >
-                    Clear All
-                  </button>
-                </div>
-              )}
+          <>
+            {/* Backdrop to detect outside clicks */}
+            <div
+              className="fixed inset-0 z-40 bg-transparent"
+              onClick={handleClose}
+            />
 
-              {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
-                <div key={group} className="mb-6">
-                  <h4 className="mb-2 font-semibold">{group}</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
-                      <TagButton
-                        key={tag}
-                        label={tag}
-                        isSelected={tempSelectedTags.includes(tag)}
-                        onClick={() => toggleTag(tag)}
-                      />
-                    ))}
+            <motion.div
+              key="mobile-filter"
+              className="fixed inset-x-0 bottom-0 z-50 max-h-[80vh] overflow-y-scroll rounded-t-2xl bg-white p-10 shadow-xl"
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0.05, bottom: 0 }}
+              onDragEnd={(event, info) => {
+                if (info.offset.y > 100) {
+                  setShowFilter(false);
+                  setTempSelectedTags(selectedTags);
+                }
+              }}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300" />
+              <div className="max-h-full p-4 pb-24">
+                {tempSelectedTags.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="mb-2 font-semibold">Selected Tags:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {tempSelectedTags.map((tag) => (
+                        <div
+                          key={tag}
+                          className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
+                        >
+                          <span>{tag}</span>
+                          <button
+                            onClick={() => toggleTag(tag)}
+                            className="ml-2"
+                          >
+                            <img src="/Close X.png" alt="x" width="20" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={clearAll}
+                      className="mt-2 text-sm font-bold text-blue-600 hover:underline"
+                    >
+                      Clear All
+                    </button>
                   </div>
-                </div>
-              ))}
-            </div>
+                )}
 
-            <div className="fixed bottom-0 left-0 flex w-full justify-between border-t bg-white px-6 py-4">
-              <button
-                className="text-md px-4 py-2 font-semibold"
-                onClick={handleClose}
-              >
-                Cancel
-              </button>
-              <button
-                className="text-md rounded-xl bg-[#5086E1] px-4 py-2 text-white"
-                onClick={handleSearch}
-              >
-                Search
-              </button>
-            </div>
-          </motion.div>
+                {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
+                  <div key={group} className="mb-6">
+                    <h4 className="mb-2 font-semibold">{group}</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag) => (
+                        <TagButton
+                          key={tag}
+                          label={tag}
+                          isSelected={tempSelectedTags.includes(tag)}
+                          onClick={() => toggleTag(tag)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="fixed bottom-0 left-0 flex w-full justify-between border-t bg-white px-6 py-4">
+                <button
+                  className="text-md px-4 py-2 font-semibold"
+                  onClick={handleClose}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="text-md rounded-xl bg-[#5086E1] px-4 py-2 text-white"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
+              </div>
+            </motion.div>
+          </>
         )}
 
         {showFilter && !isMobile && (
