@@ -53,7 +53,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex items-center justify-between w-full px-8 py-6 bg-[#DFEBFF]">
+    <div className="flex items-center justify-between w-full px-20 py-6 bg-[#DFEBFF]">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button onClick={() => router.push("/")} className="flex items-center">
