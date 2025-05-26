@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-const CustomSlider = ({ 
-  min = 1, 
-  max = 5, 
-  step = 0.5, 
-  value, 
+const CustomSlider = ({
+  min = 1,
+  max = 5,
+  step = 0.5,
+  value,
   onChange,
   lowLabel = "Low",
-  highLabel = "High"
+  highLabel = "High",
 }) => {
   const [sliderValue, setSliderValue] = useState(value);
-  
+
   useEffect(() => {
     setSliderValue(value);
   }, [value]);
@@ -33,20 +33,20 @@ const CustomSlider = ({
     <div className="w-full py-2">
       <div className="relative mb-2">
         {/* Slider track */}
-        <div className="absolute top-1/2 left-0 w-full h-4 bg-gray-200 rounded-full transform -translate-y-1/2"></div>
-        
+        <div className="absolute top-1/2 left-0 h-4 w-full -translate-y-1/2 transform rounded-full bg-gray-200"></div>
+
         {/* Filled portion */}
-        <div 
-          className="absolute top-1/2 left-0 h-3 bg-[#74C476] rounded-full transform -translate-y-1/2" 
+        <div
+          className="absolute top-1/2 left-0 h-3 -translate-y-1/2 transform rounded-full bg-[#74C476]"
           style={{ width: `${calculateFillPercentage()}%` }}
         ></div>
-        
+
         {/* Thumb */}
-        <div 
-          className="absolute top-1/2 w-5 h-5 bg-white border border-gray-300 rounded-full shadow-md transform -translate-y-1/2 -translate-x-1/2 z-10"
+        <div
+          className="absolute top-1/2 z-10 h-5 w-5 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white shadow-md"
           style={{ left: `${calculateFillPercentage()}%` }}
         ></div>
-        
+
         {/* Range input  */}
         <input
           type="range"
@@ -55,42 +55,42 @@ const CustomSlider = ({
           step={step}
           value={sliderValue}
           onChange={handleChange}
-          className="absolute top-0 left-0 w-full h-6 opacity-0 cursor-pointer z-20"
+          className="absolute top-0 left-0 z-20 h-6 w-full cursor-pointer opacity-0"
         />
       </div>
-      
+
       {/* Labels */}
-      <div className="flex flex-col w-full mt-3">
+      <div className="mt-3 flex w-full flex-col">
         {/* Number markers with exact spacing */}
-        <div className="relative w-full flex h-6">
+        <div className="relative flex h-6 w-full">
           {steps.map((num) => {
             const percentage = ((num - min) / (max - min)) * 100;
             return (
-              <div 
-                key={num} 
+              <div
+                key={num}
                 className="absolute flex flex-col items-center text-xs text-green-800"
-                style={{ 
-                  left: `${percentage}%`, 
-                  transform: 'translateX(-50%)' 
+                style={{
+                  left: `${percentage}%`,
+                  transform: "translateX(-50%)",
                 }}
               >
                 <span>{num}</span>
                 {num === min && (
-                  <span className="text-green-800 mt-2">{lowLabel}</span>
+                  <span className="mt-2 text-green-800">{lowLabel}</span>
                 )}
                 {num === max && (
-                  <span className="text-green-800 mt-2">{highLabel}</span>
+                  <span className="mt-2 text-green-800">{highLabel}</span>
                 )}
               </div>
             );
           })}
         </div>
       </div>
-      
+
       {/* Current value display */}
-      <div className="text-center text-xs font-medium mt-4">
+      <div className="mt-4 text-center text-xs font-medium">
         {sliderValue.toFixed(1)}
-      </div> 
+      </div>
     </div>
   );
 };

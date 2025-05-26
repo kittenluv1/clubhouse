@@ -1,16 +1,16 @@
 export default function PendingCard({ review, handleApprove, handleReject }) {
   return (
-    <div className="px-[24px] md:px-[40px] py-[32px] md:py-[40px] rounded-[12px] w-full bg-[#FFFFFF] space-y-[20px] border">
+    <div className="w-full space-y-[20px] rounded-[12px] border bg-[#FFFFFF] px-[24px] py-[32px] md:px-[40px] md:py-[40px]">
       {/* Mobile: Buttons on top */}
-      <div className="flex justify-end gap-2 mb-4 md:hidden">
+      <div className="mb-4 flex justify-end gap-2 md:hidden">
         <button
-          className="py-[8px] px-[20px] rounded-full font-bold hover:bg-black border hover:text-white bg-[#B1D49D] text-sm"
+          className="rounded-full border bg-[#B1D49D] px-[20px] py-[8px] text-sm font-bold hover:bg-black hover:text-white"
           onClick={() => handleApprove(review)}
         >
           Approve
         </button>
         <button
-          className="py-[8px] px-[20px] rounded-full font-bold bg-[#FFA1CD] border hover:text-white hover:bg-black text-sm"
+          className="rounded-full border bg-[#FFA1CD] px-[20px] py-[8px] text-sm font-bold hover:bg-black hover:text-white"
           onClick={() => handleReject(review)}
         >
           Reject
@@ -23,28 +23,28 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
             <div>
               <label>{review.created_at.split("T")[0]}</label>
             </div>
-            <div className="flex flex-row gap-[4px] items-center">
-              <label className="font-[var(--font-dm-sans)] font-bold text-[24px] md:text-[28px] text-black">
+            <div className="flex flex-row items-center gap-[4px]">
+              <label className="text-[24px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">
                 {review.overall_satisfaction}
                 <span className="text-yellow-400">★</span>
               </label>
             </div>
-            <label className="font-[var(--font-dm-sans)] text-black text-sm md:text-base">
+            <label className="text-sm font-[var(--font-dm-sans)] text-black md:text-base">
               {review.user_email}
             </label>
           </div>
         </div>
 
         {/* Desktop: Buttons stay in top-right */}
-        <div className="hidden md:flex flex-row items-start gap-[8px]">
+        <div className="hidden flex-row items-start gap-[8px] md:flex">
           <button
-            className="py-[12px] px-[32px] rounded-full font-bold hover:bg-black border hover:text-white bg-[#B1D49D]"
+            className="rounded-full border bg-[#B1D49D] px-[32px] py-[12px] font-bold hover:bg-black hover:text-white"
             onClick={() => handleApprove(review)}
           >
             Approve
           </button>
           <button
-            className="py-[12px] px-[32px] rounded-full font-bold bg-[#FFA1CD] border hover:text-white hover:bg-black"
+            className="rounded-full border bg-[#FFA1CD] px-[32px] py-[12px] font-bold hover:bg-black hover:text-white"
             onClick={() => handleReject(review)}
           >
             Reject

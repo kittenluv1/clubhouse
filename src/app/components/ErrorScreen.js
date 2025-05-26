@@ -1,11 +1,11 @@
-function ErrorScreen({error}) {
-    return (
-        <div className="w-full min-h-[100vh]">
-            <div className="flex justify-center items-center text-3xl pt-10">
-                <p className="p-4 text-red-500">{error}</p>
-            </div>
-        </div>
-    )
-};
+function ErrorScreen({ error }) {
+  return (
+    <div className="min-h-[100vh] w-full">
+      <div className="flex items-center justify-center pt-10 text-3xl">
+        <p className="p-4 text-red-500">{error}</p>
+      </div>
+    </div>
+  );
+}
 
 export default ErrorScreen;

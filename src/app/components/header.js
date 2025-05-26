@@ -28,7 +28,7 @@ function Header() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setIsAdmin(session?.user?.email === "clubhouseucla@gmail.com");
-      }
+      },
     );
 
     return () => {
@@ -53,19 +53,19 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex items-center justify-between w-full p-5 lg:px-20 lg:py-6 bg-[#DFEBFF] overflow-hidden">
+    <div className="flex w-full items-center justify-between overflow-hidden bg-[#DFEBFF] p-5 lg:px-20 lg:py-6">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button onClick={() => router.push("/")} className="flex items-center">
           <img
             src="/clubhouse-logo-text.svg"
             alt="ClubHouse Logo"
-            className="hidden md:block md:object-cover md:w-3xs"
+            className="hidden md:block md:w-3xs md:object-cover"
           />
           <img
             src="/clubhouse-star-logo.svg"
             alt="ClubHouse Logo"
-            className="lg:hidden object-cover w-18"
+            className="w-18 object-cover lg:hidden"
           />
         </button>
       ) : (
@@ -85,7 +85,7 @@ function Header() {
       <div className="hidden lg:flex lg:items-center lg:gap-4">
         <button
           onClick={attemptReview}
-          className="p-3 text-nowrap flex items-center gap-2"
+          className="flex items-center gap-2 p-3 text-nowrap"
         >
           Add a Review
         </button>
@@ -93,7 +93,7 @@ function Header() {
         {isAdmin && (
           <button
             onClick={() => router.push("/admin")}
-            className="p-3 text-nowrap flex items-center gap-2"
+            className="flex items-center gap-2 p-3 text-nowrap"
           >
             Admin
           </button>
@@ -104,10 +104,10 @@ function Header() {
 
       {/* Mobile Hamburger Menu */}
       <button>
-        <img 
+        <img
           src="/hamburger-menu.svg"
           alt="Menu"
-          className="lg:hidden object-fill w-10"
+          className="w-10 object-fill lg:hidden"
           // onClick={() => router.push("/menu")}
         />
         {/* toggle between 'nav' (default) and 'menu options' */}

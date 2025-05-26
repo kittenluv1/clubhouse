@@ -83,7 +83,7 @@ export default function ReviewPage() {
           setCurrentUser(null);
           window.location.href = "/sign-in";
         }
-      }
+      },
     );
 
     return () => {
@@ -97,10 +97,10 @@ export default function ReviewPage() {
         startQuarter,
         startYear,
         endQuarter,
-        endYear
+        endYear,
       );
       setDateError(
-        isValid ? null : "End date cannot be earlier than start date"
+        isValid ? null : "End date cannot be earlier than start date",
       );
     } else {
       setDateError(null);
@@ -206,7 +206,7 @@ export default function ReviewPage() {
             review_text: data[0].review_text,
             user_email: data[0].user_email,
           }),
-        }
+        },
       );
 
       setSuccess(true);
@@ -256,8 +256,8 @@ export default function ReviewPage() {
 
   return (
     <div className="w-full p-4 md:p-12">
-      <div className="max-w-7xl mx-auto font-dm-sans">
-        <div className="text-6xl font-bold mt-18 mb-18">Review a Club</div>
+      <div className="font-dm-sans mx-auto max-w-7xl">
+        <div className="mt-18 mb-18 text-6xl font-bold">Review a Club</div>
         <div className="mb-16 max-w-6xl">
           <p className="mb-8">
             Your review is completely anonymous, so feel free to be honest! Your
@@ -277,22 +277,22 @@ export default function ReviewPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Club Name */}
           <div>
-            <label className="block text-lg font-bold mb-3">Club Name *</label>
+            <label className="mb-3 block text-lg font-bold">Club Name *</label>
             <div className="max-w-md">
               <SearchableDropdown
                 tableName="clubs"
                 onSelect={handleClubSelect}
                 value={selectedClub}
-                className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-md border border-gray-300 bg-white py-2 pr-10 pl-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                 placeholderColor="#374151"
               />
             </div>
           </div>
 
           {/* Membership dates */}
-          <div className="grid grid-cols-1 mt-12 md:grid-cols-2 gap-5 max-w-4xl">
+          <div className="mt-12 grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-2">
             <div>
-              <label className="block text-lg font-bold mb-3">
+              <label className="mb-3 block text-lg font-bold">
                 Club Membership Start Date *
               </label>
               <div className="flex space-x-2">
@@ -309,10 +309,10 @@ export default function ReviewPage() {
             </div>
 
             <div>
-              <label className="block text-lg font-bold mb-3">
+              <label className="mb-3 block text-lg font-bold">
                 Club Membership End Date *
               </label>
-              <div className="flex space-x-2 mb-4">
+              <div className="mb-4 flex space-x-2">
                 <div className="w-1/2">
                   <QuarterYearDropdown
                     selectedQuarter={endQuarter}
@@ -325,7 +325,7 @@ export default function ReviewPage() {
                 </div>
               </div>
               {dateError && (
-                <p className="text-red-500 text-xs mt-1">{dateError}</p>
+                <p className="mt-1 text-xs text-red-500">{dateError}</p>
               )}
               {/* Current Member Checkbox */}
               <div className="flex">
@@ -334,7 +334,7 @@ export default function ReviewPage() {
                   id="member"
                   checked={isMember}
                   onChange={handleMembershipCheckbox}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600"
                 />
                 <label
                   htmlFor="member"
@@ -348,9 +348,9 @@ export default function ReviewPage() {
 
           {/* Ratings */}
           <div className="mt-20">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
               <div className="flex flex-col items-center space-y-1">
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100">
                   {/* Timer/Clock SVG icon */}
                   <svg
                     width="40"
@@ -365,7 +365,7 @@ export default function ReviewPage() {
                     />
                   </svg>
                 </div>
-                <span className="text-xs font-medium text-green-800 mt-6 mb-6">
+                <span className="mt-6 mb-6 text-xs font-medium text-green-800">
                   Time Commitment
                 </span>
                 <div className="relative w-full">
@@ -379,7 +379,7 @@ export default function ReviewPage() {
               </div>
 
               <div className="flex flex-col items-center space-y-1">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                   {/* Diversity SVG icon */}
                   <svg
                     width="40"
@@ -396,7 +396,7 @@ export default function ReviewPage() {
                     />
                   </svg>
                 </div>
-                <span className="text-xs font-medium text-green-800 mt-6 mb-6">
+                <span className="mt-6 mb-6 text-xs font-medium text-green-800">
                   Diversity
                 </span>
                 <div className="relative w-full">
@@ -410,7 +410,7 @@ export default function ReviewPage() {
               </div>
 
               <div className="flex flex-col items-center space-y-1">
-                <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-100">
                   {/* Social Community SVG icon */}
                   <svg
                     width="40"
@@ -441,7 +441,7 @@ export default function ReviewPage() {
                     />
                   </svg>
                 </div>
-                <span className="text-xs font-medium text-green-800 mt-6 mb-6">
+                <span className="mt-6 mb-6 text-xs font-medium text-green-800">
                   Social Community
                 </span>
                 <div className="relative w-full">
@@ -455,7 +455,7 @@ export default function ReviewPage() {
               </div>
 
               <div className="flex flex-col items-center">
-                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100">
                   {/* Competitiveness SVG icon */}
                   <svg
                     width="40"
@@ -470,7 +470,7 @@ export default function ReviewPage() {
                     />
                   </svg>
                 </div>
-                <span className="text-xs font-medium text-green-800 mt-5 mb-5">
+                <span className="mt-5 mb-5 text-xs font-medium text-green-800">
                   Competitiveness
                 </span>
                 <div className="w-full max-w-xs">
@@ -487,7 +487,7 @@ export default function ReviewPage() {
 
           {/* Satisfaction Stars */}
           <div>
-            <label className="block text-lg font-bold mt-20 mb-3">
+            <label className="mt-20 mb-3 block text-lg font-bold">
               How satisfied are you with your club experience? *
             </label>
             <StarRating
@@ -498,11 +498,11 @@ export default function ReviewPage() {
 
           {/* Review Text */}
           <div className="mt-10">
-            <label className="block text-sm font-bold text-gray-700 mb-3">
+            <label className="mb-3 block text-sm font-bold text-gray-700">
               Your Club Review <span className="text-red-500">*</span>
             </label>
             <textarea
-              className="w-full h-32 p-3 border bg-white rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 text-sm"
+              className="h-32 w-full rounded-md border bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
               placeholder="Write your review here..."
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
@@ -511,7 +511,7 @@ export default function ReviewPage() {
           </div>
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div className="mb-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700">
               {error}
             </div>
           )}
@@ -521,7 +521,7 @@ export default function ReviewPage() {
             <button
               type="submit"
               disabled={isSubmitting || dateError}
-              className="w-24 px-4 py-2 bg-gray-900 hover:bg-gray-600 text-white font-medium rounded-full transition duration-300 ease-in-out disabled:opacity-50"
+              className="w-24 rounded-full bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-gray-600 disabled:opacity-50"
             >
               Submit
             </button>

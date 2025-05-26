@@ -5,116 +5,133 @@ import React, {
   useEffect,
   useRef,
   useImperativeHandle,
-  forwardRef
+  forwardRef,
 } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 
-const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "OrganizationName", width = "w-full", height = "h-10" }, ref) => {
-  const [inputValue, setInputValue] = useState("");
-  const [allOptions, setAllOptions] = useState([]);
-  const [filteredOptions, setFilteredOptions] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const router = useRouter();
-
-  useImperativeHandle(ref, () => ({
-    triggerSearch: (overrideTerm, byCategory = false) => {
-      handleSearch(overrideTerm, byCategory);
-    }
-  }));
-
-  //search logic
-  const handleSearch = (overrideTerm, byCategory = false) => {
-    // Use the overrideTerm if provided, otherwise fall back to the input's value
-    const term = (overrideTerm !== undefined ? overrideTerm : inputValue).trim();
-    // if the search term is empty, redirect to the clubs page
-    if (!term) 
+const ClubSearchBar = forwardRef(
+  (
     {
-      router.push("/clubs");
+      tableName = "clubs",
+      nameColumn = "OrganizationName",
+      width = "w-full",
+      height = "h-10",
+    },
+    ref,
+  ) => {
+    const [inputValue, setInputValue] = useState("");
+    const [allOptions, setAllOptions] = useState([]);
+    const [filteredOptions, setFilteredOptions] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
+    const router = useRouter();
+
+    useImperativeHandle(ref, () => ({
+      triggerSearch: (overrideTerm, byCategory = false) => {
+        handleSearch(overrideTerm, byCategory);
+      },
+    }));
+
+    //search logic
+    const handleSearch = (overrideTerm, byCategory = false) => {
+      // Use the overrideTerm if provided, otherwise fall back to the input's value
+      const term = (
+        overrideTerm !== undefined ? overrideTerm : inputValue
+      ).trim();
+      // if the search term is empty, redirect to the clubs page
+      if (!term) {
+        router.push("/clubs");
+      }
+
+      // Keep the input in sync
+      if (!byCategory) {
+        setInputValue(term);
+      }
+
+      // Encode for URL
+      const encoded = encodeURIComponent(term);
+
+      if (byCategory) {
+        // Category search:
+        router.push(`/clubs?category=${encoded}`);
+      } else {
+        // Name search:
+        router.push(`/clubs?name=${encoded}`);
+      }
+
+      // close the dropdown
+      setIsOpen(false);
     };
-    
-    // Keep the input in sync
-    if (!byCategory) {
-      setInputValue(term);
-    }
-    
-    // Encode for URL
-    const encoded = encodeURIComponent(term);
-    
-    if (byCategory) {
-      // Category search: 
-      router.push(`/clubs?category=${encoded}`);
-    } else {
-      // Name search: 
-      router.push(`/clubs?name=${encoded}`);
-    }
 
-    // close the dropdown
-    setIsOpen(false);
-  }
+    useEffect(() => {
+      const fetchClubNames = async () => {
+        const { data, error } = await supabase
+          .from(tableName)
+          .select(nameColumn);
+        if (!error && data) {
+          setAllOptions(data.map((club) => club[nameColumn]));
+        }
+      };
+      fetchClubNames();
+    }, [tableName, nameColumn]);
 
-  useEffect(() => {
-    const fetchClubNames = async () => {
-      const { data, error } = await supabase.from(tableName).select(nameColumn);
-      if (!error && data) {
-        setAllOptions(data.map((club) => club[nameColumn]));
+    useEffect(() => {
+      if (inputValue.trim() === "") {
+        setFilteredOptions([]);
+      } else {
+        const filtered = allOptions.filter((option) =>
+          option.toLowerCase().includes(inputValue.toLowerCase()),
+        );
+        setFilteredOptions(filtered);
+      }
+    }, [inputValue, allOptions]);
+
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          dropdownRef.current &&
+          !dropdownRef.current.contains(event.target)
+        ) {
+          setIsOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        handleSearch();
       }
     };
-    fetchClubNames();
-  }, [tableName, nameColumn]);
 
-  useEffect(() => {
-    if (inputValue.trim() === "") {
-      setFilteredOptions([]);
-    } else {
-      const filtered = allOptions.filter((option) =>
-        option.toLowerCase().includes(inputValue.toLowerCase())
-      );
-      setFilteredOptions(filtered);
-    }
-  }, [inputValue, allOptions]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
+    const handleOptionClick = (option) => {
+      // close the dropdown
+      setIsOpen(false);
+      router.push(`/clubs/details/${encodeURIComponent(option)}`);
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
-  const handleOptionClick = (option) => {
-    // close the dropdown
-    setIsOpen(false);
-    router.push(`/clubs/details/${encodeURIComponent(option)}`);
-  };
-
-  return (
-    <div className={`relative ${width}`} ref={dropdownRef}>
-      <div className="relative flex items-center">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          onKeyDown={handleKeyDown}
-          placeholder="Search for a club..."
-          className={`border-1 border-[#272727] bg-white text-black text-sm md:text-base rounded-3xl p-2 pl-4 pr-10 ${height} w-full shadow-md`}
-        />
-        <button 
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pr-2"
-          onClick={() => handleSearch()}>
+    return (
+      <div className={`relative ${width}`} ref={dropdownRef}>
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setIsOpen(true);
+            }}
+            onFocus={() => setIsOpen(true)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search for a club..."
+            className={`rounded-3xl border-1 border-[#272727] bg-white p-2 pr-10 pl-4 text-sm text-black md:text-base ${height} w-full shadow-md`}
+          />
+          <button
+            className="absolute top-1/2 right-3 -translate-y-1/2 transform pr-2 text-gray-400"
+            onClick={() => handleSearch()}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -129,31 +146,32 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-        </button>
-      </div>
-
-      {isOpen && filteredOptions.length > 0 && (
-        <ul className="absolute z-20 mt-1 w-full bg-white shadow-md max-h-60 rounded-md overflow-auto text-sm">
-          {filteredOptions.map((option, idx) => (
-            <li
-              key={idx}
-              onClick={() => handleOptionClick(option)}
-              className="cursor-pointer px-4 py-2 hover:bg-gray-100"
-            >
-              {option}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {isOpen && inputValue && filteredOptions.length === 0 && (
-        <div className="absolute z-20 mt-1 w-full bg-white shadow-md rounded-md py-2 px-4 text-sm text-gray-500 overflow-hidden whitespace-nowrap text-ellipsis">
-          No clubs found matching &quot;{inputValue}&quot;
+          </button>
         </div>
-      )}
-    </div>
-  );
-});
+
+        {isOpen && filteredOptions.length > 0 && (
+          <ul className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white text-sm shadow-md">
+            {filteredOptions.map((option, idx) => (
+              <li
+                key={idx}
+                onClick={() => handleOptionClick(option)}
+                className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+              >
+                {option}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {isOpen && inputValue && filteredOptions.length === 0 && (
+          <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-md bg-white px-4 py-2 text-sm text-ellipsis whitespace-nowrap text-gray-500 shadow-md">
+            No clubs found matching &quot;{inputValue}&quot;
+          </div>
+        )}
+      </div>
+    );
+  },
+);
 
 ClubSearchBar.displayName = "ClubSearchBar";
 

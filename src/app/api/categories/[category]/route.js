@@ -1,4 +1,4 @@
-import { supabase } from '../../../lib/db';
+import { supabase } from "../../../lib/db";
 
 export async function GET(req, { params }) {
   try {
@@ -26,15 +26,17 @@ export async function GET(req, { params }) {
 
     // Fetch filtered + paginated + sorted data
     const { data, count, error } = await supabase
-      .from('clubs')
-      .select('*', { count: 'exact' })
+      .from("clubs")
+      .select("*", { count: "exact" })
       .or(`Category1Name.ilike.%${category}%,Category2Name.ilike.%${category}%`)
       .order(sortBy, { ascending, nullsFirst: false })
       .range(startIndex, endIndex);
 
     if (error) {
-      console.error('Supabase error:', error);
-      return new Response(JSON.stringify({ error: 'Database query failed' }), { status: 500 });
+      console.error("Supabase error:", error);
+      return new Response(JSON.stringify({ error: "Database query failed" }), {
+        status: 500,
+      });
     }
 
     const totalNumPages = Math.ceil(count / pageSize);
@@ -45,11 +47,12 @@ export async function GET(req, { params }) {
         currPage: pageNum,
         totalNumPages,
       }),
-      { status: 200 }
+      { status: 200 },
     );
-
   } catch (err) {
-    console.error('Error fetching data:', err);
-    return new Response(JSON.stringify({ error: 'Failed to fetch data' }), { status: 500 });
+    console.error("Error fetching data:", err);
+    return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
+      status: 500,
+    });
   }
 }

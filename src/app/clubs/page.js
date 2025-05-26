@@ -42,15 +42,15 @@ function AllClubsPage() {
     let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
     if (nameParam) {
       url = `/api/clubs?name=${encodeURIComponent(
-        nameParam
+        nameParam,
       )}&page=${currPage}&sort=${sortType}`;
     } else if (multiCategoriesParam) {
       url = `/api/categories/multi?list=${encodeURIComponent(
-        multiCategoriesParam
+        multiCategoriesParam,
       )}&page=${currPage}&sort=${sortType}`;
     } else if (singleCategoryParam) {
       url = `/api/categories/${encodeURIComponent(
-        singleCategoryParam
+        singleCategoryParam,
       )}?page=${currPage}&sort=${sortType}`;
     }
 
@@ -90,15 +90,15 @@ function AllClubsPage() {
   const title = nameParam
     ? `Search results for "${nameParam}"`
     : multiCategoriesParam
-    ? `Clubs in "${multiCategoriesParam.replaceAll(",", ", ")}"`
-    : singleCategoryParam
-    ? `Clubs in "${singleCategoryParam}"`
-    : "All Clubs";
+      ? `Clubs in "${multiCategoriesParam.replaceAll(",", ", ")}"`
+      : singleCategoryParam
+        ? `Clubs in "${singleCategoryParam}"`
+        : "All Clubs";
 
   return (
     <>
-      <div className="p-6 md:p-20 space-y-6 flex flex-col">
-        <div className="flex justify-between items-start mb-6">
+      <div className="flex flex-col space-y-6 p-6 md:p-20">
+        <div className="mb-6 flex items-start justify-between">
           <Filter
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
@@ -108,7 +108,7 @@ function AllClubsPage() {
             <>
               <button
                 onClick={() => setShowSortModal(true)}
-                className="flex-shrink-0 bg-[#FFF7D6] text-black border border-black rounded-full font-bold px-4 py-2"
+                className="flex-shrink-0 rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold text-black"
               >
                 Sort by
               </button>
@@ -125,15 +125,15 @@ function AllClubsPage() {
               />
             </>
           ) : (
-            <div className="flex-shrink-0 flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2 cursor-pointer">
-              <label className="font-medium text-black cursor-pointer">
+            <div className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border border-black bg-[#FFF7D6] px-4 py-2">
+              <label className="cursor-pointer font-medium text-black">
                 Sort by:
               </label>
               <select
                 id="sort"
                 value={sortType}
                 onChange={(e) => setSortType(e.target.value)}
-                className="text-black font-bold cursor-pointer outline-hidden"
+                className="cursor-pointer font-bold text-black outline-hidden"
               >
                 <option value="rating">Highest Rated</option>
                 <option value="reviews">Most Reviewed</option>
@@ -143,7 +143,7 @@ function AllClubsPage() {
           )}
         </div>
 
-        <h1 className="text-[16px] font-normal mb-4">{title}</h1>
+        <h1 className="mb-4 text-[16px] font-normal">{title}</h1>
 
         <div className="grid grid-cols-1 gap-12">
           {clubs.map((club) => (
@@ -154,11 +154,11 @@ function AllClubsPage() {
           ))}
         </div>
 
-        <div className="flex justify-center items-center gap-4 mt-16">
+        <div className="mt-16 flex items-center justify-center gap-4">
           <button
             onClick={handlePreviousPage}
             disabled={currPage === 1}
-            className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
+            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-200 hover:bg-[#F6E18C] disabled:opacity-50"
           >
             Previous
           </button>
@@ -168,7 +168,7 @@ function AllClubsPage() {
           <button
             onClick={handleNextPage}
             disabled={currPage === pageTotal}
-            className="px-4 py-2 bg-[#FFB0D8] hover:bg-[#F6E18C] rounded-xl border border-black text-black font-medium disabled:opacity-50 transition-colors duration-200"
+            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-200 hover:bg-[#F6E18C] disabled:opacity-50"
           >
             Next
           </button>
