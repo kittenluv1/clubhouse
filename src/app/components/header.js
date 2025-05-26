@@ -53,7 +53,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex items-center justify-between w-full px-20 py-6 bg-[#DFEBFF]">
+    <div className="flex items-center justify-between w-full px-5 lg:px-20 py-3 lg:py-6 bg-[#DFEBFF] overflow-hidden">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button onClick={() => router.push("/")} className="flex items-center">
@@ -78,7 +78,7 @@ function Header() {
       )}
 
       {/* Right: Buttons */}
-      <div className="flex items-center gap-4">
+      <div className="hidden lg:flex lg:items-center lg:gap-4">
         <button
           onClick={attemptReview}
           className="p-3 text-nowrap flex items-center gap-2"

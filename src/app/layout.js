@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${dmSans.variable} antialiased flex flex-col min-h-screen`}
       >
         <Header />
-        <main className="min-h-screen relative">
+        <main className="min-h-screen relative overflow-hidden">
           <Gradient/>
           {children}</main>
         <Footer />
