@@ -5,6 +5,7 @@ import SearchBar from "./search-bar";
 import { useRouter, usePathname } from "next/navigation";
 import LoginButton from "./login-button";
 import { supabase } from "../lib/db";
+import { motion, AnimatePresence } from "framer-motion";
 
 function useIsMobile(breakpoint = 640) {
   const [isMobile, setIsMobile] = useState(false);
@@ -71,6 +72,7 @@ function Header() {
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button onClick={() => router.push("/")} className="flex items-center">
+          {/* mobile responsive logo */}
           <img
             src="/clubhouse-logo-text.svg"
             alt="ClubHouse Logo"
@@ -83,45 +85,92 @@ function Header() {
           />
         </button>
       ) : (
-        <div className="w-3xs" /> // placeholder to preserve spacing
+        <div className="w-3xs" /> // placeholder to preserve spacing on homepage
       )}
 
       {/* Center: Search Bar or spacer */}
       {pathname !== "/" ? (
-        // show search bar when menu buttons are not open, or whenever not on mobile
-        !showMobileMenu || !isMobile ? (
-          <div className="flex-1 px-4 lg:px-8">
-            <SearchBar width="w-full" height="h-13" />
+        // mobile responsive search bar with animation
+        isMobile ? (
+          <div className="relative min-h-[52px] flex-1 px-4 md:px-8">
+            <AnimatePresence mode="wait" initial={false}>
+              {!showMobileMenu && (
+                <motion.div
+                  key="searchbar"
+                  initial={{ x: 0, opacity: 1 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 100, opacity: 0 }}
+                  transition={{ type: "tween", duration: 0.3 }}
+                  className="relative w-full"
+                >
+                  <SearchBar width="w-full" height="h-13" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ) : (
-          <div className="flex-1" />
+          // desktop search bar
+          <div className="flex-1 px-4 md:px-8">
+            <SearchBar width="w-full" height="h-13" />
+          </div>
         )
       ) : (
-        // Placeholder for search bar on homepage
+        // placeholder for homepage
         <div className="w-3xs" />
       )}
 
       {/* Right: Buttons */}
-      <div
-        className={`hidden items-center gap-2 p-0 md:gap-4 ${showMobileMenu || !isMobile ? "!flex" : ""} lg:flex`}
-      >
-        <button
-          onClick={attemptReview}
-          className="flex items-center gap-2 p-3 text-nowrap"
-        >
-          Add a Review
-        </button>
-
-        {isAdmin && (
-          <button
-            onClick={() => router.push("/admin")}
-            className="flex items-center gap-2 p-3 text-nowrap"
-          >
-            Admin
-          </button>
-        )}
-
-        <LoginButton />
+      <div className="relative min-h-[52px]">
+        <AnimatePresence mode="wait" initial={false}>
+          {/* buttons are initially hidden in menu on mobile */}
+          {showMobileMenu && isMobile && (
+            <motion.div
+              key="mobile-buttons"
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 100, opacity: 0 }}
+              transition={{ type: "tween", duration: 0.3 }}
+              className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-[#DFEBFF] p-0 md:gap-4"
+            >
+              <button
+                onClick={attemptReview}
+                className="flex items-center p-1 text-nowrap"
+              >
+                Add a Review
+              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => router.push("/admin")}
+                  className="flex items-center p-1 text-nowrap"
+                >
+                  Admin
+                </button>
+              )}
+              <LoginButton />
+            </motion.div>
+          )}
+          {/* if not mobile, show buttons (no animation)
+          // if mobile menu is not showing, hide buttons */}
+          {!isMobile && (
+            <div className="items-center gap-2 p-0 md:flex md:gap-4">
+              <button
+                onClick={attemptReview}
+                className="flex items-center gap-2 p-3 text-nowrap"
+              >
+                Add a Review
+              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => router.push("/admin")}
+                  className="flex items-center gap-2 p-3 text-nowrap"
+                >
+                  Admin
+                </button>
+              )}
+              <LoginButton />
+            </div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Mobile Hamburger Menu */}
