@@ -29,7 +29,7 @@ function MobileNavbar() {
   if (!isMobile) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black z-50 lg:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#DFF1F1] border-t border-black z-20 lg:hidden">
       <div className="flex justify-around items-center py-3">
         <button
           onClick={handleHomeClick}

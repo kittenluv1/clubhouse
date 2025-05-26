@@ -12,9 +12,14 @@ function Header() {
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+
+    const update = () => setIsMobile(window.innerWidth < 1024);
+    update();
+    window.addEventListener("resize", update);
 
     const checkAdmin = async () => {
       const {
@@ -33,6 +38,7 @@ function Header() {
 
     return () => {
       authListener.subscription.unsubscribe();
+      window.removeEventListener("resize", update);
     };
   }, []);
 
@@ -50,12 +56,16 @@ function Header() {
     }
   };
 
+  const searchPages = ['/clubs'];
+  const isSearchPage = searchPages.some(page => pathname.startsWith(page));
+
   if (!isMounted) return null;
+  if (isMobile && !isSearchPage) return null;
 
   return (
     <div className="flex items-center justify-between w-full px-20 py-6 bg-[#DFEBFF]">
       {/* Left: Logo or placeholder */}
-      {pathname !== "/" ? (
+      {pathname !== "/" && !isMobile ? (
         <button onClick={() => router.push("/")} className="flex items-center">
           <img
             src="/clubhouse-logo-text.svg"
@@ -65,7 +75,8 @@ function Header() {
           />
         </button>
       ) : (
-        <div className="w-[210px]" /> // placeholder to preserve spacing
+        <div className="flex-1" />
+        // <div className="w-[210px]" /> // placeholder to preserve spacing
       )}
 
       {/* Center: Search Bar or spacer */}
@@ -78,6 +89,7 @@ function Header() {
       )}
 
       {/* Right: Buttons */}
+      {!isMobile ? (
       <div className="flex items-center gap-4">
         <button
           onClick={attemptReview}
@@ -97,6 +109,9 @@ function Header() {
 
         <LoginButton />
       </div>
+      ) : (
+        <div className="flex-1" />
+      )}
     </div>
   );
 }
