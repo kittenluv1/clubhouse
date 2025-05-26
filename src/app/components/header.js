@@ -53,24 +53,28 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex items-center justify-between w-full px-5 lg:px-20 py-3 lg:py-6 bg-[#DFEBFF] overflow-hidden">
+    <div className="flex items-center justify-between w-full p-5 lg:px-20 lg:py-6 bg-[#DFEBFF] overflow-hidden">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button onClick={() => router.push("/")} className="flex items-center">
           <img
             src="/clubhouse-logo-text.svg"
             alt="ClubHouse Logo"
-            className="object-cover"
-            width="210"
+            className="hidden md:block md:object-cover md:w-3xs"
+          />
+          <img
+            src="/clubhouse-star-logo.svg"
+            alt="ClubHouse Logo"
+            className="lg:hidden object-cover w-18"
           />
         </button>
       ) : (
-        <div className="w-[210px]" /> // placeholder to preserve spacing
+        <div className="w-3xs" /> // placeholder to preserve spacing
       )}
 
       {/* Center: Search Bar or spacer */}
       {pathname !== "/" ? (
-        <div className="flex-1 px-8">
+        <div className="flex-1 px-4 lg:px-8">
           <SearchBar width="w-full" height="h-13" />
         </div>
       ) : (
@@ -97,6 +101,15 @@ function Header() {
 
         <LoginButton />
       </div>
+
+      <button>
+        <img 
+          src="/hamburger-menu.svg"
+          alt="Menu"
+          className="lg:hidden object-fill w-10"
+          // onClick={() => router.push("/menu")}
+        />
+      </button>
     </div>
   );
 }

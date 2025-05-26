@@ -110,7 +110,7 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder="Search for a club..."
-          className={`border-1 border-[#272727] bg-white text-black rounded-3xl p-2 pl-4 pr-10 ${height} w-full shadow-md`}
+          className={`border-1 border-[#272727] bg-white text-black text-sm md:text-base rounded-3xl p-2 pl-4 pr-10 ${height} w-full shadow-md`}
         />
         <button 
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pr-2"

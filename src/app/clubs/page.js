@@ -97,7 +97,7 @@ function AllClubsPage() {
 
   return (
     <>
-      <div className="p-6 md:p-20 pt-15 space-y-6 flex flex-col">
+      <div className="p-6 md:p-20 space-y-6 flex flex-col">
         <div className="flex justify-between items-start mb-6">
           <Filter
             initialSelectedTags={initialSelectedTags}
