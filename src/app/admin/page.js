@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import PendingCard from "../components/pendingCard";
+import SortModal from "../components/sortModal";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -14,6 +15,15 @@ const Page = () => {
   const [sortType, setSortType] = useState("newest");
   const [numPending, setNumPending] = useState(0);
   const [authChecked, setAuthChecked] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 1024);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   useEffect(() => {
     const checkSession = async (session) => {
@@ -25,19 +35,16 @@ const Page = () => {
       }
     };
 
-    // Initial check
     supabase.auth.getSession().then(({ data: { session } }) => {
       checkSession(session);
     });
 
-    // Subscribe to auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         checkSession(session);
-      }
+      },
     );
 
-    // Cleanup
     return () => {
       authListener.subscription.unsubscribe();
     };
@@ -59,7 +66,6 @@ const Page = () => {
     }
   };
 
-  // Fetch reviews when sortType changes
   useEffect(() => {
     if (authChecked) {
       fetchPendingReviews();
@@ -72,7 +78,6 @@ const Page = () => {
 
   const handleApprove = async (record) => {
     try {
-      // Step 1: Approve the review
       const approveRes = await fetch("/api/pendingReviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -84,7 +89,6 @@ const Page = () => {
         return;
       }
 
-      // Step 2: Send the email
       const emailRes = await fetch(
         "https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-user-approval-email",
         {
@@ -94,7 +98,7 @@ const Page = () => {
             club_name: record.club_name,
             user_email: record.user_email,
           }),
-        }
+        },
       );
 
       if (!emailRes.ok) {
@@ -112,7 +116,6 @@ const Page = () => {
 
   const handleReject = async (record) => {
     try {
-      // Step 1: Disapprove the review in Supabase
       const disproveRes = await fetch("/api/pendingReviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -124,7 +127,6 @@ const Page = () => {
         return;
       }
 
-      // Step 2: Send disapproval email via Supabase Function
       const emailRes = await fetch(
         "https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-user-disapprove-email",
         {
@@ -144,7 +146,7 @@ const Page = () => {
             review_text: record.review_text,
             user_email: record.user_email,
           }),
-        }
+        },
       );
 
       if (!emailRes.ok) {
@@ -163,32 +165,55 @@ const Page = () => {
   if (!authChecked) return null;
 
   if (loading) {
-    return <div className="p-[80px] space-y-6">Loading reviews...</div>;
+    return <div className="space-y-6 p-6 md:p-[80px]">Loading reviews...</div>;
   }
 
   return (
-    <div className="p-[80px] space-y-6">
-      <div className="flex flex-row justify-between items-center">
-        <div className="flex flex-row space-x-[4px]">
-          <h1 className="font-[var(--font-dm-sans)] font-bold text-[28px] text-black">
+    <div className="space-y-6 p-6 md:p-[80px]">
+      <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-row items-center space-x-[4px]">
+          <h1 className="text-[20px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">
             Pending Reviews
           </h1>
-          <h1 className="font-[var(--font-dm-sans)] font-bold text-[28px] text-black">
+          <h1 className="text-[20px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">
             ({numPending})
           </h1>
         </div>
 
-        <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
-          <label className="font-medium text-black">Sort by:</label>
-          <select
-            id="sort"
-            value={sortType}
-            onChange={handleSortChange}
-            className="text-black font-medium"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-          </select>
+        <div className="flex w-auto items-center gap-2">
+          {isMobile ? (
+            <>
+              <button
+                onClick={() => setShowSortModal(true)}
+                className="rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold"
+              >
+                Sort by
+              </button>
+              <SortModal
+                open={showSortModal}
+                onClose={() => setShowSortModal(false)}
+                selected={sortType}
+                onSelect={(newSort) => setSortType(newSort)}
+                sortOptions={[
+                  { label: "Newest First", value: "newest" },
+                  { label: "Oldest First", value: "oldest" },
+                ]}
+              />
+            </>
+          ) : (
+            <div className="flex items-center gap-2 rounded-full border border-black bg-[#FFF7D6] px-4 py-2">
+              <label className="font-medium text-black">Sort by:</label>
+              <select
+                id="sort"
+                value={sortType}
+                onChange={handleSortChange}
+                className="font-medium text-black"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 

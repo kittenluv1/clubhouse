@@ -11,6 +11,7 @@
   "dependencies": {
     "@next/font": "^14.2.15",
     "@supabase/supabase-js": "^2.49.4",
+    "framer-motion": "^12.12.2",
     "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -21,6 +22,8 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4"
   }
 }
