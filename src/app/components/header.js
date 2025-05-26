@@ -102,6 +102,7 @@ function Header() {
         <LoginButton />
       </div>
 
+      {/* Mobile Hamburger Menu */}
       <button>
         <img 
           src="/hamburger-menu.svg"
@@ -109,6 +110,7 @@ function Header() {
           className="lg:hidden object-fill w-10"
           // onClick={() => router.push("/menu")}
         />
+        {/* toggle between 'nav' (default) and 'menu options' */}
       </button>
     </div>
   );

@@ -60,16 +60,21 @@ function Home() {
 
   return (
     <div className="relative w-full flex flex-col justify-center items-center">
-      <h2 className="max-w-2xl p-5 lg:p-10">
+      <h2 className="max-w-2xl lg:p-10">
         <img
-        src={"/clubhouse-logo-text.svg"}
-        alt="ClubHouse Logo"
-        className="object-cover"
+          src={"/clubhouse-logo-text.svg"}
+          alt="ClubHouse Logo"
+          className="hidden lg:block object-cover"
+        />
+        <img
+          src={"/clubhouse-star-logo.svg"}
+          alt="ClubHouse Logo"
+          className="lg:hidden object-cover w-3xs"
         />
       </h2>
       <div className="flex flex-col space-y-2 w-6/8 max-w-3xl items-center">
         <SearchBar ref={searchRef} width="w-full" height="h-13"/>
-        <div className="flex flex-wrap gap-2 lg:gap-3 justify-center mt-4 lg:py-10">
+        <div className="flex flex-wrap gap-3 justify-center mt-4 py-5 md:py-10">
           {randomCategories.map((category, index) => (
             <button
               key={category}
