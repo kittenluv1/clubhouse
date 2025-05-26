@@ -1,14 +1,14 @@
 import { Geist, Geist_Mono, Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
-import React from 'react'
-import Header from './components/header'
+import React from "react";
+import Header from "./components/header";
 import Footer from "./components/footer";
 import Gradient from "./components/gradient";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"]
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistSans = Geist({
@@ -22,10 +22,10 @@ const geistMono = Geist_Mono({
 });
 
 const dmSans = DM_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-dm-sans',
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
 });
 
 export const metadata = {
@@ -37,12 +37,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${dmSans.variable} antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${dmSans.variable} flex min-h-screen flex-col antialiased`}
       >
         <Header />
-        <main className="min-h-screen relative">
-          <Gradient/>
-          {children}</main>
+        <main className="relative min-h-screen overflow-hidden">
+          <Gradient />
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

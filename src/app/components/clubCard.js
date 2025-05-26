@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function ClubTags({ category }) {
   return (
-    <span className="font-medium text-sm md:text-base text-black border border-black bg-[#ACC9FA] px-4 py-2 rounded-full">
+    <span className="rounded-full border border-black bg-[#ACC9FA] px-4 py-2 text-sm font-medium text-black md:text-base">
       {category}
     </span>
   );
@@ -12,9 +12,9 @@ export default function ClubCard({ club }) {
   return (
     <Link
       href={`/clubs/details/${encodeURIComponent(club.OrganizationName)}`}
-      className="w-full rounded-xl bg-white border px-4 py-6 md:px-10 md:py-10 space-y-4 md:space-y-5 transition-all duration-100 transform hover:drop-shadow-[12px_12px_0_#B1D49D]"
+      className="w-full transform space-y-4 rounded-xl border bg-white px-4 py-6 transition-all duration-100 hover:drop-shadow-[12px_12px_0_#B1D49D] md:space-y-5 md:px-10 md:py-10"
     >
-      <h2 className="font-bold text-xl md:text-2xl text-black">
+      <h2 className="text-xl font-bold text-black md:text-2xl">
         {club.OrganizationName}
       </h2>
 
@@ -23,26 +23,26 @@ export default function ClubCard({ club }) {
         {club.Category2Name && <ClubTags category={club.Category2Name} />}
       </div>
 
-      <p className="font-normal text-sm md:text-base text-black line-clamp-4">
+      <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
         {club.OrganizationDescription}
       </p>
 
       <div>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-1 sm:space-y-0">
-          <label className="font-bold text-xl text-black flex items-center">
+        <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
+          <label className="flex items-center text-xl font-bold text-black">
             {club.average_satisfaction ? (
               <>
                 {club.average_satisfaction}
-                <span className="text-yellow-400 ml-1">★</span>
+                <span className="ml-1 text-yellow-400">★</span>
               </>
             ) : (
               <>
                 N/A
-                <span className="text-yellow-400 ml-1">★</span>
+                <span className="ml-1 text-yellow-400">★</span>
               </>
             )}
           </label>
-          <label className="font-bold text-base text-black">
+          <label className="text-base font-bold text-black">
             satisfaction rating
           </label>
         </div>

@@ -8,31 +8,164 @@ import { supabase } from "@/app/lib/db";
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
-import { AiFillStar } from 'react-icons/ai'; import { useMemo } from "react";
+import { AiFillStar } from "react-icons/ai";
+import { useMemo } from "react";
 
 const nouns = [
-  'Panda', 'Koala', 'Otter', 'Bunny', 'Duckling', 'Squirrel', 'Hedgehog', 'Fox', 'Penguin', 'Dolphin',
-  'Shark', 'Spider', 'Unicorn', 'Lemur', 'Platypus', 'Axolotl', 'Capybara', 'Narwhal', 'Sloth', 'SugarGlider',
-  'Newt', 'Hummingbird', 'Firefly', 'Mermaid', 'Saola', 'Quokka', 'Pangolin', 'Kitten', 'Student', 'Bruin', 'Doodle', 'Notebook', 'Scribble', 'Origami', 
-  'Flower', 'Acorn', 'Pebble', 'Dewdrop', 'Cloud', 'Sunbeam', 'Raindrop', 'Fawn',
-  'Pinecone', 'Nymph', 'Faerie', 'Jackalope', 'Fern', 'Rose', 'Ivy', 'Clover', 'Twilight', 'Frost', 'Sprite',
-  'Seashell', 'Moss', 'Matcha', 'Sandwich', 'Bagel', 'Noodle', 'Cupcake', 'Marshmallow', 'Donut', 'Macaron',
-  'Cookie', 'Peach', 'Mochi', 'Taffy', 'Toast', 'Muffin', 'Taco', 'Dumpling', 'Rice', 'Omelet', 'Naan', 'Pizza',
-  'Boba', 'Latte', 'Lemonade', 'Smoothie', 'Espresso', 'Sushi', 'Açaí', 'Panini', 'Salad', 'Dessert', 'Churro'
+  "Panda",
+  "Koala",
+  "Otter",
+  "Bunny",
+  "Duckling",
+  "Squirrel",
+  "Hedgehog",
+  "Fox",
+  "Penguin",
+  "Dolphin",
+  "Shark",
+  "Spider",
+  "Unicorn",
+  "Lemur",
+  "Platypus",
+  "Axolotl",
+  "Capybara",
+  "Narwhal",
+  "Sloth",
+  "SugarGlider",
+  "Newt",
+  "Hummingbird",
+  "Firefly",
+  "Mermaid",
+  "Saola",
+  "Quokka",
+  "Pangolin",
+  "Kitten",
+  "Student",
+  "Bruin",
+  "Doodle",
+  "Notebook",
+  "Scribble",
+  "Origami",
+  "Flower",
+  "Acorn",
+  "Pebble",
+  "Dewdrop",
+  "Cloud",
+  "Sunbeam",
+  "Raindrop",
+  "Fawn",
+  "Pinecone",
+  "Nymph",
+  "Faerie",
+  "Jackalope",
+  "Fern",
+  "Rose",
+  "Ivy",
+  "Clover",
+  "Twilight",
+  "Frost",
+  "Sprite",
+  "Seashell",
+  "Moss",
+  "Matcha",
+  "Sandwich",
+  "Bagel",
+  "Noodle",
+  "Cupcake",
+  "Marshmallow",
+  "Donut",
+  "Macaron",
+  "Cookie",
+  "Peach",
+  "Mochi",
+  "Taffy",
+  "Toast",
+  "Muffin",
+  "Taco",
+  "Dumpling",
+  "Rice",
+  "Omelet",
+  "Naan",
+  "Pizza",
+  "Boba",
+  "Latte",
+  "Lemonade",
+  "Smoothie",
+  "Espresso",
+  "Sushi",
+  "Açaí",
+  "Panini",
+  "Salad",
+  "Dessert",
+  "Churro",
 ];
 const verbs = [
-  'Pretty', 'Fast', 'Fluffy', 'Bubbly', 'Sunny', 'Zesty', 'Wiggly', 'Cheerful', 'Silky', 'Jolly', 'Breezy', 'Goofy', 
-  'Fuzzy', 'Squishy', 'Swift', 'Spirited', 'Wobbly', 'Mysterious', 'Anonymous', 'Silly', 'Curious', 'Fancy', 'Magical',
-  'Tiny', 'Cozy', 'Mellow', 'Dreamy', 'Gentle', 'Kind', 'Quiet', 'Wandering', 'Thoughtful', 'Shy', 'Bashful', 'Whispering',
-  'Nimble', 'Luminous', 'Daring', 'Radiant', 'Hyper', 'Solitary', 'Untamed', 'Obscure', 'Invisible', 'Subtle', 
-  'Abstract', 'Private', 'Creative', 'Adventurous', 'Brave', 'Noble', 'Clever', 'Witty', 'Earnest', 'Playful', 
-  'Humble', 'Wise', 'Peaceful', 'Charming', 'Serene'
-]
+  "Pretty",
+  "Fast",
+  "Fluffy",
+  "Bubbly",
+  "Sunny",
+  "Zesty",
+  "Wiggly",
+  "Cheerful",
+  "Silky",
+  "Jolly",
+  "Breezy",
+  "Goofy",
+  "Fuzzy",
+  "Squishy",
+  "Swift",
+  "Spirited",
+  "Wobbly",
+  "Mysterious",
+  "Anonymous",
+  "Silly",
+  "Curious",
+  "Fancy",
+  "Magical",
+  "Tiny",
+  "Cozy",
+  "Mellow",
+  "Dreamy",
+  "Gentle",
+  "Kind",
+  "Quiet",
+  "Wandering",
+  "Thoughtful",
+  "Shy",
+  "Bashful",
+  "Whispering",
+  "Nimble",
+  "Luminous",
+  "Daring",
+  "Radiant",
+  "Hyper",
+  "Solitary",
+  "Untamed",
+  "Obscure",
+  "Invisible",
+  "Subtle",
+  "Abstract",
+  "Private",
+  "Creative",
+  "Adventurous",
+  "Brave",
+  "Noble",
+  "Clever",
+  "Witty",
+  "Earnest",
+  "Playful",
+  "Humble",
+  "Wise",
+  "Peaceful",
+  "Charming",
+  "Serene",
+];
 const anonymousName = () => {
   const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
   const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
   return `@${randomVerb}${randomNoun}`;
-}
+};
 
 // // shuffle for array
 // function shuffle(array) {
@@ -57,49 +190,63 @@ function DescriptionWithClamp({ description }) {
       }
     }
     checkClamp();
-    window.addEventListener('resize', checkClamp);
-    return () => window.removeEventListener('resize', checkClamp);
+    window.addEventListener("resize", checkClamp);
+    return () => window.removeEventListener("resize", checkClamp);
   }, [description, showFull]);
 
   useEffect(() => {
     console.log("isClamped", isClamped);
   }, [isClamped]);
-    useEffect(() => {
+  useEffect(() => {
     console.log("showFull", showFull);
   }, [showFull]);
 
   if (!description) {
-    return <p className="italic text-m mb-6">No description available for this club.</p>;
+    return (
+      <p className="text-m mb-6 italic">
+        No description available for this club.
+      </p>
+    );
   }
   return (
     <div>
       <p
         ref={ref}
-        className={`italic text-m transition-all duration-200 ${!showFull ? 'line-clamp-7' : ''}`}
+        className={`text-m italic transition-all duration-200 ${!showFull ? "line-clamp-7" : ""}`}
       >
-      {description}
+        {description}
       </p>
-      {(!showFull && isClamped) && (
+      {!showFull && isClamped && (
         <>
-          {' '}
+          {" "}
           <button
-            className="text-blue-600 italic underline text-sm inline ml-1"
+            className="ml-1 inline text-sm text-blue-600 italic underline"
             type="button"
             onClick={() => setShowFull(true)}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
           >
             ...see more
           </button>
         </>
       )}
-      {(showFull) && (
+      {showFull && (
         <>
-          {' '}
+          {" "}
           <button
-            className="text-blue-600 italic underline text-sm inline ml-1"
+            className="ml-1 inline text-sm text-blue-600 italic underline"
             type="button"
             onClick={() => setShowFull(false)}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
           >
             ...see less
           </button>
@@ -131,7 +278,8 @@ export default function ClubDetailsPage() {
         const decodedId = decodeURIComponent(id);
         console.log("Decoded ID:", decodedId);
         const response = await fetch(`/api/clubs/details/${id}`);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
 
@@ -140,10 +288,10 @@ export default function ClubDetailsPage() {
           setClub(clubData);
 
           const { data: reviewsData, error: reviewsError } = await supabase
-            .from('reviews')
-            .select('*')
-            .eq('club_id', clubData.OrganizationID)
-            .order('created_at', { ascending: false });
+            .from("reviews")
+            .select("*")
+            .eq("club_id", clubData.OrganizationID)
+            .order("created_at", { ascending: false });
 
           if (reviewsError) throw reviewsError;
           setReviews(reviewsData);
@@ -163,31 +311,31 @@ export default function ClubDetailsPage() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const formatMembership = (review) => {
     if (!review.membership_start_quarter || !review.membership_end_quarter) {
-      return '';
+      return "";
     }
     return `${review.membership_start_quarter} Quarter ${review.membership_start_year} - ${review.membership_end_quarter} Quarter ${review.membership_end_year}`;
   };
 
   const getRatingColor = (rating) => {
-    if (!rating) return 'bg-gray-300 text-gray-700';
+    if (!rating) return "bg-gray-300 text-gray-700";
 
     const numRating = parseFloat(rating);
-    if (numRating >= 4.0) return 'bg-green-700 text-white';
-    if (numRating >= 3.0) return 'bg-teal-600 text-white';
-    if (numRating >= 2.0) return 'bg-yellow-500 text-white';
-    return 'bg-red-600 text-white';
+    if (numRating >= 4.0) return "bg-green-700 text-white";
+    if (numRating >= 3.0) return "bg-teal-600 text-white";
+    if (numRating >= 2.0) return "bg-yellow-500 text-white";
+    return "bg-red-600 text-white";
   };
 
-  if (loading) return (LoadingScreen());
+  if (loading) return LoadingScreen();
 
   if (error) return <ErrorScreen error={error} />;
 
@@ -197,45 +345,47 @@ export default function ClubDetailsPage() {
     // check if user is logged in
     // if not, redirect to sign in page
     // else, redirect to review page with params
-    const { data: { session} } = await supabase.auth.getSession();
-  
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     if (session) {
       console.log("GO TO REVIEWS", session);
       window.location.href = href;
     } else {
       console.log("GO TO SIGN IN", session);
-      window.location.href = "/sign-in"; 
+      window.location.href = "/sign-in";
     }
-  }
+  };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-
+    <div className="mx-auto max-w-6xl px-4 py-8">
       {/* Club Information */}
-      <div className="border-2 rounded-lg p-10 flex flex-col md:flex-row gap-8 mb-10 bg-white"
-        style={{ boxShadow: '6px 6px 0px rgba(200,221,190,255)' }}
+      <div
+        className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 md:flex-row"
+        style={{ boxShadow: "6px 6px 0px rgba(200,221,190,255)" }}
       >
         {/* left side of the box */}
-        <div className="md:w-3/5 pr-5">
-          <h1 className="text-4xl font-bold mb-6">{club.OrganizationName}</h1>
+        <div className="pr-5 md:w-3/5">
+          <h1 className="mb-6 text-4xl font-bold">{club.OrganizationName}</h1>
 
           {/* Categories/Tags */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            <TagButton 
-              label={club.Category1Name} 
-              isSelected={true} 
+          <div className="mb-6 flex flex-wrap gap-2">
+            <TagButton
+              label={club.Category1Name}
+              isSelected={true}
               onClick={() => {
                 const encoded = encodeURIComponent(club.Category1Name);
                 router.push(`/clubs?categories=${encoded}`);
-              }} 
+              }}
             />
-            <TagButton 
-              label={club.Category2Name} 
-              isSelected={true} 
+            <TagButton
+              label={club.Category2Name}
+              isSelected={true}
               onClick={() => {
                 const encoded = encodeURIComponent(club.Category2Name);
                 router.push(`/clubs?categories=${encoded}`);
-              }} 
+              }}
             />
           </div>
 
@@ -247,7 +397,10 @@ export default function ClubDetailsPage() {
             {club.OrganizationEmail && (
               <p className="mt-1">
                 Email:{" "}
-                <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
+                <a
+                  href={`mailto:${club.OrganizationEmail}`}
+                  className="text-blue-600 underline"
+                >
                   {club.OrganizationEmail}
                 </a>
               </p>
@@ -255,7 +408,8 @@ export default function ClubDetailsPage() {
             {club.OrganizationWebSite && (
               <p className="mt-1">
                 Website:{" "}
-                <a href={club.OrganizationWebSite}
+                <a
+                  href={club.OrganizationWebSite}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 underline"
@@ -268,89 +422,122 @@ export default function ClubDetailsPage() {
 
           {/* Overall Rating */}
           <div className="flex items-center">
-            <span className="font-semibold text-2xl">
-              {club.average_satisfaction ? club.average_satisfaction.toFixed(1) : 'N/A'}
+            <span className="text-2xl font-semibold">
+              {club.average_satisfaction
+                ? club.average_satisfaction.toFixed(1)
+                : "N/A"}
             </span>
-            <AiFillStar className="text-yellow-400 text-2xl mr-2" />
-            <h2 className="font-medium text-xl">satisfaction rating</h2>
+            <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+            <h2 className="text-xl font-medium">satisfaction rating</h2>
           </div>
-          <p className="font-style: italic">from {club.total_num_reviews || reviews.length || 0} trusted students</p>
+          <p className="font-style: italic">
+            from {club.total_num_reviews || reviews.length || 0} trusted
+            students
+          </p>
         </div>
 
         {/* vertical line */}
-        <div className="hidden md:flex justify-center">
-          <div className="w-px bg-gray-400" style={{ height: '100%' }} />
+        <div className="hidden justify-center md:flex">
+          <div className="w-px bg-gray-400" style={{ height: "100%" }} />
         </div>
 
         {/* right side */}
-        <div className="md:w-2/5 pl-5">
-          <h2 className="font-bold text-2xl mt-2 mb-4">Ratings</h2>
+        <div className="pl-5 md:w-2/5">
+          <h2 className="mt-2 mb-4 text-2xl font-bold">Ratings</h2>
           {/* Ratings Bars - Only show if there are reviews */}
           {reviews.length > 0 && (
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <div className="flex justify-between mb-1">
+                <div className="mb-1 flex justify-between">
                   <span>Time Commitment</span>
-                  <span>{club.average_time_commitment ? club.average_time_commitment.toFixed(1) : 'N/A'}/5</span>
+                  <span>
+                    {club.average_time_commitment
+                      ? club.average_time_commitment.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
                 </div>
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
                     className="h-full bg-green-500"
-                    style={{ width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%` }}
+                    style={{
+                      width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
+                    }}
                   ></div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
                   <span>low</span>
                   <span>high</span>
                 </div>
               </div>
 
               <div>
-                <div className="flex justify-between mb-1">
+                <div className="mb-1 flex justify-between">
                   <span>Diversity</span>
-                  <span>{club.average_diversity ? club.average_diversity.toFixed(1) : 'N/A'}/5</span>
+                  <span>
+                    {club.average_diversity
+                      ? club.average_diversity.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
                 </div>
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
                     className="h-full bg-green-500"
-                    style={{ width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%` }}
+                    style={{
+                      width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
+                    }}
                   ></div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
                   <span>low</span>
                   <span>high</span>
                 </div>
               </div>
 
               <div>
-                <div className="flex justify-between mb-1">
+                <div className="mb-1 flex justify-between">
                   <span>Social Community</span>
-                  <span>{club.average_social_community ? club.average_social_community.toFixed(1) : 'N/A'}/5</span>
+                  <span>
+                    {club.average_social_community
+                      ? club.average_social_community.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
                 </div>
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
                     className="h-full bg-green-500"
-                    style={{ width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%` }}
+                    style={{
+                      width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
+                    }}
                   ></div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
                   <span>poor</span>
                   <span>great</span>
                 </div>
               </div>
 
               <div>
-                <div className="flex justify-between mb-1">
+                <div className="mb-1 flex justify-between">
                   <span>Competitiveness</span>
-                  <span>{club.average_competitiveness ? club.average_competitiveness.toFixed(1) : 'N/A'}/5</span>
+                  <span>
+                    {club.average_competitiveness
+                      ? club.average_competitiveness.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
                 </div>
-                <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
                     className="h-full bg-green-500"
-                    style={{ width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%` }}
+                    style={{
+                      width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
+                    }}
                   ></div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
                   <span>low</span>
                   <span>high</span>
                 </div>
@@ -358,33 +545,37 @@ export default function ClubDetailsPage() {
             </div>
           )}
         </div>
-         
       </div>
 
       {club.SocialMediaLink && (
         <div className="mb-8">
-          <h2 className="text-xl font-bold mb-2">Social Media</h2>
+          <h2 className="mb-2 text-xl font-bold">Social Media</h2>
           <div dangerouslySetInnerHTML={{ __html: club.SocialMediaLink }} />
         </div>
       )}
-      
 
       {/* Reviews Section */}
       <div>
-        <h2 className="text-4xl font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
+        <h2 className="py-4 text-4xl font-bold">
+          Student Reviews ({club.total_num_reviews || reviews.length || 0})
+        </h2>
         <p className="mb-6">Have something to say? Share your experience...</p>
         {/* 'Leave a Review'  button automatically redirects to sign in page if not signed in, */}
         {/* instead of flashing Reviews page first */}
         <button
-          onClick={() => attemptReview(`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`)}
-          className="border inline-block px-6 py-2 bg-black rounded-lg text-white mb-12"
-          >
+          onClick={() =>
+            attemptReview(
+              `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+            )
+          }
+          className="mb-12 inline-block rounded-lg border bg-black px-6 py-2 text-white"
+        >
           Leave a Review
         </button>
 
         {/* Reviews List */}
         {reviews.length === 0 ? (
-          <div className="text-gray-500 text-center py-10">
+          <div className="py-10 text-center text-gray-500">
             No reviews yet. Be the first to share your experience!
           </div>
         ) : (
@@ -392,27 +583,24 @@ export default function ClubDetailsPage() {
             {reviews.map((review, index) => (
               <div
                 key={index}
-                className="bg-gray-50 rounded-lg p-8 border border-black"
-                style={{ boxShadow: '6px 6px 0px rgba(202,236,200,255)' }}
-
+                className="rounded-lg border border-black bg-gray-50 p-8"
+                style={{ boxShadow: "6px 6px 0px rgba(202,236,200,255)" }}
               >
-                <div className="flex justify-between mb-2">
-                  <h3 className="text-2xl font-bold">
-                    {anonymousName()}
-                  </h3>
+                <div className="mb-2 flex justify-between">
+                  <h3 className="text-2xl font-bold">{anonymousName()}</h3>
                   <div className="font-bold text-[#666dbc]">
                     Reviewed on {formatDate(review.created_at)}
                   </div>
                 </div>
                 <div className="mb-4 font-semibold">
                   <span className="text-gray-600">
-                    Member from{' '}
+                    Member from{" "}
                     <span className="text-[#666dbc]">
                       {formatMembership(review)}
                     </span>
                   </span>
                 </div>
-                <p className="text-gray-800 mb-2">
+                <p className="mb-2 text-gray-800">
                   &quot;{review.review_text}&quot;
                 </p>
               </div>

@@ -101,7 +101,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
   const toggleTag = (tag) => {
     setTempSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -141,7 +141,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
       <div className="flex items-start gap-2">
         <button
           ref={buttonRef}
-          className="flex-shrink-0 bg-[#FFF7D6] text-black border border-black rounded-full font-bold px-4 py-2 whitespace-nowrap"
+          className="flex-shrink-0 rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold whitespace-nowrap text-black"
           onClick={toggleFilter}
         >
           Search by Category
@@ -153,7 +153,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
               {selectedTags.map((tag) => (
                 <div
                   key={tag}
-                  className="flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full shadow-md"
+                  className="flex items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-white shadow-md"
                 >
                   <span>{tag}</span>
                   <button onClick={() => handleRemoveTag(tag)} className="ml-2">
@@ -170,7 +170,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
         {showFilter && isMobile && (
           <motion.div
             key="mobile-filter"
-            className="fixed bottom-0 left-0 right-0 bg-white z-50 p-10 max-h-[80vh] rounded-t-2xl shadow-xl overflow-y-auto touch-pan-y"
+            className="fixed right-0 bottom-0 left-0 z-50 max-h-[80vh] touch-pan-y overflow-y-auto rounded-t-2xl bg-white p-10 shadow-xl"
             drag="y"
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={{ top: 0.05, bottom: 0 }}
@@ -186,15 +186,15 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300" />
-            <div className="p-4 pb-24 max-h-full">
+            <div className="max-h-full p-4 pb-24">
               {tempSelectedTags.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="font-semibold mb-2">Selected Tags:</h4>
+                  <h4 className="mb-2 font-semibold">Selected Tags:</h4>
                   <div className="flex flex-wrap gap-2">
                     {tempSelectedTags.map((tag) => (
                       <div
                         key={tag}
-                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm"
+                        className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
                       >
                         <span>{tag}</span>
                         <button onClick={() => toggleTag(tag)} className="ml-2">
@@ -205,7 +205,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
                   </div>
                   <button
                     onClick={clearAll}
-                    className="mt-2 text-sm text-blue-600 font-bold hover:underline"
+                    className="mt-2 text-sm font-bold text-blue-600 hover:underline"
                   >
                     Clear All
                   </button>
@@ -214,7 +214,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
               {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
                 <div key={group} className="mb-6">
-                  <h4 className="font-semibold mb-2">{group}</h4>
+                  <h4 className="mb-2 font-semibold">{group}</h4>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
                       <TagButton
@@ -229,15 +229,15 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
               ))}
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full bg-white px-6 py-4 border-t flex justify-between">
+            <div className="fixed bottom-0 left-0 flex w-full justify-between border-t bg-white px-6 py-4">
               <button
-                className="text-md font-semibold px-4 py-2"
+                className="text-md px-4 py-2 font-semibold"
                 onClick={handleClose}
               >
                 Cancel
               </button>
               <button
-                className="bg-[#5086E1] text-white text-md px-4 py-2 rounded-xl"
+                className="text-md rounded-xl bg-[#5086E1] px-4 py-2 text-white"
                 onClick={handleSearch}
               >
                 Search
@@ -249,17 +249,17 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
         {showFilter && !isMobile && (
           <div
             ref={filterRef}
-            className="absolute top-12 left-0 bg-white rounded-xl shadow-lg z-50 w-lg lg:w-3xl p-6"
+            className="absolute top-12 left-0 z-50 w-lg rounded-xl bg-white p-6 shadow-lg lg:w-3xl"
           >
-            <div className="p-4 max-h-[50vh] overflow-y-auto">
+            <div className="max-h-[50vh] overflow-y-auto p-4">
               {tempSelectedTags.length > 0 && (
                 <div className="mb-4">
-                  <h4 className="font-semibold mb-2">Selected Tags:</h4>
+                  <h4 className="mb-2 font-semibold">Selected Tags:</h4>
                   <div className="flex flex-wrap gap-2">
                     {tempSelectedTags.map((tag) => (
                       <div
                         key={tag}
-                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm"
+                        className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
                       >
                         <span>{tag}</span>
                         <button onClick={() => toggleTag(tag)} className="ml-2">
@@ -270,7 +270,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
                   </div>
                   <button
                     onClick={clearAll}
-                    className="mt-2 text-sm text-blue-600 font-bold hover:underline"
+                    className="mt-2 text-sm font-bold text-blue-600 hover:underline"
                   >
                     Clear All
                   </button>
@@ -279,7 +279,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
               {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
                 <div key={group} className="mb-4">
-                  <h4 className="font-semibold mb-2">{group}</h4>
+                  <h4 className="mb-2 font-semibold">{group}</h4>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
                       <TagButton
@@ -294,15 +294,15 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
               ))}
             </div>
 
-            <div className="flex pb-2 pt-4 justify-end">
+            <div className="flex justify-end pt-4 pb-2">
               <button
-                className="text-md font-semibold px-4 py-2"
+                className="text-md px-4 py-2 font-semibold"
                 onClick={handleClose}
               >
                 Cancel
               </button>
               <button
-                className="bg-[#5086E1] text-white text-md px-4 py-2 rounded-xl ml-2"
+                className="text-md ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-white"
                 onClick={handleSearch}
               >
                 Search
