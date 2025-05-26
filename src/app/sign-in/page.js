@@ -1,6 +1,18 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import GoogleSignIn from '../components/google-sign-in';
+import MobileNavbar from "../components/MobileNavbar";
 
 function SignInPage() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 1024);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center text-center h-135 p-10 lg:p-30">
@@ -11,6 +23,7 @@ function SignInPage() {
       <div className="my-10 0 h-10 flex-none">
         <GoogleSignIn/>
       </div>
+      <MobileNavbar />
     </div>
   )
 }

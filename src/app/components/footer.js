@@ -7,8 +7,8 @@ export default function Footer() {
     return (
         <>
         {/* <div className="border"/> */}
-        <footer className=" h-auto py-15 px-30 bg-[#DFF1F1]">
-          <h3 className="text-lg mb-5">Have questions or feedback? Want to collaborate?</h3>
+        <footer className="w-full max-w-screen h-auto py-15 px-30 bg-[#DFF1F1] text-sm sm:text-base break-words leading-relaxed">
+          <h3 className="text-lg mb-[1%]">Have questions or feedback? Want to collaborate?</h3>
           <p>We’d love to hear from you!</p>
           <p>Whether you’re a student with suggestions, a club rep hoping to update your listing, or just curious about how we verify reviews — reach out anytime.</p>
           <br />

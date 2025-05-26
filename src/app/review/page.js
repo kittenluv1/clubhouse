@@ -7,6 +7,7 @@ import CustomSlider from "../components/custom-slider";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import MobileNavbar from "../components/MobileNavbar";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -56,6 +57,7 @@ export default function ReviewPage() {
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -106,6 +108,13 @@ export default function ReviewPage() {
       setDateError(null);
     }
   }, [startQuarter, startYear, endQuarter, endYear]);
+
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 1024);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const handleStartQuarterChange = (e) => setStartQuarter(e.target.value);
   const handleStartYearChange = (e) => setStartYear(e.target.value);
@@ -528,6 +537,7 @@ export default function ReviewPage() {
           </div>
         </form>
       </div>
+      <MobileNavbar />
     </div>
   );
 }
