@@ -115,7 +115,7 @@ const handleRemoveTag = (tagToRemove) => {
 };
 
 return (
-  <div className="relative max-w-[80%]">
+  <div className="relative max-w-[75%]">
     <div className="flex items-start gap-2">
       {/* Filter Button */}
         <button

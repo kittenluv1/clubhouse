@@ -92,6 +92,8 @@ const ClubSearchBar = forwardRef(({ tableName = "clubs", nameColumn = "Organizat
   };
 
   const handleOptionClick = (option) => {
+    // close the dropdown
+    setIsOpen(false);
     router.push(`/clubs/details/${encodeURIComponent(option)}`);
   };
 
