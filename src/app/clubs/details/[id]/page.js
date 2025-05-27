@@ -885,7 +885,7 @@ export default function ClubDetailsPage() {
                   </div>
                 </div>
                 <div className="text-base">
-                  "{review.review_text}"
+                  &quot;{review.review_text}&quot;
                 </div>
               </div>
             )
