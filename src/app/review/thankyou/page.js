@@ -11,7 +11,7 @@ export default function ThankYouPage() {
       <h1 className="mb-4 text-center text-6xl font-bold">Thank you!</h1>
       <p className="text-4x1 m-2 font-semibold">Your review has been sent!</p>
       <p className="text-4x1 m-2 font-semibold">
-        You will receive an email once your submission has been reviewed.{" "}
+        You will receive an email once your submission has been approved.{" "}
       </p>
     </div>
   );
