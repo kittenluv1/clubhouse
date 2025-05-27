@@ -382,7 +382,14 @@ export default function ClubDetailsPage() {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <div className="mb-1 flex justify-between">
+                  <div>
                   <span>Time Commitment</span>
+                  <Tooltip text={tooltipDefinitions.timeCommitment}>
+                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                      ?
+                    </div>
+                  </Tooltip>
+                  </div>
                   <span>
                     {club.average_time_commitment
                       ? club.average_time_commitment.toFixed(1)
@@ -406,7 +413,14 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
-                  <span>Diversity</span>
+                  <div>
+                  <span>Inclusivity</span>
+                  <Tooltip text={tooltipDefinitions.diversity}>
+                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                      ?
+                    </div>
+                  </Tooltip>
+                  </div>
                   <span>
                     {club.average_diversity
                       ? club.average_diversity.toFixed(1)
@@ -430,7 +444,14 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
+                  <div>
                   <span>Social Community</span>
+                  <Tooltip text={tooltipDefinitions.socialCommunity}>
+                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                      ?
+                    </div>
+                  </Tooltip>
+                  </div>
                   <span>
                     {club.average_social_community
                       ? club.average_social_community.toFixed(1)
@@ -447,14 +468,21 @@ export default function ClubDetailsPage() {
                   ></div>
                 </div>
                 <div className="mt-1 flex justify-between text-xs text-gray-500">
-                  <span>poor</span>
-                  <span>great</span>
+                  <span>low</span>
+                  <span>high</span>
                 </div>
               </div>
 
               <div>
                 <div className="mb-1 flex justify-between">
+                  <div>
                   <span>Competitiveness</span>
+                  <Tooltip text={tooltipDefinitions.competitiveness}>
+                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                      ?
+                    </div>
+                  </Tooltip>
+                  </div>
                   <span>
                     {club.average_competitiveness
                       ? club.average_competitiveness.toFixed(1)
