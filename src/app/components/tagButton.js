@@ -2,8 +2,11 @@
 export default function TagButton({ label, isSelected, onClick }) {
   return (
     <button
-      className={`rounded-full px-3 py-1 border ${isSelected ? 'bg-[#5086E1] text-white border-black' : 'bg-[#EEF4FF] text-black border-[#BEBEBE]'
-        }`}
+      className={`rounded-full border px-3 py-1 ${
+        isSelected
+          ? "border-black bg-[#5086E1] text-white"
+          : "border-[#BEBEBE] bg-[#EEF4FF] text-black"
+      }`}
       onClick={onClick}
     >
       {label}

@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import SearchableDropdown from '../components/searchable-dropdown';
-import { QuarterYearDropdown } from '../components/dropdowns';
-import CustomSlider from '../components/custom-slider';
-import { createClient } from '@supabase/supabase-js';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect } from "react";
+import SearchableDropdown from "../components/searchable-dropdown";
+import { QuarterYearDropdown } from "../components/dropdowns";
+import CustomSlider from "../components/custom-slider";
+import { createClient } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { AiFillStar } from 'react-icons/ai'; 
 
 // Initialize Supabase client
@@ -26,21 +27,17 @@ const anonymousNames = [
 ];
 
 const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
-    if (!startQuarter || !startYear || !endQuarter || !endYear) return true;
-    
-    const startYearNum = parseInt(startYear);
-    const endYearNum = parseInt(endYear);
-    
-    if (endYearNum > startYearNum) return true;
-    
-    if (endYearNum === startYearNum) {
-        const quarters = ['Winter', 'Spring', 'Fall'];
-        const startQuarterIndex = quarters.indexOf(startQuarter);
-        const endQuarterIndex = quarters.indexOf(endQuarter);
-        
-        return endQuarterIndex >= startQuarterIndex;
-    }
-    return false;
+  if (!startQuarter || !startYear || !endQuarter || !endYear) return true;
+  const startYearNum = parseInt(startYear);
+  const endYearNum = parseInt(endYear);
+
+  if (endYearNum > startYearNum) return true;
+
+  if (endYearNum === startYearNum) {
+    const quarters = ["Winter", "Spring", "Fall"];
+    return quarters.indexOf(endQuarter) >= quarters.indexOf(startQuarter);
+  }
+  return false;
 };
 
 // Helper function to determine the current quarter
@@ -99,29 +96,26 @@ export default function ReviewPage() {
                 error,
             } = await supabase.auth.getUser();
 
-            if (user) {
-                setCurrentUser(user);
-                console.log("Current user:", user);
-            } else {
-                console.error("Error getting user or user not authenticated:", error);
-                window.location.href = "/sign-in";
-            }
-        };
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        console.error("Error getting user:", error);
+        window.location.href = "/sign-in";
+      }
+    };
 
         getUser();
 
-        // subscribe to auth state changes
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                if (session?.user) {
-                    setCurrentUser(session.user);
-                    console.log("User changed:", session.user);
-                } else {
-                    setCurrentUser(null);
-                    window.location.href = "/sign-in";
-                }
-            }
-        );
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user) {
+          setCurrentUser(session.user);
+        } else {
+          setCurrentUser(null);
+          window.location.href = "/sign-in";
+        }
+      },
+    );
 
         // cleanup
         return () => {
@@ -143,37 +137,37 @@ export default function ReviewPage() {
         }
     }, [searchParams]);
 
-    useEffect(() => {
-        if (startQuarter && startYear && endQuarter && endYear) {
-            const isValid = isEndDateValid(startQuarter, startYear, endQuarter, endYear);
-            setDateError(isValid ? null : 'End date cannot be earlier than start date');
-        } else {
-            setDateError(null);
-        }
-    }, [startQuarter, startYear, endQuarter, endYear]);
+  useEffect(() => {
+    if (startQuarter && startYear && endQuarter && endYear) {
+      const isValid = isEndDateValid(
+        startQuarter,
+        startYear,
+        endQuarter,
+        endYear,
+      );
+      setDateError(
+        isValid ? null : "End date cannot be earlier than start date",
+      );
+    } else {
+      setDateError(null);
+    }
+  }, [startQuarter, startYear, endQuarter, endYear]);
 
-    const handleMembershipCheckbox = (e) => {
-        const isChecked = e.target.checked;
-        
-        if (isChecked) {
-            if (endQuarter && endYear) {
-                setSavedEndQuarter(endQuarter);
-                setSavedEndYear(endYear);
-            }
-            setEndQuarter(getCurrentQuarter());
-            setEndYear(new Date().getFullYear().toString());
-        } else {
-            if (savedEndQuarter && savedEndYear) {
-                setEndQuarter(savedEndQuarter);
-                setEndYear(savedEndYear);
-            } else {
-                setEndQuarter('');
-                setEndYear('');
-            }
-        }
-        
-        setIsMember(isChecked);
-    };
+  const handleMembershipCheckbox = (e) => {
+    const checked = e.target.checked;
+    if (checked) {
+      if (endQuarter && endYear) {
+        setSavedEndQuarter(endQuarter);
+        setSavedEndYear(endYear);
+      }
+      setEndQuarter(getCurrentQuarter());
+      setEndYear(new Date().getFullYear().toString());
+    } else {
+      setEndQuarter(savedEndQuarter || "");
+      setEndYear(savedEndYear || "");
+    }
+    setIsMember(checked);
+  };
 
     const handleClubSelect = async (club) => {
         setSelectedClub(club);
@@ -236,15 +230,12 @@ export default function ReviewPage() {
             
             if (overallSatisfaction === null) throw new Error('Please rate your overall satisfaction');
 
-            let userId = currentUser?.id || null;
-            let userEmail = currentUser?.email || null;
-            let updatedAt = null;
             let userAlias = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
 
             const reviewData = {
                 club_id: clubId,
-                user_id: userId,
-                user_email: userEmail,
+                user_id: currentUser?.id,
+                user_email: currentUser?.email,
                 membership_start_quarter: startQuarter,
                 membership_start_year: parseInt(startYear),
                 membership_end_quarter: endQuarter,
@@ -255,83 +246,61 @@ export default function ReviewPage() {
                 competitiveness_rating: competitiveness,
                 overall_satisfaction: overallSatisfaction,
                 review_text: reviewText,
-                updated_at: updatedAt,
+                updated_at: null,
+                club_name: selectedClub,
                 user_alias: userAlias,
             };
 
-            console.log(clubId, 'clubID');
-            console.log("Current user ID:", userId);
-            console.log("Current user email:", userEmail);
-            console.log("Sending review data to Supabase:", reviewData);
-            
-            const { data, error } = await supabase
-                .from('pending_reviews')
-                .insert(reviewData)
-                .select(); 
+      const { data, error } = await supabase
+        .from("pending_reviews")
+        .insert(reviewData)
+        .select();
 
-            if (error) {
-                console.error('Full error object:', error);
-                throw new Error(`${error.message}${error.details ? ' - ' + error.details : ''}${error.hint ? ' - ' + error.hint : ''}`);
-            }
-            
-            if (data) {
-                try {
-                    const response = await fetch('https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-review-email', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            record: {
-                                id: data[0].id,
-                                club_id: data[0].club_id,
-                                overall_satisfaction: data[0].overall_satisfaction,
-                                review_text: data[0].review_text,
-                            },
-                        }),
-                    });
+      if (error) throw new Error(error.message);
 
-                    if (!response.ok) {
-                        throw new Error(`Failed to call edge function: ${response.statusText}`);
-                    }
+      await fetch(
+        "https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-review-email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            club_name: data[0].club_name,
+            overall_satisfaction: data[0].overall_satisfaction,
+            review_text: data[0].review_text,
+            user_email: data[0].user_email,
+          }),
+        },
+      );
 
-                    console.log('Edge function called successfully');
-                } catch (error) {
-                    console.error('Error calling edge function:', error);
-                    setError('Failed to send approval email. Please try again.');
-                }
-            }
+      setSuccess(true);
+      router.push("/review/thankyou");
+      resetForm();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      setError(error.message || "Failed to submit review. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-            setSuccess(true);
-            router.push('/review/thankyou');
-            resetForm();
-            
-        } catch (error) {
-            console.error('Error submitting review:', error);
-            setError(error.message || 'Failed to submit review. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-    
-    const resetForm = () => {
-        setSelectedClub('');
-        setClubId(null);
-        setStartQuarter('');
-        setStartYear('');
-        setEndQuarter('');
-        setEndYear('');
-        setSavedEndQuarter('');
-        setSavedEndYear('');
-        setTimeCommitment(3);
-        setDiversityRating(3);
-        setSocialCommunity(3);
-        setCompetitiveness(3);
-        setOverallSatisfaction(null);
-        setReviewText('');
-        setIsMember(false);
-        setDateError(null);
-    };
+  const resetForm = () => {
+    setSelectedClub("");
+    setClubId(null);
+    setStartQuarter("");
+    setStartYear("");
+    setEndQuarter("");
+    setEndYear("");
+    setSavedEndQuarter("");
+    setSavedEndYear("");
+    setTimeCommitment(3);
+    setDiversityRating(3);
+    setSocialCommunity(3);
+    setCompetitiveness(3);
+    setOverallSatisfaction(null);
+    setReviewText("");
+    setIsMember(false);
+    setDateError(null);
+  };
 
     const StarRating = ({ rating, setRating }) => {
         return (
@@ -372,7 +341,13 @@ export default function ReviewPage() {
                     Your review is completely anonymous, so feel free to be honest! Your insights help other students get a better sense of what the club is really like. 
                     Be real, respectful, and specific—your voice makes a difference.
                 </p>
-                
+                <p>
+                    Review our Community Guidelines for posting reviews{" "}
+                    <Link href="/community-guidelines" className="underline">
+                    here
+                    </Link>
+                    .
+                </p>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Club Name */}
                     <div>

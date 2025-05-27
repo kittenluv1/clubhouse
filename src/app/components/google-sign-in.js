@@ -1,17 +1,18 @@
-"use client"; 
+"use client";
 
 import Script from "next/script";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
+import ErrorScreen from "@/app/components/ErrorScreen";
 
 export default function GoogleSignIn() {
   // null (logged out), string (logged in), or INVALID (invalid email)
   const [userEmail, setUserEmail] = useState(null);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
-
     if (window.google) {
       window.google.accounts.id.initialize({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
@@ -29,58 +30,67 @@ export default function GoogleSignIn() {
           text: "signin_with",
           shape: "pill",
           logo_alignment: "left",
-        }
+        },
       );
     }
-  }
+  };
 
   useEffect(() => {
     // global function to handle credential response, mounted on component load
     window.handleCredentialResponse = async function (response) {
+      setLoading(true);
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: "google",
         token: response.credential,
       });
 
-      setLoading(true); 
+      if (error) {
+        setError(error);
+        setLoading(false);
+        return;
+      }
 
-      if (data?.user) {
-        const email = data.user.email;
+      const email = data.user.email;
 
-        if ((email.endsWith('@ucla.edu') || email.endsWith('@g.ucla.edu') || email === 'clubhouseucla@gmail.com')) {
-          setUserEmail(email);
-        } else {
-          console.log("NOT A UCLA EMAIL");
+      // if valid email, sign in and set user email
+      if (
+        email.endsWith("@ucla.edu") ||
+        email.endsWith("@g.ucla.edu") ||
+        email === "clubhouseucla@gmail.com"
+      ) {
+        setUserEmail(email);
+        setLoading(false);
+      }
+      // if invalid email, set userEmail to "INVALID" and delete user from auth table
+      else {
+        console.log("NOT A UCLA EMAIL");
+        try {
+          const response = await fetch("/api/components", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: data.user.id }), // send user ID to delete
+          });
 
-          try {
-            const response = await fetch("/api/components", {
-              method: "DELETE", 
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ userId: data.user.id }), // send user ID to delete
-            })
+          const result = await response.json();
 
-            const result = await response.json();
-
-            if (!response.ok) {
-              console.error("Error deleting user:", result.error);
-            } else {
-              console.log("User deleted successfully:", result.message);
-              await supabase.auth.signOut(); // sign out the user
-              setUserEmail("INVALID"); // display invalid email message
-            }
-          } catch (error) {
-            console.error("Error deleting user:", error.message);
+          if (!response.ok) {
+            console.error("Error deleting user:", result.error);
+          } else {
+            console.log("User deleted successfully:", result.message);
+            await supabase.auth.signOut(); // sign out the user
+            setUserEmail("INVALID"); // display invalid email message
           }
-      }    
-    }
-
-    setLoading(false);
-  };
+        } catch (error) {
+          console.error("Error deleting user:", error.message);
+        }
+        setLoading(false);
+      }
+    };
 
     if (window.google) {
-      renderGoogleButton(); 
+      renderGoogleButton();
     }
   });
 
@@ -88,11 +98,11 @@ export default function GoogleSignIn() {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        // setLoading(true); 
+        // setLoading(true);
         setUserEmail(session.user.email); // Update email when signed in
         console.log("Auth state changed:", event, session.user.email);
       } else {
-        // setLoading(true); 
+        // setLoading(true);
         setUserEmail(null); // Clear email when signed out
         console.log("Auth state changed:", event);
       }
@@ -102,23 +112,24 @@ export default function GoogleSignIn() {
     return () => {
       data.subscription.unsubscribe();
     };
-  }, []); 
+  }, []);
+
+  if (error) return <ErrorScreen error={error} />;
 
   return (
     <>
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={() => { 
+        onLoad={() => {
           if (window.google) {
             console.log("Google Sign-In script loaded");
-            renderGoogleButton(); 
-            setLoading(false); 
+            renderGoogleButton();
+            setLoading(false);
             // Google One Tap
             // window.google.accounts.id.prompt();
-            }
           }
-        }
+        }}
       />
       {/* BUG: BUTTON RENDERS A BIT SLOW */}
       <div>
@@ -127,14 +138,16 @@ export default function GoogleSignIn() {
         ) : userEmail === "INVALID" ? (
           <div className="flex flex-col items-center justify-center gap-3">
             <p>Please sign in with a valid UCLA email.</p>
-            <div id="google-button" className="hide-google-loading"/>
+            <div id="google-button" className="hide-google-loading" />
           </div>
         ) : userEmail ? (
-          <p>You are signed in as <b>{userEmail}</b></p>
+          <p>
+            You are signed in as <b>{userEmail}</b>
+          </p>
         ) : (
-          <div id="google-button" className="hide-google-loading"/>
-        )}  
-      </div>        
+          <div id="google-button" className="hide-google-loading" />
+        )}
+      </div>
     </>
   );
 }
