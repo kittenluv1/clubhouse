@@ -8,23 +8,32 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const SearchableDropdown = ({
-  placeholder = "Search for your club here...",
-  tableName = "clubs",
-  nameColumn = "OrganizationName",
-  onSelect = () => {},
-  required = true,
-  placeholderColor = "#000", // Default to black, can be overridden
-}) => {
-  const [inputValue, setInputValue] = useState("");
-  const [filteredOptions, setFilteredOptions] = useState([]);
-  const [allOptions, setAllOptions] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const dropdownRef = useRef(null);
+const SearchableDropdown = ({  
+    placeholder = "Search for your club here...",
+    tableName = "clubs", 
+    nameColumn = "OrganizationName", 
+    onSelect = () => {},
+    required = true,
+    placeholderColor = "#000", 
+    value = "" 
+    }) => {
+    const [inputValue, setInputValue] = useState(value || ''); 
+    const [filteredOptions, setFilteredOptions] = useState([]);
+    const [allOptions, setAllOptions] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const dropdownRef = useRef(null);
 
-  useEffect(() => {
+   
+    useEffect(() => {
+        // Update inputValue when the value prop changes
+        if (value !== inputValue) {
+            setInputValue(value || '');
+        }
+    }, [value]);
+
+    useEffect(() => {
     const fetchClubNames = async () => {
       try {
         setIsLoading(true);
