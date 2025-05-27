@@ -8,7 +8,7 @@ import { supabase } from "@/app/lib/db";
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
-import { AiFillStar } from 'react-icons/ai'; import { useMemo } from "react";
+import { AiFillStar } from 'react-icons/ai'; 
 
 const anonymousNames = [
   'Panda', 'Koala', 'Otter', 'Bunny', 'Duckling', 'Squirrel', 'Hedgehog', 'Fox', 'Penguin', 'Dolphin',
