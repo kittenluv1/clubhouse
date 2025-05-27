@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
 
@@ -10,6 +10,8 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from "react-icons/ai";
 import { useMemo } from "react";
+import Link from 'next/link';
+import MobileRatingsDropdown from '../../../components/MobileRatingsDropdown';
 
 const nouns = [
   "Panda",
@@ -161,12 +163,59 @@ const verbs = [
   "Charming",
   "Serene",
 ];
+
 const anonymousName = () => {
   const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
   const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
   return `@${randomVerb}${randomNoun}`;
 };
 
+const getIconByName = (name) => {
+  const key = name.toLowerCase();
+  if (key.includes('instagram')) {
+    return <img src="/instagram2.svg" alt="Instagram" width={27} height={27} />;
+  }
+  if (key.includes('facebook')) {
+    return <img src="/facebook.svg" alt="Facebook" width={25} height={25}/>;
+  }
+  if (key.includes('linkedin')) {
+    return <img src="/linkedin.svg" alt="LinkedIn" width={25} height={25} />;
+  }
+  if (key.includes('youtube')) {
+    return <img src="/youtube.svg" alt="YouTube" width={25} height={25} />;
+  }
+  return null;
+};
+
+const parseSocialLinks = (htmlString) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, 'text/html');
+  const links = doc.querySelectorAll('a');
+
+
+   return (
+    <div className="flex items-center gap-1">
+      {Array.from(links).map((link, index) => {
+        const href = link.getAttribute('href');
+        const text = link.textContent.trim();
+        const icon = getIconByName(text || href);
+
+
+        return (
+          <a
+            key={index}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80"
+          >
+            {icon}
+          </a>
+        );
+      })}
+    </div>
+  );
+};
 // // shuffle for array
 // function shuffle(array) {
 //   const arr = array.slice();
@@ -267,6 +316,10 @@ export default function ClubDetailsPage() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const descriptionRef = useRef(null);
   const [isClamped, setIsClamped] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isMobile = !isDesktop;
+  const [ratingsOpen, setRatingsOpen] = useState(false);
+
 
   useEffect(() => {
     if (!id) return;
@@ -308,6 +361,22 @@ export default function ClubDetailsPage() {
 
     fetchClubData();
   }, [id]);
+
+  function useMediaQuery(query) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, [matches, query]);
+
+  return matches;
+}
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -361,12 +430,14 @@ export default function ClubDetailsPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       {/* Club Information */}
+      <section>
+      {isDesktop ? (
       <div
         className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 md:flex-row"
-        style={{ boxShadow: "6px 6px 0px rgba(200,221,190,255)" }}
+        style={{ boxShadow: "6px 6px 0px #b4d59f" }}
       >
         {/* left side of the box */}
-        <div className="pr-5 md:w-3/5">
+        <div className="pr-5 md:w-4/6">
           <h1 className="mb-6 text-4xl font-bold">{club.OrganizationName}</h1>
 
           {/* Categories/Tags */}
@@ -392,48 +463,42 @@ export default function ClubDetailsPage() {
         {/* Description with clamp/expand */}
         <DescriptionWithClamp description={club.OrganizationDescription} />
 
-          {/* // Contact Information */}
-          <div className="mt-6 mb-6">
+<div className="mt-6 mb-6">
+  <div className="mb-1">
+    <div className="flex items-center gap-1">
+      <span className="text-xl font-bold italic">Contact Information:</span>
+      {/* Website Icon */}
+      {club.OrganizationWebSite && (
+        <a
+          href={club.OrganizationWebSite}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/link.svg"
+            alt="Website Icon"
+            style={{ width: 25, height: 25, display: "inline-block" }}
+          />
+        </a>
+      )}
+      {/* Social Icons */}
+      {parseSocialLinks(club.SocialMediaLink)}
+    </div>
+  </div>
+
+
             {club.OrganizationEmail && (
-              <p className="mt-1">
+              <p className="font-bold italic">
                 Email:{" "}
                 <a
                   href={`mailto:${club.OrganizationEmail}`}
-                  className="text-blue-600 underline"
+                  className="font-bold underline "
                 >
                   {club.OrganizationEmail}
                 </a>
               </p>
             )}
-            {club.OrganizationWebSite && (
-              <p className="mt-1">
-                Website:{" "}
-                <a
-                  href={club.OrganizationWebSite}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline"
-                >
-                  {club.OrganizationWebSite}
-                </a>
-              </p>
-            )}
           </div>
-
-          {/* Overall Rating */}
-          <div className="flex items-center">
-            <span className="text-2xl font-semibold">
-              {club.average_satisfaction
-                ? club.average_satisfaction.toFixed(1)
-                : "N/A"}
-            </span>
-            <AiFillStar className="mr-2 text-2xl text-yellow-400" />
-            <h2 className="text-xl font-medium">satisfaction rating</h2>
-          </div>
-          <p className="font-style: italic">
-            from {club.total_num_reviews || reviews.length || 0} trusted
-            students
-          </p>
         </div>
 
         {/* vertical line */}
@@ -442,10 +507,21 @@ export default function ClubDetailsPage() {
         </div>
 
         {/* right side */}
-        <div className="pl-5 md:w-2/5">
-          <h2 className="mt-2 mb-4 text-2xl font-bold">Ratings</h2>
-          {/* Ratings Bars - Only show if there are reviews */}
-          {reviews.length > 0 && (
+        <div className="pl-5 md:w-2/6">      
+          {/* Overall Rating */}
+          <div className="flex items-center mt-2 mb-4">
+            <span className="text-2xl font-bold">
+              {club.average_satisfaction
+                ? club.average_satisfaction.toFixed(1)
+                : "N/A"}
+            </span>
+            <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+            <h2 className="text-xl font-bold mt-2 mb-1">satisfaction rating</h2>
+          </div>
+
+<section>
+          {/* Rating Bars - always show */}
+          { isDesktop ? (
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <div className="mb-1 flex justify-between">
@@ -459,7 +535,7 @@ export default function ClubDetailsPage() {
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
-                    className="h-full bg-green-500"
+                    className="h-full bg-[#b4d59f]"
                     style={{
                       width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
                     }}
@@ -483,7 +559,7 @@ export default function ClubDetailsPage() {
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
-                    className="h-full bg-green-500"
+                    className="h-full bg-[#b4d59f]"
                     style={{
                       width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
                     }}
@@ -507,7 +583,7 @@ export default function ClubDetailsPage() {
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
-                    className="h-full bg-green-500"
+                    className="h-full bg-[#b4d59f]"
                     style={{
                       width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
                     }}
@@ -531,7 +607,7 @@ export default function ClubDetailsPage() {
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
-                    className="h-full bg-green-500"
+                    className="h-full bg-[#b4d59f]"
                     style={{
                       width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
                     }}
@@ -543,59 +619,243 @@ export default function ClubDetailsPage() {
                 </div>
               </div>
             </div>
+          ) : (
+              <div className="mb-4">
+              <MobileRatingsDropdown club={club} />
+  </div>
           )}
+        </section>
         </div>
       </div>
 
-      {club.SocialMediaLink && (
-        <div className="mb-8">
-          <h2 className="mb-2 text-xl font-bold">Social Media</h2>
-          <div dangerouslySetInnerHTML={{ __html: club.SocialMediaLink }} />
-        </div>
+      ) : (
+<div
+        className="mb-4 flex flex-col rounded-lg border-2 bg-white p-6 md:flex-row"
+      >
+        {/* left side of the box */}
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg font-bold">{club.OrganizationName}</h1>
+    <div className="flex items-center gap-1">
+      {/* Website Icon */}
+      {club.OrganizationWebSite && (
+        <a
+          href={club.OrganizationWebSite}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/link.svg"
+            alt="Website Icon"
+            style={{ width: 25, height: 25, display: "inline-block" }}
+          />
+        </a>
       )}
+       {club.OrganizationEmail && (
+        <a
+          href={club.OrganizationEmail}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/email.svg"
+            alt="Email Icon"
+            style={{ width: 30, height: 30, display: "inline-block" }}
+          />
+        </a>
+      )}
+      {/* Social Icons */}
+      {parseSocialLinks(club.SocialMediaLink)}
+    </div>
+          </div>
+          {/* Description with clamp/expand */}
+          
+        <DescriptionWithClamp description={club.OrganizationDescription} />
 
-      {/* Reviews Section */}
-      <div>
-        <h2 className="py-4 text-4xl font-bold">
-          Student Reviews ({club.total_num_reviews || reviews.length || 0})
-        </h2>
+          {/* Categories/Tags */}
+          <div className="mt-4 mb-4 flex flex-wrap gap-2">
+            <TagButton
+              label={club.Category1Name}
+              isSelected={true}
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category1Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }}
+            />
+            <TagButton
+              label={club.Category2Name}
+              isSelected={true}
+              onClick={() => {
+                const encoded = encodeURIComponent(club.Category2Name);
+                router.push(`/clubs?categories=${encoded}`);
+              }}
+            />
+          </div>
+        {/* right side */}
+          {/* Overall Rating */}
+          <div className="flex items-center mb-4">
+            <span className="text-lg font-bold">
+              {club.average_satisfaction
+                ? club.average_satisfaction.toFixed(1)
+                : "N/A"}
+            </span>
+            <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+            <p className="text-lg font-bold mt-2 mb-2">satisfaction rating</p>
+          </div>
+
+          {/* Ratings Bars - always show */}
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <span>Time Commitment</span>
+                  <span>
+                    {club.average_time_commitment
+                      ? club.average_time_commitment.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>low</span>
+                  <span>high</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <span>Diversity</span>
+                  <span>
+                    {club.average_diversity
+                      ? club.average_diversity.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>low</span>
+                  <span>high</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <span>Social Community</span>
+                  <span>
+                    {club.average_social_community
+                      ? club.average_social_community.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>poor</span>
+                  <span>great</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <span>Competitiveness</span>
+                  <span>
+                    {club.average_competitiveness
+                      ? club.average_competitiveness.toFixed(1)
+                      : "N/A"}
+                    /5
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>low</span>
+                  <span>high</span>
+                </div>
+              </div>
+            </div>
+      </div>
+
+      )}
+</section>
+<section>
+
+<section>
+  { isDesktop ? (
+    <div>
+    <h2 className="text-4xl font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
         <p className="mb-6">Have something to say? Share your experience...</p>
-        {/* 'Leave a Review'  button automatically redirects to sign in page if not signed in, */}
-        {/* instead of flashing Reviews page first */}
-        <button
-          onClick={() =>
-            attemptReview(
-              `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
-            )
-          }
-          className="mb-12 inline-block rounded-lg border bg-black px-6 py-2 text-white"
+        <Link
+          href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
+          className="border inline-block px-6 py-2 bg-black rounded-lg text-white mb-12"
         >
           Leave a Review
-        </button>
+        </Link>
+    </div>
+  ) : (
+    <div>
+      <h2 className="text-lg font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
+        <Link
+          href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
+          className="border inline-block px-6 py-2 bg-black rounded-lg text-white mb-8"
+        >
+          Leave a Review
+        </Link>
+    </div>
+  )}
+</section>
 
-        {/* Reviews List */}
-        {reviews.length === 0 ? (
-          <div className="py-10 text-center text-gray-500">
-            No reviews yet. Be the first to share your experience!
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {reviews.map((review, index) => (
+      {/* Reviews List */}
+      {reviews.length === 0 ? (
+        <div className="py-10 text-center text-gray-500">
+          No reviews yet. Be the first to share your experience!
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {reviews.map((review, index) => (
+            isDesktop ? (
+              // desktop card
               <div
                 key={index}
                 className="rounded-lg border border-black bg-gray-50 p-8"
-                style={{ boxShadow: "6px 6px 0px rgba(202,236,200,255)" }}
+                style={{ boxShadow: "6px 6px 0px #b4d59f" }}
               >
                 <div className="mb-2 flex justify-between">
                   <h3 className="text-2xl font-bold">{anonymousName()}</h3>
-                  <div className="font-bold text-[#666dbc]">
+                  <div>
                     Reviewed on {formatDate(review.created_at)}
                   </div>
                 </div>
                 <div className="mb-4 font-semibold">
                   <span className="text-gray-600">
                     Member from{" "}
-                    <span className="text-[#666dbc]">
+                    <span className="text-[#5058B2]">
                       {formatMembership(review)}
                     </span>
                   </span>
@@ -604,10 +864,35 @@ export default function ClubDetailsPage() {
                   &quot;{review.review_text}&quot;
                 </p>
               </div>
-            ))}
-          </div>
-        )}
+            ) : (
+              // mobile card
+              <div
+                key={index}
+                className="rounded-lg border border-2 border-black bg-gray-50 p-6"
+              >
+                <div className="text-lg mb-2 font-bold">{anonymousName()}</div>
+                <div>
+                  <span className="text-black">
+                    Member from{" "}
+                    <span className="font-semibold text-[#5058B2]">
+                      {formatMembership(review)}
+                    </span>
+                  </span>
+                </div>
+                <div className="mb-3 text-sm font-semibold">
+                  <div>
+                    Reviewed on {formatDate(review.created_at)}
+                  </div>
+                </div>
+                <div className="text-base">
+                  "{review.review_text}"
+                </div>
+              </div>
+            )
+          ))}
+        </div>
+      )}
+    </section>
       </div>
-    </div>
   );
 }
