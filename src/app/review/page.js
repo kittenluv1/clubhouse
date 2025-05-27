@@ -503,7 +503,7 @@ export default function ReviewPage() {
             </label>
             <textarea
               className="h-32 w-full rounded-md border bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-              placeholder="Write your review here..."
+              placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience. Be honest, respectful, and specific. Your review helps other students understand what the club is really like."
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
               required
