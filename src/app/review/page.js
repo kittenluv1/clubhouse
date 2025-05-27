@@ -13,6 +13,18 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+const anonymousNames = [
+  'Panda', 'Koala', 'Otter', 'Bunny', 'Duckling', 'Squirrel', 'Hedgehog', 'Fox', 'Penguin', 'Dolphin',
+  'Shark', 'Spider', 'Unicorn', 'Lemur', 'Platypus', 'Axolotl', 'Capybara', 'Narwhal', 'Sloth', 'SugarGlider',
+  'Newt', 'Hummingbird', 'Firefly', 'Mermaid', 'Saola', 'Quokka', 'Pangolin', 'Kitten', 'Student', 'Pencil',
+  'Crayon', 'Stapler', 'Ruler', 'Bruin', 'Fountain', 'Doodle', 'Notebook', 'Highlighter', 'Backpack',
+  'JoeBruin', 'Scribble', 'Origami', 'Flower', 'Acorn', 'Pebble', 'Dewdrop', 'Cloud', 'Sunbeam', 'Raindrop',
+  'Pinecone', 'Nymph', 'Faerie', 'Jackalope', 'Fern', 'Rose', 'Ivy', 'Clover', 'Twilight', 'Frost', 'Sprite',
+  'Seashell', 'Moss', 'Matcha', 'Sandwich', 'Bagel', 'Noodle', 'Cupcake', 'Marshmallow', 'Donut', 'Macaron',
+  'Cookie', 'Peach', 'Mochi', 'Taffy', 'Toast', 'Muffin', 'Taco', 'Dumpling', 'Rice', 'Omelet', 'Naan', 'Pizza',
+  'Boba', 'Latte', 'Lemonade', 'Smoothie', 'Espresso', 'Sushi', 'Acai', 'Panini', 'Salad', 'Dessert', 'Churro'
+];
+
 const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
     if (!startQuarter || !startYear || !endQuarter || !endYear) return true;
     
@@ -228,6 +240,7 @@ export default function ReviewPage() {
             let userId = currentUser?.id || null;
             let userEmail = currentUser?.email || null;
             let updatedAt = null;
+            let userAlias = anonymousNames[Math.floor(Math.random() * anonymousNames.length)];
 
             const reviewData = {
                 club_id: clubId,
@@ -244,6 +257,7 @@ export default function ReviewPage() {
                 overall_satisfaction: overallSatisfaction,
                 review_text: reviewText,
                 updated_at: updatedAt,
+                user_alias: userAlias,
             };
 
             console.log(clubId, 'clubID');

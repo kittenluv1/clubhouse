@@ -10,18 +10,6 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from 'react-icons/ai'; 
 
-const anonymousNames = [
-  'Panda', 'Koala', 'Otter', 'Bunny', 'Duckling', 'Squirrel', 'Hedgehog', 'Fox', 'Penguin', 'Dolphin',
-  'Shark', 'Spider', 'Unicorn', 'Lemur', 'Platypus', 'Axolotl', 'Capybara', 'Narwhal', 'Sloth', 'SugarGlider',
-  'Newt', 'Hummingbird', 'Firefly', 'Mermaid', 'Saola', 'Quokka', 'Pangolin', 'Kitten', 'Student', 'Pencil',
-  'Crayon', 'Stapler', 'Ruler', 'Bruin', 'Fountain', 'Doodle', 'Notebook', 'Highlighter', 'Backpack',
-  'JoeBruin', 'Scribble', 'Origami', 'Flower', 'Acorn', 'Pebble', 'Dewdrop', 'Cloud', 'Sunbeam', 'Raindrop',
-  'Pinecone', 'Nymph', 'Faerie', 'Jackalope', 'Fern', 'Rose', 'Ivy', 'Clover', 'Twilight', 'Frost', 'Sprite',
-  'Seashell', 'Moss', 'Matcha', 'Sandwich', 'Bagel', 'Noodle', 'Cupcake', 'Marshmallow', 'Donut', 'Macaron',
-  'Cookie', 'Peach', 'Mochi', 'Taffy', 'Toast', 'Muffin', 'Taco', 'Dumpling', 'Rice', 'Omelet', 'Naan', 'Pizza',
-  'Boba', 'Latte', 'Lemonade', 'Smoothie', 'Espresso', 'Sushi', 'Acai', 'Panini', 'Salad', 'Dessert', 'Churro'
-];
-
 // // shuffle for array
 // function shuffle(array) {
 //   const arr = array.slice();
@@ -96,6 +84,14 @@ function DescriptionWithClamp({ description }) {
     </div>
   );
 }
+
+// Definitions for each rating category
+const tooltipDefinitions = {
+    timeCommitment: "Time commitment description here.",
+    diversity: "Inclusivity description here.",
+    socialCommunity: "Social community description here.",
+    competitiveness: "Competitiveness description here."
+};
 
 export default function ClubDetailsPage() {
   const { id } = useParams();
@@ -196,6 +192,19 @@ export default function ClubDetailsPage() {
     }
   }
 
+   // Tooltip component
+    const Tooltip = ({ text, children }) => {
+        return (
+            <div className="relative group inline-block">
+                {children}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 w-64 text-center">
+                    {text}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                </div>
+            </div>
+        );
+    };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
 
@@ -278,7 +287,14 @@ export default function ClubDetailsPage() {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <div className="flex justify-between mb-1">
-                  <span>Time Commitment</span>
+                  <div>
+                    <span>Time Commitment</span>
+                    <Tooltip text={tooltipDefinitions.timeCommitment}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
                   <span>{club.average_time_commitment ? club.average_time_commitment.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
@@ -295,7 +311,14 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <span>Diversity</span>
+                  <div>
+                    <span>Inclusivity</span>
+                    <Tooltip text={tooltipDefinitions.diversity}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
                   <span>{club.average_diversity ? club.average_diversity.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
@@ -312,7 +335,14 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <span>Social Community</span>
+                  <div>
+                    <span>Social Community</span>
+                    <Tooltip text={tooltipDefinitions.socialCommunity}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
                   <span>{club.average_social_community ? club.average_social_community.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
@@ -322,14 +352,22 @@ export default function ClubDetailsPage() {
                   ></div>
                 </div>
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>poor</span>
-                  <span>great</span>
+                  <span>low</span>
+                  <span>high</span>
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <span>Competitiveness</span>
+                  <div>
+                    <span>Competitiveness
+                    </span>
+                    <Tooltip text={tooltipDefinitions.competitiveness}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
                   <span>{club.average_competitiveness ? club.average_competitiveness.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
@@ -386,7 +424,7 @@ export default function ClubDetailsPage() {
               >
                 <div className="flex justify-between mb-2">
                   <h3 className="text-2xl font-bold">
-                    {`Anonymous ${anonymousNames[Math.floor(Math.random() * anonymousNames.length)]}`}
+                    {review.user_alias ? `Anonymous ${review.user_alias}` : 'Anonymous'}
                   </h3>
                   <div className="font-bold text-[#666dbc]">
                     Reviewed on {formatDate(review.created_at)}
