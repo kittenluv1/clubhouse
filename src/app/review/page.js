@@ -60,10 +60,10 @@ const getCurrentQuarter = () => {
 
 // Definitions for each rating category
 const tooltipDefinitions = {
-    timeCommitment: "Time commitment description here.",
-    diversity: "Inclusivity description here.",
-    socialCommunity: "Social community description here.",
-    competitiveness: "Competitiveness description here."
+    timeCommitment: "Estimated weekly time required for meetings, events, or responsibilities. \n 1 = Minimal \n 5 = Very High",
+    diversity: " How welcoming the club is to people of diverse identities (race, gender, sexuality, ability, etc.). \n 1 = Not inclusive \n 5 = Actively promoting diversity through leadership and programming",
+    socialCommunity: " Strength of the club’s social environment, including club culture, events, mentorship, and overall sense of belonging. \n 1 = Minimal connection \n 5 = Strong, supportive community",
+    competitiveness: " How selective and challenging the club is to join and stay involved in. \n 1 = Open to all \n 5 = Highly selective and rigorous"
 };
 
 export default function ReviewPage() {
@@ -356,7 +356,8 @@ export default function ReviewPage() {
         return (
             <div className="relative group inline-block">
                 {children}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 w-64 text-center">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg 
+                opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 w-64 text-center whitespace-pre-line">
                     {text}
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
                 </div>
@@ -478,7 +479,7 @@ export default function ReviewPage() {
                                     </svg>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <span className="text-xs font-medium text-green-800 mt-6 mb-6">Diversity</span>
+                                    <span className="text-xs font-medium text-green-800 mt-6 mb-6">Inclusivity</span>
                                     <Tooltip text={tooltipDefinitions.diversity}>
                                         <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs mt-6 mb-6">
                                             ?
