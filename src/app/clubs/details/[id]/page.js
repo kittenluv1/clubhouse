@@ -9,7 +9,6 @@ import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from "react-icons/ai";
-import { useMemo } from "react";
 
 const nouns = [
   "Panda",
@@ -359,7 +358,7 @@ export default function ClubDetailsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-6xl p-6 md:p-20">
       {/* Club Information */}
       <div
         className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 md:flex-row"
