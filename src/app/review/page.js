@@ -46,7 +46,7 @@ const getCurrentQuarter = () => {
     }
 };
 
-// Tooltip definitions for each category
+// Definitions for each rating category
 const tooltipDefinitions = {
     timeCommitment: "Time commitment description here.",
     diversity: "Inclusivity description here.",
@@ -54,8 +54,8 @@ const tooltipDefinitions = {
     competitiveness: "Competitiveness description here."
 };
 
-
 export default function ReviewPage() {
+    const searchParams = useSearchParams();
     const [selectedClub, setSelectedClub] = useState('');
     const [clubId, setClubId] = useState(null);
     const [startQuarter, setStartQuarter] = useState('');
@@ -115,6 +115,22 @@ export default function ReviewPage() {
             authListener.subscription.unsubscribe();
         };
     }, []);
+
+
+    // Getting club name and ID from URL parameters
+    useEffect(() => {
+        const clubFromUrl = searchParams.get('club');
+        const clubIdFromUrl = searchParams.get('clubId');
+        
+        if (clubFromUrl) {
+            setSelectedClub(decodeURIComponent(clubFromUrl));
+        }
+        
+        if (clubIdFromUrl) {
+            setClubId(parseInt(clubIdFromUrl));
+        }
+    }, [searchParams]);
+
 
     useEffect(() => {
         if (startQuarter && startYear && endQuarter && endYear) {
@@ -321,6 +337,7 @@ export default function ReviewPage() {
         );
     };
 
+    // Tooltip component
     const Tooltip = ({ text, children }) => {
         return (
             <div className="relative group inline-block">
@@ -447,7 +464,7 @@ export default function ReviewPage() {
                                     </svg>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <span className="text-xs font-medium text-green-800 mt-6 mb-6">Inclusivity</span>
+                                    <span className="text-xs font-medium text-green-800 mt-6 mb-6">Diversity</span>
                                     <Tooltip text={tooltipDefinitions.diversity}>
                                         <div className="w-4 h-4 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs mt-6 mb-6">
                                             ?

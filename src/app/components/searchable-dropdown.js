@@ -14,15 +14,24 @@ const SearchableDropdown = ({
     nameColumn = "OrganizationName", 
     onSelect = () => {},
     required = true,
-    placeholderColor = "#000" // Default to black, can be overridden
+    placeholderColor = "#000", 
+    value = "" 
     }) => {
-    const [inputValue, setInputValue] = useState('');
+    const [inputValue, setInputValue] = useState(value || ''); 
     const [filteredOptions, setFilteredOptions] = useState([]);
     const [allOptions, setAllOptions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const dropdownRef = useRef(null);
+
+   
+    useEffect(() => {
+        // Update inputValue when the value prop changes
+        if (value !== inputValue) {
+            setInputValue(value || '');
+        }
+    }, [value]);
 
     useEffect(() => {
     const fetchClubNames = async () => {
