@@ -38,15 +38,15 @@ export default function GoogleSignIn() {
   useEffect(() => {
     // global function to handle credential response, mounted on component load
     window.handleCredentialResponse = async function (response) {
+      setLoading(true);
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: "google",
         token: response.credential,
       });
 
-      setLoading(true);
-
       if (error) {
         setError(error);
+        setLoading(false);
         return;
       }
 
@@ -59,6 +59,7 @@ export default function GoogleSignIn() {
         email === "clubhouseucla@gmail.com"
       ) {
         setUserEmail(email);
+        setLoading(false);
       }
       // if invalid email, set userEmail to "INVALID" and delete user from auth table
       else {
@@ -84,10 +85,9 @@ export default function GoogleSignIn() {
         } catch (error) {
           console.error("Error deleting user:", error.message);
         }
+        setLoading(false);
       }
     };
-
-    setLoading(false);
 
     if (window.google) {
       renderGoogleButton();
