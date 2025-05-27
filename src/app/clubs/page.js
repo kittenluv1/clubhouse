@@ -38,6 +38,10 @@ function AllClubsPage() {
   }, []);
 
   useEffect(() => {
+    setShowSortModal(false);
+  }, [nameParam, singleCategoryParam, multiCategoriesParam]);
+
+  useEffect(() => {
     setError(null);
     let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
     if (nameParam) {
@@ -102,6 +106,7 @@ function AllClubsPage() {
           <Filter
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
+            onInteraction={() => setShowSortModal(false)}
           />
 
           {isMobile ? (
