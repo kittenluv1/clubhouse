@@ -13,162 +13,6 @@ import { useMemo } from "react";
 import Link from 'next/link';
 import MobileRatingsDropdown from '../../../components/MobileRatingsDropdown';
 
-const nouns = [
-  "Panda",
-  "Koala",
-  "Otter",
-  "Bunny",
-  "Duckling",
-  "Squirrel",
-  "Hedgehog",
-  "Fox",
-  "Penguin",
-  "Dolphin",
-  "Shark",
-  "Spider",
-  "Unicorn",
-  "Lemur",
-  "Platypus",
-  "Axolotl",
-  "Capybara",
-  "Narwhal",
-  "Sloth",
-  "SugarGlider",
-  "Newt",
-  "Hummingbird",
-  "Firefly",
-  "Mermaid",
-  "Saola",
-  "Quokka",
-  "Pangolin",
-  "Kitten",
-  "Student",
-  "Bruin",
-  "Doodle",
-  "Notebook",
-  "Scribble",
-  "Origami",
-  "Flower",
-  "Acorn",
-  "Pebble",
-  "Dewdrop",
-  "Cloud",
-  "Sunbeam",
-  "Raindrop",
-  "Fawn",
-  "Pinecone",
-  "Nymph",
-  "Faerie",
-  "Jackalope",
-  "Fern",
-  "Rose",
-  "Ivy",
-  "Clover",
-  "Twilight",
-  "Frost",
-  "Sprite",
-  "Seashell",
-  "Moss",
-  "Matcha",
-  "Sandwich",
-  "Bagel",
-  "Noodle",
-  "Cupcake",
-  "Marshmallow",
-  "Donut",
-  "Macaron",
-  "Cookie",
-  "Peach",
-  "Mochi",
-  "Taffy",
-  "Toast",
-  "Muffin",
-  "Taco",
-  "Dumpling",
-  "Rice",
-  "Omelet",
-  "Naan",
-  "Pizza",
-  "Boba",
-  "Latte",
-  "Lemonade",
-  "Smoothie",
-  "Espresso",
-  "Sushi",
-  "Açaí",
-  "Panini",
-  "Salad",
-  "Dessert",
-  "Churro",
-];
-const verbs = [
-  "Pretty",
-  "Fast",
-  "Fluffy",
-  "Bubbly",
-  "Sunny",
-  "Zesty",
-  "Wiggly",
-  "Cheerful",
-  "Silky",
-  "Jolly",
-  "Breezy",
-  "Goofy",
-  "Fuzzy",
-  "Squishy",
-  "Swift",
-  "Spirited",
-  "Wobbly",
-  "Mysterious",
-  "Anonymous",
-  "Silly",
-  "Curious",
-  "Fancy",
-  "Magical",
-  "Tiny",
-  "Cozy",
-  "Mellow",
-  "Dreamy",
-  "Gentle",
-  "Kind",
-  "Quiet",
-  "Wandering",
-  "Thoughtful",
-  "Shy",
-  "Bashful",
-  "Whispering",
-  "Nimble",
-  "Luminous",
-  "Daring",
-  "Radiant",
-  "Hyper",
-  "Solitary",
-  "Untamed",
-  "Obscure",
-  "Invisible",
-  "Subtle",
-  "Abstract",
-  "Private",
-  "Creative",
-  "Adventurous",
-  "Brave",
-  "Noble",
-  "Clever",
-  "Witty",
-  "Earnest",
-  "Playful",
-  "Humble",
-  "Wise",
-  "Peaceful",
-  "Charming",
-  "Serene",
-];
-
-const anonymousName = () => {
-  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
-  const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
-  return `@${randomVerb}${randomNoun}`;
-};
 
 const getIconByName = (name) => {
   const key = name.toLowerCase();
@@ -216,15 +60,6 @@ const parseSocialLinks = (htmlString) => {
     </div>
   );
 };
-// // shuffle for array
-// function shuffle(array) {
-//   const arr = array.slice();
-//   for (let i = arr.length - 1; i > 0; i--) {
-//     const j = Math.floor(Math.random() * (i + 1));
-//     [arr[i], arr[j]] = [arr[j], arr[i]];
-//   }
-//   return arr;
-// }
 
 // DescriptionWithClamp component
 function DescriptionWithClamp({ description }) {
@@ -304,6 +139,14 @@ function DescriptionWithClamp({ description }) {
     </div>
   );
 }
+
+// Definitions for each rating category
+const tooltipDefinitions = {
+    timeCommitment: "Estimated weekly time required for meetings, events, or responsibilities. \n 1 = Minimal \n 5 = Very High",
+    diversity: " How welcoming the club is to people of diverse identities (race, gender, sexuality, ability, etc.). \n 1 = Not inclusive \n 5 = Actively promoting diversity through leadership and programming",
+    socialCommunity: " Strength of the club’s social environment, including club culture, events, mentorship, and overall sense of belonging. \n 1 = Minimal connection \n 5 = Strong, supportive community",
+    competitiveness: " How selective and challenging the club is to join and stay involved in. \n 1 = Open to all \n 5 = Highly selective and rigorous"
+};
 
 export default function ClubDetailsPage() {
   const { id } = useParams();
@@ -426,6 +269,20 @@ export default function ClubDetailsPage() {
       window.location.href = "/sign-in";
     }
   };
+
+   // Tooltip component
+    const Tooltip = ({ text, children }) => {
+        return (
+            <div className="relative group inline-block">
+                {children}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg 
+                opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 w-64 text-center whitespace-pre-line">
+                    {text}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                </div>
+            </div>
+        );
+    };
 
   return (
     <div className="mx-auto max-w-6xl px-8 py-8">
@@ -705,14 +562,16 @@ export default function ClubDetailsPage() {
           {/* Ratings Bars - always show */}
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <div className="mb-1 flex justify-between">
-                  <span>Time Commitment</span>
-                  <span>
-                    {club.average_time_commitment
-                      ? club.average_time_commitment.toFixed(1)
-                      : "N/A"}
-                    /5
-                  </span>
+                <div className="flex justify-between mb-1">
+                  <div>
+                    <span>Time Commitment</span>
+                    <Tooltip text={tooltipDefinitions.timeCommitment}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
+                  <span>{club.average_time_commitment ? club.average_time_commitment.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
@@ -729,14 +588,16 @@ export default function ClubDetailsPage() {
               </div>
 
               <div>
-                <div className="mb-1 flex justify-between">
-                  <span>Diversity</span>
-                  <span>
-                    {club.average_diversity
-                      ? club.average_diversity.toFixed(1)
-                      : "N/A"}
-                    /5
-                  </span>
+                <div className="flex justify-between mb-1">
+                  <div>
+                    <span>Inclusivity</span>
+                    <Tooltip text={tooltipDefinitions.diversity}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
+                  <span>{club.average_diversity ? club.average_diversity.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
@@ -753,14 +614,16 @@ export default function ClubDetailsPage() {
               </div>
 
               <div>
-                <div className="mb-1 flex justify-between">
-                  <span>Social Community</span>
-                  <span>
-                    {club.average_social_community
-                      ? club.average_social_community.toFixed(1)
-                      : "N/A"}
-                    /5
-                  </span>
+                <div className="flex justify-between mb-1">
+                  <div>
+                    <span>Social Community</span>
+                    <Tooltip text={tooltipDefinitions.socialCommunity}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
+                  <span>{club.average_social_community ? club.average_social_community.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
@@ -770,21 +633,24 @@ export default function ClubDetailsPage() {
                     }}
                   ></div>
                 </div>
-                <div className="mt-1 flex justify-between text-xs text-gray-500">
-                  <span>poor</span>
-                  <span>great</span>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>low</span>
+                  <span>high</span>
                 </div>
               </div>
 
               <div>
-                <div className="mb-1 flex justify-between">
-                  <span>Competitiveness</span>
-                  <span>
-                    {club.average_competitiveness
-                      ? club.average_competitiveness.toFixed(1)
-                      : "N/A"}
-                    /5
-                  </span>
+                <div className="flex justify-between mb-1">
+                  <div>
+                    <span>Competitiveness
+                    </span>
+                    <Tooltip text={tooltipDefinitions.competitiveness}>
+                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
+                            ?
+                        </div>
+                      </Tooltip>
+                  </div>
+                  <span>{club.average_competitiveness ? club.average_competitiveness.toFixed(1) : 'N/A'}/5</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                   <div
@@ -846,9 +712,12 @@ export default function ClubDetailsPage() {
                 className="rounded-lg border border-black bg-gray-50 p-8"
                 style={{ boxShadow: "6px 6px 0px #b4d59f" }}
               >
-                <div className="mb-2 flex justify-between">
-                  <h3 className="text-2xl font-bold">{anonymousName()}</h3>
-                  <div>
+                <div className="flex justify-between mb-2">
+                  <h3 className="text-2xl font-bold">
+                    {review.user_alias ? `${review.user_alias}` : 'Anonymous'}
+                  </h3>
+                  <div className="font-bold text-[#666dbc]">
+
                     Reviewed on {formatDate(review.created_at)}
                   </div>
                 </div>
