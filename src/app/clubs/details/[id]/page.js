@@ -182,7 +182,7 @@ const getIconByName = (name) => {
     return <img src="/linkedin.svg" alt="LinkedIn" width={25} height={25} />;
   }
   if (key.includes('youtube')) {
-    return <img src="/youtube.svg" alt="YouTube" width={25} height={25} />;
+    return <img src="/youtube.svg" alt="YouTube" width={30} height={30} />;
   }
   return null;
 };
@@ -428,7 +428,7 @@ export default function ClubDetailsPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-6xl px-8 py-8">
       {/* Club Information */}
       <section>
       {isDesktop ? (
@@ -438,10 +438,10 @@ export default function ClubDetailsPage() {
       >
         {/* left side of the box */}
         <div className="pr-5 md:w-4/6">
-          <h1 className="mb-6 text-4xl font-bold">{club.OrganizationName}</h1>
+          <h1 className="mb-3 text-3xl font-bold">{club.OrganizationName}</h1>
 
           {/* Categories/Tags */}
-          <div className="mb-6 flex flex-wrap gap-2">
+          <div className="mb-3 flex flex-wrap gap-2">
             <TagButton
               label={club.Category1Name}
               isSelected={true}
@@ -510,13 +510,13 @@ export default function ClubDetailsPage() {
         <div className="pl-5 md:w-2/6">      
           {/* Overall Rating */}
           <div className="flex items-center mt-2 mb-4">
-            <span className="text-2xl font-bold">
+            <span className="text-lg font-bold">
               {club.average_satisfaction
                 ? club.average_satisfaction.toFixed(1)
                 : "N/A"}
             </span>
-            <AiFillStar className="mr-2 text-2xl text-yellow-400" />
-            <h2 className="text-xl font-bold mt-2 mb-1">satisfaction rating</h2>
+            <AiFillStar className="mr-2 text-lg text-yellow-400" />
+            <h2 className="text-lg font-bold">satisfaction rating</h2>
           </div>
 
 <section>
@@ -809,7 +809,7 @@ export default function ClubDetailsPage() {
 <section>
   { isDesktop ? (
     <div>
-    <h2 className="text-4xl font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
+    <h2 className="text-2xl font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
         <p className="mb-6">Have something to say? Share your experience...</p>
         <Link
           href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
