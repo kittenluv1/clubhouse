@@ -739,7 +739,7 @@ export default function ClubDetailsPage() {
                 key={index}
                 className="rounded-lg border border-2 border-black bg-gray-50 p-6"
               >
-                <div className="text-lg mb-2 font-bold">{anonymousName()}</div>
+                <div className="text-lg mb-2 font-bold">{review.user_alias ? `${review.user_alias}` : 'Anonymous'}</div>
                 <div>
                   <span className="text-black">
                     Member from{" "}
