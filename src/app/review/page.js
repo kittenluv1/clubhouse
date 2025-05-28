@@ -744,7 +744,6 @@ export default function ReviewPage() {
           </div>
         </form>
       </div>
-      <MobileNavbar />
     </div>
   );
 }

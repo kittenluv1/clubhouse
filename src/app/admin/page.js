@@ -172,10 +172,10 @@ const Page = () => {
     <div className="space-y-6 p-6 md:p-[80px]">
       <div className="flex flex-row items-center justify-between gap-4">
         <div className="flex flex-row items-center space-x-[4px]">
-          <h1 className="text-[20px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">
+          <h1 className="text-[20px] font-bold text-black md:text-[28px]">
             Pending Reviews
           </h1>
-          <h1 className="text-[20px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">
+          <h1 className="text-[20px] font-bold text-black md:text-[28px]">
             ({numPending})
           </h1>
         </div>

@@ -7,7 +7,6 @@ import Filter from "../components/filter";
 import ErrorScreen from "../components/ErrorScreen";
 import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
-import MobileNavbar from "../components/MobileNavbar";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -179,7 +178,6 @@ function AllClubsPage() {
             Next
           </button>
         </div>
-        <MobileNavbar />
       </div>
     </>
   );

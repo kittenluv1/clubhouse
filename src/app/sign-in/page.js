@@ -21,7 +21,6 @@ function SignInPage() {
       <div className="0 my-10 h-10 flex-none">
         <GoogleSignIn />
       </div>
-      <MobileNavbar />
     </div>
   );
 }

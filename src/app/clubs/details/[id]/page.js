@@ -348,7 +348,7 @@ export default function ClubDetailsPage() {
               <div className="mt-2 mb-4 flex items-center">
                 <span className="text-2xl font-bold">
                   {club.average_satisfaction
-                    ? club.average_satisfaction.toFixed(1)
+                    ? club.average_satisfaction.toFixed(1) + "/5"
                     : "N/A"}
                 </span>
                 <AiFillStar className="mr-2 text-2xl text-yellow-400" />
@@ -369,9 +369,8 @@ export default function ClubDetailsPage() {
                         </div>
                         <span>
                           {club.average_time_commitment
-                            ? club.average_time_commitment.toFixed(1)
+                            ? club.average_time_commitment.toFixed(1) + "/5"
                             : "N/A"}
-                          /5
                         </span>
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -391,14 +390,13 @@ export default function ClubDetailsPage() {
                     <div>
                       <div className="mb-1 flex justify-between">
                         <div className="flex items-center gap-1">
-                          <span>inclusivity</span>
+                          <span>Inclusivity</span>
                           <Tooltip rating="inclusivity" />
                         </div>
                         <span>
                           {club.average_inclusivity
-                            ? club.average_inclusivity.toFixed(1)
+                            ? club.average_inclusivity.toFixed(1) + "/5"
                             : "N/A"}
-                          /5
                         </span>
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -423,9 +421,8 @@ export default function ClubDetailsPage() {
                         </div>
                         <span>
                           {club.average_social_community
-                            ? club.average_social_community.toFixed(1)
+                            ? club.average_social_community.toFixed(1) + "/5"
                             : "N/A"}
-                          /5
                         </span>
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -450,9 +447,8 @@ export default function ClubDetailsPage() {
                         </div>
                         <span>
                           {club.average_competitiveness
-                            ? club.average_competitiveness.toFixed(1)
+                            ? club.average_competitiveness.toFixed(1) + "/5"
                             : "N/A"}
-                          /5
                         </span>
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -543,7 +539,7 @@ export default function ClubDetailsPage() {
             <div className="mb-4 flex items-center">
               <span className="text-2xl font-bold">
                 {club.average_satisfaction
-                  ? club.average_satisfaction.toFixed(1)
+                  ? club.average_satisfaction.toFixed(1) + "/5"
                   : "N/A"}
               </span>
               <AiFillStar className="mr-2 text-2xl text-yellow-400" />
@@ -560,9 +556,8 @@ export default function ClubDetailsPage() {
                   </div>
                   <span>
                     {club.average_time_commitment
-                      ? club.average_time_commitment.toFixed(1)
+                      ? club.average_time_commitment.toFixed(1) + "/5"
                       : "N/A"}
-                    /5
                   </span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -587,9 +582,8 @@ export default function ClubDetailsPage() {
                   </div>
                   <span>
                     {club.average_inclusivity
-                      ? club.average_inclusivity.toFixed(1)
+                      ? club.average_inclusivity.toFixed(1) + "/5"
                       : "N/A"}
-                    /5
                   </span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -614,9 +608,8 @@ export default function ClubDetailsPage() {
                   </div>
                   <span>
                     {club.average_social_community
-                      ? club.average_social_community.toFixed(1)
+                      ? club.average_social_community.toFixed(1) + "/5"
                       : "N/A"}
-                    /5
                   </span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -641,9 +634,8 @@ export default function ClubDetailsPage() {
                   </div>
                   <span>
                     {club.average_competitiveness
-                      ? club.average_competitiveness.toFixed(1)
+                      ? club.average_competitiveness.toFixed(1) + "/5"
                       : "N/A"}
-                    /5
                   </span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -744,7 +736,7 @@ export default function ClubDetailsPage() {
                 // mobile card
                 <div
                   key={index}
-                  className="rounded-lg border border-2 border-black bg-gray-50 p-6"
+                  className="rounded-lg border-2 border-black bg-gray-50 p-6"
                 >
                   <div className="mb-2 text-lg font-bold">
                     {review.user_alias ? `${review.user_alias}` : "Anonymous"}
