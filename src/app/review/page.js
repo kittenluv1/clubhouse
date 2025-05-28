@@ -8,6 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
+import Tooltip from "../components/tooltip";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -195,18 +196,6 @@ const getCurrentQuarter = () => {
   } else {
     return "Spring";
   }
-};
-
-// Definitions for each rating category
-const tooltipDefinitions = {
-  timeCommitment:
-    "Estimated weekly time required for meetings, events, or responsibilities.\n1 = Minimal\n5 = Very High",
-  diversity:
-    "How welcoming the club is to people of diverse identities (race, gender, sexuality, ability, etc.).\n1 = Not inclusive\n5 = Actively promoting diversity through leadership and programming",
-  socialCommunity:
-    "Strength of the club's social environment, including club culture, events, mentorship, and overall sense of belonging.\n1 = Minimal connection\n5 = Strong, supportive community",
-  competitiveness:
-    "How selective and challenging the club is to join and stay involved in.\n1 = Open to all\n5 = Highly selective and rigorous",
 };
 
 export default function ReviewPage() {
@@ -473,19 +462,6 @@ export default function ReviewPage() {
     );
   };
 
-  // Tooltip component
-  const Tooltip = ({ text, children }) => {
-    return (
-      <div className="group relative inline-block">
-        {children}
-        <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          {text}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen w-full p-10 md:p-12">
       <div className="font-dm-sans mx-auto max-w-7xl">
@@ -601,11 +577,7 @@ export default function ReviewPage() {
                   <span className="text-center text-xs font-medium text-green-800">
                     Time Commitment
                   </span>
-                  <Tooltip text={tooltipDefinitions.timeCommitment}>
-                    <div className="flex h-4 w-4 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <Tooltip rating="timeCommitment" />
                 </div>
                 <div className="lg:2-full relative w-full md:w-3/4">
                   <CustomSlider
@@ -640,11 +612,7 @@ export default function ReviewPage() {
                   <span className="text-center text-xs font-medium text-green-800">
                     Inclusivity
                   </span>
-                  <Tooltip text={tooltipDefinitions.diversity}>
-                    <div className="flex h-4 w-4 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <Tooltip rating="diversity" />
                 </div>
                 <div className="lg:2-full relative w-full md:w-3/4">
                   <CustomSlider
@@ -679,11 +647,7 @@ export default function ReviewPage() {
                   <span className="text-center text-xs font-medium text-green-800">
                     Social Community
                   </span>
-                  <Tooltip text={tooltipDefinitions.socialCommunity}>
-                    <div className="flex h-4 w-4 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <Tooltip rating="socialCommunity" />
                 </div>
                 <div className="lg:2-full relative w-full md:w-3/4">
                   <CustomSlider
@@ -718,11 +682,7 @@ export default function ReviewPage() {
                   <span className="text-center text-xs font-medium text-green-800">
                     Competitiveness
                   </span>
-                  <Tooltip text={tooltipDefinitions.competitiveness}>
-                    <div className="flex h-4 w-4 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <Tooltip rating="competitiveness" />
                 </div>
                 <div className="lg:2-full relative w-full md:w-3/4">
                   <CustomSlider

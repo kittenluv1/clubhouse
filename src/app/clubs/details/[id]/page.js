@@ -12,6 +12,7 @@ import { AiFillStar } from "react-icons/ai";
 import { useMemo } from "react";
 import Link from "next/link";
 import MobileRatingsDropdown from "../../../components/MobileRatingsDropdown";
+import Tooltip from "@/app/components/tooltip";
 
 const getIconByName = (name) => {
   const key = name.toLowerCase();
@@ -137,18 +138,6 @@ function DescriptionWithClamp({ description }) {
   );
 }
 
-// Definitions for each rating category
-const tooltipDefinitions = {
-  timeCommitment:
-    "Estimated weekly time required for meetings, events, or responsibilities. \n 1 = Minimal \n 5 = Very High",
-  diversity:
-    " How welcoming the club is to people of diverse identities (race, gender, sexuality, ability, etc.). \n 1 = Not inclusive \n 5 = Actively promoting diversity through leadership and programming",
-  socialCommunity:
-    " Strength of the club’s social environment, including club culture, events, mentorship, and overall sense of belonging. \n 1 = Minimal connection \n 5 = Strong, supportive community",
-  competitiveness:
-    " How selective and challenging the club is to join and stay involved in. \n 1 = Open to all \n 5 = Highly selective and rigorous",
-};
-
 export default function ClubDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -270,24 +259,6 @@ export default function ClubDetailsPage() {
     }
   };
 
-  // Tooltip component
-  const Tooltip = ({ text, children }) => {
-    const [open, setOpen] = useState(false);
-    return (
-      <div className="relative inline-block">
-        <span onClick={() => setOpen((v) => !v)} className="cursor-pointer">
-          {children}
-        </span>
-        {open && (
-          <div className="pointer-events-auto absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-100 transition-opacity duration-200">
-            {text}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="mx-auto max-w-6xl p-6 md:p-20">
       {/* Club Information */}
@@ -395,11 +366,7 @@ export default function ClubDetailsPage() {
                       <div className="mb-1 flex justify-between">
                         <div className="flex items-center gap-1">
                           <span>Time Commitment</span>
-                          <Tooltip text={tooltipDefinitions.timeCommitment}>
-                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                              ?
-                            </div>
-                          </Tooltip>
+                          <Tooltip rating="timeCommitment" />
                         </div>
                         <span>
                           {club.average_time_commitment
@@ -426,11 +393,7 @@ export default function ClubDetailsPage() {
                       <div className="mb-1 flex justify-between">
                         <div className="flex items-center gap-1">
                           <span>Diversity</span>
-                          <Tooltip text={tooltipDefinitions.diversity}>
-                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                              ?
-                            </div>
-                          </Tooltip>
+                          <Tooltip rating="diversity" />
                         </div>
                         <span>
                           {club.average_diversity
@@ -457,11 +420,7 @@ export default function ClubDetailsPage() {
                       <div className="mb-1 flex justify-between">
                         <div className="flex items-center gap-1">
                           <span>Social Community</span>
-                          <Tooltip text={tooltipDefinitions.socialCommunity}>
-                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                              ?
-                            </div>
-                          </Tooltip>
+                          <Tooltip rating="socialCommunity" />
                         </div>
                         <span>
                           {club.average_social_community
@@ -488,11 +447,7 @@ export default function ClubDetailsPage() {
                       <div className="mb-1 flex justify-between">
                         <div className="flex items-center gap-1">
                           <span>Competitiveness</span>
-                          <Tooltip text={tooltipDefinitions.competitiveness}>
-                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                              ?
-                            </div>
-                          </Tooltip>
+                          <Tooltip rating="competitiveness" />
                         </div>
                         <span>
                           {club.average_competitiveness
@@ -602,11 +557,7 @@ export default function ClubDetailsPage() {
                 <div className="mb-1 flex justify-between">
                   <div className="flex items-center gap-1">
                     <span>Time Commitment</span>
-                    <Tooltip text={tooltipDefinitions.timeCommitment}>
-                      <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                        ?
-                      </div>
-                    </Tooltip>
+                    <Tooltip rating="timeCommitment" />
                   </div>
                   <span>
                     {club.average_time_commitment
@@ -633,11 +584,7 @@ export default function ClubDetailsPage() {
                 <div className="mb-1 flex justify-between">
                   <div className="flex items-center gap-1">
                     <span>Inclusivity</span>
-                    <Tooltip text={tooltipDefinitions.diversity}>
-                      <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                        ?
-                      </div>
-                    </Tooltip>
+                    <Tooltip rating="diversity" />
                   </div>
                   <span>
                     {club.average_diversity
@@ -664,11 +611,7 @@ export default function ClubDetailsPage() {
                 <div className="mb-1 flex justify-between">
                   <div className="flex items-center gap-1">
                     <span>Social Community</span>
-                    <Tooltip text={tooltipDefinitions.socialCommunity}>
-                      <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                        ?
-                      </div>
-                    </Tooltip>
+                    <Tooltip rating="socialCommunity" />
                   </div>
                   <span>
                     {club.average_social_community
@@ -695,11 +638,7 @@ export default function ClubDetailsPage() {
                 <div className="mb-1 flex justify-between">
                   <div className="flex items-center gap-1">
                     <span>Competitiveness</span>
-                    <Tooltip text={tooltipDefinitions.competitiveness}>
-                      <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
-                        ?
-                      </div>
-                    </Tooltip>
+                    <Tooltip rating="competitiveness" />
                   </div>
                   <span>
                     {club.average_competitiveness
