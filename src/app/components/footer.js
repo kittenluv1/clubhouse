@@ -25,7 +25,7 @@ export default function Footer() {
         <br />
         <a href="https://www.instagram.com/clubhouseucla/" target="_blank">
           <img
-            src="/instagram2.svg"
+            src="/instagram.svg"
             alt="instagram icon"
             className="inline-block w-6"
           />
