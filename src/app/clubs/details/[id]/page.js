@@ -391,12 +391,12 @@ export default function ClubDetailsPage() {
                     <div>
                       <div className="mb-1 flex justify-between">
                         <div className="flex items-center gap-1">
-                          <span>Diversity</span>
-                          <Tooltip rating="diversity" />
+                          <span>inclusivity</span>
+                          <Tooltip rating="inclusivity" />
                         </div>
                         <span>
-                          {club.average_diversity
-                            ? club.average_diversity.toFixed(1)
+                          {club.average_inclusivity
+                            ? club.average_inclusivity.toFixed(1)
                             : "N/A"}
                           /5
                         </span>
@@ -405,7 +405,7 @@ export default function ClubDetailsPage() {
                         <div
                           className="h-full bg-[#b4d59f]"
                           style={{
-                            width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
+                            width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
                           }}
                         ></div>
                       </div>
@@ -583,11 +583,11 @@ export default function ClubDetailsPage() {
                 <div className="mb-1 flex justify-between">
                   <div className="flex items-center gap-1">
                     <span>Inclusivity</span>
-                    <Tooltip rating="diversity" />
+                    <Tooltip rating="inclusivity" />
                   </div>
                   <span>
-                    {club.average_diversity
-                      ? club.average_diversity.toFixed(1)
+                    {club.average_inclusivity
+                      ? club.average_inclusivity.toFixed(1)
                       : "N/A"}
                     /5
                   </span>
@@ -596,7 +596,7 @@ export default function ClubDetailsPage() {
                   <div
                     className="h-full bg-[#b4d59f]"
                     style={{
-                      width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
+                      width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
                     }}
                   ></div>
                 </div>

@@ -139,7 +139,7 @@ const Page = () => {
             membership_end_quarter: record.membership_end_quarter,
             membership_end_year: record.membership_end_year,
             time_commitment_rating: record.time_commitment_rating,
-            diversity_rating: record.diversity_rating,
+            inclusivity_rating: record.inclusivity_rating,
             social_community_rating: record.social_community_rating,
             competitiveness_rating: record.competitiveness_rating,
             overall_satisfaction: record.overall_satisfaction,

@@ -31,13 +31,13 @@ function MobileRatingsDropdown({ club }) {
               <span>high</span>
             </div>
           </div>
-          {/* Diversity */}
+          {/* Inclusivity */}
           <div>
             <div className="mb-1 flex justify-between">
-              <span>Diversity</span>
+              <span>Inclusivity</span>
               <span>
-                {club.average_diversity
-                  ? club.average_diversity.toFixed(1)
+                {club.average_inclusivity
+                  ? club.average_inclusivity.toFixed(1)
                   : "N/A"}
                 /5
               </span>
@@ -46,7 +46,7 @@ function MobileRatingsDropdown({ club }) {
               <div
                 className="h-full bg-[#b4d59f]"
                 style={{
-                  width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
+                  width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
                 }}
               ></div>
             </div>
