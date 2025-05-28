@@ -6,7 +6,7 @@ function MobileRatingsDropdown({ club }) {
   return (
     <div className="mb-4">
       {open && (
-        <div id="rating-bars-menu" className="grid grid-cols-1 gap-4 mt-2">
+        <div id="rating-bars-menu" className="mt-2 grid grid-cols-1 gap-4">
           {/* Time Commitment */}
           <div>
             <div className="mb-1 flex justify-between">
@@ -75,8 +75,8 @@ function MobileRatingsDropdown({ club }) {
               ></div>
             </div>
             <div className="mt-1 flex justify-between text-xs text-gray-500">
-              <span>poor</span>
-              <span>great</span>
+              <span>low</span>
+              <span>high</span>
             </div>
           </div>
           {/* Competitiveness */}

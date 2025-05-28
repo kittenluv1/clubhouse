@@ -16,16 +16,16 @@ import MobileRatingsDropdown from "../../../components/MobileRatingsDropdown";
 const getIconByName = (name) => {
   const key = name.toLowerCase();
   if (key.includes("instagram")) {
-    return <img src="/instagram2.svg" alt="Instagram" width={27} height={27} />;
+    return <img src="/instagram2.svg" alt="Instagram" className="w-6" />;
   }
   if (key.includes("facebook")) {
-    return <img src="/facebook.svg" alt="Facebook" width={25} height={25} />;
+    return <img src="/facebook.svg" alt="Facebook" className="w-6" />;
   }
   if (key.includes("linkedin")) {
-    return <img src="/linkedin.svg" alt="LinkedIn" width={25} height={25} />;
+    return <img src="/linkedin.svg" alt="LinkedIn" className="w-6" />;
   }
   if (key.includes("youtube")) {
-    return <img src="/youtube.svg" alt="YouTube" width={30} height={30} />;
+    return <img src="/youtube.svg" alt="YouTube" className="w-6" />;
   }
   return null;
 };
@@ -272,28 +272,33 @@ export default function ClubDetailsPage() {
 
   // Tooltip component
   const Tooltip = ({ text, children }) => {
+    const [open, setOpen] = useState(false);
     return (
-      <div className="group relative inline-block">
-        {children}
-        <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          {text}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
-        </div>
+      <div className="relative inline-block">
+        <span onClick={() => setOpen((v) => !v)} className="cursor-pointer">
+          {children}
+        </span>
+        {open && (
+          <div className="pointer-events-auto absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-100 transition-opacity duration-200">
+            {text}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
+          </div>
+        )}
       </div>
     );
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-8">
+    <div className="mx-auto max-w-6xl p-6 md:p-20">
       {/* Club Information */}
       <section>
         {isDesktop ? (
           <div
-            className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 md:flex-row"
+            className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 lg:flex-row"
             style={{ boxShadow: "6px 6px 0px #b4d59f" }}
           >
             {/* left side of the box */}
-            <div className="pr-5 md:w-4/6">
+            <div className="pr-5 lg:w-4/6">
               <h1 className="mb-3 text-3xl font-bold">
                 {club.OrganizationName}
               </h1>
@@ -339,11 +344,7 @@ export default function ClubDetailsPage() {
                         <img
                           src="/link.svg"
                           alt="Website Icon"
-                          style={{
-                            width: 25,
-                            height: 25,
-                            display: "inline-block",
-                          }}
+                          className="inline-block w-6 hover:opacity-80"
                         />
                       </a>
                     )}
@@ -367,21 +368,23 @@ export default function ClubDetailsPage() {
             </div>
 
             {/* vertical line */}
-            <div className="hidden justify-center md:flex">
+            <div className="hidden justify-center lg:flex">
               <div className="w-px bg-gray-400" style={{ height: "100%" }} />
             </div>
 
             {/* right side */}
-            <div className="pl-5 md:w-2/6">
+            <div className="pl-5 lg:w-2/6">
               {/* Overall Rating */}
               <div className="mt-2 mb-4 flex items-center">
-                <span className="text-lg font-bold">
+                <span className="text-2xl font-bold">
                   {club.average_satisfaction
                     ? club.average_satisfaction.toFixed(1)
                     : "N/A"}
                 </span>
-                <AiFillStar className="mr-2 text-lg text-yellow-400" />
-                <h2 className="text-lg font-bold">satisfaction rating</h2>
+                <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+                <h2 className="text-lg font-bold text-nowrap">
+                  satisfaction rating
+                </h2>
               </div>
 
               <section>
@@ -390,7 +393,14 @@ export default function ClubDetailsPage() {
                   <div className="grid grid-cols-1 gap-4">
                     <div>
                       <div className="mb-1 flex justify-between">
-                        <span>Time Commitment</span>
+                        <div className="flex items-center gap-1">
+                          <span>Time Commitment</span>
+                          <Tooltip text={tooltipDefinitions.timeCommitment}>
+                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
+                              ?
+                            </div>
+                          </Tooltip>
+                        </div>
                         <span>
                           {club.average_time_commitment
                             ? club.average_time_commitment.toFixed(1)
@@ -414,7 +424,14 @@ export default function ClubDetailsPage() {
 
                     <div>
                       <div className="mb-1 flex justify-between">
-                        <span>Diversity</span>
+                        <div className="flex items-center gap-1">
+                          <span>Diversity</span>
+                          <Tooltip text={tooltipDefinitions.diversity}>
+                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
+                              ?
+                            </div>
+                          </Tooltip>
+                        </div>
                         <span>
                           {club.average_diversity
                             ? club.average_diversity.toFixed(1)
@@ -438,7 +455,14 @@ export default function ClubDetailsPage() {
 
                     <div>
                       <div className="mb-1 flex justify-between">
-                        <span>Social Community</span>
+                        <div className="flex items-center gap-1">
+                          <span>Social Community</span>
+                          <Tooltip text={tooltipDefinitions.socialCommunity}>
+                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
+                              ?
+                            </div>
+                          </Tooltip>
+                        </div>
                         <span>
                           {club.average_social_community
                             ? club.average_social_community.toFixed(1)
@@ -455,14 +479,21 @@ export default function ClubDetailsPage() {
                         ></div>
                       </div>
                       <div className="mt-1 flex justify-between text-xs text-gray-500">
-                        <span>poor</span>
-                        <span>great</span>
+                        <span>low</span>
+                        <span>high</span>
                       </div>
                     </div>
 
                     <div>
                       <div className="mb-1 flex justify-between">
-                        <span>Competitiveness</span>
+                        <div className="flex items-center gap-1">
+                          <span>Competitiveness</span>
+                          <Tooltip text={tooltipDefinitions.competitiveness}>
+                            <div className="mx-1 flex h-3 w-3 cursor-pointer items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
+                              ?
+                            </div>
+                          </Tooltip>
+                        </div>
                         <span>
                           {club.average_competitiveness
                             ? club.average_competitiveness.toFixed(1)
@@ -493,10 +524,11 @@ export default function ClubDetailsPage() {
             </div>
           </div>
         ) : (
-          <div className="mb-4 flex flex-col rounded-lg border-2 bg-white p-6 md:flex-row">
+          // mobile view of the club details
+          <div className="mb-4 flex flex-col rounded-lg border-2 bg-white p-8 lg:flex-row">
             {/* left side of the box */}
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold">{club.OrganizationName}</h1>
+            <div className="mb-2 flex items-center gap-2">
+              <h1 className="text-2xl font-bold">{club.OrganizationName}</h1>
               <div className="flex items-center gap-1">
                 {/* Website Icon */}
                 {club.OrganizationWebSite && (
@@ -508,7 +540,7 @@ export default function ClubDetailsPage() {
                     <img
                       src="/link.svg"
                       alt="Website Icon"
-                      style={{ width: 25, height: 25, display: "inline-block" }}
+                      className="inline-block w-6 hover:opacity-80"
                     />
                   </a>
                 )}
@@ -521,7 +553,7 @@ export default function ClubDetailsPage() {
                     <img
                       src="/email.svg"
                       alt="Email Icon"
-                      style={{ width: 30, height: 30, display: "inline-block" }}
+                      className="inline-block w-6 hover:opacity-80"
                     />
                   </a>
                 )}
@@ -555,7 +587,7 @@ export default function ClubDetailsPage() {
             {/* right side */}
             {/* Overall Rating */}
             <div className="mb-4 flex items-center">
-              <span className="text-lg font-bold">
+              <span className="text-2xl font-bold">
                 {club.average_satisfaction
                   ? club.average_satisfaction.toFixed(1)
                   : "N/A"}
@@ -568,7 +600,7 @@ export default function ClubDetailsPage() {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
+                  <div className="flex items-center gap-1">
                     <span>Time Commitment</span>
                     <Tooltip text={tooltipDefinitions.timeCommitment}>
                       <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
@@ -599,7 +631,7 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
+                  <div className="flex items-center gap-1">
                     <span>Inclusivity</span>
                     <Tooltip text={tooltipDefinitions.diversity}>
                       <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
@@ -630,7 +662,7 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
+                  <div className="flex items-center gap-1">
                     <span>Social Community</span>
                     <Tooltip text={tooltipDefinitions.socialCommunity}>
                       <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
@@ -661,7 +693,7 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
+                  <div className="flex items-center gap-1">
                     <span>Competitiveness</span>
                     <Tooltip text={tooltipDefinitions.competitiveness}>
                       <div className="mx-1 flex h-3 w-3 cursor-help items-center justify-center rounded-full border border-gray-400 text-xs text-gray-500">
@@ -769,7 +801,7 @@ export default function ClubDetailsPage() {
                   className="rounded-lg border border-2 border-black bg-gray-50 p-6"
                 >
                   <div className="mb-2 text-lg font-bold">
-                    {anonymousName()}
+                    {review.user_alias ? `${review.user_alias}` : "Anonymous"}
                   </div>
                   <div>
                     <span className="text-black">
