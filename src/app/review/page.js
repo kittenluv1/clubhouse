@@ -212,7 +212,7 @@ export default function ReviewPage() {
   const [savedEndQuarter, setSavedEndQuarter] = useState("");
   const [savedEndYear, setSavedEndYear] = useState("");
   const [timeCommitment, setTimeCommitment] = useState(3);
-  const [diversityRating, setDiversityRating] = useState(3);
+  const [inclusivityRating, setInclusivityRating] = useState(3);
   const [socialCommunity, setSocialCommunity] = useState(3);
   const [competitiveness, setCompetitiveness] = useState(3);
   const [overallSatisfaction, setOverallSatisfaction] = useState(null);
@@ -381,7 +381,7 @@ export default function ReviewPage() {
         membership_end_quarter: endQuarter,
         membership_end_year: parseInt(endYear),
         time_commitment_rating: timeCommitment,
-        diversity_rating: diversityRating,
+        inclusivity_rating: inclusivityRating,
         social_community_rating: socialCommunity,
         competitiveness_rating: competitiveness,
         overall_satisfaction: overallSatisfaction,
@@ -433,7 +433,7 @@ export default function ReviewPage() {
     setSavedEndQuarter("");
     setSavedEndYear("");
     setTimeCommitment(3);
-    setDiversityRating(3);
+    setInclusivityRating(3);
     setSocialCommunity(3);
     setCompetitiveness(3);
     setOverallSatisfaction(null);
@@ -596,7 +596,7 @@ export default function ReviewPage() {
 
               <div className="flex flex-col items-center space-y-1">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full">
-                  {/* Diversity SVG icon */}
+                  {/* Inclusivity SVG icon */}
                   <svg
                     width="55"
                     height="51"
@@ -617,12 +617,12 @@ export default function ReviewPage() {
                   <span className="text-center text-xs font-medium text-green-800">
                     Inclusivity
                   </span>
-                  <Tooltip rating="diversity" />
+                  <Tooltip rating="inclusivity" />
                 </div>
                 <div className="lg:2-full relative w-full md:w-3/4">
                   <CustomSlider
-                    value={diversityRating}
-                    onChange={(val) => setDiversityRating(val)}
+                    value={inclusivityRating}
+                    onChange={(val) => setInclusivityRating(val)}
                     lowLabel="low"
                     highLabel="high"
                   />

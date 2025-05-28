@@ -77,8 +77,8 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
               <label>{review.time_commitment_rating}</label>
             </div>
             <div className="flex flex-row gap-[4px]">
-              <label className="font-bold">Diversity:</label>
-              <label>{review.diversity_rating}</label>
+              <label className="font-bold">Inclusivity:</label>
+              <label>{review.inclusivity_rating}</label>
             </div>
           </div>
 

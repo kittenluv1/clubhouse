@@ -4,7 +4,7 @@ import { useState } from "react";
 const tooltipDefinitions = {
   timeCommitment:
     "Estimated weekly time required for meetings, events, or responsibilities.\n1 = Minimal\n5 = Very High",
-  diversity:
+  inclusivity:
     "How welcoming the club is to people of diverse identities (race, gender, sexuality, ability, etc.).\n1 = Not inclusive\n5 = Actively promoting diversity through leadership and programming",
   socialCommunity:
     "Strength of the club's social environment, including club culture, events, mentorship, and overall sense of belonging.\n1 = Minimal connection\n5 = Strong, supportive community",
