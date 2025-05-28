@@ -468,20 +468,22 @@ export default function ReviewPage() {
   return (
     <div className="min-h-screen w-full p-10 md:p-12">
       <div className="font-dm-sans mx-auto max-w-7xl">
-        <div className="mt-18 mb-18 text-6xl font-bold">Review a Club</div>
-        <p className="text mb-16 max-w-6xl">
-          Your review is completely anonymous, so feel free to be honest! Your
-          insights help other students get a better sense of what the club is
-          really like. Be real, respectful, and specific—your voice makes a
-          difference.
-        </p>
-        <p>
-          Review our Community Guidelines for posting reviews{" "}
-          <Link href="/community-guidelines" className="underline">
-            here
-          </Link>
-          .
-        </p>
+        <div className="my-10 text-6xl font-bold md:my-18">Review a Club</div>
+        <div className="mb-10 max-w-6xl space-y-10">
+          <p>
+            Your review is completely anonymous, so feel free to be honest! Your
+            insights help other students get a better sense of what the club is
+            really like. Be real, respectful, and specific—your voice makes a
+            difference.
+          </p>
+          <p>
+            Review our Community Guidelines for posting reviews{" "}
+            <Link href="/community-guidelines" className="underline">
+              here
+            </Link>
+            .
+          </p>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Club Name */}
           <div>

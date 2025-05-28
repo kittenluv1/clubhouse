@@ -1,6 +1,6 @@
 function GuidelinesPage() {
   return (
-    <div className="lg:p-30 lg:pt-15 lg:pb-25">
+    <div className="p-20 md:mb-25 md:p-30 md:pt-15">
       <h1 className="my-6 text-4xl">Clubhouse Community Guidelines</h1>
       <p>
         To ensure ClubHouse remains a safe, respectful, and helpful space for
