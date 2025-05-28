@@ -31,10 +31,6 @@ function Header() {
   useEffect(() => {
     setIsMounted(true);
 
-    const update = () => setIsMobile(window.innerWidth < 1024);
-    update();
-    window.addEventListener("resize", update);
-
     const checkAdmin = async () => {
       const {
         data: { session },
@@ -52,7 +48,6 @@ function Header() {
 
     return () => {
       authListener.subscription.unsubscribe();
-      window.removeEventListener("resize", update);
     };
   }, []);
 
@@ -70,11 +65,7 @@ function Header() {
     }
   };
 
-  const searchPages = ["/clubs"];
-  const isSearchPage = searchPages.some((page) => pathname.startsWith(page));
-
   if (!isMounted) return null;
-  if (isMobile && !isSearchPage) return null;
 
   return (
     <div className="flex w-full items-center justify-between bg-[#DFEBFF] p-5 md:px-20 lg:py-6">
