@@ -10,7 +10,6 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from "react-icons/ai";
 import { useMemo } from "react";
-import Link from "next/link";
 import MobileRatingsDropdown from "../../../components/MobileRatingsDropdown";
 import Tooltip from "@/app/components/tooltip";
 
@@ -675,12 +674,16 @@ export default function ClubDetailsPage() {
               <p className="mb-6">
                 Have something to say? Share your experience...
               </p>
-              <Link
-                href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
+              <button
+                onClick={() =>
+                  attemptReview(
+                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                  )
+                }
                 className="mb-12 inline-block rounded-lg border bg-black px-6 py-2 text-white"
               >
                 Leave a Review
-              </Link>
+              </button>
             </div>
           ) : (
             <div>
@@ -688,12 +691,16 @@ export default function ClubDetailsPage() {
                 Student Reviews ({club.total_num_reviews || reviews.length || 0}
                 )
               </h2>
-              <Link
-                href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
+              <button
+                onClick={() =>
+                  attemptReview(
+                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                  )
+                }
                 className="mb-8 inline-block rounded-lg border bg-black px-6 py-2 text-white"
               >
                 Leave a Review
-              </Link>
+              </button>
             </div>
           )}
         </section>
