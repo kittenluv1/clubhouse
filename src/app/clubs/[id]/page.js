@@ -6,7 +6,7 @@ import Link from "next/link";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import ErrorScreen from "@/app/components/ErrorScreen";
 
-import { AiFillStar } from 'react-icons/ai';
+import { AiFillStar } from "react-icons/ai";
 
 function getCategories(club) {
   return [
@@ -20,12 +20,14 @@ function getCategories(club) {
 
 function RatingBar({ label, value }) {
   return (
-    <div className="flex flex-col items-start w-48">
-      <div className="flex justify-between w-full mb-1">
+    <div className="flex w-48 flex-col items-start">
+      <div className="mb-1 flex w-full justify-between">
         <span className="text-xs font-medium text-gray-600">{label}</span>
-        <span className="text-xs font-semibold text-green-700">{value.toFixed(1)}</span>
+        <span className="text-xs font-semibold text-green-700">
+          {value.toFixed(1)}
+        </span>
       </div>
-      <div className="w-full h-2 bg-gray-200 rounded-full">
+      <div className="h-2 w-full rounded-full bg-gray-200">
         <div
           className="h-2 rounded-full"
           style={{
@@ -67,47 +69,50 @@ export default function ClubPage() {
       });
   }, [id]);
 
-  if (loading) return (LoadingScreen());
+  if (loading) return LoadingScreen();
 
   if (error) return <ErrorScreen error={error} />;
 
-  if (!club) return (<p className="p-4">No club found with the name: {id}</p>);
+  if (!club) return <p className="p-4">No club found with the name: {id}</p>;
 
   const categories = getCategories(club);
 
   return (
-    <div className="border rounded-xl p-8 m-6 flex-col rounded m-10">
+    <div className="m-6 m-10 flex-col rounded rounded-xl border p-8">
       <Link
         href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
         className="block"
       >
-        <h3 className="text-2xl pb-4 font-bold">{club.OrganizationName}</h3>
+        <h3 className="pb-4 text-2xl font-bold">{club.OrganizationName}</h3>
       </Link>
 
       <div className="flex gap-2 pb-4">
         {categories.map((cat, idx) => (
           <span
             key={idx}
-            className="border bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-sm font-bold"
+            className="rounded-full border bg-gray-200 px-3 py-1 text-sm font-bold text-gray-800"
           >
             {cat}
           </span>
         ))}
       </div>
 
-      <p className="text-sm text-gray-800 pb-6">{club.OrganizationDescription}</p>
+      <p className="pb-6 text-sm text-gray-800">
+        {club.OrganizationDescription}
+      </p>
 
       <div className="flex items-center">
-        <span className="font-semibold text-xl">
-          {club.average_satisfaction ? club.average_satisfaction.toFixed(1) : 'N/A'}
+        <span className="text-xl font-semibold">
+          {club.average_satisfaction
+            ? club.average_satisfaction.toFixed(1)
+            : "N/A"}
         </span>
-        <AiFillStar className="text-yellow-400 text-xl mr-2" />
-        <h2 className="font-semibold text-x">satisfaction rating</h2>
+        <AiFillStar className="mr-2 text-xl text-yellow-400" />
+        <h2 className="text-x font-semibold">satisfaction rating</h2>
       </div>
-      <p className="font-style: italic">from {club.total_num_reviews || reviews.length || 0} trusted students</p>
-
-
-
+      <p className="font-style: italic">
+        from {club.total_num_reviews || reviews.length || 0} trusted students
+      </p>
 
       {/* 
       {club.OrganizationEmail && (

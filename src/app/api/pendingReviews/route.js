@@ -37,7 +37,7 @@ export async function POST(req) {
         JSON.stringify({
           error: "Invalid request: issue with id or approve boolean",
         }),
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -78,7 +78,7 @@ export async function POST(req) {
           ? "Review approved and moved to reviews table"
           : "Review rejected and deleted from pending table",
       }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {

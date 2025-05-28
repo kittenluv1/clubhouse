@@ -42,7 +42,7 @@ const Page = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         checkSession(session);
-      }
+      },
     );
 
     return () => {
@@ -98,7 +98,7 @@ const Page = () => {
             club_name: record.club_name,
             user_email: record.user_email,
           }),
-        }
+        },
       );
 
       if (!emailRes.ok) {
@@ -139,14 +139,14 @@ const Page = () => {
             membership_end_quarter: record.membership_end_quarter,
             membership_end_year: record.membership_end_year,
             time_commitment_rating: record.time_commitment_rating,
-            diversity_rating: record.diversity_rating,
+            inclusivity_rating: record.inclusivity_rating,
             social_community_rating: record.social_community_rating,
             competitiveness_rating: record.competitiveness_rating,
             overall_satisfaction: record.overall_satisfaction,
             review_text: record.review_text,
             user_email: record.user_email,
           }),
-        }
+        },
       );
 
       if (!emailRes.ok) {
@@ -165,27 +165,27 @@ const Page = () => {
   if (!authChecked) return null;
 
   if (loading) {
-    return <div className="p-6 md:p-[80px] space-y-6">Loading reviews...</div>;
+    return <div className="space-y-6 p-6 md:p-[80px]">Loading reviews...</div>;
   }
 
   return (
-    <div className="p-6 md:p-[80px] space-y-6">
-      <div className="flex flex-row justify-between items-center gap-4">
-        <div className="flex flex-row space-x-[4px] items-center">
-          <h1 className="font-[var(--font-dm-sans)] font-bold text-[20px] md:text-[28px] text-black">
+    <div className="space-y-6 p-6 md:p-[80px]">
+      <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-row items-center space-x-[4px]">
+          <h1 className="text-[20px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">
             Pending Reviews
           </h1>
-          <h1 className="font-[var(--font-dm-sans)] font-bold text-[20px] md:text-[28px] text-black">
+          <h1 className="text-[20px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">
             ({numPending})
           </h1>
         </div>
 
-        <div className="flex items-center gap-2 w-auto">
+        <div className="flex w-auto items-center gap-2">
           {isMobile ? (
             <>
               <button
                 onClick={() => setShowSortModal(true)}
-                className="bg-[#FFF7D6] border border-black rounded-full font-bold px-4 py-2"
+                className="rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold"
               >
                 Sort by
               </button>
@@ -201,13 +201,13 @@ const Page = () => {
               />
             </>
           ) : (
-            <div className="flex items-center gap-2 border border-black rounded-full bg-[#FFF7D6] px-4 py-2">
+            <div className="flex items-center gap-2 rounded-full border border-black bg-[#FFF7D6] px-4 py-2">
               <label className="font-medium text-black">Sort by:</label>
               <select
                 id="sort"
                 value={sortType}
                 onChange={handleSortChange}
-                className="text-black font-medium"
+                className="font-medium text-black"
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>

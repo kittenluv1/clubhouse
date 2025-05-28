@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import TagButton from "./tagButton";
+import { useSearch } from "../context/SearchContext";
 
 const GROUPED_TAGS = {
   "Academic & Pre-Professional": [
@@ -62,13 +63,18 @@ export default function Filter({
   show = false,
   onInteraction = () => {},
 }) {
+  const { selectedCategories, searchByCategories } = useSearch();
   const [showFilter, setShowFilter] = useState(show);
-  const [selectedTags, setSelectedTags] = useState(initialSelectedTags);
-  const [tempSelectedTags, setTempSelectedTags] = useState(initialSelectedTags);
+  const [tempSelectedTags, setTempSelectedTags] = useState(selectedCategories);
   const [isMobile, setIsMobile] = useState(false);
   const filterRef = useRef(null);
   const buttonRef = useRef(null);
   const router = useRouter();
+
+  // Sync with context state
+  useEffect(() => {
+    setTempSelectedTags(selectedCategories);
+  }, [selectedCategories]);
 
   // detect mobile screen
   useEffect(() => {
@@ -82,7 +88,7 @@ export default function Filter({
     e.stopPropagation();
     onInteraction();
     setShowFilter((prev) => !prev);
-    if (showFilter) setTempSelectedTags(selectedTags);
+    if (showFilter) setTempSelectedTags(selectedCategories);
   };
 
   useEffect(() => {
@@ -96,13 +102,24 @@ export default function Filter({
         !buttonRef.current.contains(event.target)
       ) {
         setShowFilter(false);
-        setTempSelectedTags(selectedTags);
+        setTempSelectedTags(selectedCategories);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showFilter, selectedTags, isMobile]);
+  }, [showFilter, selectedCategories, isMobile]);
+
+  useEffect(() => {
+    if (isMobile && showFilter) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, showFilter]);
 
   useEffect(() => {
     if (isMobile && showFilter) {
@@ -124,33 +141,22 @@ export default function Filter({
   const clearAll = () => setTempSelectedTags([]);
   const handleClose = () => {
     setShowFilter(false);
-    setTempSelectedTags(selectedTags);
+    setTempSelectedTags(selectedCategories);
   };
 
   const handleSearch = () => {
     onInteraction();
-    if (!tempSelectedTags.length) {
-      router.push("/clubs");
-    } else {
-      const encoded = encodeURIComponent(tempSelectedTags.join(","));
-      router.push(`/clubs?categories=${encoded}`);
-    }
 
-    setSelectedTags(tempSelectedTags);
+    // Use the context method which will clear name search
+    searchByCategories(tempSelectedTags);
     setShowFilter(false);
   };
 
   const handleRemoveTag = (tagToRemove) => {
-    const updatedTags = selectedTags.filter((tag) => tag !== tagToRemove);
-    setSelectedTags(updatedTags);
-    setTempSelectedTags(updatedTags);
+    const updatedTags = selectedCategories.filter((tag) => tag !== tagToRemove);
 
-    if (updatedTags.length > 0) {
-      const encoded = encodeURIComponent(updatedTags.join(","));
-      router.push(`/clubs?categories=${encoded}`);
-    } else {
-      router.push("/clubs");
-    }
+    // Use the context method to update and clear name search
+    searchByCategories(updatedTags);
   };
 
   return (
@@ -164,10 +170,10 @@ export default function Filter({
           Search by Category
         </button>
 
-        {!isMobile && selectedTags.length > 0 && (
+        {!isMobile && selectedCategories.length > 0 && (
           <div className="flex-grow overflow-x-auto pb-2">
             <div className="flex flex-wrap gap-2">
-              {selectedTags.map((tag) => (
+              {selectedCategories.map((tag) => (
                 <div
                   key={tag}
                   className="flex items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-white shadow-md"
@@ -214,7 +220,7 @@ export default function Filter({
               >
                 <div className="mx-auto h-1.5 w-12 rounded-full bg-gray-300" />
               </motion.div>
-              
+
               <div className="flex-1 overflow-y-auto px-10">
                 <div className="pb-24">
                   {tempSelectedTags.length > 0 && (
