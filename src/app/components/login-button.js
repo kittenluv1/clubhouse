@@ -42,7 +42,7 @@ function LoginButton() {
         <button
           onClick={handleSignOut}
           className={
-            "-3 flex w-full justify-center self-center rounded-full border-1 border-black bg-[#FFA1CD] px-4 py-2 text-nowrap hover:bg-black hover:text-white"
+            "-3 flex w-full justify-center self-center rounded-full border-1 border-black bg-[#FFA1CD] px-4 py-2 text-nowrap transition-colors duration-300 ease-in-out hover:bg-black hover:text-white"
           }
         >
           Sign Out
@@ -51,7 +51,7 @@ function LoginButton() {
         <button
           onClick={() => router.push("/sign-in")}
           className={
-            "flex w-full justify-center self-center rounded-full border-1 border-black bg-[#FFA1CD] px-4 py-2 text-nowrap hover:bg-black hover:text-white"
+            "flex w-full justify-center self-center rounded-full border-1 border-black bg-[#FFA1CD] px-4 py-2 text-nowrap transition-colors duration-300 ease-in-out hover:bg-black hover:text-white"
           }
         >
           Sign in

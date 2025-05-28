@@ -672,7 +672,7 @@ export default function ClubDetailsPage() {
                     `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
                   )
                 }
-                className="mb-12 inline-block rounded-lg border bg-black px-6 py-2 text-white"
+                className="mb-12 inline-block rounded-full border-1 border-black bg-black px-6 py-2 text-white transition duration-300 ease-in-out hover:bg-white hover:text-black"
               >
                 Leave a Review
               </button>
