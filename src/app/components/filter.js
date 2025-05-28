@@ -57,7 +57,11 @@ const GROUPED_TAGS = {
   ],
 };
 
-export default function Filter({ initialSelectedTags = [], show = false }) {
+export default function Filter({
+  initialSelectedTags = [],
+  show = false,
+  onInteraction = () => {},
+}) {
   const [showFilter, setShowFilter] = useState(show);
   const [selectedTags, setSelectedTags] = useState(initialSelectedTags);
   const [tempSelectedTags, setTempSelectedTags] = useState(initialSelectedTags);
@@ -76,6 +80,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
   const toggleFilter = (e) => {
     e.stopPropagation();
+    onInteraction();
     setShowFilter((prev) => !prev);
     if (showFilter) setTempSelectedTags(selectedTags);
   };
@@ -99,9 +104,20 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showFilter, selectedTags, isMobile]);
 
+  useEffect(() => {
+    if (isMobile && showFilter) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, showFilter]);
+
   const toggleTag = (tag) => {
     setTempSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -112,6 +128,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
   };
 
   const handleSearch = () => {
+    onInteraction();
     if (!tempSelectedTags.length) {
       router.push("/clubs");
     } else {
@@ -141,7 +158,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
       <div className="flex items-start gap-2">
         <button
           ref={buttonRef}
-          className="flex-shrink-0 bg-[#FFF7D6] text-black border border-black rounded-full font-bold px-4 py-2 whitespace-nowrap"
+          className="flex-shrink-0 rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold whitespace-nowrap text-black"
           onClick={toggleFilter}
         >
           Search by Category
@@ -153,7 +170,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
               {selectedTags.map((tag) => (
                 <div
                   key={tag}
-                  className="flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full shadow-md"
+                  className="flex items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-white shadow-md"
                 >
                   <span>{tag}</span>
                   <button onClick={() => handleRemoveTag(tag)} className="ml-2">
@@ -168,98 +185,116 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
       <AnimatePresence>
         {showFilter && isMobile && (
-          <motion.div
-            key="mobile-filter"
-            className="fixed bottom-0 left-0 right-0 bg-white z-50 p-10 max-h-[80vh] rounded-t-2xl shadow-xl overflow-y-auto touch-pan-y"
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={{ top: 0.05, bottom: 0 }}
-            onDragEnd={(event, info) => {
-              if (info.offset.y > 100) {
-                setShowFilter(false);
-                setTempSelectedTags(selectedTags);
-              }
-            }}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-300" />
-            <div className="p-4 pb-24 max-h-full">
-              {tempSelectedTags.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="font-semibold mb-2">Selected Tags:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {tempSelectedTags.map((tag) => (
-                      <div
-                        key={tag}
-                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm"
-                      >
-                        <span>{tag}</span>
-                        <button onClick={() => toggleTag(tag)} className="ml-2">
-                          <img src="/Close X.png" alt="x" width="20" />
-                        </button>
+          <>
+            {/* Backdrop to detect outside clicks */}
+            <div
+              className="fixed inset-0 z-40 bg-transparent"
+              onClick={handleClose}
+            />
+
+            <motion.div
+              key="mobile-filter"
+              className="fixed inset-x-0 bottom-0 z-50 flex h-[80vh] flex-col rounded-t-2xl bg-white shadow-xl"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <motion.div
+                className="flex-shrink-0 bg-white px-10 pt-6 pb-2"
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0.05, bottom: 0 }}
+                onDragEnd={(event, info) => {
+                  if (info.offset.y > 100) {
+                    setShowFilter(false);
+                    setTempSelectedTags(selectedTags);
+                  }
+                }}
+              >
+                <div className="mx-auto h-1.5 w-12 rounded-full bg-gray-300" />
+              </motion.div>
+              
+              <div className="flex-1 overflow-y-auto px-10">
+                <div className="pb-24">
+                  {tempSelectedTags.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="mb-2 font-semibold">Selected Tags:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {tempSelectedTags.map((tag) => (
+                          <div
+                            key={tag}
+                            className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
+                          >
+                            <span>{tag}</span>
+                            <button
+                              onClick={() => toggleTag(tag)}
+                              className="ml-2"
+                            >
+                              <img src="/Close X.png" alt="x" width="20" />
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                      <button
+                        onClick={clearAll}
+                        className="mt-2 text-sm font-bold text-blue-600 hover:underline"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  )}
+
+                  {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
+                    <div key={group} className="mb-6">
+                      <h4 className="mb-2 font-semibold">{group}</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {tags.map((tag) => (
+                          <TagButton
+                            key={tag}
+                            label={tag}
+                            isSelected={tempSelectedTags.includes(tag)}
+                            onClick={() => toggleTag(tag)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="fixed bottom-0 left-0 flex w-full justify-between border-t bg-white px-6 py-4">
                   <button
-                    onClick={clearAll}
-                    className="mt-2 text-sm text-blue-600 font-bold hover:underline"
+                    className="text-md px-4 py-2 font-semibold"
+                    onClick={handleClose}
                   >
-                    Clear All
+                    Cancel
+                  </button>
+                  <button
+                    className="text-md rounded-xl bg-[#5086E1] px-4 py-2 text-white"
+                    onClick={handleSearch}
+                  >
+                    Search
                   </button>
                 </div>
-              )}
-
-              {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
-                <div key={group} className="mb-6">
-                  <h4 className="font-semibold mb-2">{group}</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag) => (
-                      <TagButton
-                        key={tag}
-                        label={tag}
-                        isSelected={tempSelectedTags.includes(tag)}
-                        onClick={() => toggleTag(tag)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="fixed bottom-0 left-0 w-full bg-white px-6 py-4 border-t flex justify-between">
-              <button
-                className="text-md font-semibold px-4 py-2"
-                onClick={handleClose}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-[#5086E1] text-white text-md px-4 py-2 rounded-xl"
-                onClick={handleSearch}
-              >
-                Search
-              </button>
-            </div>
-          </motion.div>
+              </div>
+            </motion.div>
+          </>
         )}
 
         {showFilter && !isMobile && (
           <div
             ref={filterRef}
-            className="absolute top-12 left-0 bg-white rounded-xl shadow-lg z-50 w-lg lg:w-3xl p-6"
+            className="absolute top-12 left-0 z-50 w-lg rounded-xl bg-white p-6 shadow-lg lg:w-3xl"
           >
-            <div className="p-4 max-h-[50vh] overflow-y-auto">
+            <div className="max-h-[50vh] overflow-y-auto p-4">
               {tempSelectedTags.length > 0 && (
                 <div className="mb-4">
-                  <h4 className="font-semibold mb-2">Selected Tags:</h4>
+                  <h4 className="mb-2 font-semibold">Selected Tags:</h4>
                   <div className="flex flex-wrap gap-2">
                     {tempSelectedTags.map((tag) => (
                       <div
                         key={tag}
-                        className="flex-shrink-0 flex items-center bg-[#5086E1] text-white border border-[#272727] px-3 py-2 rounded-full text-sm"
+                        className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
                       >
                         <span>{tag}</span>
                         <button onClick={() => toggleTag(tag)} className="ml-2">
@@ -270,7 +305,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
                   </div>
                   <button
                     onClick={clearAll}
-                    className="mt-2 text-sm text-blue-600 font-bold hover:underline"
+                    className="mt-2 text-sm font-bold text-blue-600 hover:underline"
                   >
                     Clear All
                   </button>
@@ -279,7 +314,7 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
 
               {Object.entries(GROUPED_TAGS).map(([group, tags]) => (
                 <div key={group} className="mb-4">
-                  <h4 className="font-semibold mb-2">{group}</h4>
+                  <h4 className="mb-2 font-semibold">{group}</h4>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
                       <TagButton
@@ -294,15 +329,15 @@ export default function Filter({ initialSelectedTags = [], show = false }) {
               ))}
             </div>
 
-            <div className="flex pb-2 pt-4 justify-end">
+            <div className="flex justify-end pt-4 pb-2">
               <button
-                className="text-md font-semibold px-4 py-2"
+                className="text-md px-4 py-2 font-semibold"
                 onClick={handleClose}
               >
                 Cancel
               </button>
               <button
-                className="bg-[#5086E1] text-white text-md px-4 py-2 rounded-xl ml-2"
+                className="text-md ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-white"
                 onClick={handleSearch}
               >
                 Search
