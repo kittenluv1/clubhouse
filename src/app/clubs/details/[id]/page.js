@@ -477,9 +477,9 @@ export default function ClubDetailsPage() {
           // mobile view of the club details
           <div className="mb-4 flex flex-col rounded-lg border-2 bg-white p-8 lg:flex-row">
             {/* left side of the box */}
-            <div className="mb-2 flex items-center gap-2">
-              <h1 className="text-2xl font-bold">{club.OrganizationName}</h1>
-              <div className="flex items-center gap-1">
+            {/* <div className="mb-2 flex items-center gap-2"> */}
+              <h1 className="mb-2 text-2xl font-bold">{club.OrganizationName}</h1>
+              <div className="mb-2 flex items-center gap-1">
                 {/* Website Icon */}
                 {club.OrganizationWebSite && (
                   <a
@@ -510,7 +510,7 @@ export default function ClubDetailsPage() {
                 {/* Social Icons */}
                 {parseSocialLinks(club.SocialMediaLink)}
               </div>
-            </div>
+           {/* </div> */}
             {/* Description with clamp/expand */}
 
             <DescriptionWithClamp description={club.OrganizationDescription} />
