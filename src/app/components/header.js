@@ -73,14 +73,16 @@ function Header() {
       {pathname !== "/" ? (
         <button onClick={() => router.push("/")} className="flex items-center">
           {/* mobile responsive logo */}
-          <img
-            src="/clubhouse-logo-text.svg"
-            alt="ClubHouse Logo"
-            className="hidden md:w-3xs md:object-cover lg:block"
+          <object
+            type="image/svg+xml"
+            data="/clubhouse-logo-text.svg"
+            aria-label="ClubHouse Logo"
+            className="hidden object-cover lg:block lg:w-3xs"
           />
-          <img
-            src="/clubhouse-star-logo.svg"
-            alt="ClubHouse Logo"
+          <object
+            type="image/svg+xml"
+            data="/clubhouse-star-logo.svg"
+            aria-label="ClubHouse Logo"
             className="w-18 shrink-0 object-cover lg:hidden"
           />
         </button>
