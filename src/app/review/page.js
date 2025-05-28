@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "../components/tooltip";
+import LoadingScreen from "../components/LoadingScreen";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -461,6 +462,8 @@ export default function ReviewPage() {
       </div>
     );
   };
+
+  if (isSubmitting) return LoadingScreen();
 
   return (
     <div className="min-h-screen w-full p-10 md:p-12">
