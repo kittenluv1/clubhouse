@@ -121,14 +121,14 @@ function Home() {
                 const encoded = encodeURIComponent(category);
                 router.push(`/clubs?categories=${encoded}`);
               }}
-              className="rounded-full border-1 px-6 py-3 text-base shadow-lg transition-colors duration-300 hover:bg-[#B1D49D] lg:text-lg"
+              className="rounded-full border-1 px-6 py-3 text-base shadow-lg transition-colors duration-300 ease-in-out hover:bg-[#B1D49D] lg:text-lg"
             >
               {category}
             </button>
           ))}
           <button
             onClick={() => router.push("/clubs?showCategories")}
-            className="ml-4 rounded-full border-1 border-black bg-black px-6 py-3 text-nowrap text-white transition-colors duration-300 hover:bg-white hover:text-black"
+            className="ml-4 rounded-full border-1 border-black bg-black px-6 py-3 text-nowrap text-white transition-colors duration-300 ease-in-out hover:bg-white hover:text-black"
           >
             More Categories &gt;
           </button>
