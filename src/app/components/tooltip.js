@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Definitions for each rating category
 const tooltipDefinitions = {
@@ -14,15 +14,58 @@ const tooltipDefinitions = {
 
 export default function Tooltip({ rating }) {
   const [open, setOpen] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
+  const ignoreMouse = useRef(false);
+  const tooltipRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
+    }
+  }, []);
+
+  // On touch, close tooltip when tapping outside
+  useEffect(() => {
+    if (!open || !isTouch) return;
+    function handleTouch(e) {
+      if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("touchstart", handleTouch);
+    return () => document.removeEventListener("touchstart", handleTouch);
+  }, [open, isTouch]);
+
+  // Suppress mouse events right after touch
+  const handleClick = (e) => {
+    if (isTouch) {
+      setOpen((v) => !v);
+      ignoreMouse.current = true;
+      setTimeout(() => {
+        ignoreMouse.current = false;
+      }, 500);
+    }
+  };
+
+  const handleMouseEnter = () => {
+    if (ignoreMouse.current) return;
+    setOpen(true);
+  };
+  const handleMouseLeave = () => {
+    if (ignoreMouse.current) return;
+    setOpen(false);
+  };
+
   return (
     <div
       className="group relative inline-block align-middle"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      ref={tooltipRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div
         className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border border-gray-400 bg-white text-xs text-gray-500 select-none"
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleClick}
       >
         ?
       </div>
