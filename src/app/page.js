@@ -97,18 +97,20 @@ function Home() {
 
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
-      <h2 className="max-w-2xl lg:p-10">
-        <img
-          src={"/clubhouse-logo-text.svg"}
-          alt="ClubHouse Logo"
+      <div className="max-w-2xl lg:p-10">
+        <object
+          type="image/svg+xml"
+          data="/clubhouse-logo-text.svg"
+          aria-label="ClubHouse Logo"
           className="hidden object-cover lg:block"
         />
-        <img
-          src={"/clubhouse-star-logo.svg"}
-          alt="ClubHouse Logo"
+        <object
+          type="image/svg+xml"
+          data="/clubhouse-star-logo.svg"
+          aria-label="ClubHouse Logo"
           className="w-3xs object-cover lg:hidden"
         />
-      </h2>
+      </div>
       <div className="flex w-6/8 max-w-3xl flex-col items-center space-y-2">
         <SearchBar ref={searchRef} width="w-full" height="h-13" />
         <div className="mt-4 flex flex-wrap justify-center gap-3 py-5 md:py-10">

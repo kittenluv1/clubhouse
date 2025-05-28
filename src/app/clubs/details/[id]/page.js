@@ -10,40 +10,37 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from "react-icons/ai";
 import { useMemo } from "react";
-import Link from 'next/link';
-import MobileRatingsDropdown from '../../../components/MobileRatingsDropdown';
-
+import MobileRatingsDropdown from "../../../components/MobileRatingsDropdown";
+import Tooltip from "@/app/components/tooltip";
 
 const getIconByName = (name) => {
   const key = name.toLowerCase();
-  if (key.includes('instagram')) {
-    return <img src="/instagram2.svg" alt="Instagram" width={27} height={27} />;
+  if (key.includes("instagram")) {
+    return <img src="/instagram2.svg" alt="Instagram" className="w-6" />;
   }
-  if (key.includes('facebook')) {
-    return <img src="/facebook.svg" alt="Facebook" width={25} height={25}/>;
+  if (key.includes("facebook")) {
+    return <img src="/facebook.svg" alt="Facebook" className="w-6" />;
   }
-  if (key.includes('linkedin')) {
-    return <img src="/linkedin.svg" alt="LinkedIn" width={25} height={25} />;
+  if (key.includes("linkedin")) {
+    return <img src="/linkedin.svg" alt="LinkedIn" className="w-6" />;
   }
-  if (key.includes('youtube')) {
-    return <img src="/youtube.svg" alt="YouTube" width={30} height={30} />;
+  if (key.includes("youtube")) {
+    return <img src="/youtube.svg" alt="YouTube" className="w-6" />;
   }
   return null;
 };
 
 const parseSocialLinks = (htmlString) => {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, 'text/html');
-  const links = doc.querySelectorAll('a');
+  const doc = parser.parseFromString(htmlString, "text/html");
+  const links = doc.querySelectorAll("a");
 
-
-   return (
+  return (
     <div className="flex items-center gap-1">
       {Array.from(links).map((link, index) => {
-        const href = link.getAttribute('href');
+        const href = link.getAttribute("href");
         const text = link.textContent.trim();
         const icon = getIconByName(text || href);
-
 
         return (
           <a
@@ -140,14 +137,6 @@ function DescriptionWithClamp({ description }) {
   );
 }
 
-// Definitions for each rating category
-const tooltipDefinitions = {
-    timeCommitment: "Estimated weekly time required for meetings, events, or responsibilities. \n 1 = Minimal \n 5 = Very High",
-    diversity: " How welcoming the club is to people of diverse identities (race, gender, sexuality, ability, etc.). \n 1 = Not inclusive \n 5 = Actively promoting diversity through leadership and programming",
-    socialCommunity: " Strength of the club’s social environment, including club culture, events, mentorship, and overall sense of belonging. \n 1 = Minimal connection \n 5 = Strong, supportive community",
-    competitiveness: " How selective and challenging the club is to join and stay involved in. \n 1 = Open to all \n 5 = Highly selective and rigorous"
-};
-
 export default function ClubDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -159,10 +148,9 @@ export default function ClubDetailsPage() {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const descriptionRef = useRef(null);
   const [isClamped, setIsClamped] = useState(false);
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = !isDesktop;
   const [ratingsOpen, setRatingsOpen] = useState(false);
-
 
   useEffect(() => {
     if (!id) return;
@@ -206,20 +194,20 @@ export default function ClubDetailsPage() {
   }, [id]);
 
   function useMediaQuery(query) {
-  const [matches, setMatches] = useState(false);
+    const [matches, setMatches] = useState(false);
 
-  useEffect(() => {
-    const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-    const listener = () => setMatches(media.matches);
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, [matches, query]);
+    useEffect(() => {
+      const media = window.matchMedia(query);
+      if (media.matches !== matches) {
+        setMatches(media.matches);
+      }
+      const listener = () => setMatches(media.matches);
+      media.addEventListener("change", listener);
+      return () => media.removeEventListener("change", listener);
+    }, [matches, query]);
 
-  return matches;
-}
+    return matches;
+  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -270,125 +258,305 @@ export default function ClubDetailsPage() {
     }
   };
 
-   // Tooltip component
-    const Tooltip = ({ text, children }) => {
-        return (
-            <div className="relative group inline-block">
-                {children}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg 
-                opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 w-64 text-center whitespace-pre-line">
-                    {text}
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
-                </div>
-            </div>
-        );
-    };
-
   return (
-    <div className="mx-auto max-w-6xl px-8 py-8">
+    <div className="mx-auto max-w-6xl p-6 md:p-20">
       {/* Club Information */}
       <section>
-      {isDesktop ? (
-      <div
-        className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 md:flex-row"
-        style={{ boxShadow: "6px 6px 0px #b4d59f" }}
-      >
-        {/* left side of the box */}
-        <div className="pr-5 md:w-4/6">
-          <h1 className="mb-3 text-3xl font-bold">{club.OrganizationName}</h1>
+        {isDesktop ? (
+          <div
+            className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 lg:flex-row"
+            style={{ boxShadow: "6px 6px 0px #b4d59f" }}
+          >
+            {/* left side of the box */}
+            <div className="pr-5 lg:w-4/6">
+              <h1 className="mb-3 text-3xl font-bold">
+                {club.OrganizationName}
+              </h1>
 
-          {/* Categories/Tags */}
-          <div className="mb-3 flex flex-wrap gap-2">
-            <TagButton
-              label={club.Category1Name}
-              isSelected={true}
-              onClick={() => {
-                const encoded = encodeURIComponent(club.Category1Name);
-                router.push(`/clubs?categories=${encoded}`);
-              }}
-            />
-            <TagButton
-              label={club.Category2Name}
-              isSelected={true}
-              onClick={() => {
-                const encoded = encodeURIComponent(club.Category2Name);
-                router.push(`/clubs?categories=${encoded}`);
-              }}
-            />
+              {/* Categories/Tags */}
+              <div className="mb-3 flex flex-wrap gap-2">
+                <TagButton
+                  label={club.Category1Name}
+                  isSelected={true}
+                  onClick={() => {
+                    const encoded = encodeURIComponent(club.Category1Name);
+                    router.push(`/clubs?categories=${encoded}`);
+                  }}
+                />
+                <TagButton
+                  label={club.Category2Name}
+                  isSelected={true}
+                  onClick={() => {
+                    const encoded = encodeURIComponent(club.Category2Name);
+                    router.push(`/clubs?categories=${encoded}`);
+                  }}
+                />
+              </div>
+
+              {/* Description with clamp/expand */}
+              <DescriptionWithClamp
+                description={club.OrganizationDescription}
+              />
+
+              <div className="mt-6 mb-6">
+                <div className="mb-1">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xl font-bold italic">
+                      Contact Information:
+                    </span>
+                    {/* Website Icon */}
+                    {club.OrganizationWebSite && (
+                      <a
+                        href={club.OrganizationWebSite}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src="/link.svg"
+                          alt="Website Icon"
+                          className="inline-block w-6 hover:opacity-80"
+                        />
+                      </a>
+                    )}
+                    {/* Social Icons */}
+                    {parseSocialLinks(club.SocialMediaLink)}
+                  </div>
+                </div>
+
+                {club.OrganizationEmail && (
+                  <p className="font-bold italic">
+                    Email:{" "}
+                    <a
+                      href={`mailto:${club.OrganizationEmail}`}
+                      className="font-bold underline"
+                    >
+                      {club.OrganizationEmail}
+                    </a>
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* vertical line */}
+            <div className="hidden justify-center lg:flex">
+              <div className="w-px bg-gray-400" style={{ height: "100%" }} />
+            </div>
+
+            {/* right side */}
+            <div className="pl-5 lg:w-2/6">
+              {/* Overall Rating */}
+              <div className="mt-2 mb-4 flex items-center">
+                <span className="text-2xl font-bold">
+                  {club.average_satisfaction
+                    ? club.average_satisfaction.toFixed(1)
+                    : "N/A"}
+                </span>
+                <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+                <h2 className="text-lg font-bold text-nowrap">
+                  satisfaction rating
+                </h2>
+              </div>
+
+              <section>
+                {/* Rating Bars - always show */}
+                {isDesktop ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <div className="mb-1 flex justify-between">
+                        <div className="flex items-center gap-1">
+                          <span>Time Commitment</span>
+                          <Tooltip rating="timeCommitment" />
+                        </div>
+                        <span>
+                          {club.average_time_commitment
+                            ? club.average_time_commitment.toFixed(1)
+                            : "N/A"}
+                          /5
+                        </span>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-full bg-[#b4d59f]"
+                          style={{
+                            width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
+                          }}
+                        ></div>
+                      </div>
+                      <div className="mt-1 flex justify-between text-xs text-gray-500">
+                        <span>low</span>
+                        <span>high</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mb-1 flex justify-between">
+                        <div className="flex items-center gap-1">
+                          <span>Diversity</span>
+                          <Tooltip rating="diversity" />
+                        </div>
+                        <span>
+                          {club.average_diversity
+                            ? club.average_diversity.toFixed(1)
+                            : "N/A"}
+                          /5
+                        </span>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-full bg-[#b4d59f]"
+                          style={{
+                            width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
+                          }}
+                        ></div>
+                      </div>
+                      <div className="mt-1 flex justify-between text-xs text-gray-500">
+                        <span>low</span>
+                        <span>high</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mb-1 flex justify-between">
+                        <div className="flex items-center gap-1">
+                          <span>Social Community</span>
+                          <Tooltip rating="socialCommunity" />
+                        </div>
+                        <span>
+                          {club.average_social_community
+                            ? club.average_social_community.toFixed(1)
+                            : "N/A"}
+                          /5
+                        </span>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-full bg-[#b4d59f]"
+                          style={{
+                            width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
+                          }}
+                        ></div>
+                      </div>
+                      <div className="mt-1 flex justify-between text-xs text-gray-500">
+                        <span>low</span>
+                        <span>high</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="mb-1 flex justify-between">
+                        <div className="flex items-center gap-1">
+                          <span>Competitiveness</span>
+                          <Tooltip rating="competitiveness" />
+                        </div>
+                        <span>
+                          {club.average_competitiveness
+                            ? club.average_competitiveness.toFixed(1)
+                            : "N/A"}
+                          /5
+                        </span>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-full bg-[#b4d59f]"
+                          style={{
+                            width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
+                          }}
+                        ></div>
+                      </div>
+                      <div className="mt-1 flex justify-between text-xs text-gray-500">
+                        <span>low</span>
+                        <span>high</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-4">
+                    <MobileRatingsDropdown club={club} />
+                  </div>
+                )}
+              </section>
+            </div>
           </div>
+        ) : (
+          // mobile view of the club details
+          <div className="mb-4 flex flex-col rounded-lg border-2 bg-white p-8 lg:flex-row">
+            {/* left side of the box */}
+            <div className="mb-2 flex items-center gap-2">
+              <h1 className="text-2xl font-bold">{club.OrganizationName}</h1>
+              <div className="flex items-center gap-1">
+                {/* Website Icon */}
+                {club.OrganizationWebSite && (
+                  <a
+                    href={club.OrganizationWebSite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src="/link.svg"
+                      alt="Website Icon"
+                      className="inline-block w-6 hover:opacity-80"
+                    />
+                  </a>
+                )}
+                {club.OrganizationEmail && (
+                  <a
+                    href={club.OrganizationEmail}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src="/email.svg"
+                      alt="Email Icon"
+                      className="inline-block w-6 hover:opacity-80"
+                    />
+                  </a>
+                )}
+                {/* Social Icons */}
+                {parseSocialLinks(club.SocialMediaLink)}
+              </div>
+            </div>
+            {/* Description with clamp/expand */}
 
-        {/* Description with clamp/expand */}
-        <DescriptionWithClamp description={club.OrganizationDescription} />
+            <DescriptionWithClamp description={club.OrganizationDescription} />
 
-<div className="mt-6 mb-6">
-  <div className="mb-1">
-    <div className="flex items-center gap-1">
-      <span className="text-xl font-bold italic">Contact Information:</span>
-      {/* Website Icon */}
-      {club.OrganizationWebSite && (
-        <a
-          href={club.OrganizationWebSite}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="/link.svg"
-            alt="Website Icon"
-            style={{ width: 25, height: 25, display: "inline-block" }}
-          />
-        </a>
-      )}
-      {/* Social Icons */}
-      {parseSocialLinks(club.SocialMediaLink)}
-    </div>
-  </div>
+            {/* Categories/Tags */}
+            <div className="mt-4 mb-4 flex flex-wrap gap-2">
+              <TagButton
+                label={club.Category1Name}
+                isSelected={true}
+                onClick={() => {
+                  const encoded = encodeURIComponent(club.Category1Name);
+                  router.push(`/clubs?categories=${encoded}`);
+                }}
+              />
+              <TagButton
+                label={club.Category2Name}
+                isSelected={true}
+                onClick={() => {
+                  const encoded = encodeURIComponent(club.Category2Name);
+                  router.push(`/clubs?categories=${encoded}`);
+                }}
+              />
+            </div>
+            {/* right side */}
+            {/* Overall Rating */}
+            <div className="mb-4 flex items-center">
+              <span className="text-2xl font-bold">
+                {club.average_satisfaction
+                  ? club.average_satisfaction.toFixed(1)
+                  : "N/A"}
+              </span>
+              <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+              <p className="mt-2 mb-2 text-lg font-bold">satisfaction rating</p>
+            </div>
 
-
-            {club.OrganizationEmail && (
-              <p className="font-bold italic">
-                Email:{" "}
-                <a
-                  href={`mailto:${club.OrganizationEmail}`}
-                  className="font-bold underline "
-                >
-                  {club.OrganizationEmail}
-                </a>
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* vertical line */}
-        <div className="hidden justify-center md:flex">
-          <div className="w-px bg-gray-400" style={{ height: "100%" }} />
-        </div>
-
-        {/* right side */}
-        <div className="pl-5 md:w-2/6">      
-          {/* Overall Rating */}
-          <div className="flex items-center mt-2 mb-4">
-            <span className="text-lg font-bold">
-              {club.average_satisfaction
-                ? club.average_satisfaction.toFixed(1)
-                : "N/A"}
-            </span>
-            <AiFillStar className="mr-2 text-lg text-yellow-400" />
-            <h2 className="text-lg font-bold">satisfaction rating</h2>
-          </div>
-
-<section>
-          {/* Rating Bars - always show */}
-          { isDesktop ? (
+            {/* Ratings Bars - always show */}
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
-                  <span>Time Commitment</span>
-                  <Tooltip text={tooltipDefinitions.timeCommitment}>
-                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <div className="flex items-center gap-1">
+                    <span>Time Commitment</span>
+                    <Tooltip rating="timeCommitment" />
                   </div>
                   <span>
                     {club.average_time_commitment
@@ -413,13 +581,9 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
-                  <span>Inclusivity</span>
-                  <Tooltip text={tooltipDefinitions.diversity}>
-                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <div className="flex items-center gap-1">
+                    <span>Inclusivity</span>
+                    <Tooltip rating="diversity" />
                   </div>
                   <span>
                     {club.average_diversity
@@ -444,13 +608,9 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
-                  <span>Social Community</span>
-                  <Tooltip text={tooltipDefinitions.socialCommunity}>
-                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <div className="flex items-center gap-1">
+                    <span>Social Community</span>
+                    <Tooltip rating="socialCommunity" />
                   </div>
                   <span>
                     {club.average_social_community
@@ -475,13 +635,9 @@ export default function ClubDetailsPage() {
 
               <div>
                 <div className="mb-1 flex justify-between">
-                  <div>
-                  <span>Competitiveness</span>
-                  <Tooltip text={tooltipDefinitions.competitiveness}>
-                    <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                      ?
-                    </div>
-                  </Tooltip>
+                  <div className="flex items-center gap-1">
+                    <span>Competitiveness</span>
+                    <Tooltip rating="competitiveness" />
                   </div>
                   <span>
                     {club.average_competitiveness
@@ -504,292 +660,115 @@ export default function ClubDetailsPage() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+      </section>
+      <section>
+        <section>
+          {isDesktop ? (
+            <div>
+              <h2 className="py-4 text-2xl font-bold">
+                Student Reviews ({club.total_num_reviews || reviews.length || 0}
+                )
+              </h2>
+              <p className="mb-6">
+                Have something to say? Share your experience...
+              </p>
+              <button
+                onClick={() =>
+                  attemptReview(
+                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                  )
+                }
+                className="mb-12 inline-block rounded-lg border bg-black px-6 py-2 text-white"
+              >
+                Leave a Review
+              </button>
+            </div>
           ) : (
-              <div className="mb-4">
-              <MobileRatingsDropdown club={club} />
-  </div>
+            <div>
+              <h2 className="py-4 text-lg font-bold">
+                Student Reviews ({club.total_num_reviews || reviews.length || 0}
+                )
+              </h2>
+              <button
+                onClick={() =>
+                  attemptReview(
+                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                  )
+                }
+                className="mb-8 inline-block rounded-lg border bg-black px-6 py-2 text-white"
+              >
+                Leave a Review
+              </button>
+            </div>
           )}
         </section>
-        </div>
-      </div>
 
-      ) : (
-<div
-        className="mb-4 flex flex-col rounded-lg border-2 bg-white p-6 md:flex-row"
-      >
-        {/* left side of the box */}
-        <div className="flex items-center gap-2">
-          <h1 className="text-lg font-bold">{club.OrganizationName}</h1>
-    <div className="flex items-center gap-1">
-      {/* Website Icon */}
-      {club.OrganizationWebSite && (
-        <a
-          href={club.OrganizationWebSite}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="/link.svg"
-            alt="Website Icon"
-            style={{ width: 25, height: 25, display: "inline-block" }}
-          />
-        </a>
-      )}
-       {club.OrganizationEmail && (
-        <a
-          href={club.OrganizationEmail}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src="/email.svg"
-            alt="Email Icon"
-            style={{ width: 30, height: 30, display: "inline-block" }}
-          />
-        </a>
-      )}
-      {/* Social Icons */}
-      {parseSocialLinks(club.SocialMediaLink)}
-    </div>
+        {/* Reviews List */}
+        {reviews.length === 0 ? (
+          <div className="py-10 text-center text-gray-500">
+            No reviews yet. Be the first to share your experience!
           </div>
-          {/* Description with clamp/expand */}
-          
-        <DescriptionWithClamp description={club.OrganizationDescription} />
-
-          {/* Categories/Tags */}
-          <div className="mt-4 mb-4 flex flex-wrap gap-2">
-            <TagButton
-              label={club.Category1Name}
-              isSelected={true}
-              onClick={() => {
-                const encoded = encodeURIComponent(club.Category1Name);
-                router.push(`/clubs?categories=${encoded}`);
-              }}
-            />
-            <TagButton
-              label={club.Category2Name}
-              isSelected={true}
-              onClick={() => {
-                const encoded = encodeURIComponent(club.Category2Name);
-                router.push(`/clubs?categories=${encoded}`);
-              }}
-            />
+        ) : (
+          <div className="space-y-8">
+            {reviews.map((review, index) =>
+              isDesktop ? (
+                // desktop card
+                <div
+                  key={index}
+                  className="rounded-lg border border-black bg-gray-50 p-8"
+                  style={{ boxShadow: "6px 6px 0px #b4d59f" }}
+                >
+                  <div className="mb-2 flex justify-between">
+                    <h3 className="text-2xl font-bold">
+                      {review.user_alias ? `${review.user_alias}` : "Anonymous"}
+                    </h3>
+                    <div className="font-bold text-[#666dbc]">
+                      Reviewed on {formatDate(review.created_at)}
+                    </div>
+                  </div>
+                  <div className="mb-4 font-semibold">
+                    <span className="text-gray-600">
+                      Member from{" "}
+                      <span className="text-[#5058B2]">
+                        {formatMembership(review)}
+                      </span>
+                    </span>
+                  </div>
+                  <p className="mb-2 text-gray-800">
+                    &quot;{review.review_text}&quot;
+                  </p>
+                </div>
+              ) : (
+                // mobile card
+                <div
+                  key={index}
+                  className="rounded-lg border border-2 border-black bg-gray-50 p-6"
+                >
+                  <div className="mb-2 text-lg font-bold">
+                    {review.user_alias ? `${review.user_alias}` : "Anonymous"}
+                  </div>
+                  <div>
+                    <span className="text-black">
+                      Member from{" "}
+                      <span className="font-semibold text-[#5058B2]">
+                        {formatMembership(review)}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="mb-3 text-sm font-semibold">
+                    <div>Reviewed on {formatDate(review.created_at)}</div>
+                  </div>
+                  <div className="text-base">
+                    &quot;{review.review_text}&quot;
+                  </div>
+                </div>
+              ),
+            )}
           </div>
-        {/* right side */}
-          {/* Overall Rating */}
-          <div className="flex items-center mb-4">
-            <span className="text-lg font-bold">
-              {club.average_satisfaction
-                ? club.average_satisfaction.toFixed(1)
-                : "N/A"}
-            </span>
-            <AiFillStar className="mr-2 text-2xl text-yellow-400" />
-            <p className="text-lg font-bold mt-2 mb-2">satisfaction rating</p>
-          </div>
-
-          {/* Ratings Bars - always show */}
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <div>
-                    <span>Time Commitment</span>
-                    <Tooltip text={tooltipDefinitions.timeCommitment}>
-                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                            ?
-                        </div>
-                      </Tooltip>
-                  </div>
-                  <span>{club.average_time_commitment ? club.average_time_commitment.toFixed(1) : 'N/A'}/5</span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                  <div
-                    className="h-full bg-[#b4d59f]"
-                    style={{
-                      width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
-                    }}
-                  ></div>
-                </div>
-                <div className="mt-1 flex justify-between text-xs text-gray-500">
-                  <span>low</span>
-                  <span>high</span>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-1">
-                  <div>
-                    <span>Inclusivity</span>
-                    <Tooltip text={tooltipDefinitions.diversity}>
-                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                            ?
-                        </div>
-                      </Tooltip>
-                  </div>
-                  <span>{club.average_diversity ? club.average_diversity.toFixed(1) : 'N/A'}/5</span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                  <div
-                    className="h-full bg-[#b4d59f]"
-                    style={{
-                      width: `${club.average_diversity ? (club.average_diversity / 5) * 100 : 0}%`,
-                    }}
-                  ></div>
-                </div>
-                <div className="mt-1 flex justify-between text-xs text-gray-500">
-                  <span>low</span>
-                  <span>high</span>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-1">
-                  <div>
-                    <span>Social Community</span>
-                    <Tooltip text={tooltipDefinitions.socialCommunity}>
-                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                            ?
-                        </div>
-                      </Tooltip>
-                  </div>
-                  <span>{club.average_social_community ? club.average_social_community.toFixed(1) : 'N/A'}/5</span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                  <div
-                    className="h-full bg-[#b4d59f]"
-                    style={{
-                      width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
-                    }}
-                  ></div>
-                </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>low</span>
-                  <span>high</span>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-1">
-                  <div>
-                    <span>Competitiveness
-                    </span>
-                    <Tooltip text={tooltipDefinitions.competitiveness}>
-                        <div className="w-3 h-3 mx-1 rounded-full border border-gray-400 flex items-center justify-center cursor-help text-gray-500 text-xs">
-                            ?
-                        </div>
-                      </Tooltip>
-                  </div>
-                  <span>{club.average_competitiveness ? club.average_competitiveness.toFixed(1) : 'N/A'}/5</span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                  <div
-                    className="h-full bg-[#b4d59f]"
-                    style={{
-                      width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
-                    }}
-                  ></div>
-                </div>
-                <div className="mt-1 flex justify-between text-xs text-gray-500">
-                  <span>low</span>
-                  <span>high</span>
-                </div>
-              </div>
-            </div>
-      </div>
-
-      )}
-</section>
-<section>
-
-<section>
-  { isDesktop ? (
-    <div>
-    <h2 className="text-2xl font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
-        <p className="mb-6">Have something to say? Share your experience...</p>
-        <Link
-          href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
-          className="border inline-block px-6 py-2 bg-black rounded-lg text-white mb-12"
-        >
-          Leave a Review
-        </Link>
+        )}
+      </section>
     </div>
-  ) : (
-    <div>
-      <h2 className="text-lg font-bold py-4">Student Reviews ({club.total_num_reviews || reviews.length || 0})</h2>
-        <Link
-          href={`/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`}
-          className="border inline-block px-6 py-2 bg-black rounded-lg text-white mb-8"
-        >
-          Leave a Review
-        </Link>
-    </div>
-  )}
-</section>
-
-      {/* Reviews List */}
-      {reviews.length === 0 ? (
-        <div className="py-10 text-center text-gray-500">
-          No reviews yet. Be the first to share your experience!
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {reviews.map((review, index) => (
-            isDesktop ? (
-              // desktop card
-              <div
-                key={index}
-                className="rounded-lg border border-black bg-gray-50 p-8"
-                style={{ boxShadow: "6px 6px 0px #b4d59f" }}
-              >
-                <div className="flex justify-between mb-2">
-                  <h3 className="text-2xl font-bold">
-                    {review.user_alias ? `${review.user_alias}` : 'Anonymous'}
-                  </h3>
-                  <div className="font-bold text-[#666dbc]">
-
-                    Reviewed on {formatDate(review.created_at)}
-                  </div>
-                </div>
-                <div className="mb-4 font-semibold">
-                  <span className="text-gray-600">
-                    Member from{" "}
-                    <span className="text-[#5058B2]">
-                      {formatMembership(review)}
-                    </span>
-                  </span>
-                </div>
-                <p className="mb-2 text-gray-800">
-                  &quot;{review.review_text}&quot;
-                </p>
-              </div>
-            ) : (
-              // mobile card
-              <div
-                key={index}
-                className="rounded-lg border border-2 border-black bg-gray-50 p-6"
-              >
-                <div className="text-lg mb-2 font-bold">{review.user_alias ? `${review.user_alias}` : 'Anonymous'}</div>
-                <div>
-                  <span className="text-black">
-                    Member from{" "}
-                    <span className="font-semibold text-[#5058B2]">
-                      {formatMembership(review)}
-                    </span>
-                  </span>
-                </div>
-                <div className="mb-3 text-sm font-semibold">
-                  <div>
-                    Reviewed on {formatDate(review.created_at)}
-                  </div>
-                </div>
-                <div className="text-base">
-                  &quot;{review.review_text}&quot;
-                </div>
-              </div>
-            )
-          ))}
-        </div>
-      )}
-    </section>
-      </div>
   );
 }

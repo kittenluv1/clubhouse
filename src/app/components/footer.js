@@ -18,27 +18,32 @@ export default function Footer() {
           anytime.
         </p>
         <br />
-        <p>
-          Email:{" "}
-          <a href="mailto:clubhouseucla@gmail.com" target="_blank">
-            clubhouseucla@gmail.com
-          </a>
-        </p>
-        <p>
-          Instagram:{" "}
-          <a href="https://www.instagram.com/clubhouseucla/" target="_blank">
-            @clubhouseucla
-          </a>
-        </p>
-        <p>
-          LinkedIn:{" "}
-          <a
-            href="https://www.linkedin.com/company/clubhouseucla/about/"
-            target="_blank"
-          >
-            linkedin.com/company/clubhouseucla/about/
-          </a>
-        </p>
+        <a href="mailto:clubhouseucla@gmail.com" target="_blank">
+          <img src="/email.svg" alt="email icon" className="inline-block w-6" />
+          &nbsp;clubhouseucla@gmail.com
+        </a>
+        <br />
+        <a href="https://www.instagram.com/clubhouseucla/" target="_blank">
+          <img
+            src="/instagram2.svg"
+            alt="instagram icon"
+            className="inline-block w-6"
+          />
+          &nbsp;@clubhouseucla
+        </a>
+        <br />
+        <a
+          href="https://www.linkedin.com/company/clubhouseucla/about/"
+          target="_blank"
+        >
+          <img
+            src="/linkedin.svg"
+            alt="linkedin icon"
+            className="inline-block w-6"
+          />
+          &nbsp;LinkedIn
+        </a>
+        <br />
         <br />
         <p>
           Let’s build a more transparent, connected UCLA community — together.
