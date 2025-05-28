@@ -12,16 +12,40 @@ export const QuarterYearDropdown = ({
   yearRange = 5,
   className = "",
 }) => {
-  const currentYear = new Date().getFullYear();
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
   const startYear = currentYear - yearRange;
   const endYear = currentYear;
   const quarters = ["Fall", "Spring", "Winter"];
 
-  // Generate array of combined quarter-year options
+const getCurrentQuarter = () => {
+  const month = new Date().getMonth() + 1;
+
+  if (month >= 9 && month <= 12) {
+    return "Fall";
+  } else if (month >= 1 && month <= 3) {
+    return "Winter";
+  } else {
+    return "Spring";
+  }
+};
+
+  const currentQuarter = getCurrentQuarter();
+
+  const isQuarterValid = (quarter, year) => {
+    if (year < currentYear) return true;
+    if (year > currentYear) return false;
+    
+    const quarterOrder = { "Winter": 1, "Spring": 2, "Fall": 3 };
+    return quarterOrder[quarter] <= quarterOrder[currentQuarter];
+  };
+
   const options = [];
   for (let year = endYear; year >= startYear; year--) {
     for (const quarter of quarters) {
-      options.push({ quarter, year: year.toString() });
+      if (isQuarterValid(quarter, year)) {
+        options.push({ quarter, year: year.toString() });
+      }
     }
   }
 
