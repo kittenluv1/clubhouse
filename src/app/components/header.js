@@ -71,19 +71,23 @@ function Header() {
     <div className="flex w-full items-center justify-between bg-[#DFEBFF] p-5 md:px-20 lg:py-6">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
-        <button onClick={() => router.push("/")} className="flex items-center">
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="flex items-center"
+        >
           {/* mobile responsive logo */}
           <object
             type="image/svg+xml"
             data="/clubhouse-logo-text.svg"
             aria-label="ClubHouse Logo"
-            className="hidden object-cover lg:block lg:w-3xs"
+            className="pointer-events-none hidden object-cover lg:block lg:w-3xs"
           />
           <object
             type="image/svg+xml"
             data="/clubhouse-star-logo.svg"
             aria-label="ClubHouse Logo"
-            className="w-18 shrink-0 object-cover lg:hidden"
+            className="pointer-events-none w-18 shrink-0 object-cover lg:hidden"
           />
         </button>
       ) : (

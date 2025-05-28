@@ -102,7 +102,7 @@ function Home() {
           type="image/svg+xml"
           data="/clubhouse-logo-text.svg"
           aria-label="ClubHouse Logo"
-          className="hidden object-cover lg:block"
+          className="hidden w-2xl object-cover lg:block"
         />
         <object
           type="image/svg+xml"
