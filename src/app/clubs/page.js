@@ -163,7 +163,7 @@ function AllClubsPage() {
           <button
             onClick={handlePreviousPage}
             disabled={currPage === 1}
-            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-200 hover:bg-[#F6E18C] disabled:opacity-50"
+            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-300 ease-in-out hover:bg-[#F6E18C] disabled:opacity-50 disabled:bg-gray-300 "
           >
             Previous
           </button>
@@ -173,7 +173,7 @@ function AllClubsPage() {
           <button
             onClick={handleNextPage}
             disabled={currPage === pageTotal}
-            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-200 hover:bg-[#F6E18C] disabled:opacity-50"
+            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-300 ease-in-out hover:bg-[#F6E18C] disabled:opacity-50 disabled:bg-gray-300"
           >
             Next
           </button>

@@ -487,7 +487,7 @@ export default function ReviewPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Club Name */}
           <div>
-            <label className="mb-3 block text-lg font-bold">Club Name *</label>
+            <label className="mb-3 block text-lg font-bold">Club Name <span className="text-red-500">*</span></label>
             <div className="max-w-md">
               <SearchableDropdown
                 tableName="clubs"
@@ -503,7 +503,7 @@ export default function ReviewPage() {
           <div className="mt-12 grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-2">
             <div>
               <label className="mb-3 block text-lg font-bold">
-                Club Membership Start Date *
+                Club Membership Start Date <span className="text-red-500">*</span>
               </label>
               <div className="flex space-x-2">
                 <div className="w-1/2">
@@ -520,7 +520,7 @@ export default function ReviewPage() {
 
             <div>
               <label className="mb-3 block text-lg font-bold">
-                Club Membership End Date *
+                Club Membership End Date <span className="text-red-500">*</span>
               </label>
               <div className="mb-4 flex space-x-2">
                 <div className="w-1/2">
@@ -704,7 +704,7 @@ export default function ReviewPage() {
           {/* Satisfaction Stars */}
           <div>
             <label className="mt-20 mb-3 block text-lg font-bold">
-              How satisfied are you with your club experience? *
+              How satisfied are you with your club experience? <span className="text-red-500">*</span>
             </label>
             <StarRating
               rating={overallSatisfaction}
@@ -737,7 +737,7 @@ export default function ReviewPage() {
             <button
               type="submit"
               disabled={isSubmitting || dateError}
-              className="w-24 rounded-full bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-gray-600 disabled:opacity-50"
+              className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
             >
               Submit
             </button>

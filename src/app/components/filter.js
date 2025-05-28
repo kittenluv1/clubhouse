@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import TagButton from "./tagButton";
+import { useSearch } from "../context/SearchContext";
 
 const GROUPED_TAGS = {
   "Academic & Pre-Professional": [
@@ -62,13 +63,18 @@ export default function Filter({
   show = false,
   onInteraction = () => {},
 }) {
+  const { selectedCategories, searchByCategories } = useSearch();
   const [showFilter, setShowFilter] = useState(show);
-  const [selectedTags, setSelectedTags] = useState(initialSelectedTags);
-  const [tempSelectedTags, setTempSelectedTags] = useState(initialSelectedTags);
+  const [tempSelectedTags, setTempSelectedTags] = useState(selectedCategories);
   const [isMobile, setIsMobile] = useState(false);
   const filterRef = useRef(null);
   const buttonRef = useRef(null);
   const router = useRouter();
+
+  // Sync with context state
+  useEffect(() => {
+    setTempSelectedTags(selectedCategories);
+  }, [selectedCategories]);
 
   // detect mobile screen
   useEffect(() => {
@@ -82,7 +88,7 @@ export default function Filter({
     e.stopPropagation();
     onInteraction();
     setShowFilter((prev) => !prev);
-    if (showFilter) setTempSelectedTags(selectedTags);
+    if (showFilter) setTempSelectedTags(selectedCategories);
   };
 
   useEffect(() => {
@@ -96,7 +102,7 @@ export default function Filter({
         !buttonRef.current.contains(event.target)
       ) {
         setShowFilter(false);
-        setTempSelectedTags(selectedTags);
+        setTempSelectedTags(selectedCategories);
       }
     };
 
@@ -135,7 +141,7 @@ export default function Filter({
   const clearAll = () => setTempSelectedTags([]);
   const handleClose = () => {
     setShowFilter(false);
-    setTempSelectedTags(selectedTags);
+    setTempSelectedTags(selectedCategories);
   };
 
   const handleSearch = () => {
@@ -164,10 +170,10 @@ export default function Filter({
           Search by Category
         </button>
 
-        {!isMobile && selectedTags.length > 0 && (
+        {!isMobile && selectedCategories.length > 0 && (
           <div className="flex-grow overflow-x-auto pb-2">
             <div className="flex flex-wrap gap-2">
-              {selectedTags.map((tag) => (
+              {selectedCategories.map((tag) => (
                 <div
                   key={tag}
                   className="flex items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-white shadow-md"
