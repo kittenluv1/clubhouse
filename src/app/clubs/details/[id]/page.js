@@ -16,7 +16,7 @@ import Tooltip from "@/app/components/tooltip";
 const getIconByName = (name) => {
   const key = name.toLowerCase();
   if (key.includes("instagram")) {
-    return <img src="/instagram2.svg" alt="Instagram" className="w-6" />;
+    return <img src="/instagram.svg" alt="Instagram" className="w-6" />;
   }
   if (key.includes("facebook")) {
     return <img src="/facebook.svg" alt="Facebook" className="w-6" />;
@@ -314,7 +314,7 @@ export default function ClubDetailsPage() {
                         <img
                           src="/link.svg"
                           alt="Website Icon"
-                          className="inline-block w-6 hover:opacity-80"
+                          className="inline-block w-7 hover:opacity-80"
                         />
                       </a>
                     )}
@@ -348,7 +348,7 @@ export default function ClubDetailsPage() {
               <div className="mt-2 mb-4 flex items-center">
                 <span className="text-2xl font-bold">
                   {club.average_satisfaction
-                    ? club.average_satisfaction.toFixed(1) + "/5"
+                    ? club.average_satisfaction.toFixed(1)
                     : "N/A"}
                 </span>
                 <AiFillStar className="mr-2 text-2xl text-yellow-400" />
