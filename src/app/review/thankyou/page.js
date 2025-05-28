@@ -7,7 +7,8 @@ export default function ThankYouPage() {
         type="image/svg+xml"
         data="/empty-star-logo.svg"
         aria-label="ClubHouse Logo"
-        className="mb-8 w-40 md:w-1/4"
+        className="mb-8 w-40 overflow-hidden align-middle leading-none md:w-1/4"
+        style={{ display: "block" }}
       />
       <h1 className="mb-4 text-center text-6xl font-bold">Thank you!</h1>
       <p className="text-4x1 m-2 font-semibold">Your review has been sent!</p>
