@@ -1,5 +1,5 @@
 "use client";
-// importe
+
 import React, {
   useState,
   useEffect,
@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
+import { useSearch } from "../context/SearchContext";
 
 const ClubSearchBar = forwardRef(
   (
@@ -20,12 +21,18 @@ const ClubSearchBar = forwardRef(
     },
     ref,
   ) => {
-    const [inputValue, setInputValue] = useState("");
+    const { searchTerm, searchByName, setSearchTerm } = useSearch();
+    const [inputValue, setInputValue] = useState(searchTerm);
     const [allOptions, setAllOptions] = useState([]);
     const [filteredOptions, setFilteredOptions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const router = useRouter();
+
+    // Sync input value with context search term
+    useEffect(() => {
+      setInputValue(searchTerm);
+    }, [searchTerm]);
 
     useImperativeHandle(ref, () => ({
       triggerSearch: (overrideTerm, byCategory = false) => {
@@ -33,15 +40,19 @@ const ClubSearchBar = forwardRef(
       },
     }));
 
-    //search logic
+    // Updated search logic using context
     const handleSearch = (overrideTerm, byCategory = false) => {
-      // Use the overrideTerm if provided, otherwise fall back to the input's value
       const term = (
         overrideTerm !== undefined ? overrideTerm : inputValue
       ).trim();
-      // if the search term is empty, redirect to the clubs page
-      if (!term) {
-        router.push("/clubs");
+      
+      if (byCategory) {
+        // This shouldn't happen from the search bar, but keeping for compatibility
+        const encoded = encodeURIComponent(term);
+        router.push(`/clubs?category=${encoded}`);
+      } else {
+        // Use the context method which will clear categories
+        searchByName(term);
       }
 
       // Keep the input in sync
@@ -49,18 +60,7 @@ const ClubSearchBar = forwardRef(
         setInputValue(term);
       }
 
-      // Encode for URL
-      const encoded = encodeURIComponent(term);
-
-      if (byCategory) {
-        // Category search:
-        router.push(`/clubs?category=${encoded}`);
-      } else {
-        // Name search:
-        router.push(`/clubs?name=${encoded}`);
-      }
-
-      // close the dropdown
+      // Close the dropdown
       setIsOpen(false);
     };
 
@@ -107,8 +107,19 @@ const ClubSearchBar = forwardRef(
       }
     };
 
+    const handleInputChange = (e) => {
+      const newValue = e.target.value;
+      setInputValue(newValue);
+      setIsOpen(true);
+      
+      // If the user clears the input, also clear the context search term
+      if (!newValue.trim()) {
+        setSearchTerm('');
+      }
+    };
+
     const handleOptionClick = (option) => {
-      // close the dropdown
+      // Close the dropdown
       setIsOpen(false);
       router.push(`/clubs/details/${encodeURIComponent(option)}`);
     };
@@ -119,10 +130,7 @@ const ClubSearchBar = forwardRef(
           <input
             type="text"
             value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setIsOpen(true);
-            }}
+            onChange={handleInputChange}
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder="Search for a club..."
