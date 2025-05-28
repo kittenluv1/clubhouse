@@ -744,7 +744,7 @@ export default function ClubDetailsPage() {
                 // mobile card
                 <div
                   key={index}
-                  className="rounded-lg border border-2 border-black bg-gray-50 p-6"
+                  className="rounded-lg border-2 border-black bg-gray-50 p-6"
                 >
                   <div className="mb-2 text-lg font-bold">
                     {review.user_alias ? `${review.user_alias}` : "Anonymous"}
