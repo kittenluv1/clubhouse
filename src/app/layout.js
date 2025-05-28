@@ -4,6 +4,7 @@ import React from "react";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import Gradient from "./components/gradient";
+import { SearchProvider } from "./context/SearchContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -39,12 +40,14 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${dmSans.variable} flex min-h-screen flex-col antialiased`}
       >
-        <Header />
-        <main className="relative min-h-screen overflow-hidden">
-          <Gradient />
-          {children}
-        </main>
-        <Footer />
+        <SearchProvider>
+          <Header />
+          <main className="relative min-h-screen overflow-hidden">
+            <Gradient />
+            {children}
+          </main>
+          <Footer />
+        </SearchProvider>
       </body>
     </html>
   );
