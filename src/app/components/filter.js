@@ -102,7 +102,18 @@ export default function Filter({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showFilter, selectedTags, isMobile]);
+  }, [showFilter, selectedCategories, isMobile]);
+
+  useEffect(() => {
+    if (isMobile && showFilter) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, showFilter]);
 
   useEffect(() => {
     if (isMobile && showFilter) {
@@ -129,28 +140,17 @@ export default function Filter({
 
   const handleSearch = () => {
     onInteraction();
-    if (!tempSelectedTags.length) {
-      router.push("/clubs");
-    } else {
-      const encoded = encodeURIComponent(tempSelectedTags.join(","));
-      router.push(`/clubs?categories=${encoded}`);
-    }
 
-    setSelectedTags(tempSelectedTags);
+    // Use the context method which will clear name search
+    searchByCategories(tempSelectedTags);
     setShowFilter(false);
   };
 
   const handleRemoveTag = (tagToRemove) => {
-    const updatedTags = selectedTags.filter((tag) => tag !== tagToRemove);
-    setSelectedTags(updatedTags);
-    setTempSelectedTags(updatedTags);
+    const updatedTags = selectedCategories.filter((tag) => tag !== tagToRemove);
 
-    if (updatedTags.length > 0) {
-      const encoded = encodeURIComponent(updatedTags.join(","));
-      router.push(`/clubs?categories=${encoded}`);
-    } else {
-      router.push("/clubs");
-    }
+    // Use the context method to update and clear name search
+    searchByCategories(updatedTags);
   };
 
   return (
