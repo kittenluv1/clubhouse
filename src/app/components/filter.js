@@ -214,7 +214,7 @@ export default function Filter({
                 onDragEnd={(event, info) => {
                   if (info.offset.y > 100) {
                     setShowFilter(false);
-                    setTempSelectedTags(selectedTags);
+                    setTempSelectedTags(selectedCategories);
                   }
                 }}
               >
