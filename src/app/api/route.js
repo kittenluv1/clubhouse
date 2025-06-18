@@ -1,8 +1,8 @@
-import { supabase } from "../lib/db.js";
+import { supabaseServer } from "../lib/server-db.js";
 
 export async function GET(req) {
-  if (!supabase) {
-    console.error("Supabase client is not initialized.");
+  if (!supabaseServer) {
+    console.error("supabaseServerServer client is not initialized.");
     return new Response(
       JSON.stringify({ error: "Server configuration error" }),
       { status: 500 },
@@ -52,7 +52,7 @@ export async function GET(req) {
     const sanitizedOrgList = orgList.map(sanitizeObject);
 
     // Insert data into the Supabase database
-    const { error } = await supabase
+    const { error } = await supabaseServer
       .from("clubs")
       .upsert(sanitizedOrgList, { onClifct: "OrganizationID" });
 
