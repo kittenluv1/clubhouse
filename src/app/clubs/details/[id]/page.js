@@ -250,10 +250,10 @@ export default function ClubDetailsPage() {
     } = await supabase.auth.getSession();
 
     if (session) {
-      console.log("GO TO REVIEWS", session);
+      console.log("GO TO REVIEWS");
       window.location.href = href;
     } else {
-      console.log("GO TO SIGN IN", session);
+      console.log("GO TO SIGN IN");
       window.location.href = "/sign-in";
     }
   };
@@ -478,39 +478,39 @@ export default function ClubDetailsPage() {
           <div className="mb-4 flex flex-col rounded-lg border-2 bg-white p-8 lg:flex-row">
             {/* left side of the box */}
             {/* <div className="mb-2 flex items-center gap-2"> */}
-              <h1 className="mb-2 text-2xl font-bold">{club.OrganizationName}</h1>
-              <div className="mb-2 flex items-center gap-1">
-                {/* Website Icon */}
-                {club.OrganizationWebSite && (
-                  <a
-                    href={club.OrganizationWebSite}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src="/link.svg"
-                      alt="Website Icon"
-                      className="inline-block w-6 hover:opacity-80"
-                    />
-                  </a>
-                )}
-                {club.OrganizationEmail && (
-                  <a
-                    href={club.OrganizationEmail}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src="/email.svg"
-                      alt="Email Icon"
-                      className="inline-block w-6 hover:opacity-80"
-                    />
-                  </a>
-                )}
-                {/* Social Icons */}
-                {parseSocialLinks(club.SocialMediaLink)}
-              </div>
-           {/* </div> */}
+            <h1 className="mb-2 text-2xl font-bold">{club.OrganizationName}</h1>
+            <div className="mb-2 flex items-center gap-1">
+              {/* Website Icon */}
+              {club.OrganizationWebSite && (
+                <a
+                  href={club.OrganizationWebSite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="/link.svg"
+                    alt="Website Icon"
+                    className="inline-block w-6 hover:opacity-80"
+                  />
+                </a>
+              )}
+              {club.OrganizationEmail && (
+                <a
+                  href={club.OrganizationEmail}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="/email.svg"
+                    alt="Email Icon"
+                    className="inline-block w-6 hover:opacity-80"
+                  />
+                </a>
+              )}
+              {/* Social Icons */}
+              {parseSocialLinks(club.SocialMediaLink)}
+            </div>
+            {/* </div> */}
             {/* Description with clamp/expand */}
 
             <DescriptionWithClamp description={club.OrganizationDescription} />
