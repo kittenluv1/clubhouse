@@ -90,7 +90,7 @@ const Page = () => {
       }
 
       const emailRes = await fetch(
-        "https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-user-approval-email",
+        `${process.env.NEXT_PUBLIC_SUPABASE_EDGE_URL}/send-user-approval-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -128,7 +128,7 @@ const Page = () => {
       }
 
       const emailRes = await fetch(
-        "https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-user-disapprove-email",
+        `${process.env.NEXT_PUBLIC_SUPABASE_EDGE_URL}/send-user-disapprove-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
