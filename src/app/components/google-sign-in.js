@@ -3,7 +3,6 @@
 import Script from "next/script";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
-import ErrorScreen from "@/app/components/ErrorScreen";
 
 export default function GoogleSignIn() {
   // null (logged out), string (logged in), or INVALID (invalid email)
@@ -114,7 +113,7 @@ export default function GoogleSignIn() {
     };
   }, []);
 
-  if (error) return <ErrorScreen error={error} />;
+  if (error) console.error("Error:", error.message);
 
   return (
     <>
