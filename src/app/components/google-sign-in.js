@@ -5,10 +5,10 @@ import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
 
 export default function GoogleSignIn() {
+  // userEmail is either:
   // null (logged out), string (logged in), or INVALID (invalid email)
   const [userEmail, setUserEmail] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
@@ -43,49 +43,18 @@ export default function GoogleSignIn() {
         token: response.credential,
       });
 
+      // if signin fails profiles email constraint, supabase will return a database error
       if (error) {
-        setError(error);
+        console.log("NOT A UCLA EMAIL");
+        await supabase.auth.signOut(); // Clear any partial/corrupted session
+        setUserEmail("INVALID");
         setLoading(false);
         return;
       }
 
       const email = data.user.email;
-
-      // if valid email, sign in and set user email
-      if (
-        email.endsWith("@ucla.edu") ||
-        email.endsWith("@g.ucla.edu") ||
-        email === "clubhouseucla@gmail.com"
-      ) {
-        setUserEmail(email);
-        setLoading(false);
-      }
-      // if invalid email, set userEmail to "INVALID" and delete user from auth table
-      else {
-        console.log("NOT A UCLA EMAIL");
-        try {
-          const response = await fetch("/api/components", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId: data.user.id }), // send user ID to delete
-          });
-
-          const result = await response.json();
-
-          if (!response.ok) {
-            console.error("Error deleting user:", result.error);
-          } else {
-            console.log("User deleted successfully:", result.message);
-            await supabase.auth.signOut(); // sign out the user
-            setUserEmail("INVALID"); // display invalid email message
-          }
-        } catch (error) {
-          console.error("Error deleting user:", error.message);
-        }
-        setLoading(false);
-      }
+      setUserEmail(email);
+      setLoading(false);
     };
 
     if (window.google) {
@@ -97,11 +66,9 @@ export default function GoogleSignIn() {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        // setLoading(true);
         setUserEmail(session.user.email); // Update email when signed in
         console.log("Auth state changed:", event, session.user.email);
       } else {
-        // setLoading(true);
         setUserEmail(null); // Clear email when signed out
         console.log("Auth state changed:", event);
       }
@@ -112,8 +79,6 @@ export default function GoogleSignIn() {
       data.subscription.unsubscribe();
     };
   }, []);
-
-  if (error) console.error("Error:", error.message);
 
   return (
     <>
