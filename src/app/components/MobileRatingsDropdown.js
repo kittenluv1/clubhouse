@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+//this component is not called
 function MobileRatingsDropdown({ club }) {
   const [open, setOpen] = useState(false);
 
