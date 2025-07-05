@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
 
@@ -81,19 +81,6 @@ function Home() {
   useEffect(() => {
     setRandomCategories(getRandomItems(CATEGORIES, isMobile ? 5 : 10));
   }, [isMobile]);
-
-  // useEffect(() => {
-  //   async function loadCategories() {
-  //     try {
-  //       const res = await fetch('/api/categories')
-  //       if (!res.ok) throw new Error('could not load categories')
-  //       setCategories(await res.json())
-  //     } catch (err) {
-  //       console.error('Error loading categories:', error);
-  //     }
-  //   }
-  //   loadCategories()
-  // }, [])
 
   return (
     <div className="relative flex w-full flex-col items-center justify-center">

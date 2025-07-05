@@ -9,8 +9,6 @@ import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
 import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from "react-icons/ai";
-import { useMemo } from "react";
-import MobileRatingsDropdown from "@/app/components/MobileRatingsDropdown";
 import Tooltip from "@/app/components/tooltip";
 
 const getIconByName = (name) => {
@@ -145,8 +143,6 @@ export default function ClubDetailsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showFullDescription, setShowFullDescription] = useState(false);
-  const descriptionRef = useRef(null);
   const [isClamped, setIsClamped] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = !isDesktop;
@@ -359,117 +355,111 @@ export default function ClubDetailsPage() {
 
               <section>
                 {/* Rating Bars - always show */}
-                {isDesktop ? (
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <div className="mb-1 flex justify-between">
-                        <div className="flex items-center gap-1">
-                          <span>Time Commitment</span>
-                          <Tooltip rating="timeCommitment" />
-                        </div>
-                        <span>
-                          {club.average_time_commitment
-                            ? club.average_time_commitment.toFixed(1) + "/5"
-                            : "N/A"}
-                        </span>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Time Commitment</span>
+                        <Tooltip rating="timeCommitment" />
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                        <div
-                          className="h-full bg-[#b4d59f]"
-                          style={{
-                            width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="mt-1 flex justify-between text-xs text-gray-500">
-                        <span>low</span>
-                        <span>high</span>
-                      </div>
+                      <span>
+                        {club.average_time_commitment
+                          ? club.average_time_commitment.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
                     </div>
-
-                    <div>
-                      <div className="mb-1 flex justify-between">
-                        <div className="flex items-center gap-1">
-                          <span>Inclusivity</span>
-                          <Tooltip rating="inclusivity" />
-                        </div>
-                        <span>
-                          {club.average_inclusivity
-                            ? club.average_inclusivity.toFixed(1) + "/5"
-                            : "N/A"}
-                        </span>
-                      </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                        <div
-                          className="h-full bg-[#b4d59f]"
-                          style={{
-                            width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="mt-1 flex justify-between text-xs text-gray-500">
-                        <span>low</span>
-                        <span>high</span>
-                      </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
                     </div>
-
-                    <div>
-                      <div className="mb-1 flex justify-between">
-                        <div className="flex items-center gap-1">
-                          <span>Social Community</span>
-                          <Tooltip rating="socialCommunity" />
-                        </div>
-                        <span>
-                          {club.average_social_community
-                            ? club.average_social_community.toFixed(1) + "/5"
-                            : "N/A"}
-                        </span>
-                      </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                        <div
-                          className="h-full bg-[#b4d59f]"
-                          style={{
-                            width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="mt-1 flex justify-between text-xs text-gray-500">
-                        <span>low</span>
-                        <span>high</span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="mb-1 flex justify-between">
-                        <div className="flex items-center gap-1">
-                          <span>Competitiveness</span>
-                          <Tooltip rating="competitiveness" />
-                        </div>
-                        <span>
-                          {club.average_competitiveness
-                            ? club.average_competitiveness.toFixed(1) + "/5"
-                            : "N/A"}
-                        </span>
-                      </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                        <div
-                          className="h-full bg-[#b4d59f]"
-                          style={{
-                            width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="mt-1 flex justify-between text-xs text-gray-500">
-                        <span>low</span>
-                        <span>high</span>
-                      </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
                     </div>
                   </div>
-                ) : (
-                  <div className="mb-4">
-                    <MobileRatingsDropdown club={club} />
+
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Inclusivity</span>
+                        <Tooltip rating="inclusivity" />
+                      </div>
+                      <span>
+                        {club.average_inclusivity
+                          ? club.average_inclusivity.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
+                    </div>
                   </div>
-                )}
+
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Social Community</span>
+                        <Tooltip rating="socialCommunity" />
+                      </div>
+                      <span>
+                        {club.average_social_community
+                          ? club.average_social_community.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Competitiveness</span>
+                        <Tooltip rating="competitiveness" />
+                      </div>
+                      <span>
+                        {club.average_competitiveness
+                          ? club.average_competitiveness.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
+                    </div>
+                  </div>
+                </div>
               </section>
             </div>
           </div>
