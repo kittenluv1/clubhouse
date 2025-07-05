@@ -161,8 +161,7 @@ export default function ClubDetailsPage() {
 
         const decodedId = decodeURIComponent(id);
         console.log("Decoded ID:", decodedId);
-        //change to clubs/id endpoint
-        const response = await fetch(`/api/clubs/details/${id}`);
+        const response = await fetch(`/api/clubs/${id}`);
         if (!response.ok)
           throw new Error(`HTTP error! Status: ${response.status}`);
 
