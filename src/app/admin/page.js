@@ -86,7 +86,7 @@ const Page = () => {
       }
 
       const emailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_EDGE_URL}/send-user-approval-email`,
+        `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-user-approval-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -95,6 +95,7 @@ const Page = () => {
             user_email: record.user_email,
           }),
         },
+        console.log("Sending approval email TO:", record.user_email),
       );
 
       if (!emailRes.ok) {
@@ -124,7 +125,7 @@ const Page = () => {
       }
 
       const emailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_EDGE_URL}/send-user-disapprove-email`,
+        `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-user-disapprove-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

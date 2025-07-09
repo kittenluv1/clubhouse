@@ -394,7 +394,7 @@ export default function ReviewPage() {
       if (error) throw new Error(error.message);
 
       await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_EDGE_URL}/send-review-email`,
+        `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-review-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -405,6 +405,7 @@ export default function ReviewPage() {
             user_email: data[0].user_email,
           }),
         },
+        console.log("HERE IS EMAIL", data[0].user_email),
       );
 
       setSuccess(true);
