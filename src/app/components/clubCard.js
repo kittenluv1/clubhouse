@@ -11,9 +11,10 @@ function ClubTags({ category }) {
 export default function ClubCard({ club }) {
   return (
     <Link
-      href={`/clubs/details/${encodeURIComponent(club.OrganizationName)}`}
+      href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
       className="w-full transform space-y-4 rounded-xl border bg-white px-4 py-6 transition-all duration-100 hover:drop-shadow-[12px_12px_0_#B1D49D] md:space-y-5 md:px-10 md:py-10"
     >
+      
       <h2 className="text-xl font-bold text-black md:text-2xl">
         {club.OrganizationName}
       </h2>
