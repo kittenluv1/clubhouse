@@ -1,167 +1,756 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import LoadingScreen from "@/app/components/LoadingScreen";
+import React from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { supabase } from "@/app/lib/db";
+
 import ErrorScreen from "@/app/components/ErrorScreen";
-
+import LoadingScreen from "@/app/components/LoadingScreen";
+import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from "react-icons/ai";
+import Tooltip from "@/app/components/tooltip";
 
-function getCategories(club) {
-  return [
-    club.Category1Name,
-    club.Category2Name,
-    club.Category3Name,
-    club.Category4Name,
-    club.Category5Name,
-  ].filter(Boolean);
-}
+const getIconByName = (name) => {
+  const key = name.toLowerCase();
+  if (key.includes("instagram")) {
+    return <img src="/instagram.svg" alt="Instagram" className="w-6" />;
+  }
+  if (key.includes("facebook")) {
+    return <img src="/facebook.svg" alt="Facebook" className="w-6" />;
+  }
+  if (key.includes("linkedin")) {
+    return <img src="/linkedin.svg" alt="LinkedIn" className="w-6" />;
+  }
+  if (key.includes("youtube")) {
+    return <img src="/youtube.svg" alt="YouTube" className="w-6" />;
+  }
+  return null;
+};
 
-function RatingBar({ label, value }) {
+const parseSocialLinks = (htmlString) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, "text/html");
+  const links = doc.querySelectorAll("a");
+
   return (
-    <div className="flex w-48 flex-col items-start">
-      <div className="mb-1 flex w-full justify-between">
-        <span className="text-xs font-medium text-gray-600">{label}</span>
-        <span className="text-xs font-semibold text-green-700">
-          {value.toFixed(1)}
-        </span>
-      </div>
-      <div className="h-2 w-full rounded-full bg-gray-200">
-        <div
-          className="h-2 rounded-full"
-          style={{
-            width: `${(value / 5) * 100}%`,
-            background: "#33B864",
-          }}
-        />
-      </div>
+    <div className="flex items-center gap-1">
+      {Array.from(links).map((link, index) => {
+        const href = link.getAttribute("href");
+        const text = link.textContent.trim();
+        const icon = getIconByName(text || href);
+
+        return (
+          <a
+            key={index}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80"
+          >
+            {icon}
+          </a>
+        );
+      })}
+    </div>
+  );
+};
+
+// DescriptionWithClamp component
+function DescriptionWithClamp({ description }) {
+  const [showFull, setShowFull] = useState(false);
+  const [isClamped, setIsClamped] = useState(true);
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    function checkClamp() {
+      if (ref.current) {
+        setIsClamped(ref.current.scrollHeight > ref.current.clientHeight);
+      }
+    }
+    checkClamp();
+    window.addEventListener("resize", checkClamp);
+    return () => window.removeEventListener("resize", checkClamp);
+  }, [description, showFull]);
+
+  useEffect(() => {
+    console.log("isClamped", isClamped);
+  }, [isClamped]);
+  useEffect(() => {
+    console.log("showFull", showFull);
+  }, [showFull]);
+
+  if (!description) {
+    return (
+      <p className="text-m mb-6 italic">
+        No description available for this club.
+      </p>
+    );
+  }
+  return (
+    <div>
+      <p
+        ref={ref}
+        className={`text-m italic transition-all duration-200 ${!showFull ? "line-clamp-7" : ""}`}
+      >
+        {description}
+      </p>
+      {!showFull && isClamped && (
+        <>
+          {" "}
+          <button
+            className="ml-1 inline text-sm text-blue-600 italic underline"
+            type="button"
+            onClick={() => setShowFull(true)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          >
+            ...see more
+          </button>
+        </>
+      )}
+      {showFull && (
+        <>
+          {" "}
+          <button
+            className="ml-1 inline text-sm text-blue-600 italic underline"
+            type="button"
+            onClick={() => setShowFull(false)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          >
+            ...see less
+          </button>
+        </>
+      )}
     </div>
   );
 }
 
-export default function ClubPage() {
+export default function ClubDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
+
   const [club, setClub] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isClamped, setIsClamped] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isMobile = !isDesktop;
+  const [ratingsOpen, setRatingsOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
-    console.log("beep boop");
-    const decodedId = decodeURIComponent(id);
-    fetch(`/api/clubs/${decodedId}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
+
+    const fetchClubData = async () => {
+      try {
+        setLoading(true);
+
+        const decodedId = decodeURIComponent(id);
+        console.log("Decoded ID:", decodedId);
+        const response = await fetch(`/api/clubs/${id}`);
+        if (!response.ok)
+          throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+
         if (data.orgList && data.orgList.length > 0) {
-          setClub(data.orgList[0]);
+          const clubData = data.orgList[0];
+          setClub(clubData);
+
+          const { data: reviewsData, error: reviewsError } = await supabase
+            .from("reviews")
+            .select("*")
+            .eq("club_id", clubData.OrganizationID)
+            .order("created_at", { ascending: false });
+
+          if (reviewsError) throw reviewsError;
+          setReviews(reviewsData);
         } else {
           setError(`No club found with name containing: ${id}`);
         }
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
+        console.error("Error fetching data:", err);
         setError("Failed to fetch club data");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchClubData();
   }, [id]);
+
+  function useMediaQuery(query) {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+      const media = window.matchMedia(query);
+      if (media.matches !== matches) {
+        setMatches(media.matches);
+      }
+      const listener = () => setMatches(media.matches);
+      media.addEventListener("change", listener);
+      return () => media.removeEventListener("change", listener);
+    }, [matches, query]);
+
+    return matches;
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const formatMembership = (review) => {
+    if (!review.membership_start_quarter || !review.membership_end_quarter) {
+      return "";
+    }
+    return `${review.membership_start_quarter} Quarter ${review.membership_start_year} - ${review.membership_end_quarter} Quarter ${review.membership_end_year}`;
+  };
+
+  const getRatingColor = (rating) => {
+    if (!rating) return "bg-gray-300 text-gray-700";
+
+    const numRating = parseFloat(rating);
+    if (numRating >= 4.0) return "bg-green-700 text-white";
+    if (numRating >= 3.0) return "bg-teal-600 text-white";
+    if (numRating >= 2.0) return "bg-yellow-500 text-white";
+    return "bg-red-600 text-white";
+  };
 
   if (loading) return LoadingScreen();
 
   if (error) return <ErrorScreen error={error} />;
 
-  if (!club) return <p className="p-4">No club found with the name: {id}</p>;
+  if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
-  const categories = getCategories(club);
+  const attemptReview = async (href) => {
+    // check if user is logged in
+    // if not, redirect to sign in page
+    // else, redirect to review page with params
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session) {
+      console.log("GO TO REVIEWS");
+      window.location.href = href;
+    } else {
+      console.log("GO TO SIGN IN");
+      window.location.href = "/sign-in";
+    }
+  };
 
   return (
-    <div className="m-6 m-10 flex-col rounded rounded-xl border p-8">
-      <Link
-        href={`/clubs/details/${encodeURIComponent(club.OrganizationID)}`}
-        className="block"
-      >
-        <h3 className="pb-4 text-2xl font-bold">{club.OrganizationName}</h3>
-      </Link>
-
-      <div className="flex gap-2 pb-4">
-        {categories.map((cat, idx) => (
-          <span
-            key={idx}
-            className="rounded-full border bg-gray-200 px-3 py-1 text-sm font-bold text-gray-800"
+    <div className="mx-auto max-w-6xl p-6 md:p-20">
+      {/* Club Information */}
+      <section>
+        {isDesktop ? (
+          <div
+            className="mb-10 flex flex-col gap-8 rounded-lg border-2 bg-white p-10 lg:flex-row"
+            style={{ boxShadow: "6px 6px 0px #b4d59f" }}
           >
-            {cat}
-          </span>
-        ))}
-      </div>
+            {/* left side of the box */}
+            <div className="pr-5 lg:w-4/6">
+              <h1 className="mb-3 text-3xl font-bold">
+                {club.OrganizationName}
+              </h1>
 
-      <p className="pb-6 text-sm text-gray-800">
-        {club.OrganizationDescription}
-      </p>
+              {/* Categories/Tags */}
+              <div className="mb-3 flex flex-wrap gap-2">
+                <TagButton
+                  label={club.Category1Name}
+                  isSelected={true}
+                  onClick={() => {
+                    const encoded = encodeURIComponent(club.Category1Name);
+                    router.push(`/clubs?categories=${encoded}`);
+                  }}
+                />
+                <TagButton
+                  label={club.Category2Name}
+                  isSelected={true}
+                  onClick={() => {
+                    const encoded = encodeURIComponent(club.Category2Name);
+                    router.push(`/clubs?categories=${encoded}`);
+                  }}
+                />
+              </div>
 
-      <div className="flex items-center">
-        <span className="text-xl font-semibold">
-          {club.average_satisfaction
-            ? club.average_satisfaction.toFixed(1)
-            : "N/A"}
-        </span>
-        <AiFillStar className="mr-2 text-xl text-yellow-400" />
-        <h2 className="text-x font-semibold">satisfaction rating</h2>
-      </div>
-      <p className="font-style: italic">
-        from {club.total_num_reviews || reviews.length || 0} trusted students
-      </p>
+              {/* Description with clamp/expand */}
+              <DescriptionWithClamp
+                description={club.OrganizationDescription}
+              />
 
-      {/* 
-      {club.OrganizationEmail && (
-        <p className="mt-1">
-          Email:{" "}
-          <a href={`mailto:${club.OrganizationEmail}`} className="text-blue-600 underline">
-            {club.OrganizationEmail}
-          </a>
-        </p>
-      )}
+              <div className="mt-6 mb-6">
+                <div className="mb-1">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xl font-bold italic">
+                      Contact Information:
+                    </span>
+                    {/* Website Icon */}
+                    {club.OrganizationWebSite && (
+                      <a
+                        href={club.OrganizationWebSite}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src="/link.svg"
+                          alt="Website Icon"
+                          className="inline-block w-7 hover:opacity-80"
+                        />
+                      </a>
+                    )}
+                    {/* Social Icons */}
+                    {parseSocialLinks(club.SocialMediaLink)}
+                  </div>
+                </div>
 
-      {club.OrganizationWebSite && (
-        <p className="mt-1">
-          Website:{" "}
+                {club.OrganizationEmail && (
+                  <p className="font-bold italic">
+                    Email:{" "}
+                    <a
+                      href={`mailto:${club.OrganizationEmail}`}
+                      className="font-bold underline"
+                    >
+                      {club.OrganizationEmail}
+                    </a>
+                  </p>
+                )}
+              </div>
+            </div>
 
-          <a href={club.OrganizationWebSite}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
-          >
-            {club.OrganizationWebSite}
-          </a>
-        </p>
-      )}
+            {/* vertical line */}
+            <div className="hidden justify-center lg:flex">
+              <div className="w-px bg-gray-400" style={{ height: "100%" }} />
+            </div>
 
-      {(club.Sig1Name || club.Sig2Name || club.Sig3Name) && (
-        <div className="mt-3">
-          <strong>Signatures:</strong>
-          <ul className="list-disc list-inside">
-            {club.Sig1Name && <li>{club.Sig1Name}</li>}
-            {club.Sig2Name && <li>{club.Sig2Name}</li>}
-            {club.Sig3Name && <li>{club.Sig3Name}</li>}
-          </ul>
-        </div>
-      )}
-    
+            {/* right side */}
+            <div className="pl-5 lg:w-2/6">
+              {/* Overall Rating */}
+              <div className="mt-2 mb-4 flex items-center">
+                <span className="text-2xl font-bold">
+                  {club.average_satisfaction
+                    ? club.average_satisfaction.toFixed(1)
+                    : "N/A"}
+                </span>
+                <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+                <h2 className="text-lg font-bold text-nowrap">
+                  satisfaction rating
+                </h2>
+              </div>
 
-      {club.SocialMediaLink && (
-        <div className="mt-3" dangerouslySetInnerHTML={{ __html: club.SocialMediaLink }} />
-      )}
-      */}
+              <section>
+                {/* Rating Bars - always show */}
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Time Commitment</span>
+                        <Tooltip rating="timeCommitment" />
+                      </div>
+                      <span>
+                        {club.average_time_commitment
+                          ? club.average_time_commitment.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
+                    </div>
+                  </div>
 
-      {/* 
-      <div className="mt-4">
-        <Link href="/clubs" className="text-blue-500 hover:underline">
-          Back to all clubs
-        </Link>
-      </div>
-      */}
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Inclusivity</span>
+                        <Tooltip rating="inclusivity" />
+                      </div>
+                      <span>
+                        {club.average_inclusivity
+                          ? club.average_inclusivity.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Social Community</span>
+                        <Tooltip rating="socialCommunity" />
+                      </div>
+                      <span>
+                        {club.average_social_community
+                          ? club.average_social_community.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="mb-1 flex justify-between">
+                      <div className="flex items-center gap-1">
+                        <span>Competitiveness</span>
+                        <Tooltip rating="competitiveness" />
+                      </div>
+                      <span>
+                        {club.average_competitiveness
+                          ? club.average_competitiveness.toFixed(1) + "/5"
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="h-full bg-[#b4d59f]"
+                        style={{
+                          width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <div className="mt-1 flex justify-between text-xs text-gray-500">
+                      <span>low</span>
+                      <span>high</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        ) : (
+          // mobile view of the club details
+          <div className="mb-4 flex flex-col rounded-lg border-2 bg-white p-8 lg:flex-row">
+            {/* left side of the box */}
+            {/* <div className="mb-2 flex items-center gap-2"> */}
+            <h1 className="mb-2 text-2xl font-bold">{club.OrganizationName}</h1>
+            <div className="mb-2 flex items-center gap-1">
+              {/* Website Icon */}
+              {club.OrganizationWebSite && (
+                <a
+                  href={club.OrganizationWebSite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="/link.svg"
+                    alt="Website Icon"
+                    className="inline-block w-6 hover:opacity-80"
+                  />
+                </a>
+              )}
+              {club.OrganizationEmail && (
+                <a
+                  href={club.OrganizationEmail}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src="/email.svg"
+                    alt="Email Icon"
+                    className="inline-block w-6 hover:opacity-80"
+                  />
+                </a>
+              )}
+              {/* Social Icons */}
+              {parseSocialLinks(club.SocialMediaLink)}
+            </div>
+            {/* </div> */}
+            {/* Description with clamp/expand */}
+
+            <DescriptionWithClamp description={club.OrganizationDescription} />
+
+            {/* Categories/Tags */}
+            <div className="mt-4 mb-4 flex flex-wrap gap-2">
+              <TagButton
+                label={club.Category1Name}
+                isSelected={true}
+                onClick={() => {
+                  const encoded = encodeURIComponent(club.Category1Name);
+                  router.push(`/clubs?categories=${encoded}`);
+                }}
+              />
+              <TagButton
+                label={club.Category2Name}
+                isSelected={true}
+                onClick={() => {
+                  const encoded = encodeURIComponent(club.Category2Name);
+                  router.push(`/clubs?categories=${encoded}`);
+                }}
+              />
+            </div>
+            {/* right side */}
+            {/* Overall Rating */}
+            <div className="mb-4 flex items-center">
+              <span className="text-2xl font-bold">
+                {club.average_satisfaction
+                  ? club.average_satisfaction.toFixed(1) + "/5"
+                  : "N/A"}
+              </span>
+              <AiFillStar className="mr-2 text-2xl text-yellow-400" />
+              <p className="mt-2 mb-2 text-lg font-bold">satisfaction rating</p>
+            </div>
+
+            {/* Ratings Bars - always show */}
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <div className="flex items-center gap-1">
+                    <span>Time Commitment</span>
+                    <Tooltip rating="timeCommitment" />
+                  </div>
+                  <span>
+                    {club.average_time_commitment
+                      ? club.average_time_commitment.toFixed(1) + "/5"
+                      : "N/A"}
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>low</span>
+                  <span>high</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <div className="flex items-center gap-1">
+                    <span>Inclusivity</span>
+                    <Tooltip rating="inclusivity" />
+                  </div>
+                  <span>
+                    {club.average_inclusivity
+                      ? club.average_inclusivity.toFixed(1) + "/5"
+                      : "N/A"}
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>low</span>
+                  <span>high</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <div className="flex items-center gap-1">
+                    <span>Social Community</span>
+                    <Tooltip rating="socialCommunity" />
+                  </div>
+                  <span>
+                    {club.average_social_community
+                      ? club.average_social_community.toFixed(1) + "/5"
+                      : "N/A"}
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>low</span>
+                  <span>high</span>
+                </div>
+              </div>
+
+              <div>
+                <div className="mb-1 flex justify-between">
+                  <div className="flex items-center gap-1">
+                    <span>Competitiveness</span>
+                    <Tooltip rating="competitiveness" />
+                  </div>
+                  <span>
+                    {club.average_competitiveness
+                      ? club.average_competitiveness.toFixed(1) + "/5"
+                      : "N/A"}
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                  <div
+                    className="h-full bg-[#b4d59f]"
+                    style={{
+                      width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="mt-1 flex justify-between text-xs text-gray-500">
+                  <span>low</span>
+                  <span>high</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+      <section>
+        <section>
+          {isDesktop ? (
+            <div>
+              <h2 className="py-4 text-2xl font-bold">
+                Student Reviews ({club.total_num_reviews || reviews.length || 0}
+                )
+              </h2>
+              <p className="mb-6">
+                Have something to say? Share your experience...
+              </p>
+              <button
+                onClick={() =>
+                  attemptReview(
+                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                  )
+                }
+                className="mb-12 inline-block rounded-full border-1 border-black bg-black px-6 py-2 text-white transition duration-300 ease-in-out hover:bg-white hover:text-black"
+              >
+                Leave a Review
+              </button>
+            </div>
+          ) : (
+            <div>
+              <h2 className="py-4 text-lg font-bold">
+                Student Reviews ({club.total_num_reviews || reviews.length || 0}
+                )
+              </h2>
+              <button
+                onClick={() =>
+                  attemptReview(
+                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                  )
+                }
+                className="mb-8 inline-block rounded-lg border bg-black px-6 py-2 text-white"
+              >
+                Leave a Review
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* Reviews List */}
+        {reviews.length === 0 ? (
+          <div className="py-10 text-center text-gray-500">
+            No reviews yet. Be the first to share your experience!
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {reviews.map((review, index) =>
+              isDesktop ? (
+                // desktop card
+                <div
+                  key={index}
+                  className="rounded-lg border border-black bg-gray-50 p-8"
+                  style={{ boxShadow: "6px 6px 0px #b4d59f" }}
+                >
+                  <div className="mb-2 flex justify-between">
+                    <h3 className="text-2xl font-bold">
+                      {review.user_alias ? `${review.user_alias}` : "Anonymous"}
+                    </h3>
+                    <div className="font-bold text-[#666dbc]">
+                      Reviewed on {formatDate(review.created_at)}
+                    </div>
+                  </div>
+                  <div className="mb-4 font-semibold">
+                    <span className="text-gray-600">
+                      Member from{" "}
+                      <span className="text-[#5058B2]">
+                        {formatMembership(review)}
+                      </span>
+                    </span>
+                  </div>
+                  <p className="mb-2 text-gray-800">
+                    &quot;{review.review_text}&quot;
+                  </p>
+                </div>
+              ) : (
+                // mobile card
+                <div
+                  key={index}
+                  className="rounded-lg border-2 border-black bg-gray-50 p-6"
+                >
+                  <div className="mb-2 text-lg font-bold">
+                    {review.user_alias ? `${review.user_alias}` : "Anonymous"}
+                  </div>
+                  <div>
+                    <span className="text-black">
+                      Member from{" "}
+                      <span className="font-semibold text-[#5058B2]">
+                        {formatMembership(review)}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="mb-3 text-sm font-semibold">
+                    <div>Reviewed on {formatDate(review.created_at)}</div>
+                  </div>
+                  <div className="text-base">
+                    &quot;{review.review_text}&quot;
+                  </div>
+                </div>
+              ),
+            )}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

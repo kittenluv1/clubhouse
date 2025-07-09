@@ -121,7 +121,7 @@ const ClubSearchBar = forwardRef(
     const handleOptionClick = (option) => {
       // Close the dropdown
       setIsOpen(false);
-      router.push(`/clubs/details/${encodeURIComponent(option)}`);
+      router.push(`/clubs/${encodeURIComponent(option)}`);
     };
 
     return (

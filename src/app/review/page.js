@@ -4,17 +4,12 @@ import React, { useState, useEffect } from "react";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
 import CustomSlider from "../components/custom-slider";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../lib/db";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "../components/tooltip";
 import LoadingScreen from "../components/LoadingScreen";
-
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const nouns = [
   "Panda",

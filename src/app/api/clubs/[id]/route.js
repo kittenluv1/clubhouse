@@ -1,4 +1,4 @@
-import { supabase } from "../../../../lib/db"; // Adjust import path as needed
+import { supabase } from "@/app/lib/db";
 
 export async function GET(request, context) {
   // await context params before using
