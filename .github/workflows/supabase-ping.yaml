@@ -11,4 +11,4 @@ jobs:
 
     steps:
       - name: Hit REST API base URL (no key)
-        run: curl https://uljxbnouvgtrjkcbnmit.supabase.co/rest/v1/
+        run: curl ${{ secrets.DEV_DB_URL }}
