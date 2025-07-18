@@ -54,7 +54,7 @@ export async function GET(req) {
     // Insert data into the Supabase database
     const { error } = await supabaseServer
       .from("clubs")
-      .upsert(sanitizedOrgList, { onClifct: "OrganizationID" });
+      .upsert(sanitizedOrgList, { onConflict: "OrganizationID" });
 
     if (error) {
       console.error("Error inserting data into Supabase:", error);
