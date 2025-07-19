@@ -11,9 +11,9 @@ export async function GET(req) {
     const startIndex = (pageNum - 1) * pageSize; // calculate indices of 'data' to be returned (i.e. 10 per page)
     const endIndex = startIndex + pageSize - 1;
 
-    // default sort type
+    // Configure sorting with secondary sort for consistency
     let sortBy = "average_satisfaction";
-    let ascending = false; // default is descending order
+    let ascending = false;
     if (sortType === "reviews") {
       sortBy = "total_num_reviews";
     } else if (sortType === "alphabetical") {
@@ -21,45 +21,42 @@ export async function GET(req) {
       ascending = true; // alphabetic order needs to go in ascending order
     }
 
-    let data, count, error;
+    // Build query with consistent ordering
+    let query = supabase
+      .from("clubs")
+      .select("*", { count: "exact" })
+      .order(sortBy, { ascending, nullsFirst: false });
 
-    if (name) {
-      const result = await supabase
-        .from("clubs")
-        .select("*", { count: "exact" })
-        .ilike("OrganizationName", `%${name}%`)
-        .order(sortBy, { ascending, nullsFirst: false })
-        .range(startIndex, endIndex);
-
-      data = result.data;
-      count = result.count;
-      error = result.error;
-    } else {
-      const result = await supabase
-        .from("clubs")
-        .select("*", { count: "exact" }) // gets how many rows were fetched (used for total page count!)
-        .order(sortBy, { ascending, nullsFirst: false }) // sort based on user-chosen type
-        .range(startIndex, endIndex);
-
-      data = result.data;
-      count = result.count;
-      error = result.error;
+    // Add secondary sort by ID (or another unique field) for consistency
+    // This ensures identical values in the primary sort column have predictable order
+    if (sortType !== "alphabetical") {
+      query = query.order("OrganizationName", { ascending: true });
     }
+    // Always add ID as final tiebreaker
+    query = query.order("OrganizationID", { ascending: true });
+
+    // Apply search filter if provided
+    if (name) {
+      query = query.ilike("OrganizationName", `%${name}%`);
+    }
+
+    // Apply pagination
+    const result = await query.range(startIndex, endIndex);
+    
+    const { data, count, error } = result;
 
     if (error) {
       console.error("Supabase error:", error);
       return new Response(JSON.stringify({ error: "Database query failed" }), {
         status: 500,
       });
-    } else {
-      console.log("success");
-      console.log(count, "total number of rows");
     }
 
-    // round up to nearest whole number; accounts for last page having < 10 items
+    console.log("success");
+    console.log(count, "total number of rows");
+
     const totalNumPages = Math.ceil(count / pageSize);
 
-    // returns the club data, current page number, and total number of pages for search
     return new Response(
       JSON.stringify(
         {
