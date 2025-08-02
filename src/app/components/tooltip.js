@@ -17,6 +17,7 @@ export default function Tooltip({ rating }) {
   const [isTouch, setIsTouch] = useState(false);
   const ignoreMouse = useRef(false);
   const tooltipRef = useRef(null);
+  const lastTouchTime = useRef(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -36,23 +37,37 @@ export default function Tooltip({ rating }) {
     return () => document.removeEventListener("touchstart", handleTouch);
   }, [open, isTouch]);
 
-  // Suppress mouse events right after touch
+  // Handle touch events
+  const handleTouchStart = (e) => {
+    e.preventDefault(); // Prevent mouse events from firing
+    lastTouchTime.current = Date.now();
+    setOpen((v) => !v);
+    ignoreMouse.current = true;
+    setTimeout(() => {
+      ignoreMouse.current = false;
+    }, 500);
+  };
+
+  // Handle click events (for mouse/non-touch)
   const handleClick = (e) => {
-    if (isTouch) {
+    // Ignore clicks that happen shortly after touch events
+    if (Date.now() - lastTouchTime.current < 500) {
+      return;
+    }
+    
+    // Only handle click if it's not a touch device or mouse isn't being ignored
+    if (!isTouch && !ignoreMouse.current) {
       setOpen((v) => !v);
-      ignoreMouse.current = true;
-      setTimeout(() => {
-        ignoreMouse.current = false;
-      }, 500);
     }
   };
 
   const handleMouseEnter = () => {
-    if (ignoreMouse.current) return;
+    if (ignoreMouse.current || isTouch) return;
     setOpen(true);
   };
+  
   const handleMouseLeave = () => {
-    if (ignoreMouse.current) return;
+    if (ignoreMouse.current || isTouch) return;
     setOpen(false);
   };
 
@@ -65,6 +80,7 @@ export default function Tooltip({ rating }) {
     >
       <div
         className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border border-gray-400 bg-white text-xs text-gray-500 select-none"
+        onTouchStart={handleTouchStart}
         onClick={handleClick}
       >
         ?

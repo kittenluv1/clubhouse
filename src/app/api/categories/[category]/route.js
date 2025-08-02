@@ -24,13 +24,22 @@ export async function GET(req, { params }) {
       ascending = true;
     }
 
-    // Fetch filtered + paginated + sorted data
-    const { data, count, error } = await supabase
+    // Build query with consistent ordering
+    let query = supabase
       .from("clubs")
       .select("*", { count: "exact" })
       .or(`Category1Name.ilike.%${category}%,Category2Name.ilike.%${category}%`)
-      .order(sortBy, { ascending, nullsFirst: false })
-      .range(startIndex, endIndex);
+      .order(sortBy, { ascending, nullsFirst: false });
+
+    // Add secondary sort by OrganizationName for consistency (except when already sorting alphabetically)
+    if (sortType !== "alphabetical") {
+      query = query.order("OrganizationName", { ascending: true });
+    }
+    // Always add ID as final tiebreaker (assuming you have an id column)
+    query = query.order("OrganizationID", { ascending: true });
+
+    // Apply pagination
+    const { data, count, error } = await query.range(startIndex, endIndex);
 
     if (error) {
       console.error("Supabase error:", error);
