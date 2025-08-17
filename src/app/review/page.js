@@ -408,14 +408,12 @@ export default function ReviewPage() {
         console.log("HERE IS EMAIL", data[0].user_email),
       );
 
-      setSuccess(true);
       router.push("/review/thankyou");
-      resetForm();
+      
     } catch (error) {
       console.error("Error submitting review:", error);
       setError(error.message || "Failed to submit review. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); 
     }
   };
 
