@@ -18,10 +18,10 @@ jobs:
           PG_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
         run: |
           mkdir -p backups
-          pg_dump postgresql://postgres.tmvimczmnplaucwwnstn:${PG_PASSWORD}@aws-0-us-west-1.pooler.supabase.com:5432/postgres -f backups/prod_backup_$(date +%F).sql
+          pg_dump postgresql://postgres.${{ secrets.PROD_DB_URL }}:${PG_PASSWORD}@aws-0-us-west-1.pooler.supabase.com:5432/postgres -f backups/prod_backup_$(date +%F).sql
 
       - name: Upload backup artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: prod-backup-$(date +%F)
           path: backups/prod_backup_$(date +%F).sql
