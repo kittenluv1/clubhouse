@@ -24,9 +24,6 @@ jobs:
           mkdir -p backups
           pg_dump postgresql://postgres.${{ secrets.PROD_DB_URL }}:${PG_PASSWORD}@aws-0-us-west-1.pooler.supabase.com:5432/postgres -f backups/prod_backup_${{ steps.date.outputs.date }}.sql
 
-      - name: Compress backup
-        run: tar -czf prod_backup_${{ steps.date.outputs.date }}.tar.gz -C backups .
-
       - name: Upload backup artifact
         uses: actions/upload-artifact@v4
         with:
