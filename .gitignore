@@ -44,3 +44,6 @@ next-env.d.ts
 # supabase
 supabase/config.toml
 *.dump
+
+# local backups
+backups/
