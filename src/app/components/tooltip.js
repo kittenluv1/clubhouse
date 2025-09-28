@@ -14,61 +14,84 @@ const tooltipDefinitions = {
 
 export default function Tooltip({ rating }) {
   const [open, setOpen] = useState(false);
-  const [isTouch, setIsTouch] = useState(false);
-  const ignoreMouse = useRef(false);
   const tooltipRef = useRef(null);
-  const lastTouchTime = useRef(0);
+  const isHovering = useRef(false);
+  const wasClicked = useRef(false);
 
+  // Close tooltip when clicking/touching outside
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    }
-  }, []);
-
-  // On touch, close tooltip when tapping outside
-  useEffect(() => {
-    if (!open || !isTouch) return;
-    function handleTouch(e) {
+    if (!open) return;
+    
+    function handleOutsideInteraction(e) {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
         setOpen(false);
+        wasClicked.current = false; // Reset click state when closing
       }
     }
-    document.addEventListener("touchstart", handleTouch);
-    return () => document.removeEventListener("touchstart", handleTouch);
-  }, [open, isTouch]);
-
-  // Handle touch events
-  const handleTouchStart = (e) => {
-    e.preventDefault(); // Prevent mouse events from firing
-    lastTouchTime.current = Date.now();
-    setOpen((v) => !v);
-    ignoreMouse.current = true;
-    setTimeout(() => {
-      ignoreMouse.current = false;
-    }, 500);
-  };
-
-  // Handle click events (for mouse/non-touch)
-  const handleClick = (e) => {
-    // Ignore clicks that happen shortly after touch events
-    if (Date.now() - lastTouchTime.current < 500) {
-      return;
-    }
     
-    // Only handle click if it's not a touch device or mouse isn't being ignored
-    if (!isTouch && !ignoreMouse.current) {
-      setOpen((v) => !v);
+    // Listen for both click and touchstart to handle all devices
+    document.addEventListener("click", handleOutsideInteraction);
+    document.addEventListener("touchstart", handleOutsideInteraction);
+    
+    return () => {
+      document.removeEventListener("click", handleOutsideInteraction);
+      document.removeEventListener("touchstart", handleOutsideInteraction);
+    };
+  }, [open]);
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    if (open) {
+      // If closing via click, reset the click state
+      wasClicked.current = false;
+      setOpen(false);
+    } else {
+      // If opening via click, set click state
+      wasClicked.current = true;
+      setOpen(true);
     }
   };
 
   const handleMouseEnter = () => {
-    if (ignoreMouse.current || isTouch) return;
-    setOpen(true);
+    // Don't show on hover if it was opened by click
+    if (wasClicked.current) return;
+    
+    isHovering.current = true;
+    // Small delay to avoid flickering on quick mouse movements
+    setTimeout(() => {
+      if (isHovering.current && !wasClicked.current) {
+        setOpen(true);
+      }
+    }, 100);
   };
-  
+
   const handleMouseLeave = () => {
-    if (ignoreMouse.current || isTouch) return;
-    setOpen(false);
+    // Don't close on mouse leave if it was opened by click
+    if (wasClicked.current) return;
+    
+    isHovering.current = false;
+    // Delay closing to allow moving to tooltip content
+    setTimeout(() => {
+      if (!isHovering.current && !wasClicked.current) {
+        setOpen(false);
+      }
+    }, 150);
+  };
+
+  // Handle tooltip content hover to keep it open
+  const handleTooltipMouseEnter = () => {
+    if (wasClicked.current) return;
+    isHovering.current = true;
+  };
+
+  const handleTooltipMouseLeave = () => {
+    if (wasClicked.current) return;
+    isHovering.current = false;
+    setTimeout(() => {
+      if (!isHovering.current && !wasClicked.current) {
+        setOpen(false);
+      }
+    }, 150);
   };
 
   return (
@@ -79,14 +102,27 @@ export default function Tooltip({ rating }) {
       onMouseLeave={handleMouseLeave}
     >
       <div
-        className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border border-gray-400 bg-white text-xs text-gray-500 select-none"
-        onTouchStart={handleTouchStart}
+        className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border border-gray-400 bg-white text-xs text-gray-500 select-none hover:bg-gray-50 transition-colors"
         onClick={handleClick}
+        aria-label="More information"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setOpen(prev => !prev);
+          }
+        }}
       >
         ?
       </div>
       {open && (
-        <div className="pointer-events-auto absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-100 transition-opacity duration-200">
+        <div 
+          className="pointer-events-auto absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-100 transition-opacity duration-200 shadow-lg"
+          onMouseEnter={handleTooltipMouseEnter}
+          onMouseLeave={handleTooltipMouseLeave}
+          role="tooltip"
+        >
           {tooltipDefinitions[rating]}
           <div className="absolute top-full left-1/2 -translate-x-1/2 transform border-4 border-transparent border-t-gray-800"></div>
         </div>
