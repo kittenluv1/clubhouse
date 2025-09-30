@@ -394,7 +394,7 @@ export default function ReviewPage() {
       if (error) throw new Error(error.message);
 
       await fetch(
-        "https://tmvimczmnplaucwwnstn.supabase.co/functions/v1/send-review-email",
+        `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-review-email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -405,16 +405,15 @@ export default function ReviewPage() {
             user_email: data[0].user_email,
           }),
         },
+        console.log("HERE IS EMAIL", data[0].user_email),
       );
 
-      setSuccess(true);
       router.push("/review/thankyou");
-      resetForm();
+      
     } catch (error) {
       console.error("Error submitting review:", error);
       setError(error.message || "Failed to submit review. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); 
     }
   };
 
@@ -482,7 +481,9 @@ export default function ReviewPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Club Name */}
           <div>
-            <label className="mb-3 block text-lg font-bold">Club Name <span className="text-red-500">*</span></label>
+            <label className="mb-3 block text-lg font-bold">
+              Club Name <span className="text-red-500">*</span>
+            </label>
             <div className="max-w-md">
               <SearchableDropdown
                 tableName="clubs"
@@ -498,7 +499,8 @@ export default function ReviewPage() {
           <div className="mt-12 grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-2">
             <div>
               <label className="mb-3 block text-lg font-bold">
-                Club Membership Start Date <span className="text-red-500">*</span>
+                Club Membership Start Date{" "}
+                <span className="text-red-500">*</span>
               </label>
               <div className="flex space-x-2">
                 <div className="w-1/2">
@@ -699,7 +701,8 @@ export default function ReviewPage() {
           {/* Satisfaction Stars */}
           <div>
             <label className="mt-20 mb-3 block text-lg font-bold">
-              How satisfied are you with your club experience? <span className="text-red-500">*</span>
+              How satisfied are you with your club experience?{" "}
+              <span className="text-red-500">*</span>
             </label>
             <StarRating
               rating={overallSatisfaction}
