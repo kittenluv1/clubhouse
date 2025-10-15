@@ -136,7 +136,7 @@ function Header() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 100, opacity: 0 }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-[#DFEBFF] p-0 md:gap-4"
+              className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-white p-0 md:gap-4"
             >
               <button
                 onClick={attemptReview}
