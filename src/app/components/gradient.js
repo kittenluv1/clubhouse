@@ -7,16 +7,15 @@ export default function Gradient() {
 
   return (
     <>
-      {pathname === "/clubs" || pathname === "/review" ? (
+      {pathname === "/" ||
+      pathname === "/sign-in" ||
+      pathname === "/review/thankyou" ? (
         <>
-          <div className="absolute top-0 left-0 -z-10 h-1/6 w-full bg-gradient-to-b from-[#DFEBFF] via-[#DFF1F1] to-[#FFFFFF]" />
-          <div className="absolute top-1/3 -z-10 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] via-[#F1FFE8] to-[#FFFFFF]" />
-          <div className="absolute top-2/3 -z-10 h-1/3 w-full bg-gradient-to-b from-[#FFFFFF] to-[#DFF1F1]" />
+          <div className="absolute top-0 bottom-0 left-0 -z-10 w-full bg-gradient-to-t from-[#CDE5FC] to-[#FFFFFF]" />
         </>
       ) : (
         <>
-          {/* <div className="absolute top-0 left-0 -z-10 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF]" /> */}
-          <div className="absolute top-0 bottom-0 left-0 -z-10 w-full bg-gradient-to-t from-[#CDE5FC] to-[#FFFFFF]" />
+          <div className="absolute top-0 bottom-0 left-0 -z-10 w-full bg-white" />
         </>
       )}
     </>

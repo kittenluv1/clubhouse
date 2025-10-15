@@ -85,7 +85,7 @@ function Header() {
           />
           <object
             type="image/svg+xml"
-            data="/clubhouse-star-logo.svg"
+            data="/clubhouse-logo-mobile.svg"
             aria-label="ClubHouse Logo"
             className="pointer-events-none w-18 shrink-0 object-cover lg:hidden"
           />
