@@ -15,8 +15,8 @@ export default function Gradient() {
         </>
       ) : (
         <>
-          <div className="absolute top-0 left-0 -z-10 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF]" />
-          <div className="absolute bottom-0 -z-10 h-1/5 w-full bg-gradient-to-t from-[#DFF1F1] to-[#FFFFFF]" />
+          {/* <div className="absolute top-0 left-0 -z-10 h-3/5 w-full bg-gradient-to-b from-[#DFEBFF] to-[#FFFFFF]" /> */}
+          <div className="absolute top-0 bottom-0 left-0 -z-10 w-full bg-gradient-to-t from-[#CDE5FC] to-[#FFFFFF]" />
         </>
       )}
     </>

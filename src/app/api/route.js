@@ -2,7 +2,7 @@ import { supabaseServer } from "../lib/server-db.js";
 
 export async function GET(req) {
   if (!supabaseServer) {
-    console.error("supabaseServerServer client is not initialized.");
+    console.error("supabaseServer client is not initialized.");
     return new Response(
       JSON.stringify({ error: "Server configuration error" }),
       { status: 500 },

@@ -68,7 +68,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#DFEBFF] p-5 md:px-20 lg:py-6">
+    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-5 md:px-20 lg:py-6">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button
@@ -79,7 +79,7 @@ function Header() {
           {/* mobile responsive logo */}
           <object
             type="image/svg+xml"
-            data="/clubhouse-logo-text.svg"
+            data="/clubhouse-logo-desktop.svg"
             aria-label="ClubHouse Logo"
             className="pointer-events-none hidden object-cover lg:block lg:w-3xs"
           />

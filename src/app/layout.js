@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} ${dmSans.variable} flex min-h-screen flex-col antialiased`}
+        className={`${dmSans.variable} ${geistSans.variable} ${geistMono.variable} ${inter.variable} flex min-h-screen flex-col antialiased`}
       >
         <Suspense fallback={<LoadingScreen />}>
           <SearchProvider>
