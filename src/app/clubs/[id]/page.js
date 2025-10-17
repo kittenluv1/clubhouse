@@ -250,7 +250,7 @@ export default function ClubDetailsPage() {
       window.location.href = href;
     } else {
       console.log("GO TO SIGN IN");
-      window.location.href = "/sign-in";
+      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`;
     }
   };
 
