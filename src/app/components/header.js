@@ -68,7 +68,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#DFEBFF] p-5 md:px-20 lg:py-6">
+    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-5 md:px-20 lg:py-6">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button
@@ -79,13 +79,13 @@ function Header() {
           {/* mobile responsive logo */}
           <object
             type="image/svg+xml"
-            data="/clubhouse-logo-text.svg"
+            data="/clubhouse-logo-desktop.svg"
             aria-label="ClubHouse Logo"
             className="pointer-events-none hidden object-cover lg:block lg:w-3xs"
           />
           <object
             type="image/svg+xml"
-            data="/clubhouse-star-logo.svg"
+            data="/clubhouse-logo-mobile.svg"
             aria-label="ClubHouse Logo"
             className="pointer-events-none w-18 shrink-0 object-cover lg:hidden"
           />
@@ -136,7 +136,7 @@ function Header() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 100, opacity: 0 }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-[#DFEBFF] p-0 md:gap-4"
+              className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-white p-0 md:gap-4"
             >
               <button
                 onClick={attemptReview}

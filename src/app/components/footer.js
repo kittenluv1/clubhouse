@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <>
       {/* <div className="border"/> */}
-      <footer className="h-auto overflow-hidden bg-[#DFF1F1] p-15 break-words lg:px-30 lg:py-15">
+      <footer className="h-auto overflow-hidden bg-[#C4E1FC] p-15 break-words lg:px-30 lg:py-15">
         <h3 className="mb-5 text-lg">
           Have questions or feedback? Want to collaborate?
         </h3>
