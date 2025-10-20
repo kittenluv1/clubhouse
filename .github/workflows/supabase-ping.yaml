@@ -1,0 +1,14 @@
+name: Ping Dev Supabase
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hit REST API base URL (no key)
+        run: curl ${{ secrets.DEV_DB_URL }}

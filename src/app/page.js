@@ -87,13 +87,13 @@ function Home() {
       <div className="max-w-2xl lg:pb-10">
         <object
           type="image/svg+xml"
-          data="/clubhouse-logo-text.svg"
+          data="/clubhouse-logo-desktop.svg"
           aria-label="ClubHouse Logo"
-          className="hidden w-2xl object-cover lg:block"
+          className="hidden w-lg object-cover lg:block"
         />
         <object
           type="image/svg+xml"
-          data="/clubhouse-star-logo.svg"
+          data="/clubhouse-logo-mobile.svg"
           aria-label="ClubHouse Logo"
           className="w-3xs object-cover lg:hidden"
         />

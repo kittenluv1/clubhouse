@@ -1,0 +1,32 @@
+name: Weekly Prod Backup
+
+on:
+  schedule:
+    - cron: "0 0 * * 0" # Sundays at midnight UTC (Saturdays 5PM PST)
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Set date
+        id: date
+        run: echo "date=$(date +'%F')" >> $GITHUB_OUTPUT
+
+      - name: Dump Prod DB
+        env:
+          PG_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+        run: |
+          mkdir -p backups
+          pg_dump postgresql://postgres.${{ secrets.PROD_DB_URL }}:${PG_PASSWORD}@aws-0-us-west-1.pooler.supabase.com:5432/postgres -f backups/prod_backup_${{ steps.date.outputs.date }}.sql
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-backup-${{ steps.date.outputs.date }}
+          path: backups/prod_backup_${{ steps.date.outputs.date }}.sql
+          retention-days: 90
