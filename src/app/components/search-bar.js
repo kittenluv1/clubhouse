@@ -80,10 +80,25 @@ const ClubSearchBar = forwardRef(
       if (inputValue.trim() === "") {
         setFilteredOptions([]);
       } else {
-        const filtered = allOptions.filter((option) =>
-          option.toLowerCase().includes(inputValue.toLowerCase()),
-        );
-        setFilteredOptions(filtered);
+      const lowerInput = inputValue.toLowerCase().trim();
+      const startsWith = [];
+      const contains = [];
+      
+      allOptions.forEach(option => {
+        const lowerOption = option.toLowerCase();
+        if (lowerOption.includes(lowerInput)) {
+          if (lowerOption.startsWith(lowerInput)) {
+            startsWith.push(option);
+          } else {
+            contains.push(option);
+          }
+        }
+      });
+      
+      startsWith.sort((a, b) => a.localeCompare(b));
+      contains.sort((a, b) => a.localeCompare(b));
+      
+      setFilteredOptions([...startsWith, ...contains]);
       }
     }, [inputValue, allOptions]);
 
