@@ -80,25 +80,22 @@ const ClubSearchBar = forwardRef(
       if (inputValue.trim() === "") {
         setFilteredOptions([]);
       } else {
-      const lowerInput = inputValue.toLowerCase().trim();
-      const startsWith = [];
-      const contains = [];
-      
-      allOptions.forEach(option => {
-        const lowerOption = option.toLowerCase();
-        if (lowerOption.includes(lowerInput)) {
-          if (lowerOption.startsWith(lowerInput)) {
-            startsWith.push(option);
-          } else {
-            contains.push(option);
-          }
-        }
-      });
-      
-      startsWith.sort((a, b) => a.localeCompare(b));
-      contains.sort((a, b) => a.localeCompare(b));
-      
-      setFilteredOptions([...startsWith, ...contains]);
+
+        const filtered = allOptions
+  .filter((option) =>
+    option.toLowerCase().includes(inputValue.toLowerCase())
+  )
+  .sort((a, b) => {
+    const lowerA = a.toLowerCase();
+    const lowerB = b.toLowerCase();
+    const indexA = lowerA.indexOf(inputValue.toLowerCase());
+    const indexB = lowerB.indexOf(inputValue.toLowerCase());
+    if (indexA !== indexB) return indexA - indexB; 
+    return lowerA.localeCompare(lowerB);
+  });
+
+
+    setFilteredOptions(filtered); 
       }
     }, [inputValue, allOptions]);
 
