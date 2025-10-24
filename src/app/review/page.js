@@ -719,9 +719,17 @@ export default function ReviewPage() {
               className="h-32 w-full rounded-md border bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
               value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
+              onChange={(e) => {
+                if (e.target.value.length <= 2500) {
+                  setReviewText(e.target.value);
+                }
+              }}
+              maxLength={2500}
               required
             ></textarea>
+            <div className={`mt-1 text-right text-sm ${reviewText.length >= 2500 ? 'text-red-500' : 'text-gray-500'}`}>
+              {reviewText.length} / 2500 Characters
+            </div>
           </div>
 
           {error && (
