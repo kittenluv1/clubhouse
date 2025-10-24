@@ -22,10 +22,22 @@ export async function GET(req) {
     }
 
     // Build query with consistent ordering
+    // let query = supabase
+    //   .from("clubs")
+    //   .select("*", { count: "exact" })
+    //   .order(sortBy, { ascending, nullsFirst: false });
+
     let query = supabase
-      .from("clubs")
-      .select("*", { count: "exact" })
-      .order(sortBy, { ascending, nullsFirst: false });
+    .from('clubs')
+    .select('*', { count: 'exact' });
+
+    if (sortType === 'rating') {
+      query = query
+        .order('average_satisfaction', { ascending: false, nullsFirst: false })
+        .order('total_num_reviews', { ascending: false });
+    } else if (sortType === 'reviews') {
+      query = query.order('total_num_reviews', { ascending: false });
+    }
 
     // Add secondary sort by ID (or another unique field) for consistency
     // This ensures identical values in the primary sort column have predictable order

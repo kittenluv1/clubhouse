@@ -3,12 +3,16 @@
 import Script from "next/script";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
+import { useSearchParams } from "next/navigation";
 
 export default function GoogleSignIn() {
   // userEmail is either:
   // null (logged out), string (logged in), or INVALID (invalid email)
   const [userEmail, setUserEmail] = useState(null);
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const club = searchParams.get('club');
+  const clubId = searchParams.get('clubId');
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
@@ -68,6 +72,14 @@ export default function GoogleSignIn() {
       if (session) {
         setUserEmail(session.user.email); // Update email when signed in
         console.log("Auth state changed:", event, session.user.email);
+        if (club != null) {
+          console.log("redirect to:" + club);
+          if (clubId != null) { // redirect to review page
+            window.location.href = `/review?club=${club}&clubId=${clubId}`;
+          } else { //redirect to club general page (currently unused)
+            window.location.href = `/clubs/${club}`;
+          }
+        }
       } else {
         setUserEmail(null); // Clear email when signed out
         console.log("Auth state changed:", event);

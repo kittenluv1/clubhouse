@@ -7,6 +7,7 @@ import Gradient from "./components/gradient";
 import { SearchProvider } from "./context/SearchContext";
 import { Suspense } from "react";
 import LoadingScreen from "./components/LoadingScreen";
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
   variable: "--font-inter",
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
             <main className="relative min-h-screen overflow-hidden">
               <Gradient />
               {children}
+              <Analytics />
             </main>
             <Footer />
           </SearchProvider>
