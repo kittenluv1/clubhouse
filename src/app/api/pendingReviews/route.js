@@ -1,10 +1,31 @@
-import { supabase } from "@/app/lib/db";
+import { createServerClient } from "@/app/lib/server-db";
 
 export async function GET(req) {
   const sortType = req.nextUrl.searchParams.get("sort");
   const orderBy = sortType === "newest" ? false : true;
 
   try {
+    const authHeader = req.headers.get('authorization');
+    
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }), 
+        { status: 401 }
+      );
+    }
+
+    const supabase = createServerClient(authHeader);
+
+    // Verify the token is valid
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }), 
+        { status: 401 }
+      );
+    }
+
     const { data, error } = await supabase
       .from("pending_reviews")
       .select("*")
@@ -29,6 +50,14 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+  const authHeader = req.headers.get('authorization');
+  
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+
+  const supabase = createServerClient(authHeader);
+
   try {
     const { reviewID, approve } = await req.json();
 

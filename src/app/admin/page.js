@@ -49,7 +49,19 @@ const Page = () => {
   const fetchPendingReviews = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/pendingReviews?sort=${sortType}`);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        console.error('No session found');
+        window.location.href = "./sign-in";
+        return;
+      }
+
+      const res = await fetch(`/api/pendingReviews?sort=${sortType}`, {
+        headers: {
+          "Authorization": `Bearer ${session.access_token}`,
+        }
+      });
       if (!res.ok) throw new Error("Failed to load");
 
       const { pendingReviews } = await res.json();
@@ -74,9 +86,20 @@ const Page = () => {
 
   const handleApprove = async (record) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+    
+      if (!session) {
+        console.error('No session found');
+        window.location.href = "./sign-in";
+        return;
+      }
+
       const approveRes = await fetch("/api/pendingReviews", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify({ reviewID: record.id, approve: true }),
       });
 
@@ -113,9 +136,20 @@ const Page = () => {
 
   const handleReject = async (record) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        console.error('No session found');
+        window.location.href = "./sign-in";
+        return;
+      }
+
       const disproveRes = await fetch("/api/pendingReviews", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`, 
+        },
         body: JSON.stringify({ reviewID: record.id, approve: false }),
       });
 
