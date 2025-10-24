@@ -11,3 +11,22 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 export const supabaseServer = createClient(supabaseUrl, supabaseServiceKey);
+
+// Special client that has the authorization in header so we can check for proper authorization. Maybe this should be the default client...
+export function createServerClient(authHeader) {
+  if (!authHeader) {
+    throw new Error('No authorization header provided');
+  }
+
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      global: {
+        headers: {
+          Authorization: authHeader,
+        },
+      },
+    }
+  );
+}
