@@ -93,6 +93,7 @@ const nouns = [
   "Smoothie",
   "Espresso",
   "Sushi",
+  "Mouse",
   "Açaí",
   "Panini",
   "Salad",
