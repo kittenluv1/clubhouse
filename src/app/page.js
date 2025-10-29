@@ -95,7 +95,7 @@ function Home() {
           type="image/svg+xml"
           data="/clubhouse-logo-mobile.svg"
           aria-label="ClubHouse Logo"
-          className="w-3xs object-cover lg:hidden"
+          className="mb-5 w-3xs object-cover lg:hidden"
         />
       </div>
       <div className="flex w-6/8 max-w-3xl flex-col items-center space-y-2">
