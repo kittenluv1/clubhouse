@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
+import '../../../src/app/slider.css';
 const CustomSlider = ({
   min = 1,
   max = 5,
@@ -46,6 +46,7 @@ const CustomSlider = ({
           className="absolute top-1/2 z-10 h-5 w-5 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white shadow-md"
           style={{ left: `${calculateFillPercentage()}%` }}
         ></div>
+        
 
         {/* Range input  */}
         <input
@@ -55,7 +56,8 @@ const CustomSlider = ({
           step={step}
           value={sliderValue}
           onChange={handleChange}
-          className="absolute top-0 left-0 z-20 h-6 w-full cursor-pointer opacity-0"
+          className="absolute top-0 left-0 z-20 h-0 w-full cursor-pointer opacity-0"
+          id="sliderStyling"
         />
       </div>
 
