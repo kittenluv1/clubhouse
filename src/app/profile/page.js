@@ -4,150 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 
-// Mock data
-const mockReviews = [
-    {
-        id: 1,
-        clubName: "Chess Club",
-        overall_satisfaction: 5,
-        review_text: "Great club with friendly members!",
-        created_at: "2024-10-15",
-    },
-    {
-        id: 2,
-        clubName: "Photography Club",
-        overall_satisfaction: 4,
-        review_text: "Good learning opportunities.",
-        created_at: "2024-10-10",
-    },
-];
-
-const mockLikedClubs = [
-    {
-        OrganizationID: 1,
-        OrganizationName: "Chess Club",
-        Description: "A club for chess enthusiasts",
-        avgRating: 4.5,
-        numReviews: 23,
-    },
-    {
-        id: 2,
-        OrganizationName: "Photography Club",
-        Description: "Learn and practice photography",
-        avgRating: 4.2,
-        numReviews: 18,
-    },
-];
-
-function ReviewsTabContent({ reviews }) {
-    const router = useRouter();
-
-    if (reviews.length === 0) {
-        return (
-            <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">No reviews yet</p>
-                <button
-                    onClick={() => router.push("/review")}
-                    className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
-                >
-                    Write a Review
-                </button>
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-4">
-            {reviews.map((review) => (
-                <div
-                    key={review.id}
-                    className="rounded-lg border border-gray-300 bg-white p-6"
-                >
-                    <div className="mb-2 flex items-start justify-between">
-                        <h3 className="text-lg font-semibold">
-                            {review.clubName}
-                        </h3>
-                        <span className="text-sm text-gray-500">
-                            {new Date(review.created_at).toLocaleDateString()}
-                        </span>
-                    </div>
-                    {review.overall_satisfaction && (
-                        <div className="mb-2 flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                                <span
-                                    key={`star-${i}`}
-                                    className={
-                                        i < review.overall_satisfaction
-                                            ? "text-yellow-500"
-                                            : "text-gray-300"
-                                    }
-                                >
-                                    ★
-                                </span>
-                            ))}
-                        </div>
-                    )}
-                    {review.review_text && (
-                        <p className="text-gray-700">{review.review_text}</p>
-                    )}
-                </div>
-            ))}
-        </div>
-    );
-}
-
-function LikedClubsTabContent({ clubs }) {
-    const router = useRouter();
-
-    if (clubs.length === 0) {
-        return (
-            <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">No liked clubs yet</p>
-                <button
-                    onClick={() => router.push("/clubs")}
-                    className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
-                >
-                    Browse Clubs
-                </button>
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-4">
-            {clubs.map((club) => (
-                <div
-                    key={club.OrganizationID || club.id}
-                    className="rounded-lg border border-gray-300 bg-white p-6 cursor-pointer hover:shadow-md transition-shadow"
-                    onClick={() => router.push(`/clubs/${club.OrganizationID || club.id}`)}
-                >
-                    <h3 className="mb-2 text-lg font-semibold">
-                        {club.OrganizationName}
-                    </h3>
-                    {club.Description && (
-                        <p className="mb-3 text-gray-700">{club.Description}</p>
-                    )}
-                    <div className="flex items-center gap-4 text-sm">
-                        {club.avgRating && (
-                            <div className="flex items-center gap-1">
-                                <span className="text-yellow-500">★</span>
-                                <span className="font-medium">
-                                    {club.avgRating.toFixed(1)}
-                                </span>
-                            </div>
-                        )}
-                        {club.numReviews && (
-                            <span className="text-gray-500">
-                                {club.numReviews} reviews
-                            </span>
-                        )}
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
 function ProfilePage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("reviews");
@@ -215,7 +71,7 @@ function ProfilePage() {
             // TODO: Implement database call
 
             // Mock data for now
-            setReviews(mockReviews);
+            setReviews(null);
         };
 
         fetchReviews();
@@ -229,7 +85,7 @@ function ProfilePage() {
             // TODO: Implement database call
 
             // Mock data for now
-            setLikedClubs(mockLikedClubs);
+            setLikedClubs(null);
         };
 
         fetchLikedClubs();
@@ -247,10 +103,11 @@ function ProfilePage() {
             <div className="mb-8 rounded-lg bg-white p-6">
                 <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                     <img
-                        src="/../../profile_default.svg"
+                        src="/default_profile.svg"
                         alt="Profile"
-                        className="h-32 w-32 rounded-full border-2 border-gray-300 p-4"
+                        className="h-32 w-32 rounded-full"
                     />
+                    
                     <div className="flex-1 text-center md:text-left self-center">
                         <h1 className="mb-2 text-2xl font-bold">{displayName}</h1>
                         <p className="mb-1 text-gray-600">{currentUser.email}</p>
@@ -264,39 +121,81 @@ function ProfilePage() {
             </div>
 
             {/* Tabs */}
-            <div className="mb-6 flex gap-4 border-b border-gray-300">
+            <div className="mb-6 flex gap-4 border-b border-[#B5BFC6]">
                 <button
                     onClick={() => setActiveTab("reviews")}
-                    className={`pb-3 px-4 font-medium transition-colors ${activeTab === "reviews"
+                    className={`group pb-3 px-4 font-medium flex items-center ${activeTab === "reviews"
                             ? "border-b-2 border-black text-black"
-                            : "text-gray-500 hover:text-gray-700"
+                            : "text-gray-500 hover:text-black"
                         }`}
                 >
-                    Reviews
+                    <img 
+                        src="/review_2.svg"
+                        alt="review_symbol"
+                        className={`${activeTab === "reviews" ? "hidden" : "group-hover:hidden"}`}
+                    />
+                    <img 
+                        src="/review_1.svg"
+                        alt="review_symbol"
+                        className={`${activeTab === "reviews" ? "block" : "hidden group-hover:block"}`}
+                    />
+                    <p className="pl-1">
+                        Reviews
+                    </p>
                 </button>
                 <button
                     onClick={() => setActiveTab("clubs")}
-                    className={`pb-3 px-4 font-medium transition-colors ${activeTab === "clubs"
+                    className={`group pb-3 px-4 font-medium flex items-center ${activeTab === "clubs"
                             ? "border-b-2 border-black text-black"
-                            : "text-gray-500 hover:text-gray-700"
+                            : "text-gray-500 hover:text-black"
                         }`}
                 >
-                    Clubs
+                    <img 
+                        src="/club_2.svg"
+                        alt="review_symbol"
+                        className={`${activeTab === "clubs" ? "hidden" : "group-hover:hidden"}`}
+                    />
+                    <img 
+                        src="/club_1.svg"
+                        alt="review_symbol"
+                        className={`${activeTab === "clubs" ? "block" : "hidden group-hover:block"}`}
+                    />
+                    <p className="pl-1">
+                        Clubs
+                    </p>
                 </button>
             </div>
 
             {/* Tab Content */}
             <div className="min-h-[400px]">
                 {activeTab === "reviews" && (
-                    // put real reviews tab in later
+                    // put real reviews tab 
                     // <Component user={} />
-                    <ReviewsTabContent reviews={reviews} />
+
+                    <div className="text-center py-12">
+                        <p className="text-[#B5BEC7] mb-4">No reviews yet</p>
+                        <button
+                            onClick={() => router.push("/review")}
+                            className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
+                        >
+                            Write a Review
+                        </button>
+                    </div>
                 )}
 
                 {activeTab === "clubs" && (
-                    // put liked clubs tab inn later
+                    // put liked clubs tab 
                     // <Component user={} />
-                    <LikedClubsTabContent clubs={likedClubs} />
+
+                    <div className="text-center py-12">
+                        <p className="text-[#B5BEC7] mb-4">No liked clubs yet</p>
+                        <button
+                            onClick={() => router.push("/clubs")}
+                            className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
+                        >
+                            Browse Clubs
+                        </button>
+                    </div>
                 )}
             </div>
         </div>
