@@ -51,15 +51,19 @@ function ProfilePage() {
         if (!currentUser) return;
 
         const fetchUserProfile = async () => {
-            // TODO: Implement database call
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
 
-            // Mock data for now
-            setUserProfile({
-                full_name: "John Doe",
-                avatar_url: null,
-            });
+            if (data) {
+                setUserProfile({
+                    full_name: data.display_name,
+                    avatar_url: null,
+                });
+            }
         };
-
         fetchUserProfile();
     }, [currentUser]);
 
@@ -94,8 +98,8 @@ function ProfilePage() {
     if (!currentUser) {
         return null;
     }
-
-    const displayName = userProfile?.full_name || currentUser.email?.split("@")[0] || "User";
+    
+    const displayName = userProfile?.full_name || "Anonymous Bruin";
 
     return (
         <div className="min-h-screen p-6 md:p-20">
