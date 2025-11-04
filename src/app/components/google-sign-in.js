@@ -79,6 +79,8 @@ export default function GoogleSignIn() {
           } else { //redirect to club general page (currently unused)
             window.location.href = `/clubs/${club}`;
           }
+        } else {
+          window.location.href = `/profile`;
         }
       } else {
         setUserEmail(null); // Clear email when signed out
