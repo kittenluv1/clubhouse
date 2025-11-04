@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
+import ClubCard from "../components/clubCard";
 
 function ProfilePage() {
     const router = useRouter();
@@ -86,10 +87,24 @@ function ProfilePage() {
         if (!currentUser) return;
 
         const fetchLikedClubs = async () => {
-            // TODO: Implement database call
+            const { data, error } = await supabase
+            .from('club_likes')              
+            .select(`
+                club_id,
+                clubs!club_likes_club_id_fkey(*)
+            `)
+            .eq('user_id', currentUser.id);
 
-            // Mock data for now
-            setLikedClubs(null);
+            if (error) {
+                console.error('Error fetching liked clubs:', error);
+                setError('Failed to load liked clubs');
+                return;
+            }
+
+            if (data) {
+                // Extract the club objects into an array
+                setLikedClubs(data.map(item => item.clubs));
+            }
         };
 
         fetchLikedClubs();
@@ -98,7 +113,7 @@ function ProfilePage() {
     if (!currentUser) {
         return null;
     }
-    
+
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
     return (
@@ -188,18 +203,26 @@ function ProfilePage() {
                 )}
 
                 {activeTab === "clubs" && (
-                    // put liked clubs tab 
-                    // <Component user={} />
-
-                    <div className="text-center py-12">
-                        <p className="text-[#B5BEC7] mb-4">No liked clubs yet</p>
-                        <button
-                            onClick={() => router.push("/clubs")}
-                            className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
-                        >
-                            Browse Clubs
-                        </button>
-                    </div>
+                    likedClubs.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-[#B5BEC7] mb-4">No liked clubs yet</p>
+                            <button
+                                onClick={() => router.push("/clubs")}
+                                className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
+                            >
+                                Browse Clubs
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-12">
+                            {likedClubs.map((club) => (
+                                <ClubCard
+                                    key={`${club.OrganizationID}-${club.OrganizationName}`}
+                                    club={club}
+                                />
+                            ))}
+                        </div>
+                    )
                 )}
             </div>
         </div>
