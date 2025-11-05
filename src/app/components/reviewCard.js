@@ -71,8 +71,26 @@ export default function ReviewCard({ review, index, isDesktop }) {
             key={index}
             className="rounded-lg border-2 border-black bg-gray-50 p-6"
         >
-            <div className="mb-2 text-lg font-bold">
-                {review.user_alias ? `${review.user_alias}` : "Anonymous"}
+            <div className="flex justify-between">
+                <div className="mb-2 flex flex-col justify-between">
+                    <h3 className="text-2xl font-bold">
+                        {review.user_alias ? `${review.user_alias}` : "Anonymous"}
+                    </h3>
+                    <div className="text-[#303030]">
+                        {formatDate(review.created_at)}
+                    </div>
+                </div>
+                <div>
+                    <button
+                        onClick={toggleLike}
+                    >
+                        <img
+                            src={`/${liked ? "heart-liked" : "heart-unliked"}.svg`}
+                            alt="Heart Icon"
+                            className="h-10 w-10"
+                        />
+                    </button>
+                </div>
             </div>
             <div>
                 <span className="text-black">
