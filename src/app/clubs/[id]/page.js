@@ -172,8 +172,14 @@ export default function ClubDetailsPage() {
             .select("*")
             .eq("club_id", clubData.OrganizationID)
             .order("created_at", { ascending: false });
-
           if (reviewsError) throw reviewsError;
+          reviewsData.forEach(review => {
+            console.log(review.id);
+            //const likes = await getReviewLikes(review);
+            console.log(getReviewLikes(review)); //returns a promise
+          })
+          console.log("reviews")
+          console.log(reviewsData);
           setReviews(reviewsData);
         } else {
           setError(`No club found with name containing: ${id}`);
@@ -188,6 +194,23 @@ export default function ClubDetailsPage() {
 
     fetchClubData();
   }, [id]);
+
+  const getReviewLikes = async (review) => {
+    //setLoading(true);
+    try {
+      const { data: reviewLikes, error: reviewLikesError } = await supabase
+        .from("review_likes")
+        .select("*")
+        .eq("review_id", review.id);
+      if (reviewLikesError) throw reviewLikesError;
+      //setReviewsLikes?
+      console.log(reviewLikes.length)
+      return reviewLikes.length;
+    } catch (err) {
+      console.error("Error fetching review likes data: " + review.id, err);
+      setError("Failed to fetch review likes data");
+    }
+  };
 
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
@@ -697,6 +720,7 @@ export default function ClubDetailsPage() {
             {reviews.map((review, index) =>
               isDesktop ? (
                 // desktop card
+                //review.review_id
                 <div
                   key={index}
                   className="rounded-lg border border-black bg-gray-50 p-8"
