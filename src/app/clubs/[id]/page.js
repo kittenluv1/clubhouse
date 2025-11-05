@@ -679,7 +679,9 @@ export default function ClubDetailsPage() {
           </div>
         ) : (
           <div className="space-y-8">
-            {reviews.map((review, index) => ReviewCard({ review, index, isDesktop }))}
+            {reviews.map((review, index) => (
+              <ReviewCard key={review?.id ?? index} review={review} index={index} isDesktop={isDesktop} />
+            ))}
           </div>
         )}
       </section>

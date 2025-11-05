@@ -1,3 +1,5 @@
+import React from "react";
+
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -15,6 +17,14 @@ const formatMembership = (review) => {
 };
 
 export default function ReviewCard({ review, index, isDesktop }) {
+    const [liked, setLiked] = React.useState(false);
+    const toggleLike = () => {
+        setLiked(!liked);
+        /*
+        TODO: call the necessary api endpoints to update the database (hardcode it for now if endpoints have not been created yet)
+        */
+    };
+
     return (isDesktop ? (
         // desktop card
         <div
@@ -22,12 +32,25 @@ export default function ReviewCard({ review, index, isDesktop }) {
             className="rounded-lg border border-black bg-gray-50 p-8"
             style={{ boxShadow: "6px 6px 0px #b4d59f" }}
         >
-            <div className="mb-2 flex justify-between">
-                <h3 className="text-2xl font-bold">
-                    {review.user_alias ? `${review.user_alias}` : "Anonymous"}
-                </h3>
-                <div className="font-bold text-[#666dbc]">
-                    Reviewed on {formatDate(review.created_at)}
+            <div className="flex justify-between">
+                <div className="mb-2 flex flex-col justify-between">
+                    <h3 className="text-2xl font-bold">
+                        {review.user_alias ? `${review.user_alias}` : "Anonymous"}
+                    </h3>
+                    <div className="text-[#303030]">
+                        {formatDate(review.created_at)}
+                    </div>
+                </div>
+                <div>
+                    <button
+                        onClick={toggleLike}
+                    >
+                        <img
+                            src={`/${liked ? "heart-liked" : "heart-unliked"}.svg`}
+                            alt="Heart Icon"
+                            className="h-10 w-10"
+                        />
+                    </button>
                 </div>
             </div>
             <div className="mb-4 font-semibold">
