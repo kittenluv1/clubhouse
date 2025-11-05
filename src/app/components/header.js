@@ -68,7 +68,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-5 md:px-20 lg:py-6">
+    <div className="flex w-full items-center justify-between bg-[#FFFFFF] pt-3 pr-3 md:px-20 lg:py-6">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button
@@ -98,7 +98,7 @@ function Header() {
       {pathname !== "/" ? (
         // mobile responsive search bar with animation
         isMobile ? (
-          <div className="relative min-h-[52px] flex-1 px-4 md:px-8">
+          <div className="relative md:min-h-[52px] flex-1 px-4 md:px-8">
             <AnimatePresence mode="wait" initial={false}>
               {!showMobileMenu && (
                 <motion.div
@@ -142,7 +142,7 @@ function Header() {
                 onClick={attemptReview}
                 className="flex items-center p-1 text-nowrap"
               >
-                Add a Review
+                Write a Review
               </button>
               {isAdmin && (
                 <button
@@ -158,12 +158,12 @@ function Header() {
           {/* if not mobile, show buttons (no animation)
           // if mobile menu is not showing, hide buttons */}
           {!isMobile && (
-            <div className="items-center gap-2 p-0 md:flex md:gap-4">
+            <div className="items-center gap-2 p-0 md:flex md:gap-12">
               <button
                 onClick={attemptReview}
                 className="flex items-center gap-2 p-3 text-nowrap"
               >
-                Add a Review
+                Write a Review
               </button>
               {isAdmin && (
                 <button
