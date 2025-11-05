@@ -69,7 +69,7 @@ export default function Footer() {
         </div>
         {/* bear */}
         <div className="flex shrink-0 items-center justify-center md:py-10 lg:justify-end lg:p-0">
-          <img src="/bear.svg" alt="bear icon" />
+          <img src="/Bear.svg" alt="bear icon" />
         </div>
         {/* </div> */}
       </footer>
