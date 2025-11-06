@@ -1,27 +1,25 @@
 import Link from "next/link";
 
-function ClubTags({ category }) {
-  return (
-    <span className="rounded-full border border-black bg-[#ACC9FA] px-4 py-2 text-sm font-medium text-black md:text-base">
-      {category}
-    </span>
-  );
-}
-
 export default function ClubCard({ club }) {
   return (
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
-      className="w-full transform space-y-4 rounded-xl border bg-white px-4 py-6 transition-all duration-100 hover:drop-shadow-[12px_12px_0_#B1D49D] md:space-y-5 md:px-10 md:py-10"
+      className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-100 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
     >
-      
+
       <h2 className="text-xl font-bold text-black md:text-2xl">
         {club.OrganizationName}
       </h2>
 
       <div className="flex flex-wrap gap-2">
-        {club.Category1Name && <ClubTags category={club.Category1Name} />}
-        {club.Category2Name && <ClubTags category={club.Category2Name} />}
+        {club.Category1Name &&
+          <span className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]">
+            {club.Category1Name}
+          </span>}
+        {club.Category2Name &&
+          <span className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]">
+            {club.Category2Name}
+          </span>}
       </div>
 
       <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
@@ -50,9 +48,8 @@ export default function ClubCard({ club }) {
         <label className="text-base text-black italic">
           {club.total_num_reviews === 0
             ? "0 reviews"
-            : `from ${club.total_num_reviews} trusted ${
-                club.total_num_reviews === 1 ? "student" : "students"
-              }`}
+            : `from ${club.total_num_reviews} trusted ${club.total_num_reviews === 1 ? "student" : "students"
+            }`}
         </label>
       </div>
     </Link>

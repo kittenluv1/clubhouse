@@ -109,7 +109,6 @@ function Home() {
                 const encoded = encodeURIComponent(category);
                 router.push(`/clubs?categories=${encoded}`);
               }}
-              className="rounded-full py-2.5 px-7 drop-shadow-xs bg-white hover:bg-[#E5EBF1]"
             >
               {category}
             </Button>

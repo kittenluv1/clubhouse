@@ -7,6 +7,7 @@ import Filter from "../components/filter";
 import ErrorScreen from "../components/ErrorScreen";
 import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
+import Button from "../components/button";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -101,8 +102,8 @@ function AllClubsPage() {
 
   return (
     <>
-      <div className="flex flex-col space-y-6 p-6 md:p-20">
-        <div className="mb-6 flex items-start justify-between">
+      <div className="flex flex-col space-y-6 p-6 md:p-30 md:py-20">
+        <div className="mb-20 flex items-start justify-between">
           <Filter
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
@@ -111,12 +112,13 @@ function AllClubsPage() {
 
           {isMobile ? (
             <>
-              <button
+              <Button
+                type="border"
+                size="small"
                 onClick={() => setShowSortModal(true)}
-                className="flex-shrink-0 rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold text-black"
               >
-                Sort by
-              </button>
+                Sort By
+              </Button>
               <SortModal
                 open={showSortModal}
                 onClose={() => setShowSortModal(false)}
@@ -130,7 +132,7 @@ function AllClubsPage() {
               />
             </>
           ) : (
-            <div className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border border-black bg-[#FFF7D6] px-4 py-2">
+            <div className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]">
               <label className="cursor-pointer font-medium text-black">
                 Sort by:
               </label>

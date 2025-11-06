@@ -163,8 +163,9 @@ export default function Filter({
     <div className="relative max-w-[75%]">
       <div className="flex items-start gap-2">
         <Button
+          type="border"
+          size="small"
           ref={buttonRef}
-          className="flex-shrink-0 rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold whitespace-nowrap text-black"
           onClick={toggleFilter}
         >
           Search by Category
@@ -176,11 +177,11 @@ export default function Filter({
               {selectedCategories.map((tag) => (
                 <div
                   key={tag}
-                  className="flex items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-white shadow-md"
+                  className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] flex items-center"
                 >
                   <span>{tag}</span>
                   <button onClick={() => handleRemoveTag(tag)} className="ml-2">
-                    <img src="/Close X.png" alt="x" width="20" />
+                    <img src="/X.png" alt="x" width="19" />
                   </button>
                 </div>
               ))}

@@ -69,7 +69,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#FFFFFF] pt-3 pr-3 md:px-20 lg:py-6">
+    <div className="flex w-full items-center justify-between bg-[#FFFFFF] pt-3 pr-3 md:px-30 lg:py-6">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button
