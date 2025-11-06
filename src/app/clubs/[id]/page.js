@@ -668,16 +668,18 @@ export default function ClubDetailsPage() {
               <p className="mb-6">
                 Have something to say? Share your experience...
               </p>
-              <button
-                onClick={() =>
-                  attemptReview(
-                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
-                  )
-                }
-                className="mb-12 inline-block rounded-full border-1 border-black bg-black px-6 py-2 text-white transition duration-300 ease-in-out hover:bg-white hover:text-black"
-              >
-                Leave a Review
-              </button>
+              <div className="mb-12">
+                <Button
+                  type="CTA"
+                  onClick={() =>
+                    attemptReview(
+                      `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                    )
+                  }
+                >
+                  Leave a Review
+                </Button>
+              </div>
             </div>
           ) : (
             <div>
@@ -685,16 +687,18 @@ export default function ClubDetailsPage() {
                 Student Reviews ({club.total_num_reviews || reviews.length || 0}
                 )
               </h2>
-              <button
-                onClick={() =>
-                  attemptReview(
-                    `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
-                  )
-                }
-                className="mb-8 inline-block rounded-lg border bg-black px-6 py-2 text-white"
-              >
-                Leave a Review
-              </button>
+              <div className="mb-8">
+                <Button
+                  type="CTA"
+                  onClick={() =>
+                    attemptReview(
+                      `/review?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`,
+                    )
+                  }
+                >
+                  Leave a Review
+                </Button>
+              </div>
             </div>
           )}
         </section>
