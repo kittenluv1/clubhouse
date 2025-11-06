@@ -2,8 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import TagButton from "./tagButton";
 import { useSearch } from "../context/SearchContext";
+import Button from "./button";
 
 const GROUPED_TAGS = {
   "Academic & Pre-Professional": [
@@ -61,7 +61,7 @@ const GROUPED_TAGS = {
 export default function Filter({
   initialSelectedTags = [],
   show = false,
-  onInteraction = () => {},
+  onInteraction = () => { },
 }) {
   const { selectedCategories, searchByCategories } = useSearch();
   const [showFilter, setShowFilter] = useState(show);
@@ -162,13 +162,13 @@ export default function Filter({
   return (
     <div className="relative max-w-[75%]">
       <div className="flex items-start gap-2">
-        <button
+        <Button
           ref={buttonRef}
           className="flex-shrink-0 rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold whitespace-nowrap text-black"
           onClick={toggleFilter}
         >
           Search by Category
-        </button>
+        </Button>
 
         {!isMobile && selectedCategories.length > 0 && (
           <div className="flex-grow overflow-x-auto pb-2">
@@ -256,12 +256,15 @@ export default function Filter({
                       <h4 className="mb-2 font-semibold">{group}</h4>
                       <div className="flex flex-wrap gap-2">
                         {tags.map((tag) => (
-                          <TagButton
+                          <Button
+                            type="tag"
+                            size="small"
                             key={tag}
-                            label={tag}
                             isSelected={tempSelectedTags.includes(tag)}
                             onClick={() => toggleTag(tag)}
-                          />
+                          >
+                            {tag}
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -300,11 +303,11 @@ export default function Filter({
                     {tempSelectedTags.map((tag) => (
                       <div
                         key={tag}
-                        className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
+                        className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] flex items-center"
                       >
                         <span>{tag}</span>
-                        <button onClick={() => toggleTag(tag)} className="ml-2">
-                          <img src="/Close X.png" alt="x" width="20" />
+                        <button onClick={() => toggleTag(tag)} className="ml-1">
+                          <img src="/X.png" alt="remove tag" width="19" />
                         </button>
                       </div>
                     ))}
@@ -323,12 +326,15 @@ export default function Filter({
                   <h4 className="mb-2 font-semibold">{group}</h4>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
-                      <TagButton
+                      <Button
+                        type="tag"
+                        size="small"
                         key={tag}
-                        label={tag}
                         isSelected={tempSelectedTags.includes(tag)}
                         onClick={() => toggleTag(tag)}
-                      />
+                      >
+                        {tag}
+                      </Button>
                     ))}
                   </div>
                 </div>
@@ -336,18 +342,20 @@ export default function Filter({
             </div>
 
             <div className="flex justify-end pt-4 pb-2">
-              <button
+              <Button
+                style='font-bold'
                 className="text-md px-4 py-2 font-semibold"
                 onClick={handleClose}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                type="CTA"
                 className="text-md ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-white"
                 onClick={handleSearch}
               >
                 Search
-              </button>
+              </Button>
             </div>
           </div>
         )}

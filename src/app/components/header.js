@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import LoginButton from "./login-button";
 import { supabase } from "../lib/db";
 import { motion, AnimatePresence } from "framer-motion";
+import Button from "./button";
 
 function useIsMobile(breakpoint = 640) {
   const [isMobile, setIsMobile] = useState(false);
@@ -138,19 +139,19 @@ function Header() {
               transition={{ type: "tween", duration: 0.3 }}
               className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-white p-0 md:gap-4"
             >
-              <button
+              <Button
                 onClick={attemptReview}
                 className="flex items-center p-1 text-nowrap"
               >
                 Write a Review
-              </button>
+              </Button>
               {isAdmin && (
-                <button
+                <Button
                   onClick={() => router.push("/admin")}
                   className="flex items-center p-1 text-nowrap"
                 >
                   Admin
-                </button>
+                </Button>
               )}
               <LoginButton />
             </motion.div>
@@ -159,19 +160,19 @@ function Header() {
           // if mobile menu is not showing, hide buttons */}
           {!isMobile && (
             <div className="items-center gap-2 p-0 md:flex md:gap-12">
-              <button
+              <Button
                 onClick={attemptReview}
-                className="flex items-center gap-2 p-3 text-nowrap"
+                className="flex items-center text-nowrap"
               >
                 Write a Review
-              </button>
+              </Button>
               {isAdmin && (
-                <button
+                <Button
                   onClick={() => router.push("/admin")}
                   className="flex items-center gap-2 p-3 text-nowrap"
                 >
                   Admin
-                </button>
+                </Button>
               )}
               <LoginButton />
             </div>

@@ -7,9 +7,9 @@ import { supabase } from "@/app/lib/db";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
-import TagButton from "@/app/components/tagButton";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "@/app/components/tooltip";
+import Button from "@/app/components/button";
 
 const getIconByName = (name) => {
   const key = name.toLowerCase();
@@ -271,22 +271,28 @@ export default function ClubDetailsPage() {
 
               {/* Categories/Tags */}
               <div className="mb-3 flex flex-wrap gap-2">
-                <TagButton
-                  label={club.Category1Name}
+                <Button
+                  type="tag"
+                  size="small"
                   isSelected={true}
                   onClick={() => {
                     const encoded = encodeURIComponent(club.Category1Name);
                     router.push(`/clubs?categories=${encoded}`);
                   }}
-                />
-                <TagButton
-                  label={club.Category2Name}
+                >
+                  {club.Category1Name}
+                </Button>
+                <Button
+                  type="tag"
+                  size="small"
                   isSelected={true}
                   onClick={() => {
                     const encoded = encodeURIComponent(club.Category2Name);
                     router.push(`/clubs?categories=${encoded}`);
                   }}
-                />
+                >
+                  {club.Category2Name}
+                </Button>
               </div>
 
               {/* Description with clamp/expand */}
@@ -507,22 +513,28 @@ export default function ClubDetailsPage() {
 
             {/* Categories/Tags */}
             <div className="mt-4 mb-4 flex flex-wrap gap-2">
-              <TagButton
-                label={club.Category1Name}
+              <Button
+                type="tag"
+                size="small"
                 isSelected={true}
                 onClick={() => {
                   const encoded = encodeURIComponent(club.Category1Name);
                   router.push(`/clubs?categories=${encoded}`);
                 }}
-              />
-              <TagButton
-                label={club.Category2Name}
+              >
+                {club.Category1Name}
+              </Button>
+              <Button
+                type="tag"
+                size="small"
                 isSelected={true}
                 onClick={() => {
                   const encoded = encodeURIComponent(club.Category2Name);
                   router.push(`/clubs?categories=${encoded}`);
                 }}
-              />
+              >
+                {club.Category2Name}
+              </Button>
             </div>
             {/* right side */}
             {/* Overall Rating */}

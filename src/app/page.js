@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
-import CTAButton from "./components/CTAButton";
+import Button from "./components/button";
 
 function useIsMobile(breakpoint = 1024) {
   const [isMobile, setIsMobile] = useState(false);
@@ -103,7 +103,7 @@ function Home() {
         <SearchBar ref={searchRef} width="w-full" height="h-13" />
         <div className="flex flex-wrap justify-center gap-3 py-5 px-10 md:py-10">
           {randomCategories.map((category, index) => (
-            <button
+            <Button
               key={category}
               onClick={() => {
                 const encoded = encodeURIComponent(category);
@@ -112,16 +112,17 @@ function Home() {
               className="rounded-full py-2.5 px-7 drop-shadow-xs bg-white hover:bg-[#E5EBF1]"
             >
               {category}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
       <div className="w-full flex justify-center lg:justify-end lg:mr-100">
-        <CTAButton
+        <Button
+          type="CTA"
           onClick={() => router.push("/clubs?showCategories")}
         >
           More Categories &gt;
-        </CTAButton>
+        </Button>
       </div>
     </div>
   );

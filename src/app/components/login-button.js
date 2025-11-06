@@ -2,7 +2,7 @@ import React from "react";
 import { supabase } from "../lib/db";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import CTAButton from "./CTAButton";
+import Button from "./button";
 
 function LoginButton() {
   // login button that changes based on whether the user is logged in or not
@@ -39,17 +39,19 @@ function LoginButton() {
   return (
     <div className="w-23">
       {isLoggedin ? (
-        <CTAButton
+        <Button
+          type="CTA"
           onClick={handleSignOut}
         >
           Sign Out
-        </CTAButton>
+        </Button>
       ) : (
-        <CTAButton
+        <Button
+          type="CTA"
           onClick={() => router.push("/sign-in")}
         >
           Sign In
-        </CTAButton>
+        </Button>
       )}
     </div>
   );
