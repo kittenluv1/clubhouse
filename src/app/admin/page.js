@@ -50,7 +50,7 @@ const Page = () => {
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         console.error('No session found');
         window.location.href = "./sign-in";
@@ -87,7 +87,7 @@ const Page = () => {
   const handleApprove = async (record) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-    
+
       if (!session) {
         console.error('No session found');
         window.location.href = "./sign-in";
@@ -96,7 +96,7 @@ const Page = () => {
 
       const approveRes = await fetch("/api/pendingReviews", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${session.access_token}`,
         },
@@ -137,7 +137,7 @@ const Page = () => {
   const handleReject = async (record) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         console.error('No session found');
         window.location.href = "./sign-in";
@@ -146,9 +146,9 @@ const Page = () => {
 
       const disproveRes = await fetch("/api/pendingReviews", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${session.access_token}`, 
+          "Authorization": `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ reviewID: record.id, approve: false }),
       });
@@ -216,7 +216,7 @@ const Page = () => {
             <>
               <button
                 onClick={() => setShowSortModal(true)}
-                className="rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold"
+                className="rounded-full border bg-[#FFF7D6] py-2 px-4 text-sm font-bold"
               >
                 Sort by
               </button>
