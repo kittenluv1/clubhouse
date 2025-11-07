@@ -90,7 +90,7 @@ function Home() {
           type="image/svg+xml"
           data="/clubhouse-logo-desktop.svg"
           aria-label="ClubHouse Logo"
-          className="hidden w-md object-cover lg:block"
+          className="hidden w-sm object-cover lg:block"
         />
         <object
           type="image/svg+xml"
@@ -100,10 +100,11 @@ function Home() {
         />
       </div>
       <div className="flex w-6/8 max-w-4xl flex-col items-center space-y-2">
-        <SearchBar ref={searchRef} width="w-full" height="h-13" />
+        <SearchBar ref={searchRef} style="bg-white" />
         <div className="flex flex-wrap justify-center gap-3 py-5 px-10 md:py-10">
           {randomCategories.map((category, index) => (
             <Button
+              style="drop-shadow-xs"
               key={category}
               onClick={() => {
                 const encoded = encodeURIComponent(category);

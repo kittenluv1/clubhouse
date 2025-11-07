@@ -37,23 +37,25 @@ function LoginButton() {
   };
 
   return (
-    <div className="w-23">
-      {isLoggedin ? (
-        <Button
-          type="CTA"
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </Button>
-      ) : (
-        <Button
-          type="CTA"
-          onClick={() => router.push("/sign-in")}
-        >
-          Sign In
-        </Button>
-      )}
-    </div>
+    <div>
+      {
+        isLoggedin ? (
+          <Button
+            type="CTA"
+            onClick={handleSignOut}
+          >
+            Sign Out
+          </Button>
+        ) : (
+          <Button
+            type="CTA"
+            onClick={() => router.push("/sign-in")}
+          >
+            Sign In
+          </Button>
+        )
+      }
+    </div >
   );
 }
 

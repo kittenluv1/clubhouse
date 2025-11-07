@@ -16,8 +16,7 @@ const ClubSearchBar = forwardRef(
     {
       tableName = "clubs",
       nameColumn = "OrganizationName",
-      width = "w-full",
-      height = "h-10",
+      style = "bg-[#E5EBF1]",
     },
     ref,
   ) => {
@@ -167,7 +166,7 @@ const ClubSearchBar = forwardRef(
     };
 
     return (
-      <div className={`relative ${width}`} ref={dropdownRef}>
+      <div className={`relative w-full m-0`} ref={dropdownRef}>
         <div className="relative flex items-center">
           <input
             type="text"
@@ -176,7 +175,7 @@ const ClubSearchBar = forwardRef(
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder="Search for a club..."
-            className={`rounded-full drop-shadow-sm bg-white p-2 pr-10 pl-4 text-sm text-black md:text-base ${height} w-full`}
+            className={`rounded-full drop-shadow-xs ${style} p-2 px-8 text-sm text-black md:text-base h-12 w-full min-w-20`}
           />
           <button
             className="absolute top-1/2 right-3 -translate-y-1/2 transform pr-2 text-gray-400"
