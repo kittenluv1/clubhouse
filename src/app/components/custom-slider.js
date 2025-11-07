@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import '../../../src/app/slider.css';
 const CustomSlider = ({
   min = 1,
   max = 5,
@@ -57,7 +56,6 @@ const CustomSlider = ({
           value={sliderValue}
           onChange={handleChange}
           className="absolute top-0 left-0 z-20 h-0 w-full cursor-pointer opacity-0"
-          id="sliderStyling"
         />
       </div>
 
