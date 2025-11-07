@@ -27,51 +27,51 @@ export default function Footer() {
           </p>
         </div>
         {/* connect and bear */}
-        {/* <div className="flex flex-1 flex-col justify-between md:flex-row"> */}
-        <div className="py-10 md:px-10 lg:py-20">
-          <h3 className="mb-5 text-2xl font-bold">Connect</h3>
-          <div className="grid auto-cols-max grid-flow-col gap-2">
-            <a href="https://www.instagram.com/clubhouseucla/" target="_blank">
-              <img
-                src="/instagram.svg"
-                alt="instagram icon"
-                className="inline-block w-8"
-              />
-            </a>
-            <a
-              href="https://www.linkedin.com/company/clubhouseucla/about/"
-              target="_blank"
-            >
-              <img
-                src="/linkedin.svg"
-                alt="linkedin icon"
-                className="inline-block w-8"
-              />
-            </a>
-            <a href="https://www.tiktok.com/@clubhouseucla" target="_blank">
-              <img
-                src="/tiktok.svg"
-                alt="tiktok icon"
-                className="inline-block w-8"
-              />
-            </a>
-            <a
-              href="https://www.reddit.com/user/clubhouseucla/"
-              target="_blank"
-            >
-              <img
-                src="/reddit.svg"
-                alt="reddit icon"
-                className="inline-block w-8"
-              />
-            </a>
+        <div className="flex flex-1 justify-between space-x-6 md:flex-row">
+          <div className="py-10 md:px-10 lg:py-20">
+            <h3 className="mb-5 text-2xl font-bold">Connect</h3>
+            <div className="grid auto-cols-max grid-flow-col gap-2">
+              <a href="https://www.instagram.com/clubhouseucla/" target="_blank">
+                <img
+                  src="/instagram.svg"
+                  alt="instagram icon"
+                  className="inline-block w-8"
+                />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/clubhouseucla/about/"
+                target="_blank"
+              >
+                <img
+                  src="/linkedin.svg"
+                  alt="linkedin icon"
+                  className="inline-block w-8"
+                />
+              </a>
+              <a href="https://www.tiktok.com/@clubhouseucla" target="_blank">
+                <img
+                  src="/tiktok.svg"
+                  alt="tiktok icon"
+                  className="inline-block w-8"
+                />
+              </a>
+              <a
+                href="https://www.reddit.com/user/clubhouseucla/"
+                target="_blank"
+              >
+                <img
+                  src="/reddit.svg"
+                  alt="reddit icon"
+                  className="inline-block w-8"
+                />
+              </a>
+            </div>
+          </div>
+          {/* bear */}
+          <div className="flex shrink-1 items-center justify-center lg:justify-end lg:p-0">
+            <img src="/Bear.svg" alt="bear icon" />
           </div>
         </div>
-        {/* bear */}
-        <div className="flex shrink-0 items-center justify-center md:py-10 lg:justify-end lg:p-0">
-          <img src="/Bear.svg" alt="bear icon" />
-        </div>
-        {/* </div> */}
       </footer>
     </>
   );
