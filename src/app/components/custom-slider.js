@@ -55,7 +55,7 @@ const CustomSlider = ({
           step={step}
           value={sliderValue}
           onChange={handleChange}
-          className="absolute top-0 left-0 z-20 h-0 w-full cursor-pointer opacity-0"
+          className="absolute top-0 left-0 z-20 h-6 w-full cursor-pointer opacity-0"
         />
       </div>
 
