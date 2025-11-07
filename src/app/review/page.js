@@ -10,6 +10,7 @@ import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "../components/tooltip";
 import LoadingScreen from "../components/LoadingScreen";
+import Button from "../components/button";
 
 const nouns = [
   "Panda",
@@ -410,11 +411,11 @@ export default function ReviewPage() {
       );
 
       router.push("/review/thankyou");
-      
+
     } catch (error) {
       console.error("Error submitting review:", error);
       setError(error.message || "Failed to submit review. Please try again.");
-      setIsSubmitting(false); 
+      setIsSubmitting(false);
     }
   };
 
@@ -741,13 +742,13 @@ export default function ReviewPage() {
 
           {/* Submit Button */}
           <div className="mt-10 mb-15 flex justify-center">
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
             >
               Submit
-            </button>
+            </Button>
           </div>
         </form>
       </div>
