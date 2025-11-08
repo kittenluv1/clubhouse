@@ -2,15 +2,14 @@ import Link from "next/link";
 
 export default function ClubCard({ club }) {
   return (
+   
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
       className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-100 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
     >
-
       <h2 className="text-xl font-bold text-black md:text-2xl">
         {club.OrganizationName}
       </h2>
-
       <div className="flex flex-wrap gap-2">
         {club.Category1Name &&
           <span className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]">
