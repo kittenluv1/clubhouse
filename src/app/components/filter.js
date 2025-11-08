@@ -231,14 +231,11 @@ export default function Filter({
                         {tempSelectedTags.map((tag) => (
                           <div
                             key={tag}
-                            className="flex flex-shrink-0 items-center rounded-full border border-[#272727] bg-[#5086E1] px-3 py-2 text-sm text-white"
+                            className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] flex items-center"
                           >
                             <span>{tag}</span>
-                            <button
-                              onClick={() => toggleTag(tag)}
-                              className="ml-2"
-                            >
-                              <img src="/Close X.png" alt="x" width="20" />
+                            <button onClick={() => toggleTag(tag)} className="ml-1">
+                              <img src="/X.png" alt="remove tag" width="19" />
                             </button>
                           </div>
                         ))}
@@ -273,18 +270,20 @@ export default function Filter({
                 </div>
 
                 <div className="fixed bottom-0 left-0 flex w-full justify-between border-t bg-white px-6 py-4">
-                  <button
+                  <Button
+                    style='font-bold'
                     className="text-md px-4 py-2 font-semibold"
                     onClick={handleClose}
                   >
                     Cancel
-                  </button>
-                  <button
-                    className="text-md rounded-xl bg-[#5086E1] px-4 py-2 text-white"
+                  </Button>
+                  <Button
+                    type="CTA"
+                    className="text-md ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-white"
                     onClick={handleSearch}
                   >
                     Search
-                  </button>
+                  </Button>
                 </div>
               </div>
             </motion.div>
