@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import '../../../src/app/ratingSlider.css';
+
 const CustomSlider = ({
   min = 1,
   max = 5,
@@ -56,8 +57,7 @@ const CustomSlider = ({
           step={step}
           value={sliderValue}
           onChange={handleChange}
-          className="absolute top-0 left-0 z-20 h-0 w-full cursor-pointer opacity-0"
-          id="sliderStyling"
+          className="absolute top-0 left-0 z-20 h-6 w-full cursor-pointer opacity-0"
         />
       </div>
 

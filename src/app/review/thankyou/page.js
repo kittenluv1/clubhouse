@@ -1,19 +1,24 @@
 "use client";
 
+import Button from "@/app/components/button";
+
 export default function ThankYouPage() {
   return (
-    <div className="flex flex-col items-center justify-center p-20 text-center">
+    <div className="flex flex-col items-center justify-center p-20 md:p-10 text-center">
       <object
         type="image/svg+xml"
         data="/review-submitted.svg"
         aria-label="ClubHouse Logo"
-        className="mb-8 w-40 overflow-hidden align-middle leading-none md:w-1/4"
+        className="mb-8 overflow-hidden align-middle leading-none w-60"
       />
-      <h1 className="mb-4 text-center text-6xl font-bold">Thank you!</h1>
-      <p className="text-4x1 m-2 font-semibold">Your review has been sent!</p>
-      <p className="text-4x1 m-2 font-semibold">
-        You will receive an email once your submission has been approved.{" "}
-      </p>
+      <h1 className="mb-4 text-center text-5xl font-bold">Thank you!</h1>
+      <p className="font-medium text-[#6E808D] mb-10">Your review has been sent! <br /> You will receive an email once your submission has been approved.</p>
+      <Button
+        type="CTA"
+        onClick={() => window.location.href = '/clubs'}
+      >
+        Browse More Clubs
+      </Button>
     </div>
   );
 }
