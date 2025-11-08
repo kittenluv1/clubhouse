@@ -51,6 +51,7 @@ const CustomSlider = ({
 
         {/* Range input  */}
         <input
+          id="sliderStyling"
           type="range"
           min={min}
           max={max}

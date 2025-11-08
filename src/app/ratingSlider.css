@@ -1,4 +1,4 @@
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   #sliderStyling {
     appearance: none;
     -webkit-appearance: none;
@@ -6,8 +6,9 @@
   #sliderStyling::-webkit-slider-thumb {
     appearance: none;
     -webkit-appearance: none;
-    height: 55;
-    width: 55;
-    border-radius: 50;
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    cursor: pointer;
   }
 }
