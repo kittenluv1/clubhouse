@@ -222,7 +222,7 @@ function ProfilePage() {
                     <div className="mx-8">
                         <div className="text-center mb-8"> 
                             <p className="text-[#000000] text-[50px] font-bold">Liked Clubs</p>
-                            <p className="text-[#747474] text-[20px]">Unlike to remove club from 'Liked Clubs' list!</p>
+                            <p className="text-[#747474] text-[20px]">Unlike to remove club from &apos;Liked Clubs&apos; list!</p>
                         </div>
                         <h2 className="text-[16px] text-[#747474] mb-4">Liked Clubs ({likedClubs.length})</h2>
                         {
@@ -259,7 +259,7 @@ function ProfilePage() {
                     <div className="mx-8">
                         <div className="text-center mb-8"> 
                             <p className="text-[#000000] text-[50px] font-bold">Saved Clubs</p>
-                            <p className="text-[#747474] text-[20px]">Unsaved to remove club from 'Saved Clubs' list!</p>
+                            <p className="text-[#747474] text-[20px]">Unsaved to remove club from &apos;Saved Clubs&apos; list!</p>
                         </div>
                         <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
                         {
