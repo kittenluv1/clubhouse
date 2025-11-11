@@ -203,7 +203,7 @@ function ProfilePage() {
             
             case "liked-reviews":
                 return likedReviews.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="text-center">
                         <p className="text-[#B5BEC7]">No liked reviews</p>
                     </div>
                 ) : (
@@ -218,48 +218,69 @@ function ProfilePage() {
                 );
             
             case "liked-clubs":
-                return likedClubs.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-[#B5BEC7] mb-4">No liked clubs yet</p>
-                        <button
-                            onClick={() => router.push("/clubs")}
-                            className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
-                        >
-                            Browse Clubs
-                        </button>
-                    </div>
-                ) : (
-                    <>  
-                        <h2 className="text-[16px] text-[#747474] mb-6">Liked Clubs ({likedClubs.length})</h2>
-                        <div className="grid grid-cols-1 gap-12">
-                            {likedClubs.map((club) => (
-                                <ClubCard
-                                    key={`${club.OrganizationID}-${club.OrganizationName}`}
-                                    club={club}
-                                />
-                            ))}
+                return (
+                    <div className="mx-8">
+                        <div className="text-center mb-8"> 
+                            <p className="text-[#000000] text-[50px] font-bold">Liked Clubs</p>
+                            <p className="text-[#747474] text-[20px]">Unlike to remove club from 'Liked Clubs' list!</p>
                         </div>
-                    </>
+                        <h2 className="text-[16px] text-[#747474] mb-4">Liked Clubs ({likedClubs.length})</h2>
+                        {
+                            likedClubs.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-[#B5BEC7] mb-4">No liked clubs yet</p>
+                                    <button
+                                        onClick={() => router.push("/clubs")}
+                                        className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
+                                    >
+                                        Browse Clubs
+                                    </button>
+                                </div>
+                            ) : (
+                                <>  
+                                    <div className="grid grid-cols-1 gap-12">
+                                        {likedClubs.map((club) => (
+                                            <ClubCard
+                                                key={`${club.OrganizationID}-${club.OrganizationName}`}
+                                                club={club}
+                                            />
+                                        ))}
+                                    </div>
+                                </>
+                                
+                            )
+                        }
+                    </div>
                     
                 );
-            
+
             case "saved-clubs":
-                return savedClubs.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-[#B5BEC7]">No saved clubs</p>
-                    </div>
-                ) : (
-                    <>
-                        <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
-                        <div className="grid grid-cols-1 gap-12">
-                            {savedClubs.map((club) => (
-                                <ClubCard
-                                    key={`${club.OrganizationID}-${club.OrganizationName}`}
-                                    club={club}
-                                />
-                            ))}
+                return (
+                    <div className="mx-8">
+                        <div className="text-center mb-8"> 
+                            <p className="text-[#000000] text-[50px] font-bold">Saved Clubs</p>
+                            <p className="text-[#747474] text-[20px]">Unsaved to remove club from 'Saved Clubs' list!</p>
                         </div>
-                    </>
+                        <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
+                        {
+                            savedClubs.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-[#B5BEC7]">No saved clubs</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="grid grid-cols-1 gap-12">
+                                        {savedClubs.map((club) => (
+                                            <ClubCard
+                                                key={`${club.OrganizationID}-${club.OrganizationName}`}
+                                                club={club}
+                                            />
+                                        ))}
+                                    </div>
+                                </>
+                            )
+                        }
+                    </div>
                 );
             
             default:
