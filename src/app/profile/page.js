@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 import ClubCard from "../components/clubCard";
+import Link from "next/link";
 
 function ProfilePage() {
     const router = useRouter();
@@ -143,11 +144,14 @@ function ProfilePage() {
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-6">
-                        {
-                            //TODO CARD
-                        }
-                    </div>
+                    <>
+                        <h2 className="text-[16px] text-[#747474] mb-6">Approved Reviews ({approvedReviews.length})</h2>
+                        <div className="space-y-6">
+                            {
+                                //TODO CARD
+                            }
+                        </div>
+                    </> 
                 );
             
             case "pending":
@@ -156,24 +160,45 @@ function ProfilePage() {
                         <p className="text-[#B5BEC7]">No pending reviews</p>
                     </div>
                 ) : (
-                    <div className="space-y-6">
-                        {
-                            //TODO CARD
-                        }
-                    </div>
+                    <>  
+                        <h2 className="text-[16px] text-[#747474] mb-6">Pending Reviews ({pendingReviews.length})</h2>
+                        <div className="space-y-6">
+                            {
+                                //TODO CARD
+                            }
+                        </div>
+                    </>
                 );
             
             case "rejected":
                 return rejectedReviews.length === 0 ? (
                     <div className="text-center py-12">
+                        <p className="text-[#B5BEC7]">
+                            These reviews did not pass our{" "}
+                            <Link href="/community-guidelines" className="underline text-[#5058B2]">
+                                Community Guidelines
+                            </Link>
+                            . Please edit them and resubmit for approval.
+                        </p>
                         <p className="text-[#B5BEC7]">No rejected reviews</p>
                     </div>
                 ) : (
-                    <div className="space-y-6">
-                        {
-                            //TODO CARD
-                        }
-                    </div>
+                    <>  
+                        <p className="text-[#B5BEC7]">
+                            These reviews did not pass our{" "}
+                            <Link href="/community-guidelines" className="underline text-[#5058B2]">
+                                Community Guidelines
+                            </Link>
+                            . Please edit them and resubmit for approval.
+                        </p>
+                        <h2 className="text-[16px] text-[#747474] mb-6">Rejected Reviews ({rejectedReviews.length})</h2>
+                        <div className="space-y-6">
+                            {
+                                //TODO CARD
+                            }
+                        </div>
+                    </>
+                    
                 );
             
             case "liked-reviews":
@@ -182,11 +207,14 @@ function ProfilePage() {
                         <p className="text-[#B5BEC7]">No liked reviews</p>
                     </div>
                 ) : (
-                    <div className="space-y-6">
-                        {
-                            //TODO CARD
-                        }
-                    </div>
+                    <>
+                        <h2 className="text-[16px] text-[#747474] mb-6">Liked Reviews ({likedReviews.length})</h2>
+                        <div className="space-y-6">
+                            {
+                                //TODO CARD
+                            }
+                        </div>
+                    </>
                 );
             
             case "liked-clubs":
@@ -201,14 +229,18 @@ function ProfilePage() {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-12">
-                        {likedClubs.map((club) => (
-                            <ClubCard
-                                key={`${club.OrganizationID}-${club.OrganizationName}`}
-                                club={club}
-                            />
-                        ))}
-                    </div>
+                    <>  
+                        <h2 className="text-[16px] text-[#747474] mb-6">Liked Clubs ({likedClubs.length})</h2>
+                        <div className="grid grid-cols-1 gap-12">
+                            {likedClubs.map((club) => (
+                                <ClubCard
+                                    key={`${club.OrganizationID}-${club.OrganizationName}`}
+                                    club={club}
+                                />
+                            ))}
+                        </div>
+                    </>
+                    
                 );
             
             case "saved-clubs":
@@ -217,14 +249,17 @@ function ProfilePage() {
                         <p className="text-[#B5BEC7]">No saved clubs</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-12">
-                        {savedClubs.map((club) => (
-                            <ClubCard
-                                key={`${club.OrganizationID}-${club.OrganizationName}`}
-                                club={club}
-                            />
-                        ))}
-                    </div>
+                    <>
+                        <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
+                        <div className="grid grid-cols-1 gap-12">
+                            {savedClubs.map((club) => (
+                                <ClubCard
+                                    key={`${club.OrganizationID}-${club.OrganizationName}`}
+                                    club={club}
+                                />
+                            ))}
+                        </div>
+                    </>
                 );
             
             default:
