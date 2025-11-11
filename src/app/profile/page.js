@@ -283,39 +283,23 @@ function ProfilePage() {
                                 <div className="ml-2 space-y-1 relative">
                                     {/* Timeline vertical line */}
                                     <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300"></div>
-                                    
-                                    <button
-                                        onClick={() => setActiveSection("approved")}
-                                        className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                            activeSection === "approved" ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                        }`}
-                                    >
-                                        Approved
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveSection("pending")}
-                                        className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                            activeSection === "pending" ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                        }`}
-                                    >
-                                        Pending
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveSection("rejected")}
-                                        className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                            activeSection === "rejected" ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                        }`}
-                                    >
-                                        Rejected
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveSection("liked-reviews")}
-                                        className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                            activeSection === "liked-reviews" ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                        }`}
-                                    >
-                                        Liked
-                                    </button>
+
+                                    {[
+                                        { value: "approved", label: "Approved" },
+                                        { value: "pending", label: "Pending" },
+                                        { value: "rejected", label: "Rejected" },
+                                        { value: "liked-reviews", label: "Liked" },
+                                    ].map((item) => (
+                                        <button
+                                            key={item.value}
+                                            onClick={() => setActiveSection(item.value)}
+                                            className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
+                                                activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                            }`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
@@ -348,23 +332,21 @@ function ProfilePage() {
                                 <div className="ml-2 space-y-1 relative">
                                     {/* Timeline vertical line */}
                                     <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300"></div>
-                                    
-                                    <button
-                                        onClick={() => setActiveSection("liked-clubs")}
-                                        className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                            activeSection === "liked-clubs" ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                        }`}
-                                    >
-                                        Liked
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveSection("saved-clubs")}
-                                        className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                            activeSection === "saved-clubs" ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                        }`}
-                                    >
-                                        Saved
-                                    </button>
+
+                                    {[
+                                        { value: "liked-clubs", label: "Liked" },
+                                        { value: "saved-clubs", label: "Saved" },
+                                    ].map((item) => (
+                                        <button
+                                            key={item.value}
+                                            onClick={() => setActiveSection(item.value)}
+                                            className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
+                                                activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                            }`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
