@@ -249,7 +249,7 @@ function ProfilePage() {
                 ) : (
                     <>
                         <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold">Pending Reviews</p>
+                            <p className="text-[#000000] text-4xl font-bold">Rejected Reviews</p>
                             <p className="text-[#B5BEC7]">
                                 These reviews did not pass our{" "}
                                 <Link href="/community-guidelines" className="underline text-[#5058B2]">
@@ -257,11 +257,11 @@ function ProfilePage() {
                                 </Link>
                                 . Please edit them and resubmit for approval.
                             </p>                            </div>
-                        <h2 className="text-[16px] text-[#747474] mb-4">Pending Reviews ({pendingReviews.length})</h2>
+                        <h2 className="text-[16px] text-[#747474] mb-4">Rejected Reviews ({rejectedReviews.length})</h2>
                         <div className="grid grid-cols-1 gap-12">
                             {
-                                pendingReviews.map(review => (
-                                    <ReviewCard key={review.id} review={review} />
+                                rejectedReviews.map(review => (
+                                    <ReviewCard key={review.id} review={review} rejected />
                                 ))
                             }
                         </div>

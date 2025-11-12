@@ -1,6 +1,10 @@
 import Link from "next/link";
+import Button from "./button";
 
-export default function ReviewCard({ review }) {
+export default function ReviewCard({
+    review,
+    rejected = false,
+}) {
     const date = new Date(review.created_at).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
@@ -22,6 +26,19 @@ export default function ReviewCard({ review }) {
             <p className="line-clamp-4 text-sm font-normal text-black md:text-base mt-4">
                 {review.review_text}
             </p>
+            {rejected && (
+                <div className="w-full flex justify-end space-x-2">
+                    <Button
+                        type="CTA"
+                        onClick={() => { window.location.href = `/review-edit?club=${encodeURIComponent(review.club_name)}&clubId=${review.id}` }}
+                    >
+                        Edit Review
+                    </Button>
+                    <Button>
+                        Delete
+                    </Button>
+                </div>
+            )}
         </Link>
     );
 }
