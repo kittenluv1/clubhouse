@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 import ClubCard from "../components/clubCard";
 import Link from "next/link";
+import ReviewCard from "../components/reviewCard";
 
 function ProfilePage() {
     const router = useRouter();
@@ -13,7 +14,9 @@ function ProfilePage() {
     const [clubsExpanded, setClubsExpanded] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
-    const [reviews, setReviews] = useState([]);
+    const [approvedReviews, setApprovedReviews] = useState([]);
+    const [pendingReviews, setPendingReviews] = useState([]);
+    const [rejectedReviews, setRejectedReviews] = useState([]);
     const [likedClubs, setLikedClubs] = useState([]);
     const [savedClubs, setSavedClubs] = useState([]);
 
@@ -76,13 +79,54 @@ function ProfilePage() {
     useEffect(() => {
         if (!currentUser) return;
 
-        const fetchReviews = async () => {
-            // TODO: Implement database call
-            // Mock data for now
-            setReviews([]);
+        const fetchApprovedReviews = async () => {
+            const { data, error } = await supabase
+                .from('reviews')
+                .select('*')
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Error fetching approved reviews:', error);
+                return;
+            }
+            if (data) {
+                setApprovedReviews(data);
+            }
         };
 
-        fetchReviews();
+        const fetchPendingReviews = async () => {
+            const { data, error } = await supabase
+                .from('pending_reviews')
+                .select('*')
+                .eq('user_id', currentUser.id)
+
+            if (error) {
+                console.error('Error fetching pending reviews:', error);
+                return;
+            }
+            if (data) {
+                setPendingReviews(data);
+            }
+        };
+
+        const fetchRejectedReviews = async () => {
+            const { data, error } = await supabase
+                .from('rejected_reviews')
+                .select('*')
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Error fetching rejected reviews:', error);
+                return;
+            }
+            if (data) {
+                setRejectedReviews(data);
+            }
+        };
+
+        fetchApprovedReviews();
+        fetchPendingReviews();
+        fetchRejectedReviews();
     }, [currentUser]);
 
     // Fetch liked clubs
@@ -91,12 +135,12 @@ function ProfilePage() {
 
         const fetchLikedClubs = async () => {
             const { data, error } = await supabase
-            .from('club_likes')              
-            .select(`
+                .from('club_likes')
+                .select(`
                 club_id,
                 clubs!club_likes_club_id_fkey(*)
             `)
-            .eq('user_id', currentUser.id);
+                .eq('user_id', currentUser.id);
 
             if (error) {
                 console.error('Error fetching liked clubs:', error);
@@ -125,13 +169,11 @@ function ProfilePage() {
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
     // Filter reviews based on active section
-    const approvedReviews = reviews.filter(r => r.status === 'approved');
-    const pendingReviews = reviews.filter(r => r.status === 'pending');
-    const rejectedReviews = reviews.filter(r => r.status === 'rejected');
-    const likedReviews = reviews.filter(r => r.liked);
+    // const pendingReviews = reviews.filter(r => r.status === 'pending');
+    // const rejectedReviews = reviews.filter(r => r.status === 'rejected');
 
     const getContentForSection = () => {
-        switch(activeSection) {
+        switch (activeSection) {
             case "approved":
                 return approvedReviews.length === 0 ? (
                     <div className="text-center py-12">
@@ -145,31 +187,53 @@ function ProfilePage() {
                     </div>
                 ) : (
                     <>
-                        <h2 className="text-[16px] text-[#747474] mb-6">Approved Reviews ({approvedReviews.length})</h2>
-                        <div className="space-y-6">
-                            {
-                                //TODO CARD
-                            }
-                        </div>
-                    </> 
-                );
-            
-            case "pending":
-                return pendingReviews.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-[#B5BEC7]">No pending reviews</p>
-                    </div>
-                ) : (
-                    <>  
-                        <h2 className="text-[16px] text-[#747474] mb-6">Pending Reviews ({pendingReviews.length})</h2>
-                        <div className="space-y-6">
-                            {
-                                //TODO CARD
-                            }
+                        <div className="mx-8">
+                            <div className="text-center mb-8">
+                                <p className="text-[#000000] text-4xl font-bold">Approved Reviews</p>
+                                <p className="text-[#747474] text-[20px]">These reviews have been approved and posted on the club page!</p>
+                            </div>
+                            <h2 className="text-[16px] text-[#747474] mb-4">Approved Reviews ({approvedReviews.length})</h2>
+                            <div className="grid grid-cols-1 gap-12">
+                                {
+                                    approvedReviews.map(review => (
+                                        <ReviewCard key={review.id} review={review} />
+                                    ))
+                                }
+                            </div>
                         </div>
                     </>
                 );
-            
+
+            case "pending":
+                return pendingReviews.length === 0 ? (
+                    <div className="text-center py-12">
+                        <p className="text-[#B5BEC7] mb-4">No pending reviews</p>
+                        <button
+                            onClick={() => router.push("/review")}
+                            className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
+                        >
+                            Write a Review
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        <div className="mx-8">
+                            <div className="text-center mb-8">
+                                <p className="text-[#000000] text-4xl font-bold">Pending Reviews</p>
+                                <p className="text-[#747474] text-[20px]">These reviews are currently being processed for approval.</p>
+                            </div>
+                            <h2 className="text-[16px] text-[#747474] mb-4">Pending Reviews ({pendingReviews.length})</h2>
+                            <div className="grid grid-cols-1 gap-12">
+                                {
+                                    pendingReviews.map(review => (
+                                        <ReviewCard key={review.id} review={review} />
+                                    ))
+                                }
+                            </div>
+                        </div>
+                    </>
+                );
+
             case "rejected":
                 return rejectedReviews.length === 0 ? (
                     <div className="text-center py-12">
@@ -183,45 +247,49 @@ function ProfilePage() {
                         <p className="text-[#B5BEC7]">No rejected reviews</p>
                     </div>
                 ) : (
-                    <>  
-                        <p className="text-[#B5BEC7]">
-                            These reviews did not pass our{" "}
-                            <Link href="/community-guidelines" className="underline text-[#5058B2]">
-                                Community Guidelines
-                            </Link>
-                            . Please edit them and resubmit for approval.
-                        </p>
-                        <h2 className="text-[16px] text-[#747474] mb-6">Rejected Reviews ({rejectedReviews.length})</h2>
-                        <div className="space-y-6">
-                            {
-                                //TODO CARD
-                            }
-                        </div>
-                    </>
-                    
-                );
-            
-            case "liked-reviews":
-                return likedReviews.length === 0 ? (
-                    <div className="text-center">
-                        <p className="text-[#B5BEC7]">No liked reviews</p>
-                    </div>
-                ) : (
                     <>
-                        <h2 className="text-[16px] text-[#747474] mb-6">Liked Reviews ({likedReviews.length})</h2>
-                        <div className="space-y-6">
+                        <div className="text-center mb-8">
+                            <p className="text-[#000000] text-4xl font-bold">Pending Reviews</p>
+                            <p className="text-[#B5BEC7]">
+                                These reviews did not pass our{" "}
+                                <Link href="/community-guidelines" className="underline text-[#5058B2]">
+                                    Community Guidelines
+                                </Link>
+                                . Please edit them and resubmit for approval.
+                            </p>                            </div>
+                        <h2 className="text-[16px] text-[#747474] mb-4">Pending Reviews ({pendingReviews.length})</h2>
+                        <div className="grid grid-cols-1 gap-12">
                             {
-                                //TODO CARD
+                                pendingReviews.map(review => (
+                                    <ReviewCard key={review.id} review={review} />
+                                ))
                             }
                         </div>
                     </>
+
                 );
-            
+
+            // case "liked-reviews":
+            //     return likedReviews.length === 0 ? (
+            //         <div className="text-center">
+            //             <p className="text-[#B5BEC7]">No liked reviews</p>
+            //         </div>
+            //     ) : (
+            //         <>
+            //             <h2 className="text-[16px] text-[#747474] mb-6">Liked Reviews ({likedReviews.length})</h2>
+            //             <div className="space-y-6">
+            //                 {
+            //                     //TODO CARD
+            //                 }
+            //             </div>
+            //         </>
+            //     );
+
             case "liked-clubs":
                 return (
                     <div className="mx-8">
-                        <div className="text-center mb-8"> 
-                            <p className="text-[#000000] text-[50px] font-bold">Liked Clubs</p>
+                        <div className="text-center mb-8">
+                            <p className="text-[#000000] text-4xl font-bold">Liked Clubs</p>
                             <p className="text-[#747474] text-[20px]">Unlike to remove club from &apos;Liked Clubs&apos; list!</p>
                         </div>
                         <h2 className="text-[16px] text-[#747474] mb-4">Liked Clubs ({likedClubs.length})</h2>
@@ -237,7 +305,7 @@ function ProfilePage() {
                                     </button>
                                 </div>
                             ) : (
-                                <>  
+                                <>
                                     <div className="grid grid-cols-1 gap-12">
                                         {likedClubs.map((club) => (
                                             <ClubCard
@@ -247,18 +315,18 @@ function ProfilePage() {
                                         ))}
                                     </div>
                                 </>
-                                
+
                             )
                         }
                     </div>
-                    
+
                 );
 
             case "saved-clubs":
                 return (
                     <div className="mx-8">
-                        <div className="text-center mb-8"> 
-                            <p className="text-[#000000] text-[50px] font-bold">Saved Clubs</p>
+                        <div className="text-center mb-8">
+                            <p className="text-[#000000] text-4xl font-bold">Saved Clubs</p>
                             <p className="text-[#747474] text-[20px]">Unsaved to remove club from &apos;Saved Clubs&apos; list!</p>
                         </div>
                         <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
@@ -282,7 +350,7 @@ function ProfilePage() {
                         }
                     </div>
                 );
-            
+
             default:
                 return null;
         }
@@ -298,7 +366,7 @@ function ProfilePage() {
                         alt="Profile"
                         className="h-32 w-32 rounded-full"
                     />
-                    
+
                     <div className="flex-1 text-center md:text-left self-center">
                         <h1 className="mb-2 text-2xl font-bold">{displayName}</h1>
                         <p className="mb-1 text-gray-600">{currentUser.email}</p>
@@ -310,7 +378,7 @@ function ProfilePage() {
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Sidebar Navigation */}
                 <div className="lg:w-64 flex-shrink-0">
-                    <div className="bg-white rounded-lg p-4 sticky top-4">
+                    <div className="bg-white rounded-lg p-8 mt-8 sticky top-8">
                         {/* Reviews Section */}
                         <div className="mb-4">
                             <button
@@ -325,16 +393,16 @@ function ProfilePage() {
                                     </span>
                                     <span>Reviews</span>
                                 </div>
-                                <svg 
-                                    className={`w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`} 
-                                    fill="none" 
-                                    stroke="currentColor" 
+                                <svg
+                                    className={`w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            
+
                             {reviewsExpanded && (
                                 <div className="ml-2 space-y-1 relative">
                                     {/* Timeline vertical line */}
@@ -344,14 +412,13 @@ function ProfilePage() {
                                         { value: "approved", label: "Approved" },
                                         { value: "pending", label: "Pending" },
                                         { value: "rejected", label: "Rejected" },
-                                        { value: "liked-reviews", label: "Liked" },
+                                        // { value: "liked-reviews", label: "Liked" },
                                     ].map((item) => (
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                                activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                            }`}
+                                            className={`ml-3 block w-full text-left py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                                }`}
                                         >
                                             {item.label}
                                         </button>
@@ -374,16 +441,16 @@ function ProfilePage() {
                                     </span>
                                     <span>Clubs</span>
                                 </div>
-                                <svg 
-                                    className={`w-4 h-4 transition-transform ${clubsExpanded ? 'rotate-180' : ''}`} 
-                                    fill="none" 
-                                    stroke="currentColor" 
+                                <svg
+                                    className={`w-4 h-4 transition-transform ${clubsExpanded ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            
+
                             {clubsExpanded && (
                                 <div className="ml-2 space-y-1 relative">
                                     {/* Timeline vertical line */}
@@ -396,9 +463,8 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left py-2 px-3 rounded rounded-full relative ${
-                                                activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
-                                            }`}
+                                            className={`ml-3 block w-full text-left py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                                }`}
                                         >
                                             {item.label}
                                         </button>
