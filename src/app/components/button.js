@@ -20,10 +20,10 @@ export default function Button({
         ${type === 'tag' && (isSelected
           ? 'bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]'
           : 'border-[#6E808D] border-1 bg-white text-black hover:bg-[#E5EBF1]')}
-        ${type === 'border' && 'border-1 border-[#6E808D]'}
+        ${type === 'border' && 'border-1 border-[#6E808D] hover:bg-[#E5EBF1]'}
         ${type === 'pink' && 'hover:bg-[#FFA1CD] border-none bg-[#FFCEE5]'}
         ${style}
-        rounded-full text-nowrap disabled:bg-[#E5EBF1] disabled:bg-none disabled:opacity-50 disabled:text-[#6E808D] disabled:!cursor-not-allowed
+        rounded-full text-nowrap transition-colors duration-300 disabled:bg-[#E5EBF1] disabled:bg-none disabled:opacity-50 disabled:text-[#6E808D] disabled:!cursor-not-allowed
         `
       }
     >
