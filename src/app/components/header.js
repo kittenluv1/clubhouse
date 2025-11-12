@@ -136,7 +136,7 @@ function Header() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 100, opacity: 0 }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="absolute top-0 right-0 z-20 flex items-center gap-2 px-2"
+              className="absolute top-0 right-0 bottom-0 z-20 flex items-center bg-white gap-2 px-2"
             >
               {isAdmin ? (
                 <Button

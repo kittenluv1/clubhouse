@@ -34,10 +34,14 @@ export async function GET(req) {
 
     const orgList = data.orgList;
 
-    // Sanitize a single object by removing null characters
+    // Sanitize a single object by removing null characters and null fields
     function sanitizeObject(obj) {
       const sanitizedObj = {};
       for (const key in obj) {
+        if (obj[key] === null) {
+          // Skip null fields entirely to prevent overwriting existing data
+          continue;
+        }
         if (typeof obj[key] === "string") {
           // Remove null characters from strings
           sanitizedObj[key] = obj[key].replace(/\u0000/g, "");
