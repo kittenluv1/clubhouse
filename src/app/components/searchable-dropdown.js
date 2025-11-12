@@ -98,7 +98,7 @@ const SearchableDropdown = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="font-dm-sans placeholder-custom w-full rounded-full border bg-white px-3 py-2 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="font-dm-sans placeholder-custom w-full rounded-full bg-gray-100 px-5 py-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           required={required}
           style={{
             "--placeholder-color": placeholderColor,

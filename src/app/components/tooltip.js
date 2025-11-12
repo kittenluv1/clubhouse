@@ -102,7 +102,7 @@ export default function Tooltip({ rating }) {
       onMouseLeave={handleMouseLeave}
     >
       <div
-        className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border border-gray-400 bg-white text-xs text-gray-500 select-none hover:bg-gray-50 transition-colors"
+        className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-gray-400 text-xs font-semibold text-white select-none hover:bg-gray-500 transition-colors"
         onClick={handleClick}
         aria-label="More information"
         role="button"
@@ -114,7 +114,7 @@ export default function Tooltip({ rating }) {
           }
         }}
       >
-        ?
+        i
       </div>
       {open && (
         <div 

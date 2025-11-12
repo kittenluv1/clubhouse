@@ -66,7 +66,7 @@ const getCurrentQuarter = () => {
       <select
         value={selectedValue}
         onChange={handleChange}
-        className={`w-full appearance-none rounded-full border bg-white px-3 py-2 text-gray-700 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${className}`}
+        className={`w-full appearance-none rounded-full bg-gray-100 px-5 py-3 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none ${className}`}
         required={required}
       >
         <option value="" disabled>
