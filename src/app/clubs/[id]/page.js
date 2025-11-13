@@ -167,16 +167,17 @@ export default function ClubDetailsPage() {
           const clubData = data.orgList[0];
           setClub(clubData);
 
-          const { data: reviewsData, error: reviewsError } = await supabase
+          var { data: reviewsData, error: reviewsError } = await supabase
             .from("reviews")
             .select("*")
             .eq("club_id", clubData.OrganizationID)
             .order("created_at", { ascending: false });
           if (reviewsError) throw reviewsError;
-          reviewsData.forEach(review => {
-            console.log(review.id);
-            //const likes = await getReviewLikes(review);
-            console.log(getReviewLikes(review)); //returns a promise
+          getReviewLikesList(reviewsData);
+          reviewsData.forEach(async review => {
+            review.likes = await getReviewLikes(review);
+            console.log(review.id + "'s likes: " + review.likes);
+            //console.log(getReviewLikes(review)); //returns a promise
           })
           console.log("reviews")
           console.log(reviewsData);
@@ -195,7 +196,23 @@ export default function ClubDetailsPage() {
     fetchClubData();
   }, [id]);
 
-  const getReviewLikes = async (review) => {
+  const getReviewLikesList = async (reviewData) => {
+    const reviewIds = reviewData.map((review, index) => review.id);
+    console.log(reviewIds);
+    try {
+      const { data: revLikesList, error: reviewLikesError } = await supabase
+        .from("review_likes")
+        .select("*")
+        .eq("review_id", reviewIds);
+      if (reviewLikesError) throw reviewLikesError;
+      console.long("rev likes lists");
+      console.log(revLikesList);
+    } catch (err) {
+
+    }
+  };
+
+  const getReviewLikes = async (review) => { //maybe return a list of uhhh 
     //setLoading(true);
     try {
       const { data: reviewLikes, error: reviewLikesError } = await supabase
@@ -204,7 +221,7 @@ export default function ClubDetailsPage() {
         .eq("review_id", review.id);
       if (reviewLikesError) throw reviewLikesError;
       //setReviewsLikes?
-      console.log(reviewLikes.length)
+      console.log("likes " + reviewLikes.length)
       return reviewLikes.length;
     } catch (err) {
       console.error("Error fetching review likes data: " + review.id, err);
@@ -732,6 +749,9 @@ export default function ClubDetailsPage() {
                     </h3>
                     <div className="font-bold text-[#666dbc]">
                       Reviewed on {formatDate(review.created_at)}
+                    </div>
+                    <div>
+                      Likes: {review.likes}
                     </div>
                   </div>
                   <div className="mb-4 font-semibold">
