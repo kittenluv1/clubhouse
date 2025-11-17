@@ -149,89 +149,34 @@ export default function ClubDetailsPage() {
   const [ratingsOpen, setRatingsOpen] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+  if (!id) return;
 
-    const fetchClubData = async () => {
-      try {
-        setLoading(true);
+  const fetchClubData = async () => {
+    try {
+      setLoading(true);
 
-        const decodedId = decodeURIComponent(id);
-        console.log("Decoded ID:", decodedId);
-        const response = await fetch(`/api/clubs/${id}`);
-        if (!response.ok)
-          throw new Error(`HTTP error! Status: ${response.status}`);
+      const response = await fetch(`/api/clubs/${id}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (data.orgList && data.orgList.length > 0) {
-          const clubData = data.orgList[0];
-          setClub(clubData);
-
-          var { data: reviewsData, error: reviewsError } = await supabase
-            .from("reviews")
-            .select(`
-            *
-            `)
-            .eq("club_id", clubData.OrganizationID)
-            .order("created_at", { ascending: false });
-          if (reviewsError) throw reviewsError;
-          getReviewLikesList(reviewsData);
-          reviewsData.forEach(async review => {
-            console.log(reviewsData);
-            review.likes = await getReviewLikes(review);
-            console.log(review.id + "'s likes: " + review.likes);
-            //console.log(getReviewLikes(review)); //returns a promise
-          })
-          console.log("reviews")
-          console.log(reviewsData);
-          setReviews(reviewsData);
-        } else {
-          setError(`No club found with name containing: ${id}`);
-        }
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to fetch club data");
-      } finally {
-        setLoading(false);
+      if (data.orgList && data.orgList.length > 0) {
+        setClub(data.orgList[0]);
+        setReviews(data.reviews || []);
+      } else {
+        setError(`No club found with name containing: ${id}`);
       }
-    };
-
-    fetchClubData();
-  }, [id]);
-
-  const getReviewLikesList = async (reviewData) => {
-    const reviewIds = reviewData.map((review, index) => review.id);
-    console.log(reviewIds);
-    try {
-      const { data: revLikesList, error: reviewLikesError } = await supabase
-        .from("review_likes")
-        .select("*")
-        .in('review_id')
-        .eq("review_id", reviewIds);
-      if (reviewLikesError) throw reviewLikesError;
-      console.long("rev likes lists");
-      console.log(revLikesList);
     } catch (err) {
-
+      console.error("Error fetching data:", err);
+      setError("Failed to fetch club data");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getReviewLikes = async (review) => { //maybe return a list of uhhh 
-    //setLoading(true);
-    try {
-      const { data: reviewLikes, error: reviewLikesError } = await supabase
-        .from("review_likes")
-        .select("*")
-        .eq("review_id", review.id);
-      if (reviewLikesError) throw reviewLikesError;
-      //setReviewsLikes?
-      console.log("likes " + reviewLikes.length)
-      return reviewLikes.length;
-    } catch (err) {
-      console.error("Error fetching review likes data: " + review.id, err);
-      setError("Failed to fetch review likes data");
-    }
-  };
+  fetchClubData();
+}, [id]);
 
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
