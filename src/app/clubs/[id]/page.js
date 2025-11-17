@@ -169,12 +169,15 @@ export default function ClubDetailsPage() {
 
           var { data: reviewsData, error: reviewsError } = await supabase
             .from("reviews")
-            .select("*")
+            .select(`
+            *
+            `)
             .eq("club_id", clubData.OrganizationID)
             .order("created_at", { ascending: false });
           if (reviewsError) throw reviewsError;
           getReviewLikesList(reviewsData);
           reviewsData.forEach(async review => {
+            console.log(reviewsData);
             review.likes = await getReviewLikes(review);
             console.log(review.id + "'s likes: " + review.likes);
             //console.log(getReviewLikes(review)); //returns a promise
@@ -203,6 +206,7 @@ export default function ClubDetailsPage() {
       const { data: revLikesList, error: reviewLikesError } = await supabase
         .from("review_likes")
         .select("*")
+        .in('review_id')
         .eq("review_id", reviewIds);
       if (reviewLikesError) throw reviewLikesError;
       console.long("rev likes lists");
