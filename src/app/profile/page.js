@@ -383,15 +383,11 @@ function ProfilePage() {
                         <div className="mb-4">
                             <button
                                 onClick={() => setReviewsExpanded(!reviewsExpanded)}
-                                className="flex items-center justify-between w-full text-left font-medium mb-2"
+                                className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <span className={`w-4 h-4 rounded-full border-2 ${activeSection.includes('review') || activeSection === 'approved' || activeSection === 'pending' || activeSection === 'rejected' || activeSection === 'liked-reviews' ? 'border-black' : 'border-gray-300'}`}>
-                                        {(activeSection.includes('review') || activeSection === 'approved' || activeSection === 'pending' || activeSection === 'rejected' || activeSection === 'liked-reviews') && (
-                                            <span className="block w-2 h-2 bg-black rounded-full m-0.5"></span>
-                                        )}
-                                    </span>
-                                    <span>Reviews</span>
+                                    <img src="profile_review.svg" alt="review icon" className="max-w-[20px]"/>
+                                    <span className="text-2xl">Reviews</span>
                                 </div>
                                 <svg
                                     className={`w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
@@ -417,7 +413,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
                                                 }`}
                                         >
                                             {item.label}
@@ -431,15 +427,11 @@ function ProfilePage() {
                         <div>
                             <button
                                 onClick={() => setClubsExpanded(!clubsExpanded)}
-                                className="flex items-center justify-between w-full text-left font-medium mb-2"
+                                className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <span className={`w-4 h-4 rounded-full border-2 ${activeSection.includes('club') ? 'border-black' : 'border-gray-300'}`}>
-                                        {activeSection.includes('club') && (
-                                            <span className="block w-2 h-2 bg-black rounded-full m-0.5"></span>
-                                        )}
-                                    </span>
-                                    <span>Clubs</span>
+                                    <img src="/profile_club.svg" alt="club icon" className="max-w-[20px]"/>
+                                    <span className="text-2xl">Clubs</span>
                                 </div>
                                 <svg
                                     className={`w-4 h-4 transition-transform ${clubsExpanded ? 'rotate-180' : ''}`}
@@ -463,7 +455,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
                                                 }`}
                                         >
                                             {item.label}
