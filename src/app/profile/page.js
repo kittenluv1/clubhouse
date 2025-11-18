@@ -67,7 +67,8 @@ function ProfilePage() {
                     setLoading(true);
                 }
 
-                const response = await fetch(`/api/profile?userId=${currentUser.id}`);
+                // No userId param needed - API gets it from session cookies
+                const response = await fetch(`/api/profile`);
                 const data = await response.json();
 
                 if (response.ok) {

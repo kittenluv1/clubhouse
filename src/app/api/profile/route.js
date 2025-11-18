@@ -1,16 +1,34 @@
-import { supabase } from "../../lib/db";
+import { createAuthenticatedClient } from "../../lib/server-db";
 
 export async function GET(req) {
   try {
-    // Get userId from query params
-    const userId = req.nextUrl.searchParams.get("userId");
+    console.log('[Profile API] Starting authentication check...');
 
-    if (!userId) {
+    // Create authenticated Supabase client (reads from cookies)
+    const supabase = await createAuthenticatedClient();
+    console.log('[Profile API] Supabase client created');
+
+    // Get the authenticated user from the session
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    console.log('[Profile API] Auth check result:', {
+      hasUser: !!user,
+      userId: user?.id,
+      authError: authError?.message
+    });
+
+    if (authError || !user) {
+      console.error('[Profile API] Authentication failed:', authError);
       return new Response(
-        JSON.stringify({ error: "userId parameter is required" }),
-        { status: 400 }
+        JSON.stringify({ error: "Unauthorized - please sign in" }),
+        { status: 401 }
       );
     }
+
+    console.log('[Profile API] User authenticated successfully:', user.id);
+
+    // Now use the verified user.id from the session (not from client)
+    const userId = user.id;
 
     // Fetch user profile
     const { data: profileData, error: profileError } = await supabase
