@@ -39,12 +39,6 @@ export async function createAuthenticatedClient() {
   const cookieStore = await cookies();
   const allCookies = cookieStore.getAll();
 
-  console.log('[Server DB] Creating authenticated client...');
-  console.log('[Server DB] Found cookies:', allCookies.map(c => c.name));
-  console.log('[Server DB] Supabase-related cookies:',
-    allCookies.filter(c => c.name.includes('supabase') || c.name.includes('sb-')).map(c => c.name)
-  );
-
   return createSSRClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
