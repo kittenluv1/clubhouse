@@ -6,6 +6,7 @@ import { supabase } from "../lib/db";
 import ClubCard from "../components/clubCard";
 import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
+import LoadingScreen from "../components/LoadingScreen";
 
 function ProfilePage() {
     const router = useRouter();
@@ -19,6 +20,7 @@ function ProfilePage() {
     const [rejectedReviews, setRejectedReviews] = useState([]);
     const [likedClubs, setLikedClubs] = useState([]);
     const [savedClubs, setSavedClubs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     // Authentication check
     useEffect(() => {
@@ -54,116 +56,56 @@ function ProfilePage() {
         };
     }, []);
 
-    // Fetch user profile data
+    // Fetch all profile data from API
     useEffect(() => {
         if (!currentUser) return;
 
-        const fetchUserProfile = async () => {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', currentUser.id)
-                .single();
+        const fetchProfileData = async () => {
+            try {
+                // Only show loading screen if we don't have data yet
+                if (!userProfile) {
+                    setLoading(true);
+                }
 
-            if (data) {
-                setUserProfile({
-                    full_name: data.display_name,
-                    avatar_url: null,
-                });
-            }
-        };
-        fetchUserProfile();
-    }, [currentUser]);
+                const response = await fetch(`/api/profile?userId=${currentUser.id}`);
+                const data = await response.json();
 
-    // Fetch user reviews
-    useEffect(() => {
-        if (!currentUser) return;
+                if (response.ok) {
+                    // Set user profile
+                    if (data.profile) {
+                        setUserProfile({
+                            full_name: data.profile.display_name,
+                            avatar_url: null,
+                        });
+                    }
 
-        const fetchApprovedReviews = async () => {
-            const { data, error } = await supabase
-                .from('reviews')
-                .select('*')
-                .eq('user_id', currentUser.id);
+                    // Set reviews
+                    setApprovedReviews(data.approvedReviews || []);
+                    setPendingReviews(data.pendingReviews || []);
+                    setRejectedReviews(data.rejectedReviews || []);
 
-            if (error) {
-                console.error('Error fetching approved reviews:', error);
-                return;
-            }
-            if (data) {
-                setApprovedReviews(data);
-            }
-        };
-
-        const fetchPendingReviews = async () => {
-            const { data, error } = await supabase
-                .from('pending_reviews')
-                .select('*')
-                .eq('user_id', currentUser.id)
-
-            if (error) {
-                console.error('Error fetching pending reviews:', error);
-                return;
-            }
-            if (data) {
-                setPendingReviews(data);
+                    // Set clubs
+                    setLikedClubs(data.likedClubs || []);
+                    setSavedClubs(data.savedClubs || []);
+                } else {
+                    console.error('Error fetching profile data:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching profile data:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
-        const fetchRejectedReviews = async () => {
-            const { data, error } = await supabase
-                .from('rejected_reviews')
-                .select('*')
-                .eq('user_id', currentUser.id);
-
-            if (error) {
-                console.error('Error fetching rejected reviews:', error);
-                return;
-            }
-            if (data) {
-                setRejectedReviews(data);
-            }
-        };
-
-        fetchApprovedReviews();
-        fetchPendingReviews();
-        fetchRejectedReviews();
-    }, [currentUser]);
-
-    // Fetch liked clubs
-    useEffect(() => {
-        if (!currentUser) return;
-
-        const fetchLikedClubs = async () => {
-            const { data, error } = await supabase
-                .from('club_likes')
-                .select(`
-                club_id,
-                clubs!club_likes_club_id_fkey(*)
-            `)
-                .eq('user_id', currentUser.id);
-
-            if (error) {
-                console.error('Error fetching liked clubs:', error);
-                return;
-            }
-
-            if (data) {
-                setLikedClubs(data.map(item => item.clubs));
-            }
-        };
-
-        fetchLikedClubs();
-    }, [currentUser]);
-
-    // TODO: Fetch saved clubs when implemented
-    useEffect(() => {
-        if (!currentUser) return;
-        // Placeholder for saved clubs functionality
-        setSavedClubs([]);
+        fetchProfileData();
     }, [currentUser]);
 
     if (!currentUser) {
         return null;
+    }
+
+    if (loading) {
+        return <LoadingScreen />;
     }
 
     const displayName = userProfile?.full_name || "Anonymous Bruin";
