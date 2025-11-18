@@ -189,7 +189,7 @@ function ProfilePage() {
                     <>
                         <div className="mx-8">
                             <div className="text-center mb-8">
-                                <p className="text-[#000000] text-4xl font-bold">Approved Reviews</p>
+                                <p className="text-[#000000] text-4xl font-bold mb-4">Approved Reviews</p>
                                 <p className="text-[#747474] text-[20px]">These reviews have been approved and posted on the club page!</p>
                             </div>
                             <h2 className="text-[16px] text-[#747474] mb-4">Approved Reviews ({approvedReviews.length})</h2>
@@ -219,7 +219,7 @@ function ProfilePage() {
                     <>
                         <div className="mx-8">
                             <div className="text-center mb-8">
-                                <p className="text-[#000000] text-4xl font-bold">Pending Reviews</p>
+                                <p className="text-[#000000] text-4xl font-bold mb-4">Pending Reviews</p>
                                 <p className="text-[#747474] text-[20px]">These reviews are currently being processed for approval.</p>
                             </div>
                             <h2 className="text-[16px] text-[#747474] mb-4">Pending Reviews ({pendingReviews.length})</h2>
@@ -249,7 +249,7 @@ function ProfilePage() {
                 ) : (
                     <>
                         <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold">Rejected Reviews</p>
+                            <p className="text-[#000000] text-4xl font-bold mb-4">Rejected Reviews</p>
                             <p className="text-[#B5BEC7]">
                                 These reviews did not pass our{" "}
                                 <Link href="/community-guidelines" className="underline text-[#5058B2]">
@@ -289,7 +289,7 @@ function ProfilePage() {
                 return (
                     <div className="mx-8">
                         <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold">Liked Clubs</p>
+                            <p className="text-[#000000] text-4xl font-bold mb-4">Liked Clubs</p>
                             <p className="text-[#747474] text-[20px]">Unlike to remove club from &apos;Liked Clubs&apos; list!</p>
                         </div>
                         <h2 className="text-[16px] text-[#747474] mb-4">Liked Clubs ({likedClubs.length})</h2>
@@ -326,7 +326,7 @@ function ProfilePage() {
                 return (
                     <div className="mx-8">
                         <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold">Saved Clubs</p>
+                            <p className="text-[#000000] text-4xl font-bold mb-4">Saved Clubs</p>
                             <p className="text-[#747474] text-[20px]">Unsaved to remove club from &apos;Saved Clubs&apos; list!</p>
                         </div>
                         <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
@@ -357,9 +357,9 @@ function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen p-6 md:p-12 lg:p-20">
+        <div className="min-h-screen">
             {/* User Information Section */}
-            <div className="mb-8 rounded-lg bg-white p-6">
+            <div className="mb-20 rounded-lg bg-white px-12 md:px-18 lg:px-26 py-6 md:py-12 lg:py-20 bg-center bg-cover bg-no-repeat" style={{backgroundImage: "url('/profile_background.png')"}}>
                 <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                     <img
                         src="/default_profile.svg"
@@ -368,14 +368,13 @@ function ProfilePage() {
                     />
 
                     <div className="flex-1 text-center md:text-left self-center">
-                        <h1 className="mb-2 text-2xl font-bold">{displayName}</h1>
-                        <p className="mb-1 text-gray-600">{currentUser.email}</p>
+                        <h1 className="mb-2 text-4xl font-bold">{displayName}</h1>
                     </div>
                 </div>
             </div>
 
             {/* Main Content with Sidebar */}
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col lg:flex-row gap-8 p-6 md:p-12 lg:p-20 pt-0 md:pt-0 lg:pt-0">
                 {/* Sidebar Navigation */}
                 <div className="lg:w-64 flex-shrink-0">
                     <div className="bg-white rounded-lg p-8 mt-8 sticky top-8">
@@ -383,15 +382,11 @@ function ProfilePage() {
                         <div className="mb-4">
                             <button
                                 onClick={() => setReviewsExpanded(!reviewsExpanded)}
-                                className="flex items-center justify-between w-full text-left font-medium mb-2"
+                                className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <span className={`w-4 h-4 rounded-full border-2 ${activeSection.includes('review') || activeSection === 'approved' || activeSection === 'pending' || activeSection === 'rejected' || activeSection === 'liked-reviews' ? 'border-black' : 'border-gray-300'}`}>
-                                        {(activeSection.includes('review') || activeSection === 'approved' || activeSection === 'pending' || activeSection === 'rejected' || activeSection === 'liked-reviews') && (
-                                            <span className="block w-2 h-2 bg-black rounded-full m-0.5"></span>
-                                        )}
-                                    </span>
-                                    <span>Reviews</span>
+                                    <img src="profile_review.svg" alt="review icon" className="max-w-[20px]"/>
+                                    <span className="text-2xl">Reviews</span>
                                 </div>
                                 <svg
                                     className={`w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
@@ -417,7 +412,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
                                                 }`}
                                         >
                                             {item.label}
@@ -431,15 +426,11 @@ function ProfilePage() {
                         <div>
                             <button
                                 onClick={() => setClubsExpanded(!clubsExpanded)}
-                                className="flex items-center justify-between w-full text-left font-medium mb-2"
+                                className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <span className={`w-4 h-4 rounded-full border-2 ${activeSection.includes('club') ? 'border-black' : 'border-gray-300'}`}>
-                                        {activeSection.includes('club') && (
-                                            <span className="block w-2 h-2 bg-black rounded-full m-0.5"></span>
-                                        )}
-                                    </span>
-                                    <span>Clubs</span>
+                                    <img src="/profile_club.svg" alt="club icon" className="max-w-[20px]"/>
+                                    <span className="text-2xl">Clubs</span>
                                 </div>
                                 <svg
                                     className={`w-4 h-4 transition-transform ${clubsExpanded ? 'rotate-180' : ''}`}
@@ -463,7 +454,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-gray-100 font-medium" : "hover:bg-gray-50"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
                                                 }`}
                                         >
                                             {item.label}
