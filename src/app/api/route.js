@@ -10,15 +10,7 @@ export async function GET(req) {
   }
 
   try {
-    // API TO GET CLUB SPORTS DATA - IMPLEMENT IN THE FUTURE
-    //   const response = await fetch("https://sa.ucla.edu/RCO/Public/SearchOrganizations", {
-    //   "headers": {
-    //     "content-type": `application/json`,
-    //   },
-    //   "body": "{\"catValueStringText\":\"All Categories\",\"searchString\":\"\",\"catValueString\":-1}",
-    //   "method": "POST",
-    // })
-
+    // Fetch regular clubs
     const response = await fetch(
       "https://sa.ucla.edu/RCO/Public/SearchOrganizations",
       {
@@ -31,19 +23,58 @@ export async function GET(req) {
     }
 
     const data = await response.json();
-
     const orgList = data.orgList;
+
+    // Fetch club sports
+    const clubSportsResponse = await fetch(
+      "https://sa.ucla.edu/RCO/Public/SearchOrganizations",
+      {
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          catValueStringText: "All Categories",
+          searchString: "",
+          catValueString: -1,
+        }),
+        method: "POST",
+      },
+    );
+
+    if (!clubSportsResponse.ok) {
+      throw new Error(`Club sports response status: ${clubSportsResponse.status}`);
+    }
+
+    const clubSportsData = await clubSportsResponse.json();
+    const clubSportsOrgList = clubSportsData.clubSportsOrgList || [];
+
+    // Map club sports to match regular clubs in Supabase
+    const mappedClubSports = clubSportsOrgList.map(sport => ({
+      OrganizationID: sport.id,
+      OrganizationName: sport.name,
+      OrganizationDescription: sport.description,
+      OrganizationEmail: sport.program_email_address,
+      OrganizationWebSite: sport.links?.find(link => link.name && link.url.includes("uclaclubsports.com"))?.url || null,
+      Category1Name: "Club Sports",
+      Category2Name: sport.identification,
+      AdvisorName: null,
+      Sig1Name: null,
+      Sig2Name: null,
+      Sig3Name: null,
+      MemberType: null,
+      SocialMediaLink: sport.links?.find(link => link.name && (link.name.includes("Instagram") || link.name.includes("Facebook")))?.url || null
+    }));
+
+    const combinedOrgList = [...orgList, ...mappedClubSports];
 
     // Sanitize a single object by removing null characters and null fields
     function sanitizeObject(obj) {
       const sanitizedObj = {};
       for (const key in obj) {
         if (obj[key] === null) {
-          // Skip null fields entirely to prevent overwriting existing data
           continue;
         }
         if (typeof obj[key] === "string") {
-          // Remove null characters from strings
           sanitizedObj[key] = obj[key].replace(/\u0000/g, "");
         } else {
           sanitizedObj[key] = obj[key];
@@ -52,8 +83,7 @@ export async function GET(req) {
       return sanitizedObj;
     }
 
-    // Sanitize the entire orgList array
-    const sanitizedOrgList = orgList.map(sanitizeObject);
+    const sanitizedOrgList = combinedOrgList.map(sanitizeObject);
 
     // Insert data into the Supabase database
     const { error } = await supabaseServer
@@ -68,7 +98,14 @@ export async function GET(req) {
       );
     }
 
-    return new Response(JSON.stringify(data, null, 2), { status: 200 });
+    return new Response(
+      JSON.stringify({
+        totalClubs: sanitizedOrgList.length,
+        regularClubs: orgList.length,
+        clubSports: clubSportsOrgList.length
+      }, null, 2),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching data:", error);
     return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
