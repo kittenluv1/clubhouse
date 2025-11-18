@@ -1,3 +1,12 @@
+
+// import Link from "next/link";
+// import Button from "./button";
+
+// export default function ReviewCard({
+//     review,
+//     rejected = false,
+// }) {
+//     const date = new Date(review.created_at).toLocaleDateString("en-US", {
 import React from "react";
 
 const formatDate = (dateString) => {
@@ -7,6 +16,37 @@ const formatDate = (dateString) => {
         month: "long",
         day: "numeric",
     });
+//     return (
+
+//         <Link
+//             href={`/clubs/${encodeURIComponent(review.club_name)}`}
+//             className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
+//         >
+//             <div className="flex justify-between items-end mt-4 mb-2">
+//                 <h2 className="text-xl font-bold text-black md:text-2xl m-0 leading-none">
+//                     {review.club_name}
+//                 </h2>
+//                 <span className="text-sm italic font-semibold">Reviewed on {date}</span>
+//             </div>
+//             <span className="text-sm text-[#6E808D]">Member from {review.membership_start_quarter}{" "}{review.membership_start_year} to {review.membership_end_quarter}{" "}{review.membership_end_year}</span>
+//             <p className="line-clamp-4 text-sm font-normal text-black md:text-base mt-4">
+//                 {review.review_text}
+//             </p>
+//             {rejected && (
+//                 <div className="w-full flex justify-end space-x-2">
+//                     <Button
+//                         type="CTA"
+//                         onClick={() => { window.location.href = `/review-edit?club=${encodeURIComponent(review.club_name)}&clubId=${review.id}` }}
+//                     >
+//                         Edit Review
+//                     </Button>
+//                     <Button>
+//                         Delete
+//                     </Button>
+//                 </div>
+//             )}
+//         </Link>
+//     );
 };
 
 const formatMembership = (review) => {

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import '../../../src/app/slider.css';
+import '../../../src/app/ratingSlider.css';
+
 const CustomSlider = ({
   min = 1,
   max = 5,
@@ -50,14 +51,14 @@ const CustomSlider = ({
 
         {/* Range input  */}
         <input
+          id="sliderStyling"
           type="range"
           min={min}
           max={max}
           step={step}
           value={sliderValue}
           onChange={handleChange}
-          className="absolute top-0 left-0 z-20 h-0 w-full cursor-pointer opacity-0"
-          id="sliderStyling"
+          className="absolute top-0 left-0 z-20 h-6 w-full cursor-pointer opacity-0"
         />
       </div>
 
