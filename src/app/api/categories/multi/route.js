@@ -79,10 +79,10 @@ export async function GET(request) {
     if (data && data.length > 0) {
       const clubIds = data.map(club => club.OrganizationID);
 
-      // Fetch all likes for all clubs in a single query
+      // Fetch all likes for counting (only need club_id)
       const { data: allLikes, error: likesError } = await supabase
         .from('club_likes')
-        .select('club_id, user_id')
+        .select('club_id')
         .in('club_id', clubIds);
 
       if (!likesError && allLikes) {
@@ -90,12 +90,26 @@ export async function GET(request) {
         const authSupabase = await createAuthenticatedClient();
         const { data: { user }, error: authError } = await authSupabase.auth.getUser();
 
+        // Fetch only current user's likes for these clubs
+        let userLikedSet = new Set();
+        if (!authError && user) {
+          const { data: userLikes, error: userLikesError } = await supabase
+            .from('club_likes')
+            .select('club_id')
+            .eq('user_id', user.id)
+            .in('club_id', clubIds);
+
+          if (!userLikesError && userLikes) {
+            userLikedSet = new Set(userLikes.map(like => like.club_id));
+          }
+        }
+
         // Build likesMap: { clubId: { count, userLiked } }
         clubIds.forEach(clubId => {
           const clubLikes = allLikes.filter(like => like.club_id === clubId);
           likesMap[clubId] = {
             count: clubLikes.length,
-            userLiked: (!authError && user) ? clubLikes.some(like => like.user_id === user.id) : false
+            userLiked: userLikedSet.has(clubId)
           };
         });
       }
