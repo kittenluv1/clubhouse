@@ -20,7 +20,7 @@ export async function POST(request, {params: {clubid}}) {
       return new Response(JSON.stringify({ error: error.message }), { status: 500 });
     }
 
-    return new Response(JSON.stringify({ message: "Like added", like: data[0] }), { status: 201 });
+    return new Response(JSON.stringify({ message: "Like added", like: data[0] }), { status: 200 });
   } catch (err) {
     console.error("Unexpected error in POST /api/likes/[clubid]:", err);
     return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
