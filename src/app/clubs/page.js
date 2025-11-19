@@ -7,6 +7,7 @@ import Filter from "../components/filter";
 import ErrorScreen from "../components/ErrorScreen";
 import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
+import Button from "../components/button";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -101,8 +102,8 @@ function AllClubsPage() {
 
   return (
     <>
-      <div className="flex flex-col space-y-6 p-6 md:p-20">
-        <div className="mb-6 flex items-start justify-between">
+      <div className="flex flex-col space-y-6 p-6 lg:p-30 lg:py-20">
+        <div className=" mb-10 lg:mb-20 flex items-start justify-between">
           <Filter
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
@@ -111,12 +112,13 @@ function AllClubsPage() {
 
           {isMobile ? (
             <>
-              <button
+              <Button
+                type="border"
+                size="small"
                 onClick={() => setShowSortModal(true)}
-                className="flex-shrink-0 rounded-full border border-black bg-[#FFF7D6] px-4 py-2 font-bold text-black"
               >
-                Sort by
-              </button>
+                Sort By
+              </Button>
               <SortModal
                 open={showSortModal}
                 onClose={() => setShowSortModal(false)}
@@ -130,7 +132,7 @@ function AllClubsPage() {
               />
             </>
           ) : (
-            <div className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border border-black bg-[#FFF7D6] px-4 py-2">
+            <div className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]">
               <label className="cursor-pointer font-medium text-black">
                 Sort by:
               </label>
@@ -160,23 +162,33 @@ function AllClubsPage() {
         </div>
 
         <div className="mt-16 flex items-center justify-center gap-4">
-          <button
+          <Button
+            type="pink"
+            size="small"
             onClick={handlePreviousPage}
             disabled={currPage === 1}
-            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-300 ease-in-out hover:bg-[#F6E18C] disabled:opacity-50 disabled:bg-gray-300 "
+            style="flex items-center gap-2"
           >
+            <svg width="5" height="10" viewBox="0 0 5 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 0.81727L4.25637 0L0.206022 4.45412C0.140733 4.5255 0.0889179 4.61037 0.0535603 4.70385C0.0182026 4.79734 0 4.89759 0 4.99884C0 5.1001 0.0182026 5.20035 0.0535603 5.29384C0.0889179 5.38732 0.140733 5.47219 0.206022 5.54356L4.25637 10L4.9993 9.18273L1.19776 5L5 0.81727Z" fill="black" />
+            </svg>
             Previous
-          </button>
+          </Button>
           <span>
             Page {currPage} of {pageTotal}
           </span>
-          <button
+          <Button
+            type="pink"
+            size="small"
             onClick={handleNextPage}
             disabled={currPage === pageTotal}
-            className="rounded-xl border border-black bg-[#FFB0D8] px-4 py-2 font-medium text-black transition-colors duration-300 ease-in-out hover:bg-[#F6E18C] disabled:opacity-50 disabled:bg-gray-300"
+            style="flex items-center gap-2"
           >
             Next
-          </button>
+            <svg width="5" height="10" viewBox="0 0 5 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 0.81727L0.743627 0L4.79398 4.45412C4.85927 4.5255 4.91108 4.61037 4.94644 4.70385C4.9818 4.79734 5 4.89759 5 4.99884C5 5.1001 4.9818 5.20035 4.94644 5.29384C4.91108 5.38732 4.85927 5.47219 4.79398 5.54356L0.743627 10L0.000700951 9.18273L3.80224 5L0 0.81727Z" fill="black" />
+            </svg>
+          </Button>
         </div>
       </div>
     </>

@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import LoginButton from "./login-button";
 import { supabase } from "../lib/db";
 import { motion, AnimatePresence } from "framer-motion";
+import Button from "./button";
 
 function useIsMobile(breakpoint = 640) {
   const [isMobile, setIsMobile] = useState(false);
@@ -68,7 +69,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-5 md:px-20 lg:py-6">
+    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-3 lg:px-30 lg:py-6">
       {/* Left: Logo or placeholder */}
       {pathname !== "/" ? (
         <button
@@ -81,7 +82,7 @@ function Header() {
             type="image/svg+xml"
             data="/clubhouse-logo-desktop.svg"
             aria-label="ClubHouse Logo"
-            className="pointer-events-none hidden object-cover lg:block lg:w-3xs"
+            className="pointer-events-none hidden object-cover lg:block lg:w-[200px]"
           />
           <object
             type="image/svg+xml"
@@ -98,7 +99,7 @@ function Header() {
       {pathname !== "/" ? (
         // mobile responsive search bar with animation
         isMobile ? (
-          <div className="relative min-h-[52px] flex-1 px-4 md:px-8">
+          <div className="relative md:min-h-[52px] flex-1 px-4 md:px-8">
             <AnimatePresence mode="wait" initial={false}>
               {!showMobileMenu && (
                 <motion.div
@@ -107,9 +108,8 @@ function Header() {
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: 100, opacity: 0 }}
                   transition={{ type: "tween", duration: 0.3 }}
-                  className="relative w-full"
                 >
-                  <SearchBar width="w-full" height="h-13" />
+                  <SearchBar />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -117,7 +117,7 @@ function Header() {
         ) : (
           // desktop search bar
           <div className="flex-1 px-4 md:px-8">
-            <SearchBar width="w-full" height="h-13" />
+            <SearchBar />
           </div>
         )
       ) : (
@@ -136,47 +136,50 @@ function Header() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 100, opacity: 0 }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="absolute top-0 right-0 z-20 flex items-center gap-2 bg-white p-0 md:gap-4"
+              className="absolute top-0 right-0 bottom-0 z-20 flex items-center bg-white gap-2 px-2"
             >
-              <button
-                onClick={attemptReview}
-                className="flex items-center p-1 text-nowrap"
-              >
-                Add a Review
-              </button>
-              {isAdmin && (
-                <button
+              {isAdmin ? (
+                <Button
                   onClick={() => router.push("/admin")}
                   className="flex items-center p-1 text-nowrap"
                 >
                   Admin
-                </button>
+                </Button>
+              ) : (
+                <Button
+                  onClick={attemptReview}
+                  className="flex items-center text-nowrap"
+                >
+                  Write a Review
+                </Button>
               )}
               <LoginButton />
             </motion.div>
           )}
-          {/* if not mobile, show buttons (no animation)
-          // if mobile menu is not showing, hide buttons */}
-          {!isMobile && (
-            <div className="items-center gap-2 p-0 md:flex md:gap-4">
-              <button
-                onClick={attemptReview}
-                className="flex items-center gap-2 p-3 text-nowrap"
-              >
-                Add a Review
-              </button>
-              {isAdmin && (
-                <button
-                  onClick={() => router.push("/admin")}
-                  className="flex items-center gap-2 p-3 text-nowrap"
-                >
-                  Admin
-                </button>
-              )}
-              <LoginButton />
-            </div>
-          )}
         </AnimatePresence>
+
+        {/* if not mobile, show buttons (no animation)
+          // if mobile menu is not showing, hide buttons */}
+        {!isMobile && (
+          <div className="flex items-center gap-4">
+            {isAdmin ? (
+              <Button
+                onClick={() => router.push("/admin")}
+                className="flex items-center p-1 text-nowrap"
+              >
+                Admin
+              </Button>
+            ) : (
+              <Button
+                onClick={attemptReview}
+                className="flex items-center text-nowrap"
+              >
+                Write a Review
+              </Button>
+            )}
+            <LoginButton />
+          </div>
+        )}
       </div>
 
       {/* Mobile Hamburger Menu */}

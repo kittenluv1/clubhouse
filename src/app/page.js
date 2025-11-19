@@ -3,8 +3,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
+import Button from "./components/button";
 
-function useIsMobile(breakpoint = 640) {
+function useIsMobile(breakpoint = 1024) {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     function check() {
@@ -21,7 +22,7 @@ function Home() {
   const router = useRouter();
   const searchRef = useRef();
   const [randomCategories, setRandomCategories] = useState([]);
-  const isMobile = useIsMobile(640);
+  const isMobile = useIsMobile();
 
   // generate random categories
   const CATEGORIES = [
@@ -79,47 +80,49 @@ function Home() {
   }
 
   useEffect(() => {
-    setRandomCategories(getRandomItems(CATEGORIES, isMobile ? 5 : 10));
+    setRandomCategories(getRandomItems(CATEGORIES, isMobile ? 5 : 12));
   }, [isMobile]);
 
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
-      <div className="max-w-2xl lg:pb-10">
+      <div className="max-w-2xl lg:p-10">
         <object
           type="image/svg+xml"
           data="/clubhouse-logo-desktop.svg"
           aria-label="ClubHouse Logo"
-          className="hidden w-lg object-cover lg:block"
+          className="hidden w-sm object-cover lg:block"
         />
         <object
           type="image/svg+xml"
           data="/clubhouse-logo-mobile.svg"
           aria-label="ClubHouse Logo"
-          className="mb-5 w-3xs object-cover lg:hidden"
+          className="w-4xs object-cover lg:hidden"
         />
       </div>
-      <div className="flex w-6/8 max-w-3xl flex-col items-center space-y-2">
-        <SearchBar ref={searchRef} width="w-full" height="h-13" />
-        <div className="mt-4 flex flex-wrap justify-center gap-3 py-5 md:py-10">
+      <div className="flex w-6/8 max-w-4xl flex-col items-center space-y-2">
+        <SearchBar ref={searchRef} style="bg-white" />
+        <div className="flex flex-wrap justify-center gap-3 py-5 px-10 md:py-10">
           {randomCategories.map((category, index) => (
-            <button
+            <Button
+              style="drop-shadow-xs"
               key={category}
               onClick={() => {
                 const encoded = encodeURIComponent(category);
                 router.push(`/clubs?categories=${encoded}`);
               }}
-              className="rounded-full border-1 px-6 py-3 text-base shadow-lg transition-colors duration-300 ease-in-out hover:bg-[#B1D49D] lg:text-lg"
             >
               {category}
-            </button>
+            </Button>
           ))}
-          <button
-            onClick={() => router.push("/clubs?showCategories")}
-            className="ml-4 rounded-full border-1 border-black bg-black px-6 py-3 text-nowrap text-white transition-colors duration-300 ease-in-out hover:bg-white hover:text-black"
-          >
-            More Categories &gt;
-          </button>
         </div>
+      </div>
+      <div className="w-full flex justify-center lg:justify-end lg:mr-100">
+        <Button
+          type="CTA"
+          onClick={() => router.push("/clubs?showCategories")}
+        >
+          More Categories &gt;
+        </Button>
       </div>
     </div>
   );

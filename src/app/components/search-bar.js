@@ -16,8 +16,7 @@ const ClubSearchBar = forwardRef(
     {
       tableName = "clubs",
       nameColumn = "OrganizationName",
-      width = "w-full",
-      height = "h-10",
+      style = "bg-[#E5EBF1]",
     },
     ref,
   ) => {
@@ -26,6 +25,7 @@ const ClubSearchBar = forwardRef(
     const [allOptions, setAllOptions] = useState([]);
     const [filteredOptions, setFilteredOptions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
     const dropdownRef = useRef(null);
     const router = useRouter();
 
@@ -45,7 +45,7 @@ const ClubSearchBar = forwardRef(
       const term = (
         overrideTerm !== undefined ? overrideTerm : inputValue
       ).trim();
-      
+
       if (byCategory) {
         // This shouldn't happen from the search bar, but keeping for compatibility
         const encoded = encodeURIComponent(term);
@@ -79,25 +79,39 @@ const ClubSearchBar = forwardRef(
     useEffect(() => {
       if (inputValue.trim() === "") {
         setFilteredOptions([]);
+        setSelectedIndex(-1);
       } else {
 
         const filtered = allOptions
-  .filter((option) =>
-    option.toLowerCase().includes(inputValue.toLowerCase())
-  )
-  .sort((a, b) => {
-    const lowerA = a.toLowerCase();
-    const lowerB = b.toLowerCase();
-    const indexA = lowerA.indexOf(inputValue.toLowerCase());
-    const indexB = lowerB.indexOf(inputValue.toLowerCase());
-    if (indexA !== indexB) return indexA - indexB; 
-    return lowerA.localeCompare(lowerB);
-  });
+          .filter((option) =>
+            option.toLowerCase().includes(inputValue.toLowerCase())
+          )
+          .sort((a, b) => {
+            const lowerA = a.toLowerCase();
+            const lowerB = b.toLowerCase();
+            const indexA = lowerA.indexOf(inputValue.toLowerCase());
+            const indexB = lowerB.indexOf(inputValue.toLowerCase());
+            if (indexA !== indexB) return indexA - indexB;
+            return lowerA.localeCompare(lowerB);
+          });
 
 
-    setFilteredOptions(filtered); 
+        setFilteredOptions(filtered);
+        // Reset selection if options change
+        setSelectedIndex(-1);
       }
     }, [inputValue, allOptions]);
+
+    // Scroll along with selected item when using arrow keys
+    useEffect(() => {
+      if (selectedIndex >= 0 && dropdownRef.current) {
+        const items = dropdownRef.current.querySelectorAll("li");
+        const selectedItem = items[selectedIndex];
+        if (selectedItem) {
+          selectedItem.scrollIntoView({ block: "nearest" });
+        }
+      }
+    }, [selectedIndex]);
 
     useEffect(() => {
       const handleClickOutside = (event) => {
@@ -115,7 +129,22 @@ const ClubSearchBar = forwardRef(
 
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
-        handleSearch();
+        if (selectedIndex >= 0 && filteredOptions[selectedIndex]) {
+          handleOptionClick(filteredOptions[selectedIndex]);
+        } else {
+          handleSearch();
+        }
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (filteredOptions.length > 0) {
+          setIsOpen(true);
+          setSelectedIndex(Math.min(selectedIndex + 1, filteredOptions.length - 1));
+        }
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (filteredOptions.length > 0) {
+          setSelectedIndex(Math.max(selectedIndex - 1, -1));
+        }
       }
     };
 
@@ -123,7 +152,7 @@ const ClubSearchBar = forwardRef(
       const newValue = e.target.value;
       setInputValue(newValue);
       setIsOpen(true);
-      
+
       // If the user clears the input, also clear the context search term
       if (!newValue.trim()) {
         setSearchTerm('');
@@ -137,7 +166,7 @@ const ClubSearchBar = forwardRef(
     };
 
     return (
-      <div className={`relative ${width}`} ref={dropdownRef}>
+      <div className={`relative w-full m-0`} ref={dropdownRef}>
         <div className="relative flex items-center">
           <input
             type="text"
@@ -146,7 +175,7 @@ const ClubSearchBar = forwardRef(
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder="Search for a club..."
-            className={`rounded-3xl border-1 border-[#272727] bg-white p-2 pr-10 pl-4 text-sm text-black md:text-base ${height} w-full shadow-md`}
+            className={`rounded-full drop-shadow-xs ${style} p-2 px-8 text-sm text-black md:text-base h-12 w-full min-w-20`}
           />
           <button
             className="absolute top-1/2 right-3 -translate-y-1/2 transform pr-2 text-gray-400"
@@ -175,7 +204,9 @@ const ClubSearchBar = forwardRef(
               <li
                 key={idx}
                 onClick={() => handleOptionClick(option)}
-                className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                onMouseEnter={() => setSelectedIndex(idx)}
+                onMouseLeave={() => setSelectedIndex(selectedIndex === idx ? -1 : selectedIndex)}
+                className={`cursor-pointer px-4 py-2 hover:bg-gray-100 ${selectedIndex === idx ? "bg-gray-100" : ""}`}
               >
                 {option}
               </li>

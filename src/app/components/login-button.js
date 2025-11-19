@@ -37,27 +37,25 @@ function LoginButton() {
   };
 
   return (
-    <div className="w-23">
-      {isLoggedin ? (
-        <button
-          onClick={handleSignOut}
-          className={
-            "-3 flex w-full justify-center self-center rounded-full border-1 border-black bg-[#FFA1CD] px-4 py-2 text-nowrap transition-colors duration-300 ease-in-out hover:bg-black hover:text-white"
-          }
-        >
-          Sign Out
-        </button>
-      ) : (
-        <button
-          onClick={() => router.push("/sign-in")}
-          className={
-            "flex w-full justify-center self-center rounded-full border-1 border-black bg-[#FFA1CD] px-4 py-2 text-nowrap transition-colors duration-300 ease-in-out hover:bg-black hover:text-white"
-          }
-        >
-          Sign in
-        </button>
-      )}
-    </div>
+    <div>
+      {
+        isLoggedin ? (
+          <Button
+            type="CTA"
+            onClick={handleSignOut}
+          >
+            Sign Out
+          </Button>
+        ) : (
+          <Button
+            type="CTA"
+            onClick={() => router.push("/sign-in")}
+          >
+            Sign In
+          </Button>
+        )
+      }
+    </div >
   );
 }
 
