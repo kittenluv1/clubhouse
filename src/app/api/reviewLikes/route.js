@@ -6,7 +6,7 @@ export async function GET(req, context) {
     const params = await context.params;
     const userId = params.userId;
     const reviewId = params.reviewId;
-
+    // merge profiles
     try {
         var reviewsLiked, reviewsLikedError;
         if (userId) { //Getting liked reviews by User that liked it
@@ -16,7 +16,7 @@ export async function GET(req, context) {
                 .eq("user_id", userId);
             reviewsLiked, reviewsLikedError = likes, error;
         } else if (reviewId) { // Getting likes from a certain review 
-            const { data: likes, error: reviewsLikedError } = await supabase
+            const { data: likes, error: error } = await supabase
                 .from("review_likes")
                 .select("*")
                 .eq("reviewId", reviewId);
