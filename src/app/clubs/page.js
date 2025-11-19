@@ -17,6 +17,7 @@ function AllClubsPage() {
   const filterParam = searchParams.has("showCategories");
 
   const [clubs, setClubs] = useState([]);
+  const [likesMap, setLikesMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
@@ -66,6 +67,7 @@ function AllClubsPage() {
       })
       .then((data) => {
         setClubs(data.orgList || []);
+        setLikesMap(data.likesMap || {});
         setPageTotal(data.totalNumPages || 1);
       })
       .catch((err) => {
@@ -157,6 +159,8 @@ function AllClubsPage() {
             <ClubCard
               key={`${club.OrganizationID}-${club.OrganizationName}`}
               club={club}
+              likeCount={likesMap[club.OrganizationID]?.count || 0}
+              userLiked={likesMap[club.OrganizationID]?.userLiked || false}
             />
           ))}
         </div>

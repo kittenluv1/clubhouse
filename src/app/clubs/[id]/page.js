@@ -10,6 +10,7 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "@/app/components/tooltip";
 import Button from "@/app/components/button";
+import ReviewCard from "@/app/components/reviewCard";
 
 const getIconByName = (name) => {
   const key = name.toLowerCase();
@@ -147,6 +148,8 @@ export default function ClubDetailsPage() {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = !isDesktop;
   const [ratingsOpen, setRatingsOpen] = useState(false);
+  const [clubLikeCount, setClublikeCount] = useState(0);
+  const [userLikedClub, setUserLikedClub] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -166,15 +169,9 @@ export default function ClubDetailsPage() {
         if (data.orgList && data.orgList.length > 0) {
           const clubData = data.orgList[0];
           setClub(clubData);
-
-          const { data: reviewsData, error: reviewsError } = await supabase
-            .from("reviews")
-            .select("*")
-            .eq("club_id", clubData.OrganizationID)
-            .order("created_at", { ascending: false });
-
-          if (reviewsError) throw reviewsError;
-          setReviews(reviewsData);
+          setReviews(data.reviews || []);
+          setClublikeCount(data.likeCount || 0);
+          setUserLikedClub(data.currentUserLiked || false);
         } else {
           setError(`No club found with name containing: ${id}`);
         }
@@ -205,20 +202,10 @@ export default function ClubDetailsPage() {
     return matches;
   }
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatMembership = (review) => {
-    if (!review.membership_start_quarter || !review.membership_end_quarter) {
-      return "";
-    }
-    return `${review.membership_start_quarter} Quarter ${review.membership_start_year} - ${review.membership_end_quarter} Quarter ${review.membership_end_year}`;
+  // Handler functions for review actions
+  const handleLike = async (reviewId, isLiked) => {
+      // TODO: Implement API call to like/unlike review, probably need to pass in userId as well, or use the current session with supabase ssr
+      console.log('Like review:', reviewId, isLiked);
   };
 
   const getRatingColor = (rating) => {
@@ -254,6 +241,47 @@ export default function ClubDetailsPage() {
     }
   };
 
+  const handleLikeToggle = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`;
+      return;
+    }
+
+    try {
+      if (userLikedClub) {
+        // Unlike
+        const response = await fetch("/api/clubLikes", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: club.OrganizationID }),
+        });
+
+        if (response.ok) {
+          setUserLikedClub(false);
+          setClublikeCount((prev) => Math.max(0, prev - 1));
+        }
+      } else {
+        // Like
+        const response = await fetch("/api/clubLikes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: club.OrganizationID }),
+        });
+
+        if (response.ok) {
+          setUserLikedClub(true);
+          setClublikeCount((prev) => prev + 1);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-6xl p-6 md:p-20">
       {/* Club Information */}
@@ -265,9 +293,24 @@ export default function ClubDetailsPage() {
           >
             {/* left side of the box */}
             <div className="pr-5 lg:w-4/6">
-              <h1 className="mb-3 text-3xl font-bold">
-                {club.OrganizationName}
-              </h1>
+              <div className="mb-3 flex items-center justify-between">
+                <h1 className="text-3xl font-bold">
+                  {club.OrganizationName}
+                </h1>
+
+                {/* Like Button */}
+                <button
+                  onClick={handleLikeToggle}
+                  className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${
+                    userLikedClub
+                      ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
+                  }`}
+                >
+                  <span className="text-xl">{userLikedClub ? "❤️" : "🤍"}</span>
+                  <span>{clubLikeCount}</span>
+                </button>
+              </div>
 
               {/* Categories/Tags */}
               <div className="mb-3 flex flex-wrap gap-2">
@@ -473,8 +516,23 @@ export default function ClubDetailsPage() {
           // mobile view of the club details
           <div className="mb-4 flex flex-col rounded-lg border-2 bg-white p-8 lg:flex-row">
             {/* left side of the box */}
-            {/* <div className="mb-2 flex items-center gap-2"> */}
-            <h1 className="mb-2 text-2xl font-bold">{club.OrganizationName}</h1>
+            <div className="mb-3 flex items-center justify-between">
+              <h1 className="text-2xl font-bold">{club.OrganizationName}</h1>
+
+              {/* Like Button */}
+              <button
+                onClick={handleLikeToggle}
+                className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${
+                  userLikedClub
+                    ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                    : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
+                }`}
+              >
+                <span className="text-lg">{userLikedClub ? "❤️" : "🤍"}</span>
+                <span>{clubLikeCount}</span>
+              </button>
+            </div>
+
             <div className="mb-2 flex items-center gap-1">
               {/* Website Icon */}
               {club.OrganizationWebSite && (
@@ -710,60 +768,16 @@ export default function ClubDetailsPage() {
           </div>
         ) : (
           <div className="space-y-8">
-            {reviews.map((review, index) =>
-              isDesktop ? (
-                // desktop card
-                <div
-                  key={index}
-                  className="rounded-lg border border-black bg-gray-50 p-8"
-                  style={{ boxShadow: "6px 6px 0px #b4d59f" }}
-                >
-                  <div className="mb-2 flex justify-between">
-                    <h3 className="text-2xl font-bold">
-                      {review.user_alias ? `${review.user_alias}` : "Anonymous"}
-                    </h3>
-                    <div className="font-bold text-[#666dbc]">
-                      Reviewed on {formatDate(review.created_at)}
-                    </div>
-                  </div>
-                  <div className="mb-4 font-semibold">
-                    <span className="text-gray-600">
-                      Member from{" "}
-                      <span className="text-[#5058B2]">
-                        {formatMembership(review)}
-                      </span>
-                    </span>
-                  </div>
-                  <p className="mb-2 text-gray-800">
-                    &quot;{review.review_text}&quot;
-                  </p>
-                </div>
-              ) : (
-                // mobile card
-                <div
-                  key={index}
-                  className="rounded-lg border-2 border-black bg-gray-50 p-6"
-                >
-                  <div className="mb-2 text-lg font-bold">
-                    {review.user_alias ? `${review.user_alias}` : "Anonymous"}
-                  </div>
-                  <div>
-                    <span className="text-black">
-                      Member from{" "}
-                      <span className="font-semibold text-[#5058B2]">
-                        {formatMembership(review)}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="mb-3 text-sm font-semibold">
-                    <div>Reviewed on {formatDate(review.created_at)}</div>
-                  </div>
-                  <div className="text-base">
-                    &quot;{review.review_text}&quot;
-                  </div>
-                </div>
-              ),
-            )}
+            {reviews.map((review, index) => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                isDesktop={true}
+                status="displayed"
+                clickable={false}
+                onLike={handleLike}
+            />
+            ))}
           </div>
         )}
       </section>

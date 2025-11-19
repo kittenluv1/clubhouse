@@ -1,4 +1,5 @@
 import { supabase } from "@/app/lib/db";
+import { createAuthenticatedClient } from "@/app/lib/server-db";
 
 export async function GET(request, context) {
   // await context params before using
@@ -41,7 +42,56 @@ export async function GET(request, context) {
     }
 
     console.log("Search results:", data.length, "clubs found");
-    return Response.json({ orgList: data });
+
+    // Fetch reviews and likes if we found a club
+    let reviews = [];
+    let likeCount = 0;
+    let currentUserLiked = false;
+
+    if (data && data.length > 0) {
+      const clubData = data[0];
+
+      // Fetch reviews
+      const { data: reviewsData, error: reviewsError } = await supabase
+        .from("reviews")
+        .select("*")
+        .eq("club_id", clubData.OrganizationID)
+        .order("created_at", { ascending: false });
+
+      if (reviewsError) {
+        console.error("Reviews fetch error:", reviewsError);
+        // Don't fail the whole request if reviews fail, just return empty array
+      } else {
+        reviews = reviewsData || [];
+      }
+
+      // Fetch club likes
+      const { data: likesData, error: likesError } = await supabase
+        .from("club_likes")
+        .select("user_id")
+        .eq("club_id", clubData.OrganizationID);
+
+      if (likesError) {
+        console.error("Likes fetch error:", likesError);
+      } else if (Array.isArray(likesData)) {
+        likeCount = likesData.length;
+
+        // Check if current user has liked (only if authenticated)
+        const authSupabase = await createAuthenticatedClient();
+        const { data: { user }, error: authError } = await authSupabase.auth.getUser();
+
+        if (!authError && user) {
+          currentUserLiked = likesData.some(like => like.user_id === user.id);
+        }
+      }
+    }
+
+    return Response.json({
+      orgList: data,
+      reviews,
+      likeCount,
+      currentUserLiked
+    });
   } catch (error) {
     console.error("Error fetching data:", error);
     return Response.json({ error: "Failed to fetch data" }, { status: 500 });
