@@ -6,29 +6,14 @@ import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "../lib/db";
 import Button from "./button";
 
-function useIsMobile(breakpoint = 640) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    function check() {
-      setIsMobile(window.innerWidth < breakpoint);
-    }
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, [breakpoint]);
-  return isMobile;
-}
-
 function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = React.useRef(null);
-  const isMobile = useIsMobile(768);
 
   useEffect(() => {
     setIsMounted(true);
@@ -36,7 +21,7 @@ function Header() {
     const checkAdmin = async () => {
       const { data } = await supabase.auth.getSession();
       const s = data?.session ?? null;
-      setIsLoggedIn(!!s);
+      setUserEmail(s?.user?.email ?? null);
       setIsAdmin(s?.user?.email === "clubhouseucla@gmail.com");
     };
 
@@ -45,7 +30,7 @@ function Header() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         const current = session ?? null;
-        setIsLoggedIn(!!current);
+        setUserEmail(current?.user?.email ?? null);
         setIsAdmin(current?.user?.email === "clubhouseucla@gmail.com");
       },
     );
@@ -72,7 +57,7 @@ function Header() {
     if (error) {
       console.error("Error signing out:", error.message);
     } else {
-      setIsLoggedIn(false);
+      setUserEmail(false);
       console.log("User signed out successfully");
     }
   };
@@ -149,7 +134,7 @@ function Header() {
           }
 
           {// Profile button 
-            isLoggedIn && (
+            userEmail && (
               <div ref={profileRef}>
 
                 {/* profile button */}
@@ -167,7 +152,7 @@ function Header() {
 
                 {/* profile menu */}
                 {showProfileMenu && (
-                  <div className="absolute top-full right-1 mt-1 w-50 shadow-[0_0_15px_#262B6A26] rounded-lg z-20 bg-white">
+                  <div className="absolute top-full right-1 mt-1 shadow-[0_0_15px_#262B6A26] rounded-lg z-20 bg-white w-max">
                     <button
                       className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
                       onClick={() => {
@@ -176,9 +161,9 @@ function Header() {
                       }}
                     >
                       <img src="/profile.svg" className="w-10 h-10 mx-2" alt="Profile" />
-                      <div className="flex flex-col items-start">
+                      <div className="flex flex-col items-start mr-2">
                         <p className="m-0 leading-tight">View Profile</p>
-                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight">@FluffyBruin</p>
+                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight">{userEmail}</p>
                       </div>
                     </button>
 
@@ -229,7 +214,7 @@ function Header() {
               </div>
             )}
 
-          {!isLoggedIn && (
+          {!userEmail && (
             <Button
               type="CTA"
               onClick={() => router.push("/sign-in")}
