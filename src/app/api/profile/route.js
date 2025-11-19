@@ -72,8 +72,22 @@ export async function GET(req) {
       console.error('Error fetching liked clubs:', likedClubsError);
     }
 
+    // Fetch saved clubs
+    const { data: savedClubsData, error: savedClubsError } = await supabase
+      .from('club_saves')
+      .select(`
+        club_id,
+        clubs!saved_clubs_club_id_fkey(*)
+      `)
+      .eq('user_id', userId);
+
+    if (savedClubsError) {
+      console.error('Error fetching saved clubs:', savedClubsError);
+    }
+
     // Transform liked clubs data to match the format in the original code
     const likedClubs = likedClubsData ? likedClubsData.map(item => item.clubs) : [];
+    const savedClubs = savedClubsData ? savedClubsData.map(item => item.clubs) : [];
 
     // Return all data
     return new Response(
@@ -83,7 +97,7 @@ export async function GET(req) {
         pendingReviews: pendingReviews || [],
         rejectedReviews: rejectedReviews || [],
         likedClubs: likedClubs,
-        savedClubs: [], // Placeholder as in original
+        savedClubs: savedClubs,
       }),
       { status: 200 }
     );
