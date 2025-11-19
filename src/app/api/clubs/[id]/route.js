@@ -47,9 +47,14 @@ export async function GET(request, context) {
     let reviews = [];
     let likeCount = 0;
     let currentUserLiked = false;
+    let currentUserSaved = false;
 
     if (data && data.length > 0) {
       const clubData = data[0];
+
+      // Get current user once (if authenticated)
+      const authSupabase = await createAuthenticatedClient();
+      const { data: { user }, error: authError } = await authSupabase.auth.getUser();
 
       // Fetch reviews
       const { data: reviewsData, error: reviewsError } = await supabase
@@ -77,11 +82,22 @@ export async function GET(request, context) {
         likeCount = likesData.length;
 
         // Check if current user has liked (only if authenticated)
-        const authSupabase = await createAuthenticatedClient();
-        const { data: { user }, error: authError } = await authSupabase.auth.getUser();
-
         if (!authError && user) {
           currentUserLiked = likesData.some(like => like.user_id === user.id);
+        }
+      }
+
+      // Check if current user has saved (only if authenticated)
+      if (!authError && user) {
+        const { data: saveData, error: saveError } = await supabase
+          .from("club_saves")
+          .select("club_id")
+          .eq("user_id", user.id)
+          .eq("club_id", clubData.OrganizationID)
+          .maybeSingle();
+
+        if (!saveError && saveData) {
+          currentUserSaved = true;
         }
       }
     }
@@ -90,7 +106,8 @@ export async function GET(request, context) {
       orgList: data,
       reviews,
       likeCount,
-      currentUserLiked
+      currentUserLiked,
+      currentUserSaved
     });
   } catch (error) {
     console.error("Error fetching data:", error);

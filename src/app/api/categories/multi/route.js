@@ -74,10 +74,15 @@ export async function GET(request) {
 
     const totalNumPages = Math.ceil(count / pageSize);
 
-    // Batch fetch likes for all clubs on this page
+    // Batch fetch likes and saves for all clubs on this page
     let likesMap = {};
+    let userSavedClubs = [];
     if (data && data.length > 0) {
       const clubIds = data.map(club => club.OrganizationID);
+
+      // Get current user once (if authenticated)
+      const authSupabase = await createAuthenticatedClient();
+      const { data: { user }, error: authError } = await authSupabase.auth.getUser();
 
       // Fetch all likes for counting (only need club_id)
       const { data: allLikes, error: likesError } = await supabase
@@ -86,10 +91,6 @@ export async function GET(request) {
         .in('club_id', clubIds);
 
       if (!likesError && allLikes) {
-        // Get current user (if authenticated)
-        const authSupabase = await createAuthenticatedClient();
-        const { data: { user }, error: authError } = await authSupabase.auth.getUser();
-
         // Fetch only current user's likes for these clubs
         let userLikedSet = new Set();
         if (!authError && user) {
@@ -113,6 +114,19 @@ export async function GET(request) {
           };
         });
       }
+
+      // Fetch user's saves (only if authenticated)
+      if (!authError && user) {
+        const { data: userSaves, error: savesError } = await supabase
+          .from('club_saves')
+          .select('club_id')
+          .eq('user_id', user.id)
+          .in('club_id', clubIds);
+
+        if (!savesError && userSaves) {
+          userSavedClubs = userSaves.map(save => save.club_id);
+        }
+      }
     }
 
     return new Response(
@@ -121,6 +135,7 @@ export async function GET(request) {
         currPage: pageNum,
         totalNumPages,
         likesMap,
+        userSavedClubs,
       }),
       { status: 200 },
     );

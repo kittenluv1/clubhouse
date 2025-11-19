@@ -150,6 +150,7 @@ export default function ClubDetailsPage() {
   const [ratingsOpen, setRatingsOpen] = useState(false);
   const [clubLikeCount, setClublikeCount] = useState(0);
   const [userLikedClub, setUserLikedClub] = useState(false);
+  const [userSavedClub, setUserSavedClub] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -172,6 +173,7 @@ export default function ClubDetailsPage() {
           setReviews(data.reviews || []);
           setClublikeCount(data.likeCount || 0);
           setUserLikedClub(data.currentUserLiked || false);
+          setUserSavedClub(data.currentUserSaved || false);
         } else {
           setError(`No club found with name containing: ${id}`);
         }
@@ -282,6 +284,45 @@ export default function ClubDetailsPage() {
     }
   };
 
+  const handleSaveToggle = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`;
+      return;
+    }
+
+    try {
+      if (userSavedClub) {
+        // Unsave
+        const response = await fetch("/api/clubSaves", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: club.OrganizationID }),
+        });
+
+        if (response.ok) {
+          setUserSavedClub(false);
+        }
+      } else {
+        // Save
+        const response = await fetch("/api/clubSaves", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: club.OrganizationID }),
+        });
+
+        if (response.ok) {
+          setUserSavedClub(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling save:", error);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-6xl p-6 md:p-20">
       {/* Club Information */}
@@ -298,18 +339,33 @@ export default function ClubDetailsPage() {
                   {club.OrganizationName}
                 </h1>
 
-                {/* Like Button */}
-                <button
-                  onClick={handleLikeToggle}
-                  className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${
-                    userLikedClub
-                      ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
-                      : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
-                  }`}
-                >
-                  <span className="text-xl">{userLikedClub ? "❤️" : "🤍"}</span>
-                  <span>{clubLikeCount}</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  {/* Like Button */}
+                  <button
+                    onClick={handleLikeToggle}
+                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${
+                      userLikedClub
+                        ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                        : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
+                    }`}
+                  >
+                    <span className="text-xl">{userLikedClub ? "❤️" : "🤍"}</span>
+                    <span>{clubLikeCount}</span>
+                  </button>
+
+                  {/* Save Button */}
+                  <button
+                    onClick={handleSaveToggle}
+                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${
+                      userSavedClub
+                        ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
+                        : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
+                    }`}
+                    title={userSavedClub ? "Unsave club" : "Save club"}
+                  >
+                    <span className="text-xl">{userSavedClub ? "★" : "☆"}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Categories/Tags */}
@@ -519,18 +575,33 @@ export default function ClubDetailsPage() {
             <div className="mb-3 flex items-center justify-between">
               <h1 className="text-2xl font-bold">{club.OrganizationName}</h1>
 
-              {/* Like Button */}
-              <button
-                onClick={handleLikeToggle}
-                className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${
-                  userLikedClub
-                    ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
-                }`}
-              >
-                <span className="text-lg">{userLikedClub ? "❤️" : "🤍"}</span>
-                <span>{clubLikeCount}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Like Button */}
+                <button
+                  onClick={handleLikeToggle}
+                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${
+                    userLikedClub
+                      ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
+                  }`}
+                >
+                  <span className="text-lg">{userLikedClub ? "❤️" : "🤍"}</span>
+                  <span>{clubLikeCount}</span>
+                </button>
+
+                {/* Save Button */}
+                <button
+                  onClick={handleSaveToggle}
+                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${
+                    userSavedClub
+                      ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
+                  }`}
+                  title={userSavedClub ? "Unsave club" : "Save club"}
+                >
+                  <span className="text-lg">{userSavedClub ? "★" : "☆"}</span>
+                </button>
+              </div>
             </div>
 
             <div className="mb-2 flex items-center gap-1">
