@@ -202,6 +202,12 @@ export default function ClubDetailsPage() {
     return matches;
   }
 
+  // Handler functions for review actions
+  const handleLike = async (reviewId, isLiked) => {
+      // TODO: Implement API call to like/unlike review, probably need to pass in userId as well, or use the current session with supabase ssr
+      console.log('Like review:', reviewId, isLiked);
+  };
+
   const getRatingColor = (rating) => {
     if (!rating) return "bg-gray-300 text-gray-700";
 
@@ -763,7 +769,14 @@ export default function ClubDetailsPage() {
         ) : (
           <div className="space-y-8">
             {reviews.map((review, index) => (
-              <ReviewCard key={review?.id ?? index} review={review} index={index} isDesktop={isDesktop} />
+              <ReviewCard
+                key={review.id}
+                review={review}
+                isDesktop={true}
+                status="displayed"
+                clickable={false}
+                onLike={handleLike}
+            />
             ))}
           </div>
         )}

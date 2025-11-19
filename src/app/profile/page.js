@@ -111,9 +111,21 @@ function ProfilePage() {
 
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
-    // Filter reviews based on active section
-    // const pendingReviews = reviews.filter(r => r.status === 'pending');
-    // const rejectedReviews = reviews.filter(r => r.status === 'rejected');
+    // Handler functions for review actions
+    const handleLike = async (reviewId, isLiked) => {
+        // TODO: Implement API call to like/unlike review
+        console.log('Like review:', reviewId, isLiked);
+    };
+
+    const handleEdit = (review) => {
+        // Navigate to edit page
+        console.log('Editing review:', reviewId);
+    };
+
+    const handleDelete = async (reviewId) => {
+        // TODO: Implement API call to delete review
+        console.log('Delete review:', reviewId);
+    };
 
     const getContentForSection = () => {
         switch (activeSection) {
@@ -136,10 +148,19 @@ function ProfilePage() {
                                 <p className="text-[#747474] text-[20px]">These reviews have been approved and posted on the club page!</p>
                             </div>
                             <h2 className="text-[16px] text-[#747474] mb-4">Approved Reviews ({approvedReviews.length})</h2>
-                            <div className="grid grid-cols-1 gap-12">
+                            <div className="grid grid-cols-1">
                                 {
                                     approvedReviews.map(review => (
-                                        <ReviewCard key={review.id} review={review} />
+                                        <ReviewCard
+                                            key={review.id}
+                                            review={review}
+                                            isDesktop={true}
+                                            status="approved"
+                                            clickable={true}
+                                            onLike={handleLike}
+                                            onEdit={handleEdit}
+                                            onDelete={handleDelete}
+                                        />
                                     ))
                                 }
                             </div>
@@ -169,7 +190,16 @@ function ProfilePage() {
                             <div className="grid grid-cols-1 gap-12">
                                 {
                                     pendingReviews.map(review => (
-                                        <ReviewCard key={review.id} review={review} />
+                                        <ReviewCard
+                                            key={review.id}
+                                            review={review}
+                                            isDesktop={true}
+                                            status="pending"
+                                            clickable={true}
+                                            onLike={handleLike}
+                                            onEdit={handleEdit}
+                                            onDelete={handleDelete}
+                                        />
                                     ))
                                 }
                             </div>
@@ -204,7 +234,16 @@ function ProfilePage() {
                         <div className="grid grid-cols-1 gap-12">
                             {
                                 rejectedReviews.map(review => (
-                                    <ReviewCard key={review.id} review={review} rejected />
+                                    <ReviewCard
+                                        key={review.id}
+                                        review={review}
+                                        isDesktop={true}
+                                        status="rejected"
+                                        clickable={true}
+                                        onLike={handleLike}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                    />
                                 ))
                             }
                         </div>
