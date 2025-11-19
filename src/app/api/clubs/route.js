@@ -1,4 +1,5 @@
 import { supabase } from "../../lib/db";
+import { createAuthenticatedClient } from "@/app/lib/server-db";
 
 export async function GET(req) {
   try {
@@ -69,12 +70,40 @@ export async function GET(req) {
 
     const totalNumPages = Math.ceil(count / pageSize);
 
+    // Batch fetch likes for all clubs on this page
+    let likesMap = {};
+    if (data && data.length > 0) {
+      const clubIds = data.map(club => club.OrganizationID);
+
+      // Fetch all likes for all clubs in a single query
+      const { data: allLikes, error: likesError } = await supabase
+        .from('club_likes')
+        .select('club_id, user_id')
+        .in('club_id', clubIds);
+
+      if (!likesError && allLikes) {
+        // Get current user (if authenticated)
+        const authSupabase = await createAuthenticatedClient();
+        const { data: { user }, error: authError } = await authSupabase.auth.getUser();
+
+        // Build likesMap: { clubId: { count, userLiked } }
+        clubIds.forEach(clubId => {
+          const clubLikes = allLikes.filter(like => like.club_id === clubId);
+          likesMap[clubId] = {
+            count: clubLikes.length,
+            userLiked: (!authError && user) ? clubLikes.some(like => like.user_id === user.id) : false
+          };
+        });
+      }
+    }
+
     return new Response(
       JSON.stringify(
         {
           orgList: data,
           currPage: pageNum,
           totalNumPages,
+          likesMap,
         },
         null,
         2,
