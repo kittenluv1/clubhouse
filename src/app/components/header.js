@@ -91,7 +91,7 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-3 lg:px-30 lg:py-6 min-h-[52px]">
+    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-3 md:px-20 lg:px-30 lg:py-6 min-h-[52px]">
       {/* Header is separated into 3 parts: LEFT, CENTER, RIGHT */}
 
       {/* LEFT: Logo =======================================================*/}
