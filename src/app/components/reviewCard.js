@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Button from "./button";
 
@@ -27,14 +27,31 @@ export default function ReviewCard({
     onEdit, // callback for edit button
     onDelete, // callback for delete button
 }) {
-    const [liked, setLiked] = React.useState(false);
+    // TODO: Initialize liked state from review.user_has_liked when user-specific likes are implemented
+    const [liked, setLiked] = useState(review.user_has_liked || false);
+    const [likeCount, setLikeCount] = useState(review.likes || 0);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    // make it so like count is fetched and displayed
+    const toggleLike = async () => {
+        if (isProcessing) return; // Ignore clicks while processing
+        if (status !== "displayed" || !onLike) return;
 
-    const toggleLike = () => {
-        if ( status === "displayed" && onLike) {
-            setLiked(!liked);
-            onLike(review.id, !liked);
+        setIsProcessing(true);
+        const newLiked = !liked;
+
+        // Optimistic update
+        setLiked(newLiked);
+        setLikeCount(prev => newLiked ? prev + 1 : prev - 1);
+
+        try {
+            await onLike(review.id, newLiked);
+        } catch (error) {
+            // Revert on failure
+            setLiked(!newLiked);
+            setLikeCount(prev => newLiked ? prev - 1 : prev + 1);
+            console.error('Failed to toggle like:', error);
+        } finally {
+            setIsProcessing(false);
         }
     };
 
@@ -46,7 +63,7 @@ export default function ReviewCard({
     const desktopCard = (
         <div className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10">
             <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
                     <h2 className="text-xl font-bold text-black md:text-2xl m-0 leading-none">
                         {status === "displayed"
                             ? (review.user_alias || "Anonymous")
@@ -60,13 +77,18 @@ export default function ReviewCard({
                 </div>
                 {/* Like button - only for approved reviews */}
                 {canLike && (
-                    <button onClick={toggleLike}>
-                        <img
-                            src={`/${liked ? "heart-liked" : "heart-unliked"}.svg`}
-                            alt="Heart Icon"
-                            className="h-10 w-10"
-                        />
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <button onClick={toggleLike}>
+                            <img
+                                src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+                                alt="Heart Icon"
+                                className="minh-[15px] min-w[18px]"
+                            />
+                        </button>
+                        <span className="text-lg font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
+                            {likeCount}
+                        </span>
+                    </div>
                 )}
             </div>
             <p className="line-clamp-4 text-sm font-normal text-black md:text-base mt-4">
@@ -107,7 +129,7 @@ export default function ReviewCard({
     const mobileCard = (
         <div className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]">
             <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
                     <h2 className="text-xl font-bold text-black m-0 leading-none">
                         {status === "displayed"
                             ? (review.user_alias || "Anonymous")
@@ -121,13 +143,18 @@ export default function ReviewCard({
                 </div>
                 {/* Like button - only for approved reviews */}
                 {canLike && (
-                    <button onClick={toggleLike}>
-                        <img
-                            src={`/${liked ? "heart-liked" : "heart-unliked"}.svg`}
-                            alt="Heart Icon"
-                            className="h-10 w-10"
-                        />
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <button onClick={toggleLike}>
+                            <img
+                                src={`/${liked ? "heart-liked" : "heart-unliked"}.svg`}
+                                alt="Heart Icon"
+                                className="minh-[15px] min-w[18px]"
+                            />
+                        </button>
+                        <span className="text-lg font-semibold text-gray-700 inline-block min-w-[2rem] text-left">
+                            {likeCount}
+                        </span>
+                    </div>
                 )}
             </div>
             <p className="line-clamp-4 text-sm font-normal text-black mt-4">

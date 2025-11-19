@@ -208,7 +208,7 @@ export default function ClubDetailsPage() {
 
   // Handler functions for review actions
   const handleLike = async (reviewId, isLiked) => {
-      // TODO: Implement API call to like/unlike review
+      // TODO: Implement API call to like/unlike review, probably need to pass in userId as well, or use the current session with supabase ssr
       console.log('Like review:', reviewId, isLiked);
   };
 
