@@ -1,4 +1,5 @@
 import { supabase } from "@/app/lib/db";
+import { createAuthenticatedClient } from "@/app/lib/server-db";
 
 export async function GET(request, context) {
   const resolvedParams = await context.params;
@@ -34,56 +35,73 @@ export async function GET(request, context) {
       return Response.json({ error: "Database query failed" }, { status: 500 });
     }
 
-    if (!clubData || clubData.length === 0) {
-      return Response.json({ orgList: [] });
-    }
+    console.log("Search results:", data.length, "clubs found");
 
-    const club = clubData[0];
+    // Fetch reviews and likes if we found a club
+    let reviews = [];
+    let likeCount = 0;
+    let currentUserLiked = false;
+    let currentUserSaved = false;
 
-    // Fetch reviews for this club
-    const { data: reviewsData, error: reviewsError } = await supabase
-      .from("reviews")
-      .select("*")
-      .eq("club_id", club.OrganizationID)
-      .order("created_at", { ascending: false });
+    if (data && data.length > 0) {
+      const clubData = data[0];
 
-    if (reviewsError) {
-      console.error("Reviews fetch error:", reviewsError);
-      return Response.json({ error: "Failed to fetch reviews" }, { status: 500 });
-    }
+      // Get current user once (if authenticated)
+      const authSupabase = await createAuthenticatedClient();
+      const { data: { user }, error: authError } = await authSupabase.auth.getUser();
 
-    // Fetch likes for all reviews in one query
-    let reviewsWithLikes = reviewsData || [];
-    if (reviewsData && reviewsData.length > 0) {
-      const reviewIds = reviewsData.map(r => r.id);
-      
+      // Fetch reviews
+      const { data: reviewsData, error: reviewsError } = await supabase
+        .from("reviews")
+        .select("*")
+        .eq("club_id", clubData.OrganizationID)
+        .order("created_at", { ascending: false });
+
+      if (reviewsError) {
+        console.error("Reviews fetch error:", reviewsError);
+        // Don't fail the whole request if reviews fail, just return empty array
+      } else {
+        reviews = reviewsData || [];
+      }
+
+      // Fetch club likes
       const { data: likesData, error: likesError } = await supabase
-        .from("review_likes")
-        .select("review_id")
-        .in('review_id', reviewIds);
+        .from("club_likes")
+        .select("user_id")
+        .eq("club_id", clubData.OrganizationID);
 
       if (likesError) {
         console.error("Likes fetch error:", likesError);
-        // Don't fail the whole request, just set likes to 0
-      } else {
-        // Count likes per review
-        const likeCounts = likesData.reduce((acc, like) => {
-          acc[like.review_id] = (acc[like.review_id] || 0) + 1;
-          return acc;
-        }, {});
+      } else if (Array.isArray(likesData)) {
+        likeCount = likesData.length;
 
-        // Add likes to reviews
-        reviewsWithLikes = reviewsData.map(review => ({
-          ...review,
-          likes: likeCounts[review.id] || 0
-        }));
+        // Check if current user has liked (only if authenticated)
+        if (!authError && user) {
+          currentUserLiked = likesData.some(like => like.user_id === user.id);
+        }
+      }
+
+      // Check if current user has saved (only if authenticated)
+      if (!authError && user) {
+        const { data: saveData, error: saveError } = await supabase
+          .from("club_saves")
+          .select("club_id")
+          .eq("user_id", user.id)
+          .eq("club_id", clubData.OrganizationID)
+          .maybeSingle();
+
+        if (!saveError && saveData) {
+          currentUserSaved = true;
+        }
       }
     }
 
-    console.log("Search results:", clubData.length, "clubs found");
-    return Response.json({ 
-      orgList: clubData,
-      reviews: reviewsWithLikes 
+    return Response.json({
+      orgList: data,
+      reviews,
+      likeCount,
+      currentUserLiked,
+      currentUserSaved
     });
   } catch (error) {
     console.error("Error fetching data:", error);
