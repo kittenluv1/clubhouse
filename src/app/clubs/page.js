@@ -18,6 +18,8 @@ function AllClubsPage() {
 
   const [clubs, setClubs] = useState([]);
   const [likesMap, setLikesMap] = useState({});
+  const [userLikedClubs, setUserLikedClubs] = useState([]);
+  const [userSavedClubs, setUserSavedClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
@@ -68,6 +70,8 @@ function AllClubsPage() {
       .then((data) => {
         setClubs(data.orgList || []);
         setLikesMap(data.likesMap || {});
+        setUserLikedClubs(data.userLikedClubs || []);
+        setUserSavedClubs(data.userSavedClubs || []);
         setPageTotal(data.totalNumPages || 1);
       })
       .catch((err) => {
@@ -90,6 +94,64 @@ function AllClubsPage() {
   const handlePreviousPage = () => currPage > 1 && setCurrPage((p) => p - 1);
   const handleNextPage = () =>
     currPage < pageTotal && setCurrPage((p) => p + 1);
+
+  const handleLike = async (clubId, isLiked) => {
+    try {
+      if (!isLiked) {
+        // Unlike
+        const response = await fetch("/api/clubLikes", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: clubId }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to unlike club");
+        }
+      } else {
+        // Like
+        const response = await fetch("/api/clubLikes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: clubId }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to like club");
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      throw error; // Re-throw so ClubCard can revert optimistic update
+    }
+  };
+
+  const handleSave = async (clubId, isSaved) => {
+    try {
+      if (!isSaved) {
+        // Unsave
+        const response = await fetch("/api/clubSaves", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: clubId }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to unsave club");
+        }
+      } else {
+        // Save
+        const response = await fetch("/api/clubSaves", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ club_id: clubId }),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to save club");
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling save:", error);
+      throw error; // Re-throw so ClubCard can revert optimistic update
+    }
+  };
 
   if (loading) return LoadingScreen();
   if (error) return <ErrorScreen error={error} />;
@@ -161,6 +223,9 @@ function AllClubsPage() {
               club={club}
               likeCount={likesMap[club.OrganizationID]?.count || 0}
               userLiked={likesMap[club.OrganizationID]?.userLiked || false}
+              userSaved={userSavedClubs.includes(club.OrganizationID)}
+              onLike={handleLike}
+              onSave={handleSave}
             />
           ))}
         </div>
