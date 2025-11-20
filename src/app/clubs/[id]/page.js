@@ -155,17 +155,17 @@ export default function ClubDetailsPage() {
   const [userLikedReviews, setUserLikedReviews] = useState([]);
 
   useEffect(() => {
-  if (!id) return;
+    if (!id) return;
 
-  const fetchClubData = async () => {
-    try {
-      setLoading(true);
+    const fetchClubData = async () => {
+      try {
+        setLoading(true);
 
-      const response = await fetch(`/api/clubs/${id}`);
-      if (!response.ok)
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const response = await fetch(`/api/clubs/${id}`);
+        if (!response.ok)
+          throw new Error(`HTTP error! Status: ${response.status}`);
 
-      const data = await response.json();
+        const data = await response.json();
 
         if (data.orgList && data.orgList.length > 0) {
           const clubData = data.orgList[0];
@@ -195,8 +195,8 @@ export default function ClubDetailsPage() {
       }
     };
 
-  fetchClubData();
-}, [id]);
+    fetchClubData();
+  }, [id]);
 
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
@@ -216,8 +216,36 @@ export default function ClubDetailsPage() {
 
   // Handler functions for review actions
   const handleLike = async (reviewId, isLiked) => {
-      // TODO: Implement API call to like/unlike review, probably need to pass in userId as well, or use the current session with supabase ssr
-      console.log('Like review:', reviewId, isLiked);
+    // TODO: Implement API call to like/unlike review, probably need to pass in userId as well, or use the current session with supabase ssr
+    console.log('Like review:', reviewId, isLiked);
+    try {
+      if (!isLiked) {
+        const response = await fetch("/api/reviewLikes", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ review_id: reviewId }),
+        });
+        if (response.ok) {
+          console.log("review unliked!");
+          // setUserLikedClub(false);
+          // setClublikeCount((prev) => Math.max(0, prev - 1));
+        }
+      } else {
+        // Like
+        const response = await fetch("/api/reviewLikes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ review_id: reviewId }),
+        });
+        if (response.ok) {
+          console.log("review liked!");
+          // setUserLikedClub(true);
+          // setClublikeCount((prev) => prev + 1);
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
   const getRatingColor = (rating) => {
@@ -353,11 +381,10 @@ export default function ClubDetailsPage() {
                   {/* Like Button */}
                   <button
                     onClick={handleLikeToggle}
-                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${
-                      userLikedClub
-                        ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
-                        : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
-                    }`}
+                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${userLikedClub
+                      ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
+                      }`}
                   >
                     <span className="text-xl">{userLikedClub ? "❤️" : "🤍"}</span>
                     <span>{clubLikeCount}</span>
@@ -366,11 +393,10 @@ export default function ClubDetailsPage() {
                   {/* Save Button */}
                   <button
                     onClick={handleSaveToggle}
-                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${
-                      userSavedClub
-                        ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
-                        : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
-                    }`}
+                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${userSavedClub
+                      ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
+                      }`}
                     title={userSavedClub ? "Unsave club" : "Save club"}
                   >
                     <span className="text-xl">{userSavedClub ? "★" : "☆"}</span>
@@ -589,11 +615,10 @@ export default function ClubDetailsPage() {
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${
-                    userLikedClub
-                      ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
-                      : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
-                  }`}
+                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${userLikedClub
+                    ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
+                    : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
+                    }`}
                 >
                   <span className="text-lg">{userLikedClub ? "❤️" : "🤍"}</span>
                   <span>{clubLikeCount}</span>
@@ -602,11 +627,10 @@ export default function ClubDetailsPage() {
                 {/* Save Button */}
                 <button
                   onClick={handleSaveToggle}
-                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${
-                    userSavedClub
-                      ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
-                      : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
-                  }`}
+                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${userSavedClub
+                    ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
+                    : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
+                    }`}
                   title={userSavedClub ? "Unsave club" : "Save club"}
                 >
                   <span className="text-lg">{userSavedClub ? "★" : "☆"}</span>
@@ -857,7 +881,7 @@ export default function ClubDetailsPage() {
                 status="displayed"
                 clickable={false}
                 onLike={handleLike}
-            />
+              />
             ))}
           </div>
         )}
