@@ -559,11 +559,11 @@ export default function ReviewPage() {
                     id="member"
                     checked={isMember}
                     onChange={handleMembershipCheckbox}
-                    className="h-5 w-5 rounded border-2 border-gray-400 bg-gray-200 peer-checked:bg-blue-600 peer-checked:border-blue-600 flex items-center justify-center transition-colors"
+                    className="h-5 w-5 rounded border-gray-800"
                   />
                   <label
                     htmlFor="member"
-                    className="ml-2 block text-sm text-gray-700 mb-14"
+                    className="ml-4 block text-sm text-gray-700 cursor-pointer mb-14"
                   >
                     I am currently a member.
                   </label>
