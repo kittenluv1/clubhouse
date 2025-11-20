@@ -57,7 +57,7 @@ function Header() {
     if (error) {
       console.error("Error signing out:", error.message);
     } else {
-      setUserEmail(false);
+      setUserEmail(null);
       console.log("User signed out successfully");
     }
   };
@@ -72,6 +72,10 @@ function Header() {
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    console.log("profile menu: ", showProfileMenu);
+  }, [showProfileMenu]);
 
   if (!isMounted) return null;
 
