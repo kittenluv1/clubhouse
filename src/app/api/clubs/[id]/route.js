@@ -2,7 +2,6 @@ import { supabase } from "@/app/lib/db";
 import { createAuthenticatedClient } from "@/app/lib/server-db";
 
 export async function GET(request, context) {
-  // await context params before using
   const resolvedParams = await context.params;
   const encodedClubId = resolvedParams.id;
 
@@ -13,14 +12,9 @@ export async function GET(request, context) {
 
   let decodedClubName;
   try {
-    // Assuming the 'id' parameter from the URL is the club name that needs decoding
     decodedClubName = decodeURIComponent(encodedClubId);
   } catch (e) {
-    console.error(
-      "API Error: Failed to decode ID parameter:",
-      encodedClubId,
-      e,
-    );
+    console.error("API Error: Failed to decode ID parameter:", encodedClubId, e);
     return Response.json(
       { error: "Invalid ID parameter encoding" },
       { status: 400 },
@@ -30,14 +24,14 @@ export async function GET(request, context) {
   console.log("Decoded club name for search:", decodedClubName);
 
   try {
-    // Search for clubs with a name that partially matches the search term
-    const { data, error } = await supabase
+    // Fetch club data
+    const { data: data, error: clubError } = await supabase
       .from("clubs")
       .select("*")
       .eq("OrganizationName", encodedClubId);
 
-    if (error) {
-      console.error("Supabase error:", error);
+    if (clubError) {
+      console.error("Supabase error:", clubError);
       return Response.json({ error: "Database query failed" }, { status: 500 });
     }
 
@@ -48,6 +42,8 @@ export async function GET(request, context) {
     let likeCount = 0;
     let currentUserLiked = false;
     let currentUserSaved = false;
+    let reviewLikesMap = {};
+    let userLikedReviews = [];
 
     if (data && data.length > 0) {
       const clubData = data[0];
@@ -100,6 +96,38 @@ export async function GET(request, context) {
           currentUserSaved = true;
         }
       }
+
+      // Batch fetch review likes for all reviews
+      if (reviews.length > 0) {
+        const reviewIds = reviews.map(review => review.id);
+
+        // Fetch all likes for counting
+        const { data: allReviewLikes, error: reviewLikesError } = await supabase
+          .from('review_likes')
+          .select('review_id')
+          .in('review_id', reviewIds);
+
+        if (!reviewLikesError && allReviewLikes) {
+          // Build reviewLikesMap: { reviewId: count }
+          reviewIds.forEach(reviewId => {
+            const reviewLikes = allReviewLikes.filter(like => like.review_id === reviewId);
+            reviewLikesMap[reviewId] = reviewLikes.length;
+          });
+
+          // Fetch only current user's likes for these reviews
+          if (!authError && user) {
+            const { data: userReviewLikes, error: userReviewLikesError } = await supabase
+              .from('review_likes')
+              .select('review_id')
+              .eq('user_id', user.id)
+              .in('review_id', reviewIds);
+
+            if (!userReviewLikesError && userReviewLikes) {
+              userLikedReviews = userReviewLikes.map(like => like.review_id);
+            }
+          }
+        }
+      }
     }
 
     return Response.json({
@@ -107,7 +135,9 @@ export async function GET(request, context) {
       reviews,
       likeCount,
       currentUserLiked,
-      currentUserSaved
+      currentUserSaved,
+      reviewLikesMap,
+      userLikedReviews
     });
   } catch (error) {
     console.error("Error fetching data:", error);
