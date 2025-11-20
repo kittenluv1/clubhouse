@@ -1,0 +1,14 @@
+@media (max-width: 640px) {
+  #sliderStyling {
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  #sliderStyling::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+}

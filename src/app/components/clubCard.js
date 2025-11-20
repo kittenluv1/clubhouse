@@ -28,11 +28,11 @@ function activeSaveButton(e){
   }
 }
 
-export default function ClubCard({ club }) {
+export default function ClubCard({ club, likeCount = 0, userLiked = false }) {
   return (
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
-      className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-100 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
+      className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
     >
      <div style={{display: "flex", justifyContent: "space-between"}}>
       <h2 className="text-xl font-bold text-black md:text-2xl">
