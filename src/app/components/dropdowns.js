@@ -56,6 +56,8 @@ const getCurrentQuarter = () => {
     const [quarter, year] = value.split("|");
     onQuarterChange({ target: { value: quarter } });
     onYearChange({ target: { value: year } });
+
+    e.target.blur();
   };
 
   const selectedValue =
@@ -66,7 +68,15 @@ const getCurrentQuarter = () => {
       <select
         value={selectedValue}
         onChange={handleChange}
-        className={`w-full appearance-none rounded-full border bg-white px-3 py-2 text-gray-700 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${className}`}
+        className={`w-full appearance-none rounded-full
+          bg-[#F4F5F6] 
+          hover:bg-[#E5EBF1] 
+          active:bg-[#B5BFC6] 
+          focus:bg-[#B5BFC6]
+          px-5 py-3 text-gray-700 
+          [&>option]:bg-white
+          [&>option:checked]:bg-white 
+          focus:outline-none ${className}`}
         required={required}
       >
         <option value="" disabled>
@@ -78,7 +88,7 @@ const getCurrentQuarter = () => {
           </option>
         ))}
       </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-gray-700">
         <svg
           width="10"
           height="6"
@@ -111,7 +121,13 @@ export const QuarterDropdown = ({
       <select
         value={value}
         onChange={onChange}
-        className={`w-full appearance-none rounded-full border bg-white px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none ${className}`}
+        className={`w-full appearance-none rounded-full border 
+          bg-[#F4F5F6] 
+          hover:bg-[#E5EBF1] 
+          active:bg-[#B5BFC6]
+          focus:bg-[#B5BFC6] 
+          px-3 py-2 text-gray-700 
+           ${className}`}
         required={required}
       >
         <option value="" disabled>

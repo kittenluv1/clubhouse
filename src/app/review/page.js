@@ -462,261 +462,296 @@ export default function ReviewPage() {
   if (isSubmitting) return LoadingScreen();
 
   return (
-    <div className="min-h-screen w-full p-10 md:p-12">
-      <div className="font-dm-sans mx-auto max-w-7xl">
-        <div className="my-10 text-6xl font-bold md:my-18">Review a Club</div>
-        <div className="mb-10 max-w-6xl space-y-10">
-          <p>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-6">Write a Review</h1>
+          <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto px-6 mb-14">
             Your review is completely anonymous, so feel free to be honest! Your
             insights help other students get a better sense of what the club is
             really like. Be real, respectful, and specific—your voice makes a
             difference.
           </p>
-          <p>
-            Review our Community Guidelines for posting reviews{" "}
-            <Link href="/community-guidelines" className="underline">
-              here
-            </Link>
-            .
-          </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Club Name */}
-          <div>
-            <label className="mb-3 block text-lg font-bold">
-              Club Name <span className="text-red-500">*</span>
-            </label>
-            <div className="max-w-md">
-              <SearchableDropdown
-                tableName="clubs"
-                onSelect={handleClubSelect}
-                value={selectedClub}
-                className="w-full rounded-md border border-gray-300 bg-white py-2 pr-10 pl-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                placeholderColor="#374151"
-              />
+
+        <div>
+          <hr className="border-t border-gray-300" />
+        </div>
+
+
+        <form onSubmit={handleSubmit} className="px-16">
+          <div className="mt-14">
+            {/* Search for a club to review */}
+            <div>
+              <label className="mb-3 block text-2xl font-bold">
+                Search for a club to review <span className="text-red-500">*</span>
+              </label>
+              <label className="mb-5 block text-sm text-gray-600">
+                Help fellow students discover the best club experiences!
+              </label>
+              <div className="max-w-md mb-5 text-sm text-gray-600">
+                <SearchableDropdown
+                  tableName="clubs"
+                  onSelect={handleClubSelect}
+                  value={selectedClub}
+                  className="w-full rounded-full border bg-gray-200 py-2 pr-10 pl-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  placeholderColor="#374151"
+                />
+              </div>
             </div>
+            <p className="mb-14 text-sm text-gray-600">
+              Review our community guidelines{" "}
+              <Link href="/community-guidelines" className="underline text-blue-600">
+                here
+              </Link>
+              .
+            </p>
+          </div>
+
+          <div className="mb-12">
+            <hr className="border-t border-gray-300" />
           </div>
 
           {/* Membership dates */}
-          <div className="mt-12 grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-2">
-            <div>
-              <label className="mb-3 block text-lg font-bold">
-                Club Membership Start Date{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <div className="flex space-x-2">
-                <div className="w-1/2">
-                  <QuarterYearDropdown
-                    selectedQuarter={startQuarter}
-                    selectedYear={startYear}
-                    onQuarterChange={handleStartQuarterChange}
-                    onYearChange={handleStartYearChange}
-                    required={true}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-3 block text-lg font-bold">
-                Club Membership End Date <span className="text-red-500">*</span>
-              </label>
-              <div className="mb-4 flex space-x-2">
-                <div className="w-1/2">
-                  <QuarterYearDropdown
-                    selectedQuarter={endQuarter}
-                    selectedYear={endYear}
-                    onQuarterChange={handleEndQuarterChange}
-                    onYearChange={handleEndYearChange}
-                    required={true}
-                    disabled={isMember}
-                  />
-                </div>
-              </div>
-              {dateError && (
-                <p className="mt-1 text-xs text-red-500">{dateError}</p>
-              )}
-              {/* Current Member Checkbox */}
-              <div className="flex">
-                <input
-                  type="checkbox"
-                  id="member"
-                  checked={isMember}
-                  onChange={handleMembershipCheckbox}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600"
-                />
-                <label
-                  htmlFor="member"
-                  className="ml-2 block text-sm text-gray-700"
-                >
-                  I am currently a member.
+          <div className="mx-auto">
+            <div className="mt-14 grid w-full max-w-4xl grid-cols-1 gap-5 md:grid-cols-2">
+              <div>
+                <label className="mb-3 block text-2xl font-bold">
+                  Club Membership Start Date{" "}
+                  <span className="text-red-500">*</span>
                 </label>
+                <div className="flex space-x-2">
+                  <div className="w-1/2">
+                    <QuarterYearDropdown
+                      selectedQuarter={startQuarter}
+                      selectedYear={startYear}
+                      onQuarterChange={handleStartQuarterChange}
+                      onYearChange={handleStartYearChange}
+                      required={true}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+
+                <label className="mb-3 block text-2xl font-bold">
+                  Club Membership End Date <span className="text-red-500">*</span>
+                </label>
+                <div className="mb-5 flex space-x-2">
+                  <div className="w-1/2">
+                    <QuarterYearDropdown
+                      selectedQuarter={endQuarter}
+                      selectedYear={endYear}
+                      onQuarterChange={handleEndQuarterChange}
+                      onYearChange={handleEndYearChange}
+                      required={true}
+                      disabled={isMember}
+                    />
+                  </div>
+                </div>
+                {dateError && (
+                  <p className="mt-1 text-xs text-red-500">{dateError}</p>
+                )}
+                {/* Current Member Checkbox */}
+                <div className="flex">
+                  <input
+                    type="checkbox"
+                    id="member"
+                    checked={isMember}
+                    onChange={handleMembershipCheckbox}
+                    className="h-5 w-5 rounded border-gray-800"
+                  />
+                  <label
+                    htmlFor="member"
+                    className="ml-4 block text-sm text-gray-700 cursor-pointer mb-14"
+                  >
+                    I am currently a member.
+                  </label>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Ratings */}
-          <div className="mt-20">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-              <div className="flex flex-col items-center space-y-1">
-                <div className="flex h-15 w-15 items-center justify-center rounded-full">
-                  {/* Timer/Clock SVG icon */}
-                  <svg
-                    width="54"
-                    height="51"
-                    viewBox="0 0 54 51"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M27 10.8V25.5L37.4 30.4M53 25.5C53 39.031 41.3594 50 27 50C12.6406 50 1 39.031 1 25.5C1 11.969 12.6406 1 27 1C41.3594 1 53 11.969 53 25.5Z"
-                      stroke="#005A32"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div className="mt-6 mb-6 flex items-center justify-center gap-1">
-                  <span className="text-center text-xs font-medium text-green-800">
-                    Time Commitment
-                  </span>
-                  <Tooltip rating="timeCommitment" />
-                </div>
-                <div className="lg:2-full relative w-full md:w-3/4">
-                  <CustomSlider
-                    value={timeCommitment}
-                    onChange={(val) => setTimeCommitment(val)}
-                    lowLabel="low"
-                    highLabel="high"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center space-y-1">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full">
-                  {/* Inclusivity SVG icon */}
-                  <svg
-                    width="55"
-                    height="51"
-                    viewBox="0 0 55 51"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M27.5 1C34.1284 7.70896 37.8953 16.4155 38.1 25.5C37.8953 34.5845 34.1284 43.291 27.5 50M27.5 1C20.8716 7.70896 17.1047 16.4155 16.9 25.5C17.1047 34.5845 20.8716 43.291 27.5 50M27.5 1C12.8645 1 1 11.969 1 25.5C1 39.031 12.8645 50 27.5 50M27.5 1C42.1355 1 54 11.969 54 25.5C54 39.031 42.1355 50 27.5 50M2.32505 18.15H52.6751M2.325 32.85H52.675"
-                      stroke="#005A32"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div className="mt-6 mb-6 flex items-center justify-center gap-1">
-                  <span className="text-center text-xs font-medium text-green-800">
-                    Inclusivity
-                  </span>
-                  <Tooltip rating="inclusivity" />
-                </div>
-                <div className="lg:2-full relative w-full md:w-3/4">
-                  <CustomSlider
-                    value={inclusivityRating}
-                    onChange={(val) => setInclusivityRating(val)}
-                    lowLabel="low"
-                    highLabel="high"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center space-y-1">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full">
-                  {/* Social Community SVG icon */}
-                  <svg
-                    width="55"
-                    height="45"
-                    viewBox="0 0 55 45"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M38.1 2.18316C42.0266 4.04569 44.725 7.91323 44.725 12.3824C44.725 16.8515 42.0266 20.719 38.1 22.5815M43.4 35.8209C47.4054 37.5509 51.0122 40.3703 54 44M1 44C6.1582 37.7336 13.1613 33.8824 20.875 33.8824C28.5887 33.8824 35.5918 37.7336 40.75 44M32.8 12.3824C32.8 18.6687 27.461 23.7647 20.875 23.7647C14.289 23.7647 8.95 18.6687 8.95 12.3824C8.95 6.09605 14.289 1 20.875 1C27.461 1 32.8 6.09605 32.8 12.3824Z"
-                      stroke="#005A32"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div className="mt-6 mb-6 flex items-center justify-center gap-1">
-                  <span className="text-center text-xs font-medium text-green-800">
-                    Social Community
-                  </span>
-                  <Tooltip rating="socialCommunity" />
-                </div>
-                <div className="lg:2-full relative w-full md:w-3/4">
-                  <CustomSlider
-                    value={socialCommunity}
-                    onChange={(val) => setSocialCommunity(val)}
-                    lowLabel="low"
-                    highLabel="high"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full">
-                  {/* Competitiveness SVG icon */}
-                  <svg
-                    width="54"
-                    height="51"
-                    viewBox="0 0 54 51"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M27 32.85C18.3844 32.85 11.4 26.2686 11.4 18.15V4.53889C11.4 3.52496 11.4 3.018 11.5568 2.61205C11.8197 1.93152 12.3886 1.39544 13.1107 1.14775C13.5415 1 14.0796 1 15.1556 1H38.8444C39.9204 1 40.4584 1 40.8893 1.14775C41.6114 1.39544 42.1803 1.93152 42.4432 2.61205C42.6 3.018 42.6 3.52496 42.6 4.53889V18.15C42.6 26.2686 35.6156 32.85 27 32.85ZM27 32.85V40.2M42.6 5.9H49.1C50.3114 5.9 50.9172 5.9 51.395 6.0865C52.032 6.33516 52.5382 6.81211 52.8021 7.41243C53 7.86266 53 8.43344 53 9.575V10.8C53 13.0784 53 14.2176 52.7342 15.1523C52.013 17.6887 49.9105 19.6699 47.2188 20.3496C46.2269 20.6 45.0179 20.6 42.6 20.6M11.4 5.9H4.9C3.68855 5.9 3.08283 5.9 2.60502 6.0865C1.96795 6.33516 1.4618 6.81211 1.19791 7.41243C1 7.86266 1 8.43344 1 9.575V10.8C1 13.0784 1 14.2176 1.26578 15.1523C1.98702 17.6887 4.08949 19.6699 6.78121 20.3496C7.77311 20.6 8.98207 20.6 11.4 20.6M15.1556 50H38.8444C39.4826 50 40 49.5125 40 48.9111C40 44.1001 35.8611 40.2 30.7556 40.2H23.2444C18.1389 40.2 14 44.1001 14 48.9111C14 49.5125 14.5174 50 15.1556 50Z"
-                      stroke="#005A32"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div className="mt-6 mb-6 flex items-center justify-center gap-1">
-                  <span className="text-center text-xs font-medium text-green-800">
-                    Competitiveness
-                  </span>
-                  <Tooltip rating="competitiveness" />
-                </div>
-                <div className="lg:2-full relative w-full md:w-3/4">
-                  <CustomSlider
-                    value={competitiveness}
-                    onChange={(val) => setCompetitiveness(val)}
-                    lowLabel="low"
-                    highLabel="high"
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="mb-12">
+            <hr className="border-t border-gray-300" />
           </div>
 
           {/* Satisfaction Stars */}
           <div>
-            <label className="mt-20 mb-3 block text-lg font-bold">
+            <label className="mt-14 mb-3 block text-2xl font-bold">
               How satisfied are you with your club experience?{" "}
               <span className="text-red-500">*</span>
             </label>
-            <StarRating
-              rating={overallSatisfaction}
-              setRating={setOverallSatisfaction}
-            />
+            <div className="mb-14">
+              <StarRating
+                rating={overallSatisfaction}
+                setRating={setOverallSatisfaction}
+              />
+            </div>
+          </div>
+
+          <div className="mb-12">
+            <hr className="border-t border-gray-300" />
+          </div>
+
+          {/* Ratings */}
+          <div className="mt-14">
+            <label className="mb-3 block text-2xl font-bold">
+              Share your experience with the club in these areas{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <p className="text-sm text-gray-500 mb-8">
+              This is private between Clubhouse reviews
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+              {/* time commitment w/ svg */}
+              <div>
+                <div className="flex items-center gap-1 mb-4">
+                  <span className="text-base font-semibold">Time Commitment</span>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 54 51"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="text-black"
+                  >
+                    <path
+                      d="M27 10.8V25.5L37.4 30.4M53 25.5C53 39.031 41.3594 50 27 50C12.6406 50 1 39.031 1 25.5C1 11.969 12.6406 1 27 1C41.3594 1 53 11.969 53 25.5Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="relative -top-2">
+                    <Tooltip rating="timeCommitment" />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <CustomSlider
+                    value={timeCommitment}
+                    onChange={(val) => setTimeCommitment(val)}
+                    lowLabel="Low"
+                    highLabel="High"
+                  />
+                </div>
+              </div>
+
+              {/* inclusivity w/ svg */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-base font-semibold">Inclusivity</span>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 55 51"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="text-black"
+                  >
+                    <path
+                      d="M27.5 1C34.1284 7.70896 37.8953 16.4155 38.1 25.5C37.8953 34.5845 34.1284 43.291 27.5 50M27.5 1C20.8716 7.70896 17.1047 16.4155 16.9 25.5C17.1047 34.5845 20.8716 43.291 27.5 50M27.5 1C12.8645 1 1 11.969 1 25.5C1 39.031 12.8645 50 27.5 50M27.5 1C42.1355 1 54 11.969 54 25.5C54 39.031 42.1355 50 27.5 50M2.32505 18.15H52.6751M2.325 32.85H52.675"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="relative -top-2">
+                    <Tooltip rating="inclusivity" />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <CustomSlider
+                    value={inclusivityRating}
+                    onChange={(val) => setInclusivityRating(val)}
+                    lowLabel="Low"
+                    highLabel="High"
+                  />
+                </div>
+              </div>
+
+              {/* social community w/ svg */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-base font-semibold">Social Community</span>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 55 45"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="text-black"
+                  >
+                    <path
+                      d="M38.1 2.18316C42.0266 4.04569 44.725 7.91323 44.725 12.3824C44.725 16.8515 42.0266 20.719 38.1 22.5815M43.4 35.8209C47.4054 37.5509 51.0122 40.3703 54 44M1 44C6.1582 37.7336 13.1613 33.8824 20.875 33.8824C28.5887 33.8824 35.5918 37.7336 40.75 44M32.8 12.3824C32.8 18.6687 27.461 23.7647 20.875 23.7647C14.289 23.7647 8.95 18.6687 8.95 12.3824C8.95 6.09605 14.289 1 20.875 1C27.461 1 32.8 6.09605 32.8 12.3824Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="relative -top-2">
+                    <Tooltip rating="socialCommunity" />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <CustomSlider
+                    value={socialCommunity}
+                    onChange={(val) => setSocialCommunity(val)}
+                    lowLabel="Low"
+                    highLabel="High"
+                  />
+                </div>
+              </div>
+
+              {/* competitiveness w/ svg */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-base font-semibold">Competitiveness</span>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 54 51"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="text-black"
+                  >
+                    <path
+                      d="M27 32.85C18.3844 32.85 11.4 26.2686 11.4 18.15V4.53889C11.4 3.52496 11.4 3.018 11.5568 2.61205C11.8197 1.93152 12.3886 1.39544 13.1107 1.14775C13.5415 1 14.0796 1 15.1556 1H38.8444C39.9204 1 40.4584 1 40.8893 1.14775C41.6114 1.39544 42.1803 1.93152 42.4432 2.61205C42.6 3.018 42.6 3.52496 42.6 4.53889V18.15C42.6 26.2686 35.6156 32.85 27 32.85ZM27 32.85V40.2M42.6 5.9H49.1C50.3114 5.9 50.9172 5.9 51.395 6.0865C52.032 6.33516 52.5382 6.81211 52.8021 7.41243C53 7.86266 53 8.43344 53 9.575V10.8C53 13.0784 53 14.2176 52.7342 15.1523C52.013 17.6887 49.9105 19.6699 47.2188 20.3496C46.2269 20.6 45.0179 20.6 42.6 20.6M11.4 5.9H4.9C3.68855 5.9 3.08283 5.9 2.60502 6.0865C1.96795 6.33516 1.4618 6.81211 1.19791 7.41243C1 7.86266 1 8.43344 1 9.575V10.8C1 13.0784 1 14.2176 1.26578 15.1523C1.98702 17.6887 4.08949 19.6699 6.78121 20.3496C7.77311 20.6 8.98207 20.6 11.4 20.6M15.1556 50H38.8444C39.4826 50 40 49.5125 40 48.9111C40 44.1001 35.8611 40.2 30.7556 40.2H23.2444C18.1389 40.2 14 44.1001 14 48.9111C14 49.5125 14.5174 50 15.1556 50Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="relative -top-1">
+                    <Tooltip rating="competitiveness" />
+                  </div>
+                </div>
+                <div className="w-full">
+                  <CustomSlider
+                    value={competitiveness}
+                    onChange={(val) => setCompetitiveness(val)}
+                    lowLabel="Low"
+                    highLabel="High"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-14 mb-14">
+            <hr className="border-t border-gray-300" />
           </div>
 
           {/* Review Text */}
-          <div className="mt-10">
-            <label className="mb-3 block text-sm font-bold text-gray-700">
-              Your Club Review <span className="text-red-500">*</span>
+          <div className="mt-14">
+            <label className="block text-2xl font-bold">
+              Write Public Review <span className="text-red-500">*</span>
             </label>
+            <p className="text-sm text-gray-600 mb-5 ">Share insights to help future students understand what to expect from this club!</p>
             <textarea
               className="h-32 w-full rounded-md border bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
