@@ -151,6 +151,8 @@ export default function ClubDetailsPage() {
   const [clubLikeCount, setClublikeCount] = useState(0);
   const [userLikedClub, setUserLikedClub] = useState(false);
   const [userSavedClub, setUserSavedClub] = useState(false);
+  const [reviewLikesMap, setReviewLikesMap] = useState({});
+  const [userLikedReviews, setUserLikedReviews] = useState([]);
 
   useEffect(() => {
   if (!id) return;
@@ -168,7 +170,17 @@ export default function ClubDetailsPage() {
         if (data.orgList && data.orgList.length > 0) {
           const clubData = data.orgList[0];
           setClub(clubData);
-          setReviews(data.reviews || []);
+
+          // Map reviews with like data
+          const reviewsWithLikes = (data.reviews || []).map(review => ({
+            ...review,
+            likes: data.reviewLikesMap?.[review.id] || 0,
+            user_has_liked: data.userLikedReviews?.includes(review.id) || false
+          }));
+
+          setReviews(reviewsWithLikes);
+          setReviewLikesMap(data.reviewLikesMap || {});
+          setUserLikedReviews(data.userLikedReviews || []);
           setClublikeCount(data.likeCount || 0);
           setUserLikedClub(data.currentUserLiked || false);
           setUserSavedClub(data.currentUserSaved || false);

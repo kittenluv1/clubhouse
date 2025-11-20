@@ -1,96 +1,75 @@
-import { supabase } from "@/app/lib/db";
-import { createServerClient } from "@/app/lib/server-db";
+import { createAuthenticatedClient } from "@/app/lib/server-db";
 
-
-export async function GET(req, context) {
-    const params = await context.params;
-    const userId = params.userId;
-    const reviewId = params.reviewId;
-    // merge profiles
-    try {
-        var reviewsLiked, reviewsLikedError;
-        if (userId) { //Getting liked reviews by User that liked it
-            const { data: likes, error: error } = await supabase
-                .from("review_likes")
-                .select("*")
-                .eq("user_id", userId);
-            reviewsLiked, reviewsLikedError = likes, error;
-        } else if (reviewId) { // Getting likes from a certain review 
-            const { data: likes, error: error } = await supabase
-                .from("review_likes")
-                .select("*")
-                .eq("reviewId", reviewId);
-            reviewsLiked, reviewsLikedError = likes, error;
-        } else {
-            console.error("API Error: user or review ID required. ");
-            return Response.json({ error: "user/review ID parameter is missing" }, { status: 400 });
-        }
-        if (reviewsLikedError) {
-            console.error("Supabase error:", reviewsLikedError);
-            return Response.json({ error: "Database query for review likes failed" }, { status: 500 });
-        }
-        let reviewIds = reviewsLiked.map(review => review.id);
-        return reviewIds;
-    } catch {
-        console.error("Error fetching data:", error);
-        return Response.json({ error: "Failed to fetch data" }, { status: 500 });
-    }
-}
-
+// POST: create a like (body: { review_id })
 export async function POST(req) {
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-    }
-
-    const supabase = createServerClient(authHeader);
-
     try {
-        const { userId, reviewId, timestamp } = await req.json();
+        const supabase = await createAuthenticatedClient();
 
-        const review = // Not sure if its repetitive to convert json -> const -> json
-        {
-            review_id: reviewId,
-            user_id: userId,
-            created_at: timestamp
-        }
-        const { error: insertError } = await supabase
-            .from("reviews_likes")
-            .insert(review);
-        if (insertError) {
-            throw new Error(insertError.message);
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return new Response(JSON.stringify({ error: "Unauthorized - please sign in" }), { status: 401, headers: { "Content-Type": "application/json" } });
         }
 
+        const body = await req.json();
+        const review_id = body?.review_id;
+        if (!review_id) {
+            return new Response(JSON.stringify({ error: 'Missing review_id in request body' }), { status: 400, headers: { "Content-Type": "application/json" } });
+        }
+
+        const userId = user.id;
+
+        const { data, error } = await supabase
+            .from('review_likes')
+            .insert([{ review_id, user_id: userId }])
+            .select();
+
+        if (error) {
+            // Handle unique constraint gracefully if configured
+            const msg = error.message || 'Database error';
+            if (msg.toLowerCase().includes('duplicate') || msg.toLowerCase().includes('unique')) {
+                return new Response(JSON.stringify({ message: 'Already liked' }), { status: 200, headers: { "Content-Type": "application/json" } });
+            }
+            return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { "Content-Type": "application/json" } });
+        }
+
+        return new Response(JSON.stringify({ message: 'Like added', like: data?.[0] }), { status: 201, headers: { "Content-Type": "application/json" } });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), {
-            status: 500,
-        });
+        console.error('Unexpected error in POST /api/reviewLikes:', err);
+        return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { "Content-Type": "application/json" } });
     }
 }
 
+// DELETE: remove a like (body: { review_id })
 export async function DELETE(req) {
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-    }
-
-    const supabase = createServerClient(authHeader);
-
     try {
-        const { userId, reviewId } = await req.json();
-        const { error: insertError } = await supabase
-            .from("review_likes")
-            .delete()
-            .eq("review_id", reviewId)
-            .eq("user_id", userId);
-        if (insertError) {
-            throw new Error(insertError.message);
+        const supabase = await createAuthenticatedClient();
+
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return new Response(JSON.stringify({ error: "Unauthorized - please sign in" }), { status: 401, headers: { "Content-Type": "application/json" } });
         }
+
+        const body = await req.json();
+        const review_id = body?.review_id;
+        if (!review_id) {
+            return new Response(JSON.stringify({ error: 'Missing review_id in request body' }), { status: 400, headers: { "Content-Type": "application/json" } });
+        }
+
+        const userId = user.id;
+
+        const { data, error } = await supabase
+            .from('review_likes')
+            .delete()
+            .eq('review_id', review_id)
+            .eq('user_id', userId);
+
+        if (error) {
+            return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
+        }
+
+        return new Response(JSON.stringify({ message: 'Like removed' }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), {
-            status: 500,
-        });
+        console.error('Unexpected error in DELETE /api/reviewLikes:', err);
+        return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500, headers: { "Content-Type": "application/json" } });
     }
 }

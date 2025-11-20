@@ -42,6 +42,8 @@ export async function GET(request, context) {
     let likeCount = 0;
     let currentUserLiked = false;
     let currentUserSaved = false;
+    let reviewLikesMap = {};
+    let userLikedReviews = [];
 
     if (data && data.length > 0) {
       const clubData = data[0];
@@ -94,6 +96,38 @@ export async function GET(request, context) {
           currentUserSaved = true;
         }
       }
+
+      // Batch fetch review likes for all reviews
+      if (reviews.length > 0) {
+        const reviewIds = reviews.map(review => review.id);
+
+        // Fetch all likes for counting
+        const { data: allReviewLikes, error: reviewLikesError } = await supabase
+          .from('review_likes')
+          .select('review_id')
+          .in('review_id', reviewIds);
+
+        if (!reviewLikesError && allReviewLikes) {
+          // Build reviewLikesMap: { reviewId: count }
+          reviewIds.forEach(reviewId => {
+            const reviewLikes = allReviewLikes.filter(like => like.review_id === reviewId);
+            reviewLikesMap[reviewId] = reviewLikes.length;
+          });
+
+          // Fetch only current user's likes for these reviews
+          if (!authError && user) {
+            const { data: userReviewLikes, error: userReviewLikesError } = await supabase
+              .from('review_likes')
+              .select('review_id')
+              .eq('user_id', user.id)
+              .in('review_id', reviewIds);
+
+            if (!userReviewLikesError && userReviewLikes) {
+              userLikedReviews = userReviewLikes.map(like => like.review_id);
+            }
+          }
+        }
+      }
     }
 
     return Response.json({
@@ -101,7 +135,9 @@ export async function GET(request, context) {
       reviews,
       likeCount,
       currentUserLiked,
-      currentUserSaved
+      currentUserSaved,
+      reviewLikesMap,
+      userLikedReviews
     });
   } catch (error) {
     console.error("Error fetching data:", error);
