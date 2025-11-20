@@ -1,49 +1,125 @@
+import { useState } from "react";
 import Link from "next/link";
+import { supabase } from "@/app/lib/db";
 
-var displayOfLikesCounter = 0;
-function activeLikeButton(e) {
-  e.preventDefault();
-  if(e.target.style.backgroundImage == `url("../likeUnfilled.svg")`){
-    e.target.style.backgroundImage = 'url(../likeFilled.svg)';
-    displayOfLikesCounter = displayOfLikesCounter + 1;
-  } else {
-    e.target.style.backgroundImage = 'url(../likeUnfilled.svg)';
-    displayOfLikesCounter = displayOfLikesCounter - 1;
-  }
-  var likesCounter = document.getElementById("likesCounter");
-  if(displayOfLikesCounter == 0){
-    likesCounter.style.display = "none";
-  } else {
-  likesCounter.style.display = "inline";
-  likesCounter.innerHTML = displayOfLikesCounter;
-  }  
-}
+export default function ClubCard({
+  club,
+  likeCount = 0,
+  userLiked = false,
+  userSaved = false,
+  onLike,
+  onSave
+}) {
+  const [liked, setLiked] = useState(userLiked);
+  const [saved, setSaved] = useState(userSaved);
+  const [clubLikeCount, setClubLikeCount] = useState(likeCount);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-function activeSaveButton(e){
-   e.preventDefault();
-  if(e.target.style.backgroundImage == `url("../saveUnfilled.svg")`){
-    e.target.style.backgroundImage = 'url(../saveFilled.svg)';
-  } else {
-    e.target.style.backgroundImage = 'url(../saveUnfilled.svg)';
-  }
-}
+  const toggleLike = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-export default function ClubCard({ club, likeCount = 0, userLiked = false }) {
+    if (isProcessing || !onLike) return;
+
+    // Check if user is authenticated
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      return;
+    }
+
+    setIsProcessing(true);
+    const newLiked = !liked;
+
+    // Optimistic update
+    setLiked(newLiked);
+    setClubLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
+
+    try {
+      await onLike(club.OrganizationID, newLiked);
+    } catch (error) {
+      // Revert on failure
+      setLiked(!newLiked);
+      setClubLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
+      console.error('Failed to toggle like:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const toggleSave = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isProcessing || !onSave) return;
+
+    // Check if user is authenticated
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      return;
+    }
+
+    setIsProcessing(true);
+    const newSaved = !saved;
+
+    // Optimistic update
+    setSaved(newSaved);
+
+    try {
+      await onSave(club.OrganizationID, newSaved);
+    } catch (error) {
+      // Revert on failure
+      setSaved(!newSaved);
+      console.error('Failed to toggle save:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
   return (
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
       className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
     >
-     <div style={{display: "flex", justifyContent: "space-between"}}>
-      <h2 className="text-xl font-bold text-black md:text-2xl">
-        {club.OrganizationName}
-      </h2>
-      <div style={{marginTop: -12, display: "flex", alignItems: "center", justifyContent: "center"}}>
-      <button className="hover:bg-[#E5EBF1]" onClick={activeLikeButton} style={{ borderRadius: "30px", backgroundImage: `url("../likeUnfilled.svg")`, height: "37px", width: "37px", backgroundRepeat: 'no-repeat', backgroundPosition: "center"}} ></button>
-      <button className="hover:bg-[#E5EBF1]" onClick={activeSaveButton} style={{ borderRadius: "30px", backgroundImage: `url("../saveUnfilled.svg")`, height: "37px", width: "37px", backgroundRepeat: 'no-repeat', backgroundPosition: "center" }} ></button>
-      <h1 id="likesCounter" style={{display: "none"}}></h1>
-      </div>
-      
+      <div className="flex justify-between items-start">
+        <h2 className="text-xl font-bold text-black md:text-2xl">
+          {club.OrganizationName}
+        </h2>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Like button */}
+          <button
+            onClick={toggleLike}
+            className="flex items-center gap-1"
+            disabled={isProcessing}
+          >
+            <img
+              src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+              alt="Heart Icon"
+              className="min-h-[15px] min-w-[18px]"
+            />
+            <span className="text-lg font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
+              {clubLikeCount}
+            </span>
+          </button>
+          {/* Save button */}
+          <button
+            onClick={toggleSave}
+            className="flex items-center"
+            disabled={isProcessing}
+          >
+            <img
+              src={`/${saved ? "saveFilled" : "saveUnfilled"}.svg`}
+              alt="Save Icon"
+              className="min-h-[18px] min-w-[18px]"
+            />
+          </button>
+        </div>
       </div>
       <div className="flex flex-wrap gap-2">
         {club.Category1Name &&
