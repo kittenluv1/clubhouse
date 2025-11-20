@@ -25,7 +25,7 @@ export async function GET(request, context) {
 
   try {
     // Fetch club data
-    const { data: clubData, error: clubError } = await supabase
+    const { data: data, error: clubError } = await supabase
       .from("clubs")
       .select("*")
       .eq("OrganizationName", encodedClubId);

@@ -47,30 +47,46 @@ export async function POST(req) {
     const supabase = createServerClient(authHeader);
 
     try {
-        const { userId, reviewId, timestamp, userLiked } = await req.json();
+        const { userId, reviewId, timestamp } = await req.json();
 
-        if (userLiked) { // User liked a review
-            const review = // Not sure if its repetitive to convert json -> const -> json
-            {
-                review_id: reviewId,
-                user_id: userId,
-                created_at: timestamp
-            }
-            const { error: insertError } = await supabase
-                .from("reviews_likes")
-                .insert(review);
-            if (insertError) {
-                throw new Error(insertError.message);
-            }
-        } else if (!userLiked) { // User unliked a review: (!userLiked) for clarity
-            const { error: insertError } = await supabase
-                .from("review_likes")
-                .delete()
-                .eq("review_id", reviewId)
-                .eq("user_id", userId);
-            if (insertError) {
-                throw new Error(insertError.message);
-            }
+        const review = // Not sure if its repetitive to convert json -> const -> json
+        {
+            review_id: reviewId,
+            user_id: userId,
+            created_at: timestamp
+        }
+        const { error: insertError } = await supabase
+            .from("reviews_likes")
+            .insert(review);
+        if (insertError) {
+            throw new Error(insertError.message);
+        }
+
+    } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+            status: 500,
+        });
+    }
+}
+
+export async function DELETE(req) {
+    const authHeader = req.headers.get('authorization');
+
+    if (!authHeader) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
+    const supabase = createServerClient(authHeader);
+
+    try {
+        const { userId, reviewId } = await req.json();
+        const { error: insertError } = await supabase
+            .from("review_likes")
+            .delete()
+            .eq("review_id", reviewId)
+            .eq("user_id", userId);
+        if (insertError) {
+            throw new Error(insertError.message);
         }
     } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), {
