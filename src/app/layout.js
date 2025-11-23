@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
         <Suspense fallback={<LoadingScreen />}>
           <SearchProvider>
             <Header />
-            <main className="relative min-h-screen overflow-hidden p-6 md:p-20 lg:px-30 md:py-20">
+            <main className="relative min-h-screen overflow-hidden">
               <Gradient />
               {children}
               <Analytics />

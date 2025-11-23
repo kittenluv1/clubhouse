@@ -201,7 +201,7 @@ const Page = () => {
   }
 
   return (
-    <div className="space-y-6 p-6 md:p-[80px]">
+    <div className="space-y-6 p-6 md:p-20 lg:px-30 md:py-20">
       <div className="flex flex-row items-center justify-between gap-4">
         <div className="flex flex-row items-center space-x-[4px]">
           <h1 className="text-[20px] font-bold text-black md:text-[28px]">
