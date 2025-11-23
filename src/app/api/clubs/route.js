@@ -11,38 +11,34 @@ export async function GET(req) {
     const startIndex = (pageNum - 1) * pageSize; // calculate indices of 'data' to be returned (i.e. 10 per page)
     const endIndex = startIndex + pageSize - 1;
 
-    // Configure sorting with secondary sort for consistency
-    let sortBy = "average_satisfaction";
-    let ascending = false;
-    if (sortType === "reviews") {
-      sortBy = "total_num_reviews";
+    // Configure sort priority based on sortType
+    let sortConfig = [];
+    if (sortType === "rating") {
+      sortConfig = [
+        { column: "average_satisfaction", ascending: false },
+        { column: "total_num_reviews", ascending: false },
+        { column: "OrganizationName", ascending: true },
+      ];
+    } else if (sortType === "reviews") {
+      sortConfig = [
+        { column: "total_num_reviews", ascending: false },
+        { column: "average_satisfaction", ascending: false },
+        { column: "OrganizationName", ascending: true },
+      ];
     } else if (sortType === "alphabetical") {
-      sortBy = "OrganizationName";
-      ascending = true; // alphabetic order needs to go in ascending order
+      sortConfig = [
+        { column: "OrganizationName", ascending: true },
+        { column: "average_satisfaction", ascending: false },
+        { column: "total_num_reviews", ascending: false },
+      ];
     }
 
-    // Build query with consistent ordering
-    // let query = supabase
-    //   .from("clubs")
-    //   .select("*", { count: "exact" })
-    //   .order(sortBy, { ascending, nullsFirst: false });
+    // Build query
+    let query = supabase.from("clubs").select("*", { count: "exact" });
 
-    let query = supabase
-    .from('clubs')
-    .select('*', { count: 'exact' });
-
-    if (sortType === 'rating') {
-      query = query
-        .order('average_satisfaction', { ascending: false, nullsFirst: false })
-        .order('total_num_reviews', { ascending: false });
-    } else if (sortType === 'reviews') {
-      query = query.order('total_num_reviews', { ascending: false });
-    }
-
-    // Add secondary sort by ID (or another unique field) for consistency
-    // This ensures identical values in the primary sort column have predictable order
-    if (sortType !== "alphabetical") {
-      query = query.order("OrganizationName", { ascending: true });
+    // Apply all sorts from config
+    for (const sort of sortConfig) {
+      query = query.order(sort.column, { ascending: sort.ascending, nullsFirst: false });
     }
     // Always add ID as final tiebreaker
     query = query.order("OrganizationID", { ascending: true });

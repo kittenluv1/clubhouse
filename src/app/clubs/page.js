@@ -123,7 +123,10 @@ function AllClubsPage() {
                 open={showSortModal}
                 onClose={() => setShowSortModal(false)}
                 selected={sortType}
-                onSelect={(newSort) => setSortType(newSort)}
+                onSelect={(newSort) => {
+                  setSortType(newSort);
+                  setCurrPage(1);
+                }}
                 sortOptions={[
                   { label: "Highest Rated", value: "rating" },
                   { label: "Most Reviewed", value: "reviews" },
@@ -139,7 +142,10 @@ function AllClubsPage() {
               <select
                 id="sort"
                 value={sortType}
-                onChange={(e) => setSortType(e.target.value)}
+                onChange={(e) => {
+                  setSortType(e.target.value);
+                  setCurrPage(1);
+                }}
                 className="cursor-pointer font-bold text-black outline-hidden"
               >
                 <option value="rating">Highest Rated</option>
