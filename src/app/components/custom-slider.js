@@ -38,13 +38,13 @@ const CustomSlider = ({
 
         {/* Filled portion */}
         <div
-          className="absolute top-1/2 left-0 h-3 -translate-y-1/2 transform rounded-full bg-[#74C476]"
+          className="absolute top-1/2 left-0 h-3 -translate-y-1/2 transform rounded-full bg-[#B8DF64]"
           style={{ width: `${calculateFillPercentage()}%` }}
         ></div>
 
         {/* Thumb */}
         <div
-          className="absolute top-1/2 z-10 h-5 w-5 -translate-x-1/2 -translate-y-1/2 transform rounded-full border border-gray-300 bg-white shadow-md"
+          className="absolute top-1/2 z-10 h-7 w-7 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-[#B8DF64] shadow-md"
           style={{ left: `${calculateFillPercentage()}%` }}
         ></div>
         
