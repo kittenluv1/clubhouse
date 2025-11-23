@@ -59,9 +59,20 @@ const SearchableDropdown = ({
     if (inputValue.trim() === "") {
       setFilteredOptions([]);
     } else {
-      const filtered = allOptions.filter((option) =>
-        option.toLowerCase().includes(inputValue.toLowerCase()),
-      );
+      const filtered = allOptions
+        .filter((option) =>
+          option.toLowerCase().includes(inputValue.toLowerCase())
+        )
+        .sort((a, b) => {
+          const lowerA = a.toLowerCase();
+          const lowerB = b.toLowerCase();
+          const indexA = lowerA.indexOf(inputValue.toLowerCase());
+          const indexB = lowerB.indexOf(inputValue.toLowerCase());
+          // Sort by match position first (earlier matches come first)
+          if (indexA !== indexB) return indexA - indexB;
+          // Then alphabetically for ties
+          return lowerA.localeCompare(lowerB);
+        });
       setFilteredOptions(filtered);
     }
   }, [inputValue, allOptions]);
