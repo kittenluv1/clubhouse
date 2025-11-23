@@ -7,32 +7,16 @@ function GuidelinesPage() {
         everyone, please follow these guidelines when posting or interacting on
         the platform:
       </p>
-      <h2 className="my-4 text-2xl">Respect Everyone’s Privacy</h2>
-      <li>
-        Do not mention individuals by name in your reviews, comments, or
-        posts—this includes club leaders or members.{" "}
-      </li>
-      <h2 className="my-4 text-2xl">Keep It Respectful</h2>
-      <li>
-        ClubHouse is committed to fostering a welcoming and inclusive
-        environment for all users. Any form of discriminatory, harassing, or
-        hateful language is strictly prohibited. This includes, but is not
-        limited to: racist, xenophobic, sexist and misogynistic comments,
-        homophobic and transphobic language, ableist and derogatory statements
-        about mental or physical disabilities, religious intolerance or bigotry.
-      </li>
-      <h2 className="my-4 text-2xl">No profanity</h2>
-      <li>Please avoid the use of offensive, vulgar, or profane language. </li>
-      <h2 className="my-4 text-2xl">Stay On-Topic</h2>
-      <li>
-        Content should be relevant to the club or organization being reviewed.
-        Off-topic posts may be removed to maintain clarity and usefulness.{" "}
-      </li>
-      <h2 className="my-4 text-2xl">No Spam or Self-Promotion</h2>
-      <li>
-        Do not post promotional content or repeated messages. This space is for
-        sharing experiences, not advertising.{" "}
-      </li>
+      <h2 className="my-4 text-2xl">Be Specific and Relevant</h2>
+      <p>
+        Share clear, helpful insights about your experience with the club. Reviews that are too brief, vague, or off-topic may be rejected to keep feedback meaningful for all students.
+      </p>
+      <h2 className="my-4 text-2xl">Respect Others</h2>
+      <p>
+        Do not name or identify individuals, including club leaders or members. Discriminatory, harassing, or hateful language of any kind is strictly prohibited.
+      </p>
+      <h2 className="my-4 text-2xl">Stay On Topic</h2>
+      <p>Ensure that all content is relevant to the club or organization being reviewed. Irrelevant or repetitive posts may be removed to maintain clarity and usefulness.</p>
     </div>
   );
 }
