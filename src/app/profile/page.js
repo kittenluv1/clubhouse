@@ -212,7 +212,7 @@ function ProfilePage() {
                     <div className="text-center py-12">
                         <p className="text-[#B5BEC7]">
                             These reviews did not pass our{" "}
-                            <Link href="/community-guidelines" className="underline text-[#5058B2]">
+                            <Link href="/community-guidelines" target="_blank" className="underline text-[#5058B2]">
                                 Community Guidelines
                             </Link>
                             . Please edit them and resubmit for approval.
@@ -225,7 +225,7 @@ function ProfilePage() {
                             <p className="text-[#000000] text-4xl font-bold mb-4">Rejected Reviews</p>
                             <p className="text-[#B5BEC7]">
                                 These reviews did not pass our{" "}
-                                <Link href="/community-guidelines" className="underline text-[#5058B2]">
+                                <Link href="/community-guidelines" target="_blank" className="underline text-[#5058B2]">
                                     Community Guidelines
                                 </Link>
                                 . Please edit them and resubmit for approval.
@@ -341,7 +341,7 @@ function ProfilePage() {
     return (
         <div className="min-h-screen">
             {/* User Information Section */}
-            <div className="mb-20 rounded-lg bg-white px-12 md:px-18 lg:px-26 py-6 md:py-12 lg:py-20 bg-center bg-cover bg-no-repeat" style={{backgroundImage: "url('/profile_background.png')"}}>
+            <div className="mb-20 rounded-lg bg-white px-12 md:px-18 lg:px-26 py-6 md:py-12 lg:py-20 bg-center bg-cover bg-no-repeat" style={{ backgroundImage: "url('/profile_background.png')" }}>
                 <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                     <img
                         src="/default_profile.svg"
@@ -367,7 +367,7 @@ function ProfilePage() {
                                 className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <img src="profile_review.svg" alt="review icon" className="max-w-[20px]"/>
+                                    <img src="profile_review.svg" alt="review icon" className="max-w-[20px]" />
                                     <span className="text-2xl">Reviews</span>
                                 </div>
                                 <svg
@@ -411,7 +411,7 @@ function ProfilePage() {
                                 className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <img src="/profile_club.svg" alt="club icon" className="max-w-[20px]"/>
+                                    <img src="/profile_club.svg" alt="club icon" className="max-w-[20px]" />
                                     <span className="text-2xl">Clubs</span>
                                 </div>
                                 <svg

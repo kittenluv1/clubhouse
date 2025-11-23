@@ -501,7 +501,7 @@ export default function ReviewPage() {
             </div>
             <p className="mb-14 text-sm text-gray-600">
               Review our community guidelines{" "}
-              <Link href="/community-guidelines" className="underline text-blue-600">
+              <Link href="/community-guidelines" target="_blank" className="underline text-blue-600">
                 here
               </Link>
               .
