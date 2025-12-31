@@ -76,11 +76,9 @@ export default function GoogleSignIn() {
           console.log("redirect to:" + club);
           if (clubId != null) { // redirect to review page
             window.location.href = `/review?club=${club}&clubId=${clubId}`;
-          } else { //redirect to club general page 
+          } else { //redirect to club general page (currently unused)
             window.location.href = `/clubs/${club}`;
           }
-        } else {
-          window.location.href = `/profile`;
         }
       } else {
         setUserEmail(null); // Clear email when signed out
