@@ -1,15 +1,126 @@
+import { useState } from "react";
 import Link from "next/link";
+import { supabase } from "@/app/lib/db";
 
-export default function ClubCard({ club }) {
+export default function ClubCard({
+  club,
+  likeCount = 0,
+  userLiked = false,
+  userSaved = false,
+  onLike,
+  onSave
+}) {
+  const [liked, setLiked] = useState(userLiked);
+  const [saved, setSaved] = useState(userSaved);
+  const [clubLikeCount, setClubLikeCount] = useState(likeCount);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const toggleLike = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isProcessing || !onLike) return;
+
+    // Check if user is authenticated
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      return;
+    }
+
+    setIsProcessing(true);
+    const newLiked = !liked;
+
+    // Optimistic update
+    setLiked(newLiked);
+    setClubLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
+
+    try {
+      await onLike(club.OrganizationID, newLiked);
+    } catch (error) {
+      // Revert on failure
+      setLiked(!newLiked);
+      setClubLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
+      console.error('Failed to toggle like:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const toggleSave = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isProcessing || !onSave) return;
+
+    // Check if user is authenticated
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      return;
+    }
+
+    setIsProcessing(true);
+    const newSaved = !saved;
+
+    // Optimistic update
+    setSaved(newSaved);
+
+    try {
+      await onSave(club.OrganizationID, newSaved);
+    } catch (error) {
+      // Revert on failure
+      setSaved(!newSaved);
+      console.error('Failed to toggle save:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
   return (
-   
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
       className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
     >
-      <h2 className="text-xl font-bold text-black md:text-2xl">
-        {club.OrganizationName}
-      </h2>
+      <div className="flex justify-between items-start">
+        <h2 className="text-xl font-bold text-black md:text-2xl">
+          {club.OrganizationName}
+        </h2>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Like button */}
+          <button
+            onClick={toggleLike}
+            className="flex items-center gap-1"
+            disabled={isProcessing}
+          >
+            <img
+              src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+              alt="Heart Icon"
+              className="min-h-[15px] min-w-[18px]"
+            />
+            <span className="text-lg font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
+              {clubLikeCount}
+            </span>
+          </button>
+          {/* Save button */}
+          <button
+            onClick={toggleSave}
+            className="flex items-center"
+            disabled={isProcessing}
+          >
+            <img
+              src={`/${saved ? "saveFilled" : "saveUnfilled"}.svg`}
+              alt="Save Icon"
+              className="min-h-[18px] min-w-[18px]"
+            />
+          </button>
+        </div>
+      </div>
       <div className="flex flex-wrap gap-2">
         {club.Category1Name &&
           <span className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]">

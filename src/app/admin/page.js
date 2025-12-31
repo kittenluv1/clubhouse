@@ -154,7 +154,8 @@ const Page = () => {
       });
 
       if (!disproveRes.ok) {
-        console.error("Error disapproving review");
+        const errorData = await disproveRes.json().catch(() => ({}));
+        console.error("Error disapproving review:", errorData);
         return;
       }
 
