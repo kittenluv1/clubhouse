@@ -27,7 +27,8 @@ export default function ClubCard({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
       return;
     }
 
@@ -62,7 +63,8 @@ export default function ClubCard({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
       return;
     }
 

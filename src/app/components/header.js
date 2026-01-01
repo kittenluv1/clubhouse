@@ -48,7 +48,8 @@ function Header() {
     if (session) {
       window.location.href = "/review";
     } else {
-      window.location.href = "/sign-in";
+      const returnUrl = encodeURIComponent("/review");
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
     }
   };
 
