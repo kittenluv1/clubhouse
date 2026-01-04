@@ -61,7 +61,7 @@ export default function ReviewCard({
     const canDelete = status === "rejected" && onDelete;
 
     const desktopCard = (
-        <div className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10">
+        <div className={`w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10 ${clickable ? 'hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]' : ''}`}>
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
                     <h2 className="text-xl font-bold text-black md:text-2xl m-0 leading-none">
@@ -127,7 +127,7 @@ export default function ReviewCard({
     );
 
     const mobileCard = (
-        <div className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]">
+        <div className={`w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out ${clickable ? 'hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]' : ''}`}>
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
                     <h2 className="text-xl font-bold text-black m-0 leading-none">
