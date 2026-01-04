@@ -221,7 +221,10 @@ export default function ClubDetailsPage() {
     } = await supabase.auth.getSession();
 
     if (!session) {
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
+      const returnUrl = encodeURIComponent(currentPath);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      return;
     }
 
     console.log('Like review:', reviewId, isLiked);
@@ -284,7 +287,8 @@ export default function ClubDetailsPage() {
       window.location.href = href;
     } else {
       console.log("GO TO SIGN IN");
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`;
+      const returnUrl = encodeURIComponent(href);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
     }
   };
 
@@ -294,7 +298,9 @@ export default function ClubDetailsPage() {
     } = await supabase.auth.getSession();
 
     if (!session) {
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`;
+      const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
+      const returnUrl = encodeURIComponent(currentPath);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
       return;
     }
 
@@ -335,7 +341,9 @@ export default function ClubDetailsPage() {
     } = await supabase.auth.getSession();
 
     if (!session) {
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}&clubId=${club.OrganizationID}`;
+      const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
+      const returnUrl = encodeURIComponent(currentPath);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
       return;
     }
 

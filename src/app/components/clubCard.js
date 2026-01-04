@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
 
 export default function ClubCard({
@@ -10,6 +11,7 @@ export default function ClubCard({
   onLike,
   onSave
 }) {
+  const router = useRouter();
   const [liked, setLiked] = useState(userLiked);
   const [saved, setSaved] = useState(userSaved);
   const [clubLikeCount, setClubLikeCount] = useState(likeCount);
@@ -27,7 +29,8 @@ export default function ClubCard({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
       return;
     }
 
@@ -62,7 +65,8 @@ export default function ClubCard({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      window.location.href = `/sign-in?club=${encodeURIComponent(club.OrganizationName)}`;
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
       return;
     }
 
@@ -82,6 +86,14 @@ export default function ClubCard({
       setIsProcessing(false);
     }
   };
+
+  const handleCategoryClick = (e, categoryName) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const encoded = encodeURIComponent(categoryName);
+    router.push(`/clubs?categories=${encoded}`);
+  };
+  
   return (
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
@@ -123,13 +135,19 @@ export default function ClubCard({
       </div>
       <div className="flex flex-wrap gap-2">
         {club.Category1Name &&
-          <span className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]">
+          <button
+            onClick={(e) => handleCategoryClick(e, club.Category1Name)}
+            className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7] cursor-pointer"
+          >
             {club.Category1Name}
-          </span>}
+          </button>}
         {club.Category2Name &&
-          <span className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]">
+          <button
+            onClick={(e) => handleCategoryClick(e, club.Category2Name)}
+            className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7] cursor-pointer"
+          >
             {club.Category2Name}
-          </span>}
+          </button>}
       </div>
 
       <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
