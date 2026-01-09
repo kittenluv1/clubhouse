@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Button from "./button";
+import { supabase } from "@/app/lib/db";
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -35,6 +36,17 @@ export default function ReviewCard({
     const toggleLike = async () => {
         if (isProcessing) return; // Ignore clicks while processing
         if (status !== "displayed" || !onLike) return;
+
+        // Check if user is authenticated
+        const {
+            data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+            const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+            window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+            return;
+        }
 
         setIsProcessing(true);
         const newLiked = !liked;
