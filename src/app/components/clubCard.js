@@ -99,7 +99,7 @@ export default function ClubCard({
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
       className="w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start bg-amber-50">
         <h2 className="text-xl font-bold text-black md:text-2xl">
           {club.OrganizationName}
         </h2>
@@ -133,6 +133,39 @@ export default function ClubCard({
           </button>
         </div>
       </div>
+
+      <div className = "bg-black">
+        <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2 bg-amber-300">
+          <label className="flex items-center text-xl font-bold text-black">
+            {club.average_satisfaction ? (
+              <>
+              <span className="ml-1 text-yellow-400">★</span>
+                {club.average_satisfaction}
+              </>
+            ) : (
+              <>
+                N/A
+                <span className="ml-1 text-yellow-400">★</span>
+              </>
+            )}
+            <label className="text-black">
+            {/**Review counter from Figma hi-fi discovery page 3*/}
+            {club.total_num_reviews === 0
+            ? "(0 reviews)"
+            : `(${club.total_num_reviews} ${club.total_num_reviews === 1 ? "review" : "reviews"})`
+            }
+            </label>
+          </label>
+        </div>
+       
+      </div>
+      
+      <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
+        {club.OrganizationDescription}
+      </p>
+
+     
+      
       <div className="flex flex-wrap gap-2">
         {club.Category1Name &&
           <button
@@ -148,37 +181,6 @@ export default function ClubCard({
           >
             {club.Category2Name}
           </button>}
-      </div>
-
-      <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
-        {club.OrganizationDescription}
-      </p>
-
-      <div>
-        <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-          <label className="flex items-center text-xl font-bold text-black">
-            {club.average_satisfaction ? (
-              <>
-                {club.average_satisfaction}
-                <span className="ml-1 text-yellow-400">★</span>
-              </>
-            ) : (
-              <>
-                N/A
-                <span className="ml-1 text-yellow-400">★</span>
-              </>
-            )}
-          </label>
-          <label className="text-base font-bold text-black">
-            satisfaction rating
-          </label>
-        </div>
-        <label className="text-base text-black italic">
-          {club.total_num_reviews === 0
-            ? "0 reviews"
-            : `from ${club.total_num_reviews} trusted ${club.total_num_reviews === 1 ? "student" : "students"
-            }`}
-        </label>
       </div>
     </Link>
   );
