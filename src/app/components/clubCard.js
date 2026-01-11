@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
@@ -16,6 +16,19 @@ export default function ClubCard({
   const [saved, setSaved] = useState(userSaved);
   const [clubLikeCount, setClubLikeCount] = useState(likeCount);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Sync internal state with props when they change (e.g., after logout)
+  useEffect(() => {
+    setLiked(userLiked);
+  }, [userLiked]);
+
+  useEffect(() => {
+    setSaved(userSaved);
+  }, [userSaved]);
+
+  useEffect(() => {
+    setClubLikeCount(likeCount);
+  }, [likeCount]);
 
   const toggleLike = async (e) => {
     e.preventDefault();
