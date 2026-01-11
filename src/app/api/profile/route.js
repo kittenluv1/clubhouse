@@ -89,6 +89,40 @@ export async function GET(req) {
     const likedClubs = likedClubsData ? likedClubsData.map(item => item.clubs) : [];
     const savedClubs = savedClubsData ? savedClubsData.map(item => item.clubs) : [];
 
+    // Get all unique club IDs to fetch like counts
+    const allClubIds = [...new Set([
+      ...likedClubs.map(c => c?.OrganizationID),
+      ...savedClubs.map(c => c?.OrganizationID)
+    ])].filter(Boolean);
+
+    // Fetch like counts for all clubs
+    let likeCounts = {};
+    if (allClubIds.length > 0) {
+      const { data: likeCountsData, error: likeCountsError } = await supabase
+        .from('club_likes')
+        .select('club_id')
+        .in('club_id', allClubIds);
+
+      if (likeCountsError) {
+        console.error('Error fetching like counts:', likeCountsError);
+      } else if (likeCountsData) {
+        // Count likes per club
+        likeCountsData.forEach(like => {
+          likeCounts[like.club_id] = (likeCounts[like.club_id] || 0) + 1;
+        });
+      }
+    }
+
+    // Attach like counts to clubs
+    const likedClubsWithCounts = likedClubs.map(club => ({
+      ...club,
+      like_count: likeCounts[club?.OrganizationID] || 0
+    }));
+    const savedClubsWithCounts = savedClubs.map(club => ({
+      ...club,
+      like_count: likeCounts[club?.OrganizationID] || 0
+    }));
+
     // Return all data
     return new Response(
       JSON.stringify({
@@ -96,8 +130,8 @@ export async function GET(req) {
         approvedReviews: approvedReviews || [],
         pendingReviews: pendingReviews || [],
         rejectedReviews: rejectedReviews || [],
-        likedClubs: likedClubs,
-        savedClubs: savedClubs,
+        likedClubs: likedClubsWithCounts,
+        savedClubs: savedClubsWithCounts,
       }),
       { status: 200 }
     );
