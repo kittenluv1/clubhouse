@@ -198,6 +198,29 @@ export default function ClubDetailsPage() {
     fetchClubData();
   }, [id]);
 
+  // Listen for auth state changes to reset user-specific state on logout
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT') {
+          // Reset all user-specific state when logged out
+          setUserLikedClub(false);
+          setUserSavedClub(false);
+          setUserLikedReviews([]);
+          // Update reviews to show user hasn't liked them
+          setReviews(prev => prev.map(review => ({
+            ...review,
+            user_has_liked: false
+          })));
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
 
