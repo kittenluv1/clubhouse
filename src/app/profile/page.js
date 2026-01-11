@@ -154,7 +154,6 @@ function ProfilePage() {
                                         <ReviewCard
                                             key={review.id}
                                             review={review}
-                                            isDesktop={true}
                                             status="approved"
                                             clickable={true}
                                             onLike={handleLike}
@@ -193,7 +192,6 @@ function ProfilePage() {
                                         <ReviewCard
                                             key={review.id}
                                             review={review}
-                                            isDesktop={true}
                                             status="pending"
                                             clickable={true}
                                             onLike={handleLike}
@@ -237,7 +235,6 @@ function ProfilePage() {
                                     <ReviewCard
                                         key={review.id}
                                         review={review}
-                                        isDesktop={true}
                                         status="rejected"
                                         clickable={true}
                                         onLike={handleLike}

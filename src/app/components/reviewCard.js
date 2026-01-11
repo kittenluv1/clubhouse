@@ -21,7 +21,6 @@ const formatMembership = (review) => {
 
 export default function ReviewCard({
     review,
-    isDesktop,
     status = "displayed", // 'approved' | 'pending' | 'rejected' | 'displayed'
     clickable = true, // whether card links to club page
     onLike, // callback for like button
@@ -72,7 +71,7 @@ export default function ReviewCard({
     const canEdit = status === "rejected" && onEdit;
     const canDelete = status === "rejected" && onDelete;
 
-    const desktopCard = (
+    const cardContent = (
         <div className={`w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10 ${clickable ? 'hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]' : ''}`}>
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
@@ -137,74 +136,6 @@ export default function ReviewCard({
             )}
         </div>
     );
-
-    const mobileCard = (
-        <div className={`w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out ${clickable ? 'hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]' : ''}`}>
-            <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
-                    <h2 className="text-xl font-bold text-black m-0 leading-none">
-                        {status === "displayed"
-                            ? (review.user_alias || "Anonymous")
-                            : review.club_name
-                        }
-                    </h2>
-                    <span className="text-sm italic font-semibold">Reviewed on {formatDate(review.created_at)}</span>
-                    <span className="text-sm text-[#6E808D]">
-                        Member from {review.membership_start_quarter}{" "}{review.membership_start_year} - {review.membership_end_quarter}{" "}{review.membership_end_year}
-                    </span>
-                </div>
-                {/* Like button - only for approved reviews */}
-                {canLike && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        <button onClick={toggleLike}>
-                            <img
-                                src={`/${liked ? "heart-liked" : "heart-unliked"}.svg`}
-                                alt="Heart Icon"
-                                className="minh-[15px] min-w[18px]"
-                            />
-                        </button>
-                        <span className="text-lg font-semibold text-gray-700 inline-block min-w-[2rem] text-left">
-                            {likeCount}
-                        </span>
-                    </div>
-                )}
-            </div>
-            <p className="line-clamp-4 text-sm font-normal text-black mt-4">
-                {review.review_text}
-            </p>
-
-            {/* Edit/Delete buttons - only for rejected reviews */}
-            {(canEdit || canDelete) && (
-                <div className="w-full flex justify-end space-x-2 mt-4">
-                    {canEdit && (
-                        <Button
-                            type="CTA"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onEdit(review);
-                            }}
-                        >
-                            Edit Review
-                        </Button>
-                    )}
-                    {canDelete && (
-                        <Button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onDelete(review.id);
-                            }}
-                        >
-                            Delete
-                        </Button>
-                    )}
-                </div>
-            )}
-        </div>
-    );
-
-    const cardContent = isDesktop ? desktopCard : mobileCard;
 
     // Wrap in Link only if clickable and club_name exists
     if (clickable && review.club_name) {
