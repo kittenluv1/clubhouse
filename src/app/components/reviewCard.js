@@ -71,7 +71,7 @@ export default function ReviewCard({
     const canDelete = status === "rejected" && onDelete;
 
     const cardContent = (
-        <div className={`w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
+        <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-4 py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
                     <h2 className="text-xl font-bold text-black md:text-2xl m-0 leading-none">
@@ -80,26 +80,33 @@ export default function ReviewCard({
                             : review.club_name
                         }
                     </h2>
-                    <span className="text-sm italic font-medium">Reviewed on {formatDate(review.created_at)}</span>
+                    {status === "displayed" && (
+                        <span className="text-sm font-medium">{formatDate(review.created_at)}</span>
+                    )}
                     <span className="text-sm text-[#6E808D] font-medium">
                         Member from {review.membership_start_quarter}{" "}{review.membership_start_year} - {review.membership_end_quarter}{" "}{review.membership_end_year}
                     </span>
                 </div>
-                {/* Like button - only for approved reviews */}
-                {canLike && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        <button onClick={toggleLike}>
-                            <img
-                                src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
-                                alt="Heart Icon"
-                                className="minh-[15px] min-w[18px]"
-                            />
-                        </button>
-                        <span className="text-lg font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
-                            {likeCount}
-                        </span>
-                    </div>
-                )}
+                <div className="flex flex-col items-end gap-2">
+                    {status !== "displayed" && (
+                        <span className="text-sm italic font-medium">Reviewed on {formatDate(review.created_at)}</span>
+                    )}
+                    {/* Like button - only for approved reviews */}
+                    {canLike && (
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <button onClick={toggleLike}>
+                                <img
+                                    src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+                                    alt="Heart Icon"
+                                    className="minh-[15px] min-w[18px]"
+                                />
+                            </button>
+                            <span className="text-lg font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
+                                {likeCount}
+                            </span>
+                        </div>
+                    )}
+                </div>
             </div>
             <p className="line-clamp-4 text-sm font-normal text-black md:text-base mt-4">
                 {review.review_text}
