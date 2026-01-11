@@ -22,7 +22,6 @@ const formatMembership = (review) => {
 export default function ReviewCard({
     review,
     status = "displayed", // 'approved' | 'pending' | 'rejected' | 'displayed'
-    clickable = true, // whether card links to club page
     onLike, // callback for like button
     onEdit, // callback for edit button
     onDelete, // callback for delete button
@@ -72,7 +71,7 @@ export default function ReviewCard({
     const canDelete = status === "rejected" && onDelete;
 
     const cardContent = (
-        <div className={`w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10 ${clickable ? 'hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]' : ''}`}>
+        <div className={`w-full transform space-y-4 rounded-xl bg-[#E6F4FF] px-4 py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-2 min-w-[150px] md:min-w-[200px]">
                     <h2 className="text-xl font-bold text-black md:text-2xl m-0 leading-none">
@@ -136,15 +135,6 @@ export default function ReviewCard({
             )}
         </div>
     );
-
-    // Wrap in Link only if clickable and club_name exists
-    if (clickable && review.club_name) {
-        return (
-            <Link href={`/clubs/${encodeURIComponent(review.club_name)}`}>
-                {cardContent}
-            </Link>
-        );
-    }
 
     return cardContent;
 }
