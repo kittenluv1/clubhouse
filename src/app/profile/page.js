@@ -232,7 +232,6 @@ function ProfilePage() {
                                         <ReviewCard
                                             key={review.id}
                                             review={review}
-                                            isDesktop={true}
                                             status="approved"
                                             clickable={true}
                                             onLike={handleLike}
@@ -271,7 +270,6 @@ function ProfilePage() {
                                         <ReviewCard
                                             key={review.id}
                                             review={review}
-                                            isDesktop={true}
                                             status="pending"
                                             clickable={true}
                                             onLike={handleLike}
@@ -315,7 +313,6 @@ function ProfilePage() {
                                     <ReviewCard
                                         key={review.id}
                                         review={review}
-                                        isDesktop={true}
                                         status="rejected"
                                         clickable={true}
                                         onLike={handleLike}
@@ -434,11 +431,11 @@ function ProfilePage() {
                     <img
                         src="/default_profile.svg"
                         alt="Profile"
-                        className="h-32 w-32 rounded-full"
+                        className="h-30 w-30 rounded-full"
                     />
 
                     <div className="flex-1 text-center md:text-left self-center">
-                        <h1 className="mb-2 text-4xl font-bold">{displayName}</h1>
+                        <h1 className="mb-2 text-3xl font-bold">{displayName}</h1>
                     </div>
                 </div>
             </div>

@@ -915,7 +915,6 @@ export default function ClubDetailsPage() {
               <ReviewCard
                 key={review.id}
                 review={review}
-                isDesktop={true}
                 status="displayed"
                 clickable={false}
                 onLike={handleLike}
