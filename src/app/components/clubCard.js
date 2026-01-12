@@ -115,7 +115,7 @@ export default function ClubCard({
               alt="Heart Icon"
               className="min-h-[15px] min-w-[18px]"
             />
-            <span className="text-lg font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
+            <span className="text-md font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
               {clubLikeCount}
             </span>
           </button>
