@@ -39,7 +39,7 @@ const getCurrentQuarter = () => {
 	}
 };
 
-export default function editReviewPage() {
+export default function EditReviewPage() {
 	const params = useParams();
 	const id = params.id;
 
