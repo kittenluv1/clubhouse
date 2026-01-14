@@ -33,7 +33,7 @@ export default function Footer() {
             <div className="grid auto-cols-max grid-flow-col gap-2">
               <a href="https://www.instagram.com/clubhouseucla/" target="_blank">
                 <img
-                  src="/instagram.svg"
+                  src="/links/instagram.svg"
                   alt="instagram icon"
                   className="inline-block w-8"
                 />
@@ -43,14 +43,14 @@ export default function Footer() {
                 target="_blank"
               >
                 <img
-                  src="/linkedin.svg"
+                  src="/links/linkedin.svg"
                   alt="linkedin icon"
                   className="inline-block w-8"
                 />
               </a>
               <a href="https://www.tiktok.com/@clubhouseucla" target="_blank">
                 <img
-                  src="/tiktok.svg"
+                  src="/links/tiktok.svg"
                   alt="tiktok icon"
                   className="inline-block w-8"
                 />
@@ -60,7 +60,7 @@ export default function Footer() {
                 target="_blank"
               >
                 <img
-                  src="/reddit.svg"
+                  src="/links/reddit.svg"
                   alt="reddit icon"
                   className="inline-block w-8"
                 />
