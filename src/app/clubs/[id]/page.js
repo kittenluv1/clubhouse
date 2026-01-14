@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { debounce } from "lodash-es";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
@@ -154,6 +153,8 @@ export default function ClubDetailsPage() {
   const [userSavedClub, setUserSavedClub] = useState(false);
   const [reviewLikesMap, setReviewLikesMap] = useState({});
   const [userLikedReviews, setUserLikedReviews] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
 
   useEffect(() => {
     if (!id) return;
@@ -316,7 +317,8 @@ export default function ClubDetailsPage() {
     }
   };
 
-  const handleLikeToggle = debounce(async () => {
+  const handleLikeToggle = async () => {
+    if (isProcessing) return; // Ignore clicks while processing
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -328,6 +330,7 @@ export default function ClubDetailsPage() {
       return;
     }
 
+    setIsProcessing(true);
     try {
       if (userLikedClub) {
         // Unlike
@@ -356,8 +359,10 @@ export default function ClubDetailsPage() {
       }
     } catch (error) {
       console.error("Error toggling like:", error);
+    } finally {
+      setIsProcessing(false);
     }
-  }, 350);
+  };
 
   const handleSaveToggle = async () => {
     const {
