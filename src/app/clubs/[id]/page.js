@@ -415,29 +415,26 @@ export default function ClubDetailsPage() {
                   {club.OrganizationName}
                 </h1>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   {/* Like Button */}
                   <button
                     onClick={handleLikeToggle}
-                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${userLikedClub
-                      ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
-                      : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
-                      }`}
+                    className={"flex items-center"}
                   >
-                    <span className="text-xl">{userLikedClub ? "❤️" : "🤍"}</span>
-                    <span>{clubLikeCount}</span>
+                    <img src={`../../${userLikedClub ? "likeFilled" : "likeUnfilled"}.svg`} 
+                    alt="like heart image" className="min-h-[15px] min-w-[18px] "/>
+                    <span className=" text-lg font-semibold text-gray-700 inline-block text-left min-w-[1rem] ">{clubLikeCount}</span>
                   </button>
 
                   {/* Save Button */}
                   <button
                     onClick={handleSaveToggle}
-                    className={`flex items-center gap-2 rounded-lg border-2 px-4 py-2 font-bold transition-all ${userSavedClub
-                      ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
-                      : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
-                      }`}
+                    className={` flex items-center`}
+                      style={{ backgroundRepeat: "no-repeat"}}
                     title={userSavedClub ? "Unsave club" : "Save club"}
                   >
-                    <span className="text-xl">{userSavedClub ? "★" : "☆"}</span>
+                     <img src={`../../${userSavedClub ? "saveFilled" : "saveUnfilled"}.svg`} 
+                    alt="like heart image" className="min-h-[15px] min-w-[18px]"/>
                   </button>
                 </div>
               </div>
@@ -653,25 +650,21 @@ export default function ClubDetailsPage() {
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${userLikedClub
-                    ? "border-red-500 bg-red-500 text-white hover:bg-red-600"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50"
-                    }`}
+                  className={`flex items-center font-bold `}
                 >
-                  <span className="text-lg">{userLikedClub ? "❤️" : "🤍"}</span>
-                  <span>{clubLikeCount}</span>
+                  <img src={`../../${userLikedClub ? "likeFilled" : "likeUnfilled"}.svg`} 
+                    alt="like heart image" className="min-h-[15px] min-w-[18px]"/>
+                  <span className="text-lg inline-block min-w-[1rem] text-left">{clubLikeCount}</span>
                 </button>
 
                 {/* Save Button */}
                 <button
                   onClick={handleSaveToggle}
-                  className={`flex items-center gap-2 rounded-lg border-2 px-3 py-1.5 font-bold transition-all ${userSavedClub
-                    ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
-                    : "border-gray-300 bg-white text-gray-700 hover:border-blue-500 hover:bg-blue-50"
-                    }`}
+                  className={`flex min-h-[18px] min-w-[18px] font-bold transition-all`}
                   title={userSavedClub ? "Unsave club" : "Save club"}
                 >
-                  <span className="text-lg">{userSavedClub ? "★" : "☆"}</span>
+                   <img src={`../../${userSavedClub ? "saveFilled" : "saveUnfilled"}.svg`} 
+                    alt="like heart image" className="min-h-[15px] min-w-[18px]"/>
                 </button>
               </div>
             </div>
