@@ -72,14 +72,14 @@ export default function ReviewCard({
 
         // Optimistic update
         setLiked(newLiked);
-        setLikeCount(prev => newLiked ? prev + 1 : prev - 1);
+        setLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
 
         try {
             await onLike(review.id, newLiked);
         } catch (error) {
             // Revert on failure
             setLiked(!newLiked);
-            setLikeCount(prev => newLiked ? prev - 1 : prev + 1);
+            setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
             console.error('Failed to toggle like:', error);
         } finally {
             setIsProcessing(false);
