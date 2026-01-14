@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Button from "./button";
 import { supabase } from "@/app/lib/db";
@@ -39,10 +39,18 @@ export default function ReviewCard({
     onEdit, // callback for edit button
     onDelete, // callback for delete button
 }) {
-    // TODO: Initialize liked state from review.user_has_liked when user-specific likes are implemented
     const [liked, setLiked] = useState(review.user_has_liked || false);
     const [likeCount, setLikeCount] = useState(review.likes || 0);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // Sync internal state with props when they change (e.g., after logout)
+    useEffect(() => {
+        setLiked(review.user_has_liked || false);
+    }, [review.user_has_liked]);
+
+    useEffect(() => {
+        setLikeCount(review.likes || 0);
+    }, [review.likes]);
 
     const toggleLike = async () => {
         if (isProcessing) return; // Ignore clicks while processing
