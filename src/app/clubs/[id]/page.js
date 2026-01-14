@@ -61,6 +61,38 @@ const parseSocialLinks = (htmlString) => {
   );
 };
 
+// RatingBar component
+function RatingBar({ title, tooltipRating, value }) {
+  return (
+    <div>
+      <div className="mb-1 flex justify-between">
+        <div className="flex items-center gap-1">
+          <span>{title}</span>
+          <Tooltip rating={tooltipRating} />
+        </div>
+        <span>
+          {value ? value.toFixed(1) + "/5" : "N/A"}
+        </span>
+      </div>
+      <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200 border-1 border-[#D9D9D9]">
+        {/* linear gradient border with linear gradient fill */}
+        <div className="h-full rounded-full bg-gradient-to-r from-[#FFA1CD] to-[#A3CD1B] p-[1px]"
+          style={{
+            width: `${value ? (value / 5) * 100 : 0}%`,
+          }}>
+          <div
+            className="h-full w-full rounded-full bg-gradient-to-r from-[#FFA2CC] via-[#FEF38C] to-[#B8DF64]"
+          />
+        </div>
+      </div>
+      <div className="mt-1 flex justify-between text-xs text-gray-500">
+        <span>low</span>
+        <span>high</span>
+      </div>
+    </div>
+  );
+}
+
 // DescriptionWithClamp component
 function DescriptionWithClamp({ description }) {
   const [showFull, setShowFull] = useState(false);
@@ -148,10 +180,6 @@ export default function ClubDetailsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isClamped, setIsClamped] = useState(false);
-  // const isDesktop = useMediaQuery("(min-width: 1024px)");
-  // const isMobile = !isDesktop;
-  // const [ratingsOpen, setRatingsOpen] = useState(false);
   const [clubLikeCount, setClublikeCount] = useState(0);
   const [userLikedClub, setUserLikedClub] = useState(false);
   const [userSavedClub, setUserSavedClub] = useState(false);
@@ -390,8 +418,10 @@ export default function ClubDetailsPage() {
   return (
     <>
       {/* Club Information */}
-      <section className="p-6 md:p-20 bg-[url('/club-page/club-page-bg.svg')]">
-        <div className="mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-lg border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B]">
+      <section className="relative p-6 md:p-20 bg-[url('/club-page/club-page-bg.svg')] bg-cover">
+
+        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-lg border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B] z-10">
+
           {/* left side of the box */}
           <div className="lg:pr-5 lg:w-4/6">
             <div className="mb-3 flex items-center justify-between">
@@ -509,109 +539,26 @@ export default function ClubDetailsPage() {
             <section>
               {/* Rating Bars - always show */}
               <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <div className="mb-1 flex justify-between">
-                    <div className="flex items-center gap-1">
-                      <span>Time Commitment</span>
-                      <Tooltip rating="timeCommitment" />
-                    </div>
-                    <span>
-                      {club.average_time_commitment
-                        ? club.average_time_commitment.toFixed(1) + "/5"
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                    <div
-                      className="h-full bg-[#b4d59f]"
-                      style={{
-                        width: `${club.average_time_commitment ? (club.average_time_commitment / 5) * 100 : 0}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="mt-1 flex justify-between text-xs text-gray-500">
-                    <span>low</span>
-                    <span>high</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-1 flex justify-between">
-                    <div className="flex items-center gap-1">
-                      <span>Inclusivity</span>
-                      <Tooltip rating="inclusivity" />
-                    </div>
-                    <span>
-                      {club.average_inclusivity
-                        ? club.average_inclusivity.toFixed(1) + "/5"
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                    <div
-                      className="h-full bg-[#b4d59f]"
-                      style={{
-                        width: `${club.average_inclusivity ? (club.average_inclusivity / 5) * 100 : 0}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="mt-1 flex justify-between text-xs text-gray-500">
-                    <span>low</span>
-                    <span>high</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-1 flex justify-between">
-                    <div className="flex items-center gap-1">
-                      <span>Social Community</span>
-                      <Tooltip rating="socialCommunity" />
-                    </div>
-                    <span>
-                      {club.average_social_community
-                        ? club.average_social_community.toFixed(1) + "/5"
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                    <div
-                      className="h-full bg-[#b4d59f]"
-                      style={{
-                        width: `${club.average_social_community ? (club.average_social_community / 5) * 100 : 0}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="mt-1 flex justify-between text-xs text-gray-500">
-                    <span>low</span>
-                    <span>high</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-1 flex justify-between">
-                    <div className="flex items-center gap-1">
-                      <span>Competitiveness</span>
-                      <Tooltip rating="competitiveness" />
-                    </div>
-                    <span>
-                      {club.average_competitiveness
-                        ? club.average_competitiveness.toFixed(1) + "/5"
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
-                    <div
-                      className="h-full bg-[#b4d59f]"
-                      style={{
-                        width: `${club.average_competitiveness ? (club.average_competitiveness / 5) * 100 : 0}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="mt-1 flex justify-between text-xs text-gray-500">
-                    <span>low</span>
-                    <span>high</span>
-                  </div>
-                </div>
+                <RatingBar
+                  title="Time Commitment"
+                  tooltipRating="timeCommitment"
+                  value={club.average_time_commitment}
+                />
+                <RatingBar
+                  title="Inclusivity"
+                  tooltipRating="inclusivity"
+                  value={club.average_inclusivity}
+                />
+                <RatingBar
+                  title="Social Community"
+                  tooltipRating="socialCommunity"
+                  value={club.average_social_community}
+                />
+                <RatingBar
+                  title="Competitiveness"
+                  tooltipRating="competitiveness"
+                  value={club.average_competitiveness}
+                />
               </div>
             </section>
           </div>
