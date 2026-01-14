@@ -419,7 +419,6 @@ export default function ClubDetailsPage() {
     <>
       {/* Club Information */}
       <section className="relative p-6 md:p-20 bg-[url('/club-page/club-page-bg.svg')] bg-cover">
-
         <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-lg border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B] z-10">
 
           {/* left side of the box */}
