@@ -8,6 +8,7 @@ import ErrorScreen from "../components/ErrorScreen";
 import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
 import Button from "../components/button";
+import { supabase } from "../lib/db";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -90,6 +91,31 @@ function AllClubsPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currPage]);
+
+  // Listen for auth state changes to reset user-specific state on logout
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT') {
+          // Reset all user-specific state when logged out
+          setUserLikedClubs([]);
+          setUserSavedClubs([]);
+          // Reset likes map to remove user-liked status
+          setLikesMap(prev => {
+            const updated = {};
+            for (const clubId in prev) {
+              updated[clubId] = { ...prev[clubId], userLiked: false };
+            }
+            return updated;
+          });
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const handlePreviousPage = () => currPage > 1 && setCurrPage((p) => p - 1);
   const handleNextPage = () =>

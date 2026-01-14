@@ -127,6 +127,84 @@ function ProfilePage() {
         console.log('Delete review:', reviewId);
     };
 
+    // Handler for club like/unlike
+    const handleClubLike = async (clubId, isLiked) => {
+        try {
+            const response = await fetch('/api/clubLikes', {
+                method: isLiked ? 'POST' : 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ club_id: clubId }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update like');
+            }
+
+            // Update local state - sync like counts across both arrays
+            if (isLiked) {
+                // Find the club from savedClubs if it exists there
+                const clubToAdd = savedClubs.find(c => c.OrganizationID === clubId);
+                if (clubToAdd && !likedClubs.some(c => c.OrganizationID === clubId)) {
+                    // Increment like count and add to liked clubs
+                    const updatedClub = { ...clubToAdd, like_count: (clubToAdd.like_count || 0) + 1 };
+                    setLikedClubs(prev => [...prev, updatedClub]);
+                    // Also update the like count in savedClubs
+                    setSavedClubs(prev => prev.map(c =>
+                        c.OrganizationID === clubId ? updatedClub : c
+                    ));
+                }
+            } else {
+                // Get current like count before removing
+                const currentClub = likedClubs.find(c => c.OrganizationID === clubId) ||
+                                   savedClubs.find(c => c.OrganizationID === clubId);
+                const newLikeCount = Math.max(0, (currentClub?.like_count || 0) - 1);
+
+                // Remove from liked clubs
+                setLikedClubs(prev => prev.filter(c => c.OrganizationID !== clubId));
+                // Update like count in savedClubs if the club exists there
+                setSavedClubs(prev => prev.map(c =>
+                    c.OrganizationID === clubId
+                        ? { ...c, like_count: newLikeCount }
+                        : c
+                ));
+            }
+        } catch (error) {
+            console.error('Error updating club like:', error);
+            throw error; // Re-throw to trigger revert in ClubCard
+        }
+    };
+
+    // Handler for club save/unsave
+    const handleClubSave = async (clubId, isSaved) => {
+        try {
+            const response = await fetch('/api/clubSaves', {
+                method: isSaved ? 'POST' : 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ club_id: clubId }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update save');
+            }
+
+            // Update local state
+            if (isSaved) {
+                // Find the club from likedClubs if it exists there
+                const clubToAdd = likedClubs.find(c => c.OrganizationID === clubId);
+                if (clubToAdd && !savedClubs.some(c => c.OrganizationID === clubId)) {
+                    // Add to saved clubs with current like count from likedClubs
+                    setSavedClubs(prev => [...prev, clubToAdd]);
+                }
+            } else {
+                // Remove from saved clubs
+                setSavedClubs(prev => prev.filter(c => c.OrganizationID !== clubId));
+            }
+        } catch (error) {
+            console.error('Error updating club save:', error);
+            throw error; // Re-throw to trigger revert in ClubCard
+        }
+    };
+
     const getContentForSection = () => {
         switch (activeSection) {
             case "approved":
@@ -293,6 +371,11 @@ function ProfilePage() {
                                             <ClubCard
                                                 key={`${club.OrganizationID}-${club.OrganizationName}`}
                                                 club={club}
+                                                likeCount={club.like_count || 0}
+                                                userLiked={true}
+                                                userSaved={savedClubs.some(c => c.OrganizationID === club.OrganizationID)}
+                                                onLike={handleClubLike}
+                                                onSave={handleClubSave}
                                             />
                                         ))}
                                     </div>
@@ -324,6 +407,11 @@ function ProfilePage() {
                                             <ClubCard
                                                 key={`${club.OrganizationID}-${club.OrganizationName}`}
                                                 club={club}
+                                                likeCount={club.like_count || 0}
+                                                userLiked={likedClubs.some(c => c.OrganizationID === club.OrganizationID)}
+                                                userSaved={true}
+                                                onLike={handleClubLike}
+                                                onSave={handleClubSave}
                                             />
                                         ))}
                                     </div>

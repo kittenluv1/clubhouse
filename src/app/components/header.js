@@ -157,18 +157,18 @@ function Header() {
 
                 {/* profile menu */}
                 {showProfileMenu && (
-                  <div className="absolute top-full right-1 mt-1 shadow-[0_0_15px_#262B6A26] rounded-lg z-20 bg-white w-max">
+                  <div className="absolute top-full right-0 mt-1 shadow-[0_0_15px_#262B6A26] rounded-lg z-20 bg-white w-max max-w-[200px] md:max-w-none">
                     <button
-                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
+                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-t-lg"
                       onClick={() => {
                         setShowProfileMenu(false);
                         router.push("/profile");
                       }}
                     >
-                      <img src="/profile.svg" className="w-10 h-10 mx-2" alt="Profile" />
-                      <div className="flex flex-col items-start mr-2">
+                      <img src="/profile.svg" className="w-10 h-10 mx-2 shrink-0" alt="Profile" />
+                      <div className="flex flex-col items-start mr-2 min-w-0">
                         <p className="m-0 leading-tight">View Profile</p>
-                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight">{userEmail}</p>
+                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight truncate max-w-[120px] md:max-w-none">{userEmail}</p>
                       </div>
                     </button>
 
@@ -206,12 +206,12 @@ function Header() {
 
                     <hr className="w-full bg-gray-300" />
                     <button
-                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
+                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-b-lg"
                       onClick={handleSignOut}
                     >
-                      <img src="/sign-out.svg" className="w-4 h-4 mx-5" alt="Sign Out" />
+                      <img src="/sign-out.svg" className="w-4 h-4 mx-5 shrink-0" alt="Sign Out" />
                       <div className="flex flex-col items-start">
-                        <p className="m-0">Sign Out</p>
+                        <p className="m-0 whitespace-nowrap">Sign Out</p>
                       </div>
                     </button>
                   </div>
