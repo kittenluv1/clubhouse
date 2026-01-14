@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Link from "next/link";
 import Button from "./button";
 import { supabase } from "@/app/lib/db";
@@ -42,6 +42,9 @@ export default function ReviewCard({
     const [liked, setLiked] = useState(review.user_has_liked || false);
     const [likeCount, setLikeCount] = useState(review.likes || 0);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [showFull, setShowFull] = useState(false);
+    const [isClamped, setIsClamped] = useState(false);
+    const textRef = useRef(null);
 
     // Sync internal state with props when they change (e.g., after logout)
     useEffect(() => {
@@ -51,6 +54,18 @@ export default function ReviewCard({
     useEffect(() => {
         setLikeCount(review.likes || 0);
     }, [review.likes]);
+
+    // Check if the review text is clamped (truncated)
+    useLayoutEffect(() => {
+        function checkClamp() {
+            if (textRef.current) {
+                setIsClamped(textRef.current.scrollHeight > textRef.current.clientHeight);
+            }
+        }
+        checkClamp();
+        window.addEventListener("resize", checkClamp);
+        return () => window.removeEventListener("resize", checkClamp);
+    }, [review.review_text, showFull]);
 
     const toggleLike = async () => {
         if (isProcessing) return; // Ignore clicks while processing
@@ -146,9 +161,52 @@ export default function ReviewCard({
                     )}
                 </div>
             </div>
-            <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
-                {review.review_text}
-            </p>
+            <div>
+                <p
+                    ref={textRef}
+                    className={`text-sm font-normal text-black md:text-base transition-all duration-200 ${!showFull ? "line-clamp-4" : ""}`}
+                >
+                    {review.review_text}
+                </p>
+                {!showFull && isClamped && (
+                    <button
+                        className="mt-1 text-sm text-blue-600 italic underline"
+                        type="button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setShowFull(true);
+                        }}
+                        style={{
+                            background: "none",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                        }}
+                    >
+                        ...see more
+                    </button>
+                )}
+                {showFull && (
+                    <button
+                        className="mt-1 text-sm text-blue-600 italic underline"
+                        type="button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setShowFull(false);
+                        }}
+                        style={{
+                            background: "none",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                        }}
+                    >
+                        ...see less
+                    </button>
+                )}
+            </div>
 
             {/* Edit/Delete buttons - only for rejected reviews */}
             {(canEdit || canDelete) && (
