@@ -10,6 +10,7 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "@/app/components/tooltip";
 import Button from "@/app/components/button";
+import SortModal from "@/app/components/sortModal";
 
 const getIconByName = (name) => {
   const key = name.toLowerCase();
@@ -147,6 +148,8 @@ export default function ClubDetailsPage() {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = !isDesktop;
   const [ratingsOpen, setRatingsOpen] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [sortType, setSortType] = useState("mostLiked");
 
   useEffect(() => {
     if (!id) return;
@@ -169,12 +172,22 @@ export default function ClubDetailsPage() {
 
           const { data: reviewsData, error: reviewsError } = await supabase
             .from("reviews")
-            .select("*")
+            .select(`*, review_likes(count)`)
             .eq("club_id", clubData.OrganizationID)
             .order("created_at", { ascending: false });
 
           if (reviewsError) throw reviewsError;
-          setReviews(reviewsData);
+
+          if (sortType === "mostLiked") {
+            setReviews(reviewsData.sort((a, b) => {
+              const likesA = a.review_likes?.[0]?.count || 0;
+              const likesB = b.review_likes?.[0]?.count || 0;
+              return likesB - likesA;
+            }));
+          }
+          else {
+            setReviews(reviewsData);
+          }
         } else {
           setError(`No club found with name containing: ${id}`);
         }
@@ -187,7 +200,10 @@ export default function ClubDetailsPage() {
     };
 
     fetchClubData();
-  }, [id]);
+  }, [
+    id,
+    sortType
+  ]);
 
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
@@ -710,6 +726,66 @@ export default function ClubDetailsPage() {
           </div>
         ) : (
           <div className="space-y-8">
+            <div className="flex items-start justify-between">
+              {isMobile ? (
+                <>
+                  <Button
+                    type="border"
+                    size="small"
+                    onClick={() => setShowSortModal(true)}
+                  >
+                    Sort By
+                  </Button>
+                  <SortModal
+                    open={showSortModal}
+                    onClose={() => setShowSortModal(false)}
+                    selected={sortType}
+                    onSelect={(newSort) => {
+                      setSortType(newSort);
+                    }}
+                    sortOptions={[
+                      { label: "Most liked", value: "mostLiked" },
+                      { label: "Most recent", value: "mostRecent" }
+                    ]}
+                  />
+                </>
+              ) : (
+                <div className="relative">
+                  <div
+                    className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
+                    onClick={() => setShowSortModal(!showSortModal)}
+                  >
+                    <span className="font-medium text-black">Sort by:</span>
+                    <span className="font-bold text-black">
+                      {sortType === "mostLiked" && "Most liked"}
+                      {sortType === "mostRecent" && "Most recent"}
+                    </span>
+                    <svg
+                      className={`h-4 w-4 transition-transform ${showSortModal ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  <SortModal
+                    open={showSortModal}
+                    onClose={() => setShowSortModal(false)}
+                    selected={sortType}
+                    onSelect={(newSort) => {
+                      setSortType(newSort);
+                    }}
+                    sortOptions={[
+                      { label: "Most liked", value: "mostLiked" },
+                      { label: "Most recent", value: "mostRecent" }
+                    ]}
+                    variant="desktop"
+                  />
+                </div>
+              )}
+            </div>
+
             {reviews.map((review, index) =>
               isDesktop ? (
                 // desktop card
