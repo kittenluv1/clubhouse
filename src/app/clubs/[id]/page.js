@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { debounce } from "lodash-es";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
@@ -315,7 +316,7 @@ export default function ClubDetailsPage() {
     }
   };
 
-  const handleLikeToggle = async () => {
+  const handleLikeToggle = debounce(async () => {
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -330,7 +331,7 @@ export default function ClubDetailsPage() {
     try {
       if (userLikedClub) {
         // Unlike
-        const response = await fetch("/api/clubLikes", {
+        let response = await fetch("/api/clubLikes", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ club_id: club.OrganizationID }),
@@ -342,7 +343,7 @@ export default function ClubDetailsPage() {
         }
       } else {
         // Like
-        const response = await fetch("/api/clubLikes", {
+        let response = await fetch("/api/clubLikes", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ club_id: club.OrganizationID }),
@@ -356,7 +357,7 @@ export default function ClubDetailsPage() {
     } catch (error) {
       console.error("Error toggling like:", error);
     }
-  };
+  }, 350);
 
   const handleSaveToggle = async () => {
     const {
