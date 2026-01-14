@@ -18,24 +18,24 @@ export const QuarterYearDropdown = ({
   const endYear = currentYear;
   const quarters = ["Fall", "Spring", "Winter"];
 
-const getCurrentQuarter = () => {
-  const month = new Date().getMonth() + 1;
+  const getCurrentQuarter = () => {
+    const month = new Date().getMonth() + 1;
 
-  if (month >= 9 && month <= 12) {
-    return "Fall";
-  } else if (month >= 1 && month <= 3) {
-    return "Winter";
-  } else {
-    return "Spring";
-  }
-};
+    if (month >= 9 && month <= 12) {
+      return "Fall";
+    } else if (month >= 1 && month <= 3) {
+      return "Winter";
+    } else {
+      return "Spring";
+    }
+  };
 
   const currentQuarter = getCurrentQuarter();
 
   const isQuarterValid = (quarter, year) => {
     if (year < currentYear) return true;
     if (year > currentYear) return false;
-    
+
     const quarterOrder = { "Winter": 1, "Spring": 2, "Fall": 3 };
     return quarterOrder[quarter] <= quarterOrder[currentQuarter];
   };
