@@ -10,6 +10,7 @@ import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "../../../components/tooltip";
 import LoadingScreen from "../../../components/LoadingScreen";
+import ErrorScreen from "../../../components/ErrorScreen";
 import Button from "../../../components/button";
 
 const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
@@ -60,7 +61,12 @@ export default function EditReviewPage() {
 	const [overallSatisfaction, setOverallSatisfaction] = useState(null);
 	const [reviewText, setReviewText] = useState("");
 	const [isMember, setIsMember] = useState(false);
+
 	const [currentUser, setCurrentUser] = useState(null);
+	const [reviewAuthorId, setReviewAuthorId] = useState(null);
+	const [isUnauthorized, setIsUnauthorized] = useState(false);
+	const [isUserLoading, setIsUserLoading] = useState(true);
+	const [isReviewLoading, setIsReviewLoading] = useState(true);
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState(null);
@@ -77,9 +83,12 @@ export default function EditReviewPage() {
 
 			if (user) {
 				setCurrentUser(user);
+				setIsUserLoading(false);
 			} else {
 				console.error("Error getting user:", error);
-				window.location.href = "/sign-in";
+				const returnUrl = encodeURIComponent(`/review/edit/${id}`);
+				window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+				setIsUserLoading(false);
 			}
 		};
 
@@ -89,9 +98,12 @@ export default function EditReviewPage() {
 			(_event, session) => {
 				if (session?.user) {
 					setCurrentUser(session.user);
+					setIsUserLoading(false);
 				} else {
 					setCurrentUser(null);
-					window.location.href = "/sign-in";
+					const returnUrl = encodeURIComponent(`/review/edit/${id}`);
+					window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+					setIsUserLoading(false);
 				}
 			},
 		);
@@ -104,7 +116,10 @@ export default function EditReviewPage() {
 
 	// Get rejected review and set form fields
 	useEffect(() => {
-		if (!id) return;
+		if (!id) {
+			setIsReviewLoading(false);
+			return;
+		}
 
 		const fetchRejectedReview = async () => {
 
@@ -133,6 +148,7 @@ export default function EditReviewPage() {
 					setOverallSatisfaction(review.overall_satisfaction);
 					setReviewText(review.review_text);
 					setUserAlias(review.user_alias);
+					setReviewAuthorId(review.user_id);
 
 				} else {
 					console.error('Error fetching rejected review:', result.error);
@@ -142,6 +158,8 @@ export default function EditReviewPage() {
 			} catch (error) {
 				console.error('Error fetching rejected review:', error);
 				setError('Failed to load review for editing.');
+			} finally {
+				setIsReviewLoading(false);
 			}
 
 		};
@@ -165,6 +183,18 @@ export default function EditReviewPage() {
 			setDateError(null);
 		}
 	}, [startQuarter, startYear, endQuarter, endYear]);
+
+	useEffect(() => {
+		if (isUserLoading || isReviewLoading) return;
+
+		if (currentUser.id == reviewAuthorId) {
+			setIsUnauthorized(false);
+			console.log("AUTHORIZED");
+		} else {
+			setIsUnauthorized(true);
+			console.log("NOT AUTHORIZED");
+		}
+	}, [currentUser, reviewAuthorId, isUserLoading, isReviewLoading]);
 
 	const handleMembershipCheckbox = (e) => {
 		const checked = e.target.checked;
@@ -339,6 +369,11 @@ export default function EditReviewPage() {
 			</div>
 		);
 	};
+
+	if (isUserLoading || isReviewLoading) return LoadingScreen();
+
+	if (isUnauthorized)
+		return <ErrorScreen error="You are not authorized to edit this review." />;
 
 	if (isSubmitting) return LoadingScreen();
 
