@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
 
@@ -10,6 +10,7 @@ import LoadingScreen from "@/app/components/LoadingScreen";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "@/app/components/tooltip";
 import Button from "@/app/components/button";
+import SortModal from "@/app/components/sortModal";
 import ReviewCard from "@/app/components/reviewCard";
 
 function IconImg({ media }) {
@@ -185,8 +186,11 @@ export default function ClubDetailsPage() {
   const [userSavedClub, setUserSavedClub] = useState(false);
   const [reviewLikesMap, setReviewLikesMap] = useState({});
   const [userLikedReviews, setUserLikedReviews] = useState([]);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const isMobile = !isDesktop;
   const [isProcessing, setIsProcessing] = useState(false);
-
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [sortType, setSortType] = useState("mostLiked");
 
   useEffect(() => {
     if (!id) return;
@@ -230,7 +234,22 @@ export default function ClubDetailsPage() {
     };
 
     fetchClubData();
-  }, [id]);
+  }, [
+    id
+  ]);
+
+  const sortedReviews = useMemo(() => {
+    const baseReviews = [...reviews];
+
+    if (sortType === "mostLiked") {
+      return baseReviews.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    }
+    else if (sortType === "mostRecent") {
+      return baseReviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
+    return baseReviews;
+  }, [reviews, sortType]);
 
   // Listen for auth state changes to reset user-specific state on logout
   useEffect(() => {
@@ -254,6 +273,22 @@ export default function ClubDetailsPage() {
       authListener.subscription.unsubscribe();
     };
   }, []);
+
+  function useMediaQuery(query) {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+      const media = window.matchMedia(query);
+      if (media.matches !== matches) {
+        setMatches(media.matches);
+      }
+      const listener = () => setMatches(media.matches);
+      media.addEventListener("change", listener);
+      return () => media.removeEventListener("change", listener);
+    }, [matches, query]);
+
+    return matches;
+  }
 
   // Handler functions for review actions
   const handleLike = async (reviewId, isLiked) => {
@@ -593,15 +628,74 @@ export default function ClubDetailsPage() {
               </Button>
             </div>
           </div>
+          <div className="flex items-end justify-end mb-12">
+            {isMobile ? (
+              <>
+                <Button
+                  type="border"
+                  size="small"
+                  onClick={() => setShowSortModal(true)}
+                >
+                  Sort By
+                </Button>
+                <SortModal
+                  open={showSortModal}
+                  onClose={() => setShowSortModal(false)}
+                  selected={sortType}
+                  onSelect={(newSort) => {
+                    setSortType(newSort);
+                  }}
+                  sortOptions={[
+                    { label: "Most liked", value: "mostLiked" },
+                    { label: "Most recent", value: "mostRecent" }
+                  ]}
+                />
+              </>
+            ) : (
+              <div className="relative">
+                <div
+                  className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
+                  onClick={() => setShowSortModal(!showSortModal)}
+                >
+                  <span className="font-medium text-black">Sort by:</span>
+                  <span className="font-bold text-black">
+                    {sortType === "mostLiked" && "Most liked"}
+                    {sortType === "mostRecent" && "Most recent"}
+                  </span>
+                  <svg
+                    className={`h-4 w-4 transition-transform ${showSortModal ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+                <SortModal
+                  open={showSortModal}
+                  onClose={() => setShowSortModal(false)}
+                  selected={sortType}
+                  onSelect={(newSort) => {
+                    setSortType(newSort);
+                  }}
+                  sortOptions={[
+                    { label: "Most liked", value: "mostLiked" },
+                    { label: "Most recent", value: "mostRecent" }
+                  ]}
+                  variant="desktop"
+                />
+              </div>
+            )}
+          </div>
 
           {/* Reviews List */}
-          {reviews.length === 0 ? (
+          {sortedReviews.length === 0 ? (
             <div className="py-10 text-center text-gray-500">
               No reviews yet. Be the first to share your experience!
             </div>
           ) : (
             <div className="space-y-8">
-              {reviews.map((review, index) => (
+              {sortedReviews.map((review, index) => (
                 <ReviewCard
                   key={review.id}
                   review={review}
