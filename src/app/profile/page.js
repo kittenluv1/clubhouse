@@ -7,6 +7,7 @@ import ClubCard from "../components/clubCard";
 import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
 import LoadingScreen from "../components/LoadingScreen";
+import ConfirmationModal from "../components/confirmationModal";
 
 function ProfilePage() {
     const router = useRouter();
@@ -21,6 +22,8 @@ function ProfilePage() {
     const [likedClubs, setLikedClubs] = useState([]);
     const [savedClubs, setSavedClubs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const [reviewToDelete, setReviewToDelete] = useState(null);
 
     // Authentication check
     useEffect(() => {
@@ -119,12 +122,23 @@ function ProfilePage() {
 
     const handleEdit = (review) => {
         // Navigate to edit page
-        console.log('Editing review:', reviewId);
+        console.log('Editing review:', review);
+        router.push(`/review/edit/${review.id}`);
     };
 
     const handleDelete = async (reviewId) => {
+        setReviewToDelete(reviewId);
+        setConfirmationModalOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!reviewToDelete) return;
+
         // TODO: Implement API call to delete review
-        console.log('Delete review:', reviewId);
+        console.log('Delete review:', reviewToDelete);
+
+        // Reset state
+        setReviewToDelete(null);
     };
 
     // Handler for club like/unlike
@@ -425,8 +439,18 @@ function ProfilePage() {
 
     return (
         <div className="min-h-screen">
+            <ConfirmationModal
+                isOpen={confirmationModalOpen}
+                onClose={() => {
+                    setConfirmationModalOpen(false);
+                    setReviewToDelete(null);
+                }}
+                onConfirm={confirmDelete}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this review?"
+            />
             {/* User Information Section */}
-            <div className="mb-20 rounded-lg bg-white px-12 md:px-18 lg:px-26 py-6 md:py-12 lg:py-20 bg-center bg-cover bg-no-repeat" style={{backgroundImage: "url('/profile_background.png')"}}>
+            <div className="mb-20 rounded-lg bg-white px-12 md:px-18 lg:px-26 py-6 md:py-12 lg:py-20 bg-center bg-cover bg-no-repeat" style={{ backgroundImage: "url('/profile_background.png')" }}>
                 <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
                     <img
                         src="/default_profile.svg"
@@ -452,7 +476,7 @@ function ProfilePage() {
                                 className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <img src="profile_review.svg" alt="review icon" className="max-w-[20px]"/>
+                                    <img src="profile_review.svg" alt="review icon" className="max-w-[20px]" />
                                     <span className="text-2xl">Reviews</span>
                                 </div>
                                 <svg
@@ -496,7 +520,7 @@ function ProfilePage() {
                                 className="flex items-center justify-between w-full text-left font-semibold mb-2"
                             >
                                 <div className="flex items-center gap-2">
-                                    <img src="/profile_club.svg" alt="club icon" className="max-w-[20px]"/>
+                                    <img src="/profile_club.svg" alt="club icon" className="max-w-[20px]" />
                                     <span className="text-2xl">Clubs</span>
                                 </div>
                                 <svg
