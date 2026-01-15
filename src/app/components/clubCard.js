@@ -110,38 +110,40 @@ export default function ClubCard({
   return (
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
-      className="w-full transform space-y-4 rounded-4xl bg-[#E6F4FF] border border-[#92C7F1] px-4 py-6 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
+      className="w-full transform space-y-4 rounded-4xl bg-[#E6F4FF] border border-[#92C7F1] px-7 py-8 sm:px-6 sm:py-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
     >
       <div className="flex justify-between items-start">
-        <h2 className="text-xl font-bold text-black md:text-2xl">
+        <h2 className="text-xl font-bold text-black md:text-2xl flex-1 min-w-0 break-words">
           {club.OrganizationName}
         </h2>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 flex-shrink-0">
           {/* Like button */}
           <button
             onClick={toggleLike}
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px]"
             disabled={isProcessing}
+            aria-label={liked ? "Unlike club" : "Like club"}
           >
             <img
               src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
               alt="Heart Icon"
-              className="min-h-[15px] min-w-[18px]"
+              className="w-[18px] h-[15px]"
             />
-            <span className="text-md font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
+            <span className="text-sm font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
               {clubLikeCount}
             </span>
           </button>
           {/* Save button */}
           <button
             onClick={toggleSave}
-            className="flex items-center"
+            className="flex items-center p-2 -m-2 min-w-[44px] min-h-[44px]"
             disabled={isProcessing}
+            aria-label={saved ? "Unsave club" : "Save club"}
           >
             <img
-              src={`/${saved ? "saveFilled" : "saveUnfilled"}.svg`}
+              src={`/${saved ? "saved" : "unsaved"}.svg`}
               alt="Save Icon"
-              className="min-h-[18px] min-w-[18px]"
+              className="w-[18px] h-[18px]"
             />
           </button>
         </div>
