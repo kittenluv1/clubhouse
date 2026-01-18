@@ -15,28 +15,39 @@ export async function GET(req, { params }) {
     const startIndex = (pageNum - 1) * pageSize;
     const endIndex = startIndex + pageSize - 1;
 
-    // Set sorting options
-    let sortBy = "average_satisfaction";
-    let ascending = false;
-    if (sortType === "reviews") {
-      sortBy = "total_num_reviews";
+    // Configure sort priority based on sortType
+    let sortConfig = [];
+    if (sortType === "rating") {
+      sortConfig = [
+        { column: "average_satisfaction", ascending: false },
+        { column: "total_num_reviews", ascending: false },
+        { column: "OrganizationName", ascending: true },
+      ];
+    } else if (sortType === "reviews") {
+      sortConfig = [
+        { column: "total_num_reviews", ascending: false },
+        { column: "average_satisfaction", ascending: false },
+        { column: "OrganizationName", ascending: true },
+      ];
     } else if (sortType === "alphabetical") {
-      sortBy = "OrganizationName";
-      ascending = true;
+      sortConfig = [
+        { column: "OrganizationName", ascending: true },
+        { column: "average_satisfaction", ascending: false },
+        { column: "total_num_reviews", ascending: false },
+      ];
     }
 
-    // Build query with consistent ordering
+    // Build query with filter
     let query = supabase
       .from("clubs")
       .select("*", { count: "exact" })
-      .or(`Category1Name.ilike.%${category}%,Category2Name.ilike.%${category}%`)
-      .order(sortBy, { ascending, nullsFirst: false });
+      .or(`Category1Name.ilike.%${category}%,Category2Name.ilike.%${category}%`);
 
-    // Add secondary sort by OrganizationName for consistency (except when already sorting alphabetically)
-    if (sortType !== "alphabetical") {
-      query = query.order("OrganizationName", { ascending: true });
+    // Apply all sorts from config
+    for (const sort of sortConfig) {
+      query = query.order(sort.column, { ascending: sort.ascending, nullsFirst: false });
     }
-    // Always add ID as final tiebreaker (assuming you have an id column)
+    // Always add ID as final tiebreaker
     query = query.order("OrganizationID", { ascending: true });
 
     // Apply pagination

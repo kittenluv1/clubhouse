@@ -10,7 +10,8 @@ const SearchableDropdown = ({
     onSelect = () => {},
     required = true,
     placeholderColor = "#000", 
-    value = "" 
+    value = "",
+    className = ""
     }) => {
     const [inputValue, setInputValue] = useState(value || ''); 
     const [filteredOptions, setFilteredOptions] = useState([]);
@@ -58,9 +59,20 @@ const SearchableDropdown = ({
     if (inputValue.trim() === "") {
       setFilteredOptions([]);
     } else {
-      const filtered = allOptions.filter((option) =>
-        option.toLowerCase().includes(inputValue.toLowerCase()),
-      );
+      const filtered = allOptions
+        .filter((option) =>
+          option.toLowerCase().includes(inputValue.toLowerCase())
+        )
+        .sort((a, b) => {
+          const lowerA = a.toLowerCase();
+          const lowerB = b.toLowerCase();
+          const indexA = lowerA.indexOf(inputValue.toLowerCase());
+          const indexB = lowerB.indexOf(inputValue.toLowerCase());
+          // Sort by match position first (earlier matches come first)
+          if (indexA !== indexB) return indexA - indexB;
+          // Then alphabetically for ties
+          return lowerA.localeCompare(lowerB);
+        });
       setFilteredOptions(filtered);
     }
   }, [inputValue, allOptions]);
@@ -98,13 +110,13 @@ const SearchableDropdown = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="font-dm-sans placeholder-custom w-full rounded-full border bg-white px-3 py-2 shadow-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="placeholder-custom w-full rounded-full bg-[#F4F5F6] hover:bg-[#E5EBF1] active:bg-[#B5BFC6] focus:bg-[#B5BFC6] px-5 py-3 text-gray-700 text-base focus:outline-none"
           required={required}
           style={{
             "--placeholder-color": placeholderColor,
           }}
         />
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+        <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center pr-3">
           <svg
             className="h-5 w-5"
             fill="none"

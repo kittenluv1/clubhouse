@@ -30,8 +30,9 @@ export default function SortModal({
               {sortOptions.map((option) => (
                 <div
                   key={option.value}
-                  className={`cursor-pointer px-4 py-2 text-sm text-center hover:bg-gray-100 ${selected === option.value ? "font-bold" : ""
-                    }`}
+                  className={`cursor-pointer px-4 py-2 text-sm text-center hover:bg-gray-100 ${
+                    selected === option.value ? "font-bold" : ""
+                  }`}
                   onClick={() => {
                     onSelect(option.value);
                     onClose();

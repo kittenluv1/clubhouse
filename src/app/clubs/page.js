@@ -213,7 +213,10 @@ function AllClubsPage() {
                 open={showSortModal}
                 onClose={() => setShowSortModal(false)}
                 selected={sortType}
-                onSelect={(newSort) => setSortType(newSort)}
+                onSelect={(newSort) => {
+                  setSortType(newSort);
+                  setCurrPage(1);
+                }}
                 sortOptions={[
                   { label: "Highest Rated", value: "rating" },
                   { label: "Most Reviewed", value: "reviews" },
@@ -222,20 +225,41 @@ function AllClubsPage() {
               />
             </>
           ) : (
-            <div className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]">
-              <label className="cursor-pointer font-medium text-black">
-                Sort by:
-              </label>
-              <select
-                id="sort"
-                value={sortType}
-                onChange={(e) => setSortType(e.target.value)}
-                className="cursor-pointer font-bold text-black outline-hidden"
+            <div className="relative">
+              <div
+                className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
+                onClick={() => setShowSortModal(!showSortModal)}
               >
-                <option value="rating">Highest Rated</option>
-                <option value="reviews">Most Reviewed</option>
-                <option value="alphabetical">A–Z</option>
-              </select>
+                <span className="font-medium text-black">Sort by:</span>
+                <span className="font-bold text-black">
+                  {sortType === "rating" && "Highest Rated"}
+                  {sortType === "reviews" && "Most Reviewed"}
+                  {sortType === "alphabetical" && "A–Z"}
+                </span>
+                <svg
+                  className={`h-4 w-4 transition-transform ${showSortModal ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              <SortModal
+                open={showSortModal}
+                onClose={() => setShowSortModal(false)}
+                selected={sortType}
+                onSelect={(newSort) => {
+                  setSortType(newSort);
+                  setCurrPage(1);
+                }}
+                sortOptions={[
+                  { label: "Highest Rated", value: "rating" },
+                  { label: "Most Reviewed", value: "reviews" },
+                  { label: "A – Z", value: "alphabetical" },
+                ]}
+                variant="desktop"
+              />
             </div>
           )}
         </div>
