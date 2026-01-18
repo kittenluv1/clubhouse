@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import { createServerClient as createSSRClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 // This is to be used for DB altering calls, i.e. POST calls. A client created using the service keys get elevated privileges
 // Mainly for backend logic
@@ -25,6 +27,34 @@ export function createServerClient(authHeader) {
       global: {
         headers: {
           Authorization: authHeader,
+        },
+      },
+    }
+  );
+}
+
+// Server-side client that properly handles cookies for user authentication
+// Use this in API routes to get authenticated user sessions
+export async function createAuthenticatedClient() {
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
+
+  return createSSRClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // The `setAll` method was called from a Server Component. This can be ignored if you have middleware refreshing user sessions.
+          }
         },
       },
     }

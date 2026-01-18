@@ -167,7 +167,7 @@ const verbs = [
 const anonymousName = () => {
   const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
   const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
-  return `@${randomVerb}${randomNoun}`;
+  return `${randomVerb}${randomNoun}`;
 };
 
 const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {

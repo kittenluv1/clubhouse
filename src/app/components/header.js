@@ -3,47 +3,35 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "./search-bar";
 import { useRouter, usePathname } from "next/navigation";
-import LoginButton from "./login-button";
 import { supabase } from "../lib/db";
-import { motion, AnimatePresence } from "framer-motion";
 import Button from "./button";
-
-function useIsMobile(breakpoint = 640) {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    function check() {
-      setIsMobile(window.innerWidth < breakpoint);
-    }
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, [breakpoint]);
-  return isMobile;
-}
 
 function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const isMobile = useIsMobile(768);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileRef = React.useRef(null);
 
   useEffect(() => {
     setIsMounted(true);
 
     const checkAdmin = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setIsAdmin(session?.user?.email === "clubhouseucla@gmail.com");
+      const { data } = await supabase.auth.getSession();
+      const s = data?.session ?? null;
+      setUserEmail(s?.user?.email ?? null);
+      setIsAdmin(s?.user?.email === "clubhouseucla@gmail.com");
     };
 
     checkAdmin();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setIsAdmin(session?.user?.email === "clubhouseucla@gmail.com");
+        const current = session ?? null;
+        setUserEmail(current?.user?.email ?? null);
+        setIsAdmin(current?.user?.email === "clubhouseucla@gmail.com");
       },
     );
 
@@ -51,8 +39,6 @@ function Header() {
       authListener.subscription.unsubscribe();
     };
   }, []);
-
-  console.log("Header rendered at", pathname);
 
   const attemptReview = async () => {
     const {
@@ -62,27 +48,54 @@ function Header() {
     if (session) {
       window.location.href = "/review";
     } else {
-      window.location.href = "/sign-in";
+      const returnUrl = encodeURIComponent("/review");
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
     }
   };
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error.message);
+    } else {
+      setUserEmail(null);
+      console.log("User signed out successfully");
+    }
+  };
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setShowProfileMenu(false);
+      }
+    }
+
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    console.log("profile menu: ", showProfileMenu);
+  }, [showProfileMenu]);
 
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-3 lg:px-30 lg:py-6">
-      {/* Left: Logo or placeholder */}
-      {pathname !== "/" ? (
+    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-3 md:px-20 lg:px-30 lg:py-6 min-h-[52px]">
+      {/* Header is separated into 3 parts: LEFT, CENTER, RIGHT */}
+
+      {/* LEFT: Logo =======================================================*/}
+      {pathname !== "/" && (
         <button
           type="button"
           onClick={() => router.push("/")}
           className="flex items-center"
         >
-          {/* mobile responsive logo */}
           <object
             type="image/svg+xml"
             data="/clubhouse-logo-desktop.svg"
             aria-label="ClubHouse Logo"
-            className="pointer-events-none hidden object-cover lg:block lg:w-[200px]"
+            className="pointer-events-none hidden object-cover lg:block lg:w-[200px] mr-7"
           />
           <object
             type="image/svg+xml"
@@ -91,108 +104,131 @@ function Header() {
             className="pointer-events-none w-18 shrink-0 object-cover lg:hidden"
           />
         </button>
-      ) : (
-        <div className="w-3xs" /> // placeholder to preserve spacing on homepage
       )}
 
-      {/* Center: Search Bar or spacer */}
+      {/* =============================CENTER: Search Bar============================ */}
       {pathname !== "/" ? (
-        // mobile responsive search bar with animation
-        isMobile ? (
-          <div className="relative md:min-h-[52px] flex-1 px-4 md:px-8">
-            <AnimatePresence mode="wait" initial={false}>
-              {!showMobileMenu && (
-                <motion.div
-                  key="searchbar"
-                  initial={{ x: 0, opacity: 1 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: 100, opacity: 0 }}
-                  transition={{ type: "tween", duration: 0.3 }}
-                >
-                  <SearchBar />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ) : (
-          // desktop search bar
-          <div className="flex-1 px-4 md:px-8">
-            <SearchBar />
-          </div>
-        )
+        <div className="flex-1 mr-2">
+          <SearchBar />
+        </div>
       ) : (
-        // placeholder for homepage
+        // placeholder for homepage /
         <div className="w-3xs" />
       )}
 
-      {/* Right: Buttons */}
-      <div className="relative min-h-[52px]">
-        <AnimatePresence mode="wait" initial={false}>
-          {/* buttons are initially hidden in menu on mobile */}
-          {showMobileMenu && isMobile && (
-            <motion.div
-              key="mobile-buttons"
-              initial={{ x: 100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 100, opacity: 0 }}
-              transition={{ type: "tween", duration: 0.3 }}
-              className="absolute top-0 right-0 bottom-0 z-20 flex items-center bg-white gap-2 px-2"
-            >
-              {isAdmin ? (
-                <Button
-                  onClick={() => router.push("/admin")}
-                  className="flex items-center p-1 text-nowrap"
-                >
-                  Admin
-                </Button>
-              ) : (
-                <Button
-                  onClick={attemptReview}
-                  className="flex items-center text-nowrap"
-                >
-                  Write a Review
-                </Button>
-              )}
-              <LoginButton />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* if not mobile, show buttons (no animation)
-          // if mobile menu is not showing, hide buttons */}
-        {!isMobile && (
-          <div className="flex items-center gap-4">
-            {isAdmin ? (
+      {/* =========================================================RIGHT: Buttons */}
+      <div className="relative h-full">
+        <div className="flex justify-center items-center gap-2">
+          {// show this button in the header on desktop only
+            isAdmin ? (
               <Button
+                type="CTA"
                 onClick={() => router.push("/admin")}
-                className="flex items-center p-1 text-nowrap"
+                style="hidden md:flex"
               >
                 Admin
-              </Button>
+              </Button >
             ) : (
               <Button
                 onClick={attemptReview}
-                className="flex items-center text-nowrap"
+                style="hidden md:flex"
               >
                 Write a Review
               </Button>
-            )}
-            <LoginButton />
-          </div>
-        )}
-      </div>
+            )
+          }
 
-      {/* Mobile Hamburger Menu */}
-      <button
-        onClick={() => setShowMobileMenu((prev) => !prev)}
-        className="shrink-0 p-2 md:hidden"
-      >
-        <img
-          src="/hamburger-menu.svg"
-          alt="Menu"
-          className="w-10 shrink-0 object-fill md:hidden"
-        />
-      </button>
+          {// Profile button 
+            userEmail && (
+              <div ref={profileRef}>
+
+                {/* profile button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowProfileMenu((prev) => !prev);
+                  }}
+                  className="relative flex items-center"
+                  aria-label="Sign out"
+                >
+                  <img src="/profile.svg" className="h-12" alt="Profile" />
+                </button>
+
+                {/* profile menu */}
+                {showProfileMenu && (
+                  <div className="absolute top-full right-0 mt-1 shadow-[0_0_15px_#262B6A26] rounded-lg z-20 bg-white w-max max-w-[200px] md:max-w-none">
+                    <button
+                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-t-lg"
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        router.push("/profile");
+                      }}
+                    >
+                      <img src="/profile.svg" className="w-10 h-10 mx-2 shrink-0" alt="Profile" />
+                      <div className="flex flex-col items-start mr-2 min-w-0">
+                        <p className="m-0 leading-tight">View Profile</p>
+                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight truncate max-w-[120px] md:max-w-none">{userEmail}</p>
+                      </div>
+                    </button>
+
+                    { // these options only displayed here on mobile
+                      isAdmin ? (
+                        <div className="md:hidden">
+                          <hr className="w-full bg-gray-300" />
+                          <button
+                            className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
+                            onClick={() => {
+                              setShowProfileMenu(false);
+                              router.push("/admin");
+                            }}
+                          >
+                            <img src="/review_1.svg" className="w-4 h-4 mx-5" alt="Admin" />
+                            <div className="flex flex-col items-start">
+                              <p className="m-0 leading-tight">Admin</p>
+                            </div>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="md:hidden">
+                          <hr className="w-full bg-gray-300" />
+                          <button
+                            className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
+                            onClick={attemptReview}
+                          >
+                            <img src="/edit-review.svg" className="w-4 h-4 mx-5" alt="Sign Out" />
+                            <div className="flex flex-col items-start">
+                              <p className="m-0">Write a Review</p>
+                            </div>
+                          </button>
+                        </div>
+                      )}
+
+                    <hr className="w-full bg-gray-300" />
+                    <button
+                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-b-lg"
+                      onClick={handleSignOut}
+                    >
+                      <img src="/sign-out.svg" className="w-4 h-4 mx-5 shrink-0" alt="Sign Out" />
+                      <div className="flex flex-col items-start">
+                        <p className="m-0 whitespace-nowrap">Sign Out</p>
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+          {!userEmail && (
+            <Button
+              type="CTA"
+              onClick={() => router.push("/sign-in")}
+            >
+              Sign In
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

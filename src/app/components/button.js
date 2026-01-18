@@ -23,7 +23,7 @@ export default function Button({
         ${type === 'border' && 'border-1 border-[#6E808D] hover:bg-[#E5EBF1]'}
         ${type === 'pink' && 'hover:bg-[#FBB2D4] border-none bg-[#FFCEE5]'}
         ${style}
-        rounded-full text-nowrap disabled:bg-[#E5EBF1] disabled:bg-none disabled:opacity-50 disabled:text-[#6E808D] disabled:!cursor-not-allowed
+        rounded-full text-nowrap transition-colors duration-300 disabled:bg-[#E5EBF1] disabled:bg-none disabled:opacity-50 disabled:text-[#6E808D] disabled:!cursor-not-allowed
         `
       }
     >
