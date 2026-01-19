@@ -403,7 +403,7 @@ function ProfilePage() {
                     <div className="mx-8">
                         <div className="text-center mb-8">
                             <p className="text-[#000000] text-4xl font-bold mb-4">Saved Clubs</p>
-                            <p className="text-[#747474] text-[20px]">Unsaved to remove club from &apos;Saved Clubs&apos; list!</p>
+                            <p className="text-[#747474] text-[20px]">Unsave to remove club from &apos;Saved Clubs&apos; list!</p>
                         </div>
                         <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
                         {
@@ -438,134 +438,158 @@ function ProfilePage() {
     };
 
     return (
-        <div className="min-h-screen">
-            <ConfirmationModal
-                isOpen={confirmationModalOpen}
-                onClose={() => {
-                    setConfirmationModalOpen(false);
-                    setReviewToDelete(null);
-                }}
-                onConfirm={confirmDelete}
-                title="Confirm Deletion"
-                message="Are you sure you want to delete this review?"
-            />
-            {/* User Information Section */}
-            <div className="mb-20 rounded-lg bg-white px-12 md:px-18 lg:px-26 py-6 md:py-12 lg:py-20 bg-center bg-cover bg-no-repeat" style={{ backgroundImage: "url('/profile_background.png')" }}>
-                <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
-                    <img
-                        src="/default_profile.svg"
-                        alt="Profile"
-                        className="h-30 w-30 rounded-full"
-                    />
-
-                    <div className="flex-1 text-center md:text-left self-center">
-                        <h1 className="mb-2 text-3xl font-bold">{displayName}</h1>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main Content with Sidebar */}
-            <div className="flex flex-col lg:flex-row gap-8 p-6 md:p-12 lg:p-20 pt-0 md:pt-0 lg:pt-0">
-                {/* Sidebar Navigation */}
-                <div className="lg:w-64 flex-shrink-0">
-                    <div className="bg-white rounded-lg p-8 mt-8 sticky top-8">
-                        {/* Reviews Section */}
-                        <div className="mb-4">
-                            <button
-                                onClick={() => setReviewsExpanded(!reviewsExpanded)}
-                                className="flex items-center justify-between w-full text-left font-semibold mb-2"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <img src="profile_review.svg" alt="review icon" className="max-w-[20px]" />
-                                    <span className="text-2xl">Reviews</span>
-                                </div>
-                                <svg
-                                    className={`w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-
-                            {reviewsExpanded && (
-                                <div className="ml-2 space-y-1 relative">
-                                    {/* Timeline vertical line */}
-                                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300"></div>
-
-                                    {[
-                                        { value: "approved", label: "Approved" },
-                                        { value: "pending", label: "Pending" },
-                                        { value: "rejected", label: "Rejected" },
-                                        // { value: "liked-reviews", label: "Liked" },
-                                    ].map((item) => (
-                                        <button
-                                            key={item.value}
-                                            onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
-                                                }`}
-                                        >
-                                            {item.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Clubs Section */}
-                        <div>
-                            <button
-                                onClick={() => setClubsExpanded(!clubsExpanded)}
-                                className="flex items-center justify-between w-full text-left font-semibold mb-2"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <img src="/profile_club.svg" alt="club icon" className="max-w-[20px]" />
-                                    <span className="text-2xl">Clubs</span>
-                                </div>
-                                <svg
-                                    className={`w-4 h-4 transition-transform ${clubsExpanded ? 'rotate-180' : ''}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-
-                            {clubsExpanded && (
-                                <div className="ml-2 space-y-1 relative">
-                                    {/* Timeline vertical line */}
-                                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-300"></div>
-
-                                    {[
-                                        { value: "liked-clubs", label: "Liked" },
-                                        { value: "saved-clubs", label: "Saved" },
-                                    ].map((item) => (
-                                        <button
-                                            key={item.value}
-                                            onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
-                                                }`}
-                                        >
-                                            {item.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Vertical Divider */}
-                <div className="hidden lg:block w-px bg-gray-200"></div>
-
-                {/* Main Content Area */}
-                <div className="flex-1 min-h-[400px]">
-                    {getContentForSection()}
-                </div>
+      <div className="min-h-screen">
+        <ConfirmationModal
+          isOpen={confirmationModalOpen}
+          onClose={() => {
+            setConfirmationModalOpen(false);
+            setReviewToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          title="Confirm Deletion"
+          message="Are you sure you want to delete this review?"
+        />
+        {/* User Information Section */}
+        <div
+          className="mb-20 rounded-lg bg-white bg-cover bg-center bg-no-repeat px-12 py-6 md:px-18 md:py-12 lg:px-26 lg:py-20"
+          style={{ backgroundImage: "url('/profile_background.png')" }}
+        >
+            <div className="absolute inset-y-12 inset-x-20 flex h-47 w-47 items-center justify-center rounded-full border border-lime-300 bg-white">
+              <img
+                src="/bear-profile.svg"
+                alt="Profile"
+                className="h-32 w-36"
+              />
             </div>
         </div>
+
+        {/* Main Content with Sidebar */}
+        <div className="flex flex-col gap-8 p-6 pt-0 md:p-12 md:pt-0 lg:flex-row lg:p-20 lg:pt-0">
+          {/* Sidebar Navigation */}
+          <div className="flex-shrink-0 lg:w-64">
+            <div className="mt-5 flex-1 self-center text-center md:text-left">
+              <h1 className="mb-2 text-3xl font-bold font-['DM-Sans']">{displayName}</h1>
+            </div>
+            <div className="sticky top-8 mt-8 rounded-lg bg-white p-8">
+              {/* Reviews Section */}
+              <div className="mb-4">
+                <button
+                  onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                  className="mb-2 flex w-full items-center justify-between text-left font-semibold"
+                >
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="profile_review.svg"
+                      alt="review icon"
+                      className="max-w-[20px]"
+                    />
+                    <span className="text-2xl">Reviews</span>
+                  </div>
+                  <svg
+                    className={`h-4 w-4 transition-transform ${reviewsExpanded ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {reviewsExpanded && (
+                  <div className="relative ml-2 space-y-1">
+                    {/* Timeline vertical line */}
+                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+
+                    {[
+                      { value: "approved", label: "Approved" },
+                      { value: "pending", label: "Pending" },
+                      { value: "rejected", label: "Rejected" },
+                      // { value: "liked-reviews", label: "Liked" },
+                    ].map((item) => (
+                      <button
+                        key={item.value}
+                        onClick={() => setActiveSection(item.value)}
+                        className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${
+                          activeSection === item.value
+                            ? "bg-[#E6F4FF]"
+                            : "hover:bg-[#F5FAFF]"
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Clubs Section */}
+              <div>
+                <button
+                  onClick={() => setClubsExpanded(!clubsExpanded)}
+                  className="mb-2 flex w-full items-center justify-between text-left font-semibold"
+                >
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/profile_club.svg"
+                      alt="club icon"
+                      className="max-w-[20px]"
+                    />
+                    <span className="text-2xl">Clubs</span>
+                  </div>
+                  <svg
+                    className={`h-4 w-4 transition-transform ${clubsExpanded ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {clubsExpanded && (
+                  <div className="relative ml-2 space-y-1">
+                    {/* Timeline vertical line */}
+                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+
+                    {[
+                      { value: "liked-clubs", label: "Liked" },
+                      { value: "saved-clubs", label: "Saved" },
+                    ].map((item) => (
+                      <button
+                        key={item.value}
+                        onClick={() => setActiveSection(item.value)}
+                        className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${
+                          activeSection === item.value
+                            ? "bg-[#E6F4FF]"
+                            : "hover:bg-[#F5FAFF]"
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Vertical Divider */}
+          <div className="hidden w-px bg-gray-200 lg:block"></div>
+
+          {/* Main Content Area */}
+          <div className="min-h-[400px] flex-1">{getContentForSection()}</div>
+        </div>
+      </div>
     );
 }
 
