@@ -123,6 +123,12 @@ export async function GET(req) {
       like_count: likeCounts[club?.OrganizationID] || 0
     }));
 
+    const lastViewedRejectedAt = profileData?.last_viewed_rejected_at;
+    const unreadRejectedCount = (rejectedReviews || []).filter(review => {
+      if (!lastViewedRejectedAt) return true; 
+      return new Date(review.updated_at) > new Date(lastViewedRejectedAt);
+    }).length;
+
     // Return all data
     return new Response(
       JSON.stringify({
@@ -132,6 +138,7 @@ export async function GET(req) {
         rejectedReviews: rejectedReviews || [],
         likedClubs: likedClubsWithCounts,
         savedClubs: savedClubsWithCounts,
+        unreadRejectedCount,
       }),
       { status: 200 }
     );

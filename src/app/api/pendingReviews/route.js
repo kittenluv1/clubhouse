@@ -104,7 +104,7 @@ export async function POST(req) {
 
       const { error: rejectError } = await supabase
         .from("rejected_reviews")
-        .insert(review);
+        .insert({ ...review, updated_at: new Date().toISOString() });
 
       if (rejectError) {
         throw new Error(rejectError.message);

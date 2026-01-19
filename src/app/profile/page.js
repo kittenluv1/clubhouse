@@ -24,6 +24,7 @@ function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [reviewToDelete, setReviewToDelete] = useState(null);
+    const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
 
     // Authentication check
     useEffect(() => {
@@ -87,6 +88,7 @@ function ProfilePage() {
                     setApprovedReviews(data.approvedReviews || []);
                     setPendingReviews(data.pendingReviews || []);
                     setRejectedReviews(data.rejectedReviews || []);
+                    setUnreadRejectedCount(data.unreadRejectedCount || 0);
 
                     // Set clubs
                     setLikedClubs(data.likedClubs || []);
@@ -185,6 +187,18 @@ function ProfilePage() {
         } catch (error) {
             console.error('Error updating club like:', error);
             throw error; // Re-throw to trigger revert in ClubCard
+        }
+    };
+
+    // Handler to mark rejected reviews as viewed
+    const handleViewRejected = async () => {
+        if (unreadRejectedCount > 0) {
+            setUnreadRejectedCount(0);
+            try {
+                await fetch('/api/profile/viewed-rejected', { method: 'POST' });
+            } catch (error) {
+                console.error('Error marking rejected reviews as viewed:', error);
+            }
         }
     };
 
@@ -489,11 +503,26 @@ function ProfilePage() {
                                     ].map((item) => (
                                         <button
                                             key={item.value}
-                                            onClick={() => setActiveSection(item.value)}
+                                            onClick={() => {
+                                                setActiveSection(item.value);
+                                                if (item.value === "rejected") {
+                                                    handleViewRejected();
+                                                }
+                                            }}
                                             className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#E6F4FFD4]"
                                                 }`}
                                         >
-                                            {item.label}
+                                            <span className="flex items-center justify-between">
+                                                {item.label}
+                                                {item.value === "rejected" && unreadRejectedCount > 0 && (
+                                                    <span
+                                                        className="ml-2 text-white text-xs font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1"
+                                                        style={{ background: 'linear-gradient(to right, #FFB464, #FFA1CD)' }}
+                                                    >
+                                                        {unreadRejectedCount}
+                                                    </span>
+                                                )}
+                                            </span>
                                         </button>
                                     ))}
                                 </div>
