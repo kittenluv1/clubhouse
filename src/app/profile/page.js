@@ -302,7 +302,7 @@ function ProfilePage() {
                     <div className="text-center py-12">
                         <p className="text-[#B5BEC7]">
                             These reviews did not pass our{" "}
-                            <Link href="/community-guidelines" className="underline text-[#5058B2]">
+                            <Link href="/community-guidelines" className="underline text-[#D9D9D9]">
                                 Community Guidelines
                             </Link>
                             . Please edit them and resubmit for approval.
@@ -311,50 +311,37 @@ function ProfilePage() {
                     </div>
                 ) : (
                     <>
-                        <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold mb-4">Rejected Reviews</p>
-                            <p className="text-[#B5BEC7]">
-                                These reviews did not pass our{" "}
-                                <Link href="/community-guidelines" className="underline text-[#5058B2]">
-                                    Community Guidelines
-                                </Link>
-                                . Please edit them and resubmit for approval.
-                            </p>                            </div>
-                        <h2 className="text-[16px] text-[#747474] mb-4">Rejected Reviews ({rejectedReviews.length})</h2>
-                        <div className="grid grid-cols-1 gap-12">
-                            {
-                                rejectedReviews.map(review => (
-                                    <ReviewCard
-                                        key={review.id}
-                                        review={review}
-                                        status="rejected"
-                                        clickable={true}
-                                        onLike={handleLike}
-                                        onEdit={handleEdit}
-                                        onDelete={handleDelete}
-                                    />
-                                ))
-                            }
+                        <div className="mx-8">
+                            <div className="text-center mb-8">
+                                <p className="text-[#000000] text-4xl font-bold mb-4">Rejected Reviews</p>
+                                <p className="text-[#747474] text-[20px]">
+                                    These reviews did not pass our{" "}
+                                    <Link href="/community-guidelines" className="underline text-[#7fbefa]">
+                                        Community Guidelines
+                                    </Link>
+                                    . Please edit them and resubmit for approval.
+                                </p>
+                            </div>
+                            <h2 className="text-[16px] text-[#747474] mb-4">Rejected Reviews ({rejectedReviews.length})</h2>
+                            <div className="grid grid-cols-1 gap-12">
+                                {
+                                    rejectedReviews.map(review => (
+                                        <ReviewCard
+                                            key={review.id}
+                                            review={review}
+                                            status="rejected"
+                                            clickable={true}
+                                            onLike={handleLike}
+                                            onEdit={handleEdit}
+                                            onDelete={handleDelete}
+                                        />
+                                    ))
+                                }
+                            </div>
                         </div>
                     </>
 
                 );
-
-            // case "liked-reviews":
-            //     return likedReviews.length === 0 ? (
-            //         <div className="text-center">
-            //             <p className="text-[#B5BEC7]">No liked reviews</p>
-            //         </div>
-            //     ) : (
-            //         <>
-            //             <h2 className="text-[16px] text-[#747474] mb-6">Liked Reviews ({likedReviews.length})</h2>
-            //             <div className="space-y-6">
-            //                 {
-            //                     //TODO CARD
-            //                 }
-            //             </div>
-            //         </>
-            //     );
 
             case "liked-clubs":
                 return (
@@ -503,7 +490,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#E6F4FFD4]"
                                                 }`}
                                         >
                                             {item.label}
@@ -545,7 +532,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#E6F4FF]" : "hover:bg-[#F5FAFF]"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#E6F4FFD4]"
                                                 }`}
                                         >
                                             {item.label}
