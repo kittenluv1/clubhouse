@@ -222,7 +222,14 @@ function Header() {
           {!userEmail && (
             <Button
               type="CTA"
-              onClick={() => router.push("/sign-in")}
+              onClick={() => {
+                if (window.location.pathname == "/") { //home page
+                  router.push("/sign-in");
+                }
+                else {
+                  router.push(`/sign-in?returnUrl=${window.location.pathname + window.location.search + window.location.hash}`);
+                }
+              }}
             >
               Sign In
             </Button>
