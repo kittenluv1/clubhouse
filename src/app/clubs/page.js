@@ -282,7 +282,7 @@ function AllClubsPage() {
 
         <div className="mt-16 flex items-center justify-center gap-4">
           <Button
-            type="pink"
+            type="gray"
             size="small"
             onClick={handlePreviousPage}
             disabled={currPage === 1}
