@@ -133,11 +133,18 @@ function ProfilePage() {
         setConfirmationModalOpen(true);
     };
 
-    const confirmDelete = async () => {
+    const deleteReview = async () => {
         if (!reviewToDelete) return;
 
         // TODO: Implement API call to delete review
-        console.log('Delete review:', reviewToDelete);
+        const response = await fetch(`/api/rejectedReviews/${reviewToDelete}`, { method: 'DELETE' });
+        if (response.ok) {
+            // console.log('Deleted review: ', reviewToDelete);
+            // Remove from local state
+            setRejectedReviews(prev => prev.filter(r => r.id !== reviewToDelete));
+        } else {
+            console.error('Error deleting review');
+        }
 
         // Reset state
         setReviewToDelete(null);
@@ -172,7 +179,7 @@ function ProfilePage() {
             } else {
                 // Get current like count before removing
                 const currentClub = likedClubs.find(c => c.OrganizationID === clubId) ||
-                                   savedClubs.find(c => c.OrganizationID === clubId);
+                    savedClubs.find(c => c.OrganizationID === clubId);
                 const newLikeCount = Math.max(0, (currentClub?.like_count || 0) - 1);
 
                 // Remove from liked clubs
@@ -446,7 +453,7 @@ function ProfilePage() {
                     setConfirmationModalOpen(false);
                     setReviewToDelete(null);
                 }}
-                onConfirm={confirmDelete}
+                onConfirm={deleteReview}
                 title="Confirm Deletion"
                 message="Are you sure you want to delete this review?"
             />

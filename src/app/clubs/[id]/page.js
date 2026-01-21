@@ -75,16 +75,16 @@ function RatingBar({ title, tooltipRating, value }) {
           {value ? value.toFixed(1) + "/5" : "N/A"}
         </span>
       </div>
-      <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200 border-1 border-[#D9D9D9]">
-        {/* linear gradient border with linear gradient fill */}
-        <div className="h-full rounded-full bg-gradient-to-r from-[#FFA1CD] to-[#A3CD1B] p-[1px]"
+      <div className="h-3 w-full overflow-hidden rounded-full border border-[#D9D9D9] bg-gray-200">
+        <div
+          className="h-full rounded-full"
           style={{
             width: `${value ? (value / 5) * 100 : 0}%`,
-          }}>
-          <div
-            className="h-full w-full rounded-full bg-gradient-to-r from-[#FFA2CC] via-[#FEF38C] to-[#B8DF64]"
-          />
-        </div>
+            background: value ? 'linear-gradient(to right, #FFA2CC, #FEF38C, #B8DF64)' : 'none',
+            backgroundSize: value ? `${500 / value}% 100%` : 'auto',
+            backgroundPosition: 'left center',
+          }}
+        />
       </div>
       <div className="mt-1 flex justify-between text-xs text-gray-500">
         <span>low</span>
@@ -460,7 +460,7 @@ export default function ClubDetailsPage() {
     <>
       {/* Club Information */}
       <section className="relative p-6 md:p-20 bg-[url('/club-page/club-page-bg.svg')] bg-cover">
-        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-lg border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B] z-10">
+        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-3xl border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B] z-10">
 
           {/* left side of the box */}
           <div className="lg:pr-5 lg:w-4/6">
