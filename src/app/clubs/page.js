@@ -297,7 +297,7 @@ function AllClubsPage() {
             Page {currPage} of {pageTotal}
           </span>
           <Button
-            type="pink"
+            type="gray"
             size="small"
             onClick={handleNextPage}
             disabled={currPage === pageTotal}
