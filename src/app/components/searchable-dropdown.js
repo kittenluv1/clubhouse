@@ -110,7 +110,7 @@ const SearchableDropdown = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="placeholder-custom w-full rounded-full bg-[#F4F5F6] hover:bg-[#E5EBF1] active:bg-[#B5BFC6] focus:bg-[#B5BFC6] px-5 py-3 text-gray-700 text-base focus:outline-none"
+          className="placeholder-custom w-full rounded-full bg-[#F4F5F6] hover:bg-[#E5EBF1] active:bg-[#B5BFC6] focus:bg-[#B5BFC6] pl-5 pr-12 py-3 text-gray-700 text-base focus:outline-none text-ellipsis overflow-hidden"
           required={required}
           style={{
             "--placeholder-color": placeholderColor,
@@ -143,7 +143,8 @@ const SearchableDropdown = ({
             <li
               key={index}
               onClick={() => handleOptionClick(option)}
-              className="relative cursor-pointer py-2 pr-9 pl-3 select-none hover:bg-gray-100"
+              className="relative cursor-pointer py-2 pr-3 pl-3 select-none hover:bg-gray-100 truncate"
+              title={option}
             >
               {option}
             </li>

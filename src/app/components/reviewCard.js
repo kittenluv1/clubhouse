@@ -38,6 +38,7 @@ export default function ReviewCard({
     onLike, // callback for like button
     onEdit, // callback for edit button
     onDelete, // callback for delete button
+    isCurrentUser = false, // whether this review belongs to the current user
 }) {
     const [liked, setLiked] = useState(review.user_has_liked || false);
     const [likeCount, setLikeCount] = useState(review.likes || 0);
@@ -125,6 +126,9 @@ export default function ReviewCard({
                                 ? (review.user_alias || "Anonymous")
                                 : review.club_name
                             }
+                            {status === "displayed" && isCurrentUser && (
+                                <span className="ml-1.5 text-xs font-medium" style={{ color: '#FFCEE5' }}>you</span>
+                            )}
                         </h2>
                     </div>
 
@@ -181,6 +185,9 @@ export default function ReviewCard({
                                     ? (review.user_alias || "Anonymous")
                                     : review.club_name
                                 }
+                                {status === "displayed" && isCurrentUser && (
+                                    <span className="ml-1.5 text-s font-medium" style={{ color: '#FFCEE5' }}>you</span>
+                                )}
                             </h2>
                             {status === "displayed" && (
                                 <span className="text-sm font-medium">{formatDate(review.created_at)}</span>
