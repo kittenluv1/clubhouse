@@ -480,7 +480,7 @@ export default function ClubDetailsPage() {
                   aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
                   <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" />
-                  <span>{clubLikeCount}</span>
+                  <span className="text-gray-700">{clubLikeCount}</span>
                 </button>
 
                 {/* Save Button */}

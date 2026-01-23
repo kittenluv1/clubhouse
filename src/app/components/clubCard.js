@@ -128,7 +128,7 @@ export default function ClubCard({
               src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
               alt="Heart Icon"
             />
-            <span>{clubLikeCount}</span>
+            <span className="text-gray-700">{clubLikeCount}</span>
           </button>
           {/* Save button */}
           <button

@@ -139,14 +139,14 @@ export default function ReviewCard({
                     {canLike && (
                         <button
                             onClick={toggleLike}
-                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0 transition-all"
+                            className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0 transition-all"
                             aria-label={liked ? "Unlike review" : "Like review"}
                         >
                             <img
                                 src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
                                 alt="Heart Icon"
                             />
-                            <span>{likeCount}</span>
+                            <span className="text-gray-700 inline-block min-w-[1rem] text-left">{likeCount}</span>
                         </button>
                     )}
                 </div>
@@ -217,14 +217,16 @@ export default function ReviewCard({
                     {canLike && (
                         <button
                             onClick={toggleLike}
-                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px] transition-all"
+                            className="flex items-center gap-1 -m-2 min-w-[44px] min-h-[44px]"
                             aria-label={liked ? "Unlike review" : "Like review"}
                         >
                             <img
-                                src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+                                src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
                                 alt="Heart Icon"
                             />
-                            <span>{likeCount}</span>
+                            <span className="text-md text-gray-700 inline-block min-w-[1rem] text-left">
+                                {likeCount}
+                            </span>
                         </button>
                     )}
                 </div>
