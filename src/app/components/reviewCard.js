@@ -127,7 +127,7 @@ export default function ReviewCard({
                                 : review.club_name
                             }
                             {status === "displayed" && isCurrentUser && (
-                                <span className="ml-1.5 text-xs font-medium" style={{ color: '#FFCEE5' }}>you</span>
+                                <span className="ml-1.5 text-s font-medium" style={{ color: '#FFA1CD' }}>(you)</span>
                             )}
                         </h2>
                     </div>
@@ -186,7 +186,7 @@ export default function ReviewCard({
                                     : review.club_name
                                 }
                                 {status === "displayed" && isCurrentUser && (
-                                    <span className="ml-1.5 text-s font-medium" style={{ color: '#FFCEE5' }}>you</span>
+                                    <span className="ml-1.5 text-s font-medium" style={{ color: '#FFA1CD' }}>(you)</span>
                                 )}
                             </h2>
                             {status === "displayed" && (

@@ -153,8 +153,8 @@ const SearchableDropdown = ({
       )}
 
       {isOpen && inputValue && filteredOptions.length === 0 && !isLoading && (
-        <div className="absolute z-10 mt-1 w-full rounded-md bg-white px-3 py-3 text-sm shadow-lg">
-          No clubs found matching &quot;{inputValue}&quot;
+        <div className="absolute z-10 mt-1 w-full rounded-md bg-white px-3 py-3 text-sm shadow-lg overflow-hidden">
+          <span className="block truncate">No clubs found matching &quot;{inputValue}&quot;</span>
         </div>
       )}
 
