@@ -125,8 +125,12 @@ export async function GET(req) {
 
     const lastViewedRejectedAt = profileData?.last_viewed_rejected_at;
     const unreadRejectedCount = (rejectedReviews || []).filter(review => {
-      if (!lastViewedRejectedAt) return true; 
-      return new Date(review.updated_at) > new Date(lastViewedRejectedAt);
+      if (!lastViewedRejectedAt) return true;
+      // Ensure consistent timezone parsing - append Z if no timezone info present
+      const updatedAt = review.updated_at.endsWith('Z') || review.updated_at.includes('+')
+        ? review.updated_at
+        : review.updated_at + 'Z';
+      return new Date(updatedAt) > new Date(lastViewedRejectedAt);
     }).length;
 
     // Return all data
