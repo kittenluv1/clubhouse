@@ -16,7 +16,7 @@ const ClubSearchBar = forwardRef(
     {
       tableName = "clubs",
       nameColumn = "OrganizationName",
-      style = "bg-[#E5EBF1]",
+      style = "bg-[#F0F2F9]",
     },
     ref,
   ) => {

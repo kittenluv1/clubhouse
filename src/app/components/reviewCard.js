@@ -130,6 +130,9 @@ export default function ReviewCard({
                                 <span className="ml-1.5 text-s font-medium" style={{ color: '#FFA1CD' }}>(you)</span>
                             )}
                         </h2>
+                        {status === "approved" && review.user_alias && (
+                            <p className="text-sm text-[#6E808D] font-medium m-0">Displayed as: {review.user_alias}</p>
+                        )}
                     </div>
 
                     {/* Like button on mobile */}
@@ -189,6 +192,9 @@ export default function ReviewCard({
                                     <span className="ml-1.5 text-s font-medium" style={{ color: '#FFA1CD' }}>(you)</span>
                                 )}
                             </h2>
+                            {status === "approved" && review.user_alias && (
+                                <span className="text-sm text-[#6E808D] font-medium">Displayed as: {review.user_alias}</span>
+                            )}
                             {status === "displayed" && (
                                 <span className="text-sm font-medium">{formatDate(review.created_at)}</span>
                             )}
