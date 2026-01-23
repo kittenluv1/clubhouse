@@ -476,7 +476,8 @@ export default function ClubDetailsPage() {
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className="flex items-center gap-2 p-2 transition-all"
+                  className="flex items-center gap-1 p-2 transition-all"
+                  aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
                   <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" />
                   <span>{clubLikeCount}</span>
@@ -486,7 +487,7 @@ export default function ClubDetailsPage() {
                 <button
                   onClick={handleSaveToggle}
                   className="flex items-center gap-2 p-2 transition-all"
-                  title={userSavedClub ? "Unsave club" : "Save club"}
+                  aria-label={userSavedClub ? "Unsave club" : "Save club"}
                 >
                   <img src={userSavedClub ? "/saveFilled.svg" : "/saveUnfilled.svg"} alt="Save Icon" />
                 </button>

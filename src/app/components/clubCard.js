@@ -120,18 +120,15 @@ export default function ClubCard({
           {/* Like button */}
           <button
             onClick={toggleLike}
-            className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px]"
+            className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] transition-all"
             disabled={isProcessing}
             aria-label={liked ? "Unlike club" : "Like club"}
           >
             <img
-              src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+              src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
               alt="Heart Icon"
-              className="w-[18px] h-[15px]"
             />
-            <span className="text-sm font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
-              {clubLikeCount}
-            </span>
+            <span>{clubLikeCount}</span>
           </button>
           {/* Save button */}
           <button
@@ -141,9 +138,8 @@ export default function ClubCard({
             aria-label={saved ? "Unsave club" : "Save club"}
           >
             <img
-              src={`/${saved ? "saved" : "unsaved"}.svg`}
+              src={`/${saved ? "saveFilled" : "saveUnfilled"}.svg`}
               alt="Save Icon"
-              className="w-[18px] h-[18px]"
             />
           </button>
         </div>

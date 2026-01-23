@@ -139,17 +139,14 @@ export default function ReviewCard({
                     {canLike && (
                         <button
                             onClick={toggleLike}
-                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0"
+                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0 transition-all"
                             aria-label={liked ? "Unlike review" : "Like review"}
                         >
                             <img
-                                src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+                                src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
                                 alt="Heart Icon"
-                                className="w-[18px] h-[15px]"
                             />
-                            <span className="text-sm font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
-                                {likeCount}
-                            </span>
+                            <span>{likeCount}</span>
                         </button>
                     )}
                 </div>
@@ -220,17 +217,14 @@ export default function ReviewCard({
                     {canLike && (
                         <button
                             onClick={toggleLike}
-                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px]"
+                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px] transition-all"
                             aria-label={liked ? "Unlike review" : "Like review"}
                         >
                             <img
                                 src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
                                 alt="Heart Icon"
-                                className="w-[20px] h-[17px]"
                             />
-                            <span className="text-md font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
-                                {likeCount}
-                            </span>
+                            <span>{likeCount}</span>
                         </button>
                     )}
                 </div>
