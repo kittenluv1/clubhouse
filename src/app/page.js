@@ -29,6 +29,7 @@ function Home() {
     "Academic",
     "Business",
     "Career Planning",
+    "Club Sports",    
     "Dental",
     "Educational",
     "Engineering",
