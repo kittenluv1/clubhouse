@@ -127,7 +127,7 @@ export default function ReviewCard({
                                 : review.club_name
                             }
                             {status === "displayed" && isCurrentUser && (
-                                <span className="ml-1.5 text-s font-medium" style={{ color: '#FFA1CD' }}>(you)</span>
+                                <span className="ml-1.5 text-s font-bold text-[#FFA1CD]" >(you)</span>
                             )}
                         </h2>
                         {status === "approved" && review.user_alias && (
@@ -186,7 +186,7 @@ export default function ReviewCard({
                                     : review.club_name
                                 }
                                 {status === "displayed" && isCurrentUser && (
-                                    <span className="ml-1.5 text-s font-medium" style={{ color: '#FFA1CD' }}>(you)</span>
+                                    <span className="ml-1.5 text-s font-bold text-[#FFA1CD]">(you)</span>
                                 )}
                             </h2>
                             {status === "approved" && review.user_alias && (
@@ -240,18 +240,12 @@ export default function ReviewCard({
                 </p>
                 {!showFull && isClamped && (
                     <button
-                        className="mt-1 text-sm text-blue-600 italic underline"
+                        className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
                         type="button"
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setShowFull(true);
-                        }}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            padding: 0,
-                            cursor: "pointer",
                         }}
                     >
                         ...see more
@@ -259,18 +253,12 @@ export default function ReviewCard({
                 )}
                 {showFull && (
                     <button
-                        className="mt-1 text-sm text-blue-600 italic underline"
+                        className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
                         type="button"
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setShowFull(false);
-                        }}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            padding: 0,
-                            cursor: "pointer",
                         }}
                     >
                         ...see less
