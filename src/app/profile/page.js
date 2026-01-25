@@ -170,7 +170,7 @@ function ProfilePage() {
             } else {
                 // Get current like count before removing
                 const currentClub = likedClubs.find(c => c.OrganizationID === clubId) ||
-                                   savedClubs.find(c => c.OrganizationID === clubId);
+                    savedClubs.find(c => c.OrganizationID === clubId);
                 const newLikeCount = Math.max(0, (currentClub?.like_count || 0) - 1);
 
                 // Remove from liked clubs
@@ -438,158 +438,156 @@ function ProfilePage() {
     };
 
     return (
-      <div className="min-h-screen">
-        <ConfirmationModal
-          isOpen={confirmationModalOpen}
-          onClose={() => {
-            setConfirmationModalOpen(false);
-            setReviewToDelete(null);
-          }}
-          onConfirm={confirmDelete}
-          title="Confirm Deletion"
-          message="Are you sure you want to delete this review?"
-        />
-        {/* User Information Section */}
-        <div
-          className="mb-20 rounded-lg bg-white bg-cover bg-center bg-no-repeat px-12 py-6 md:px-18 md:py-12 lg:px-26 lg:py-20"
-          style={{ backgroundImage: "url('/profile_background.png')" }}
-        >
-            <div className="absolute inset-y-12 inset-x-20 flex h-47 w-47 items-center justify-center rounded-full border border-lime-300 bg-white">
-              <img
-                src="/bear-profile.svg"
-                alt="Profile"
-                className="h-32 w-36"
-              />
+        <div className="min-h-screen">
+            <ConfirmationModal
+                isOpen={confirmationModalOpen}
+                onClose={() => {
+                    setConfirmationModalOpen(false);
+                    setReviewToDelete(null);
+                }}
+                onConfirm={confirmDelete}
+                title="Confirm Deletion"
+                message="Are you sure you want to delete this review?"
+            />
+            {/* User Information Section */}
+            <div
+                className="mb-20 rounded-lg bg-white bg-cover bg-center bg-no-repeat px-12 py-15 lg:px-26 lg:py-25"
+                style={{ backgroundImage: "url('/profile_background.png')" }}
+            >
+                <div className="absolute left-1/2 -translate-x-1/2 top-12 lg:top-25 lg:left-51 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
+                    <img
+                        src="/bear-profile.svg"
+                        alt="Profile"
+                        className="h-25 lg:h-32"
+                    />
+                </div>
+            </div>
+
+            {/* Main Content with Sidebar */}
+            <div className="flex flex-col gap-8 p-6 pt-0 md:p-12 md:pt-0 lg:flex-row lg:p-20 lg:pt-0">
+                {/* Sidebar Navigation */}
+                <div className="flex-shrink-0 lg:w-64">
+                    <div className="mt-2 flex-1 self-center text-center">
+                        <h1 className="mb-2 text-2xl md:text-3xl font-bold font-['DM-Sans']">{displayName}</h1>
+                    </div>
+                    <div className="sticky top-8 mt-8 rounded-lg bg-white p-8">
+                        {/* Reviews Section */}
+                        <div className="mb-4">
+                            <button
+                                onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                                className="mb-2 flex w-full items-center justify-between text-left font-semibold"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="profile_review.svg"
+                                        alt="review icon"
+                                        className="max-w-[20px]"
+                                    />
+                                    <span className="text-2xl">Reviews</span>
+                                </div>
+                                <svg
+                                    className={`h-4 w-4 transition-transform ${reviewsExpanded ? "rotate-180" : ""}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </button>
+
+                            {reviewsExpanded && (
+                                <div className="relative ml-2 space-y-1">
+                                    {/* Timeline vertical line */}
+                                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+
+                                    {[
+                                        { value: "approved", label: "Approved" },
+                                        { value: "pending", label: "Pending" },
+                                        { value: "rejected", label: "Rejected" },
+                                        // { value: "liked-reviews", label: "Liked" },
+                                    ].map((item) => (
+                                        <button
+                                            key={item.value}
+                                            onClick={() => setActiveSection(item.value)}
+                                            className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${activeSection === item.value
+                                                ? "bg-[#E6F4FF]"
+                                                : "hover:bg-[#F5FAFF]"
+                                                }`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Clubs Section */}
+                        <div>
+                            <button
+                                onClick={() => setClubsExpanded(!clubsExpanded)}
+                                className="mb-2 flex w-full items-center justify-between text-left font-semibold"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="/profile_club.svg"
+                                        alt="club icon"
+                                        className="max-w-[20px]"
+                                    />
+                                    <span className="text-2xl">Clubs</span>
+                                </div>
+                                <svg
+                                    className={`h-4 w-4 transition-transform ${clubsExpanded ? "rotate-180" : ""}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </button>
+
+                            {clubsExpanded && (
+                                <div className="relative ml-2 space-y-1">
+                                    {/* Timeline vertical line */}
+                                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+
+                                    {[
+                                        { value: "liked-clubs", label: "Liked" },
+                                        { value: "saved-clubs", label: "Saved" },
+                                    ].map((item) => (
+                                        <button
+                                            key={item.value}
+                                            onClick={() => setActiveSection(item.value)}
+                                            className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${activeSection === item.value
+                                                ? "bg-[#E6F4FF]"
+                                                : "hover:bg-[#F5FAFF]"
+                                                }`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Vertical Divider */}
+                <div className="hidden w-px bg-gray-200 lg:block"></div>
+
+                {/* Main Content Area */}
+                <div className="min-h-[400px] flex-1">{getContentForSection()}</div>
             </div>
         </div>
-
-        {/* Main Content with Sidebar */}
-        <div className="flex flex-col gap-8 p-6 pt-0 md:p-12 md:pt-0 lg:flex-row lg:p-20 lg:pt-0">
-          {/* Sidebar Navigation */}
-          <div className="flex-shrink-0 lg:w-64">
-            <div className="mt-5 flex-1 self-center text-center md:text-left">
-              <h1 className="mb-2 text-3xl font-bold font-['DM-Sans']">{displayName}</h1>
-            </div>
-            <div className="sticky top-8 mt-8 rounded-lg bg-white p-8">
-              {/* Reviews Section */}
-              <div className="mb-4">
-                <button
-                  onClick={() => setReviewsExpanded(!reviewsExpanded)}
-                  className="mb-2 flex w-full items-center justify-between text-left font-semibold"
-                >
-                  <div className="flex items-center gap-2">
-                    <img
-                      src="profile_review.svg"
-                      alt="review icon"
-                      className="max-w-[20px]"
-                    />
-                    <span className="text-2xl">Reviews</span>
-                  </div>
-                  <svg
-                    className={`h-4 w-4 transition-transform ${reviewsExpanded ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {reviewsExpanded && (
-                  <div className="relative ml-2 space-y-1">
-                    {/* Timeline vertical line */}
-                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
-
-                    {[
-                      { value: "approved", label: "Approved" },
-                      { value: "pending", label: "Pending" },
-                      { value: "rejected", label: "Rejected" },
-                      // { value: "liked-reviews", label: "Liked" },
-                    ].map((item) => (
-                      <button
-                        key={item.value}
-                        onClick={() => setActiveSection(item.value)}
-                        className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${
-                          activeSection === item.value
-                            ? "bg-[#E6F4FF]"
-                            : "hover:bg-[#F5FAFF]"
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Clubs Section */}
-              <div>
-                <button
-                  onClick={() => setClubsExpanded(!clubsExpanded)}
-                  className="mb-2 flex w-full items-center justify-between text-left font-semibold"
-                >
-                  <div className="flex items-center gap-2">
-                    <img
-                      src="/profile_club.svg"
-                      alt="club icon"
-                      className="max-w-[20px]"
-                    />
-                    <span className="text-2xl">Clubs</span>
-                  </div>
-                  <svg
-                    className={`h-4 w-4 transition-transform ${clubsExpanded ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {clubsExpanded && (
-                  <div className="relative ml-2 space-y-1">
-                    {/* Timeline vertical line */}
-                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
-
-                    {[
-                      { value: "liked-clubs", label: "Liked" },
-                      { value: "saved-clubs", label: "Saved" },
-                    ].map((item) => (
-                      <button
-                        key={item.value}
-                        onClick={() => setActiveSection(item.value)}
-                        className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${
-                          activeSection === item.value
-                            ? "bg-[#E6F4FF]"
-                            : "hover:bg-[#F5FAFF]"
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Vertical Divider */}
-          <div className="hidden w-px bg-gray-200 lg:block"></div>
-
-          {/* Main Content Area */}
-          <div className="min-h-[400px] flex-1">{getContentForSection()}</div>
-        </div>
-      </div>
     );
 }
 
