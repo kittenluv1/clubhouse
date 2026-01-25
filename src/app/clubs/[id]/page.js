@@ -463,7 +463,7 @@ export default function ClubDetailsPage() {
     <>
       {/* Club Information */}
       <section className="relative p-6 md:p-20 bg-[url('/club-page/club-page-bg.svg')] bg-cover">
-        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-3xl border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B] z-10">
+        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-3xl border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B]">
 
           {/* left side of the box */}
           <div className="lg:pr-5 lg:w-4/6">
@@ -526,7 +526,7 @@ export default function ClubDetailsPage() {
             />
 
             {club.OrganizationEmail && (
-              <p>
+              <p className="mt-6">
                 Email:{" "}
                 <a
                   href={`mailto:${club.OrganizationEmail}`}
