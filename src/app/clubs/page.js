@@ -207,7 +207,14 @@ function AllClubsPage() {
                 size="small"
                 onClick={() => setShowSortModal(true)}
               >
-                Sort By
+                <div className="flex gap-1">
+                <span className="font-medium text-[#6E808D]">Sort By:</span>
+                <span className="font-bold text-[#6E808D]">
+                  {sortType === "rating" && "Highest Rated"}
+                  {sortType === "reviews" && "Most Reviewed"}
+                  {sortType === "alphabetical" && "A–Z"}
+                </span>
+                </div>
               </Button>
               <SortModal
                 open={showSortModal}
@@ -222,15 +229,15 @@ function AllClubsPage() {
               />
             </>
           ) : (
-            <div className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]">
-              <label className="cursor-pointer font-medium text-black">
+            <div className="flex flex-shrink-0 cursor-pointer items-center rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]">
+              <label className="cursor-pointer font-medium text-[#6E808D] mr-[-3]">
                 Sort by:
               </label>
               <select
                 id="sort"
                 value={sortType}
                 onChange={(e) => setSortType(e.target.value)}
-                className="cursor-pointer font-bold text-black outline-hidden"
+                className="cursor-pointer font-bold text-[#6E808D] outline-hidden"
               >
                 <option value="rating">Highest Rated</option>
                 <option value="reviews">Most Reviewed</option>

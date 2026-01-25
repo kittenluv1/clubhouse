@@ -106,6 +106,38 @@ export default function ClubCard({
     const encoded = encodeURIComponent(categoryName);
     router.push(`/clubs?categories=${encoded}`);
   };
+
+  const renderRatingStars = (rating) =>  {
+    const ratingStars = [];
+    const intRating = Math.round(rating || 0); 
+    const ratingDecimal = rating - Math.floor(rating); 
+    for(let x = 0; x<5; x++){
+      if(x<intRating){
+        if((rating - ratingDecimal) == x && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)){
+          ratingStars.push(<img 
+            key = {x} 
+            src = {"reviewStarHalf.svg"} 
+            className="mr-1"
+                />);
+        } else {
+          ratingStars.push(<img 
+            key = {x} 
+            src = {"reviewStarFilled.svg"} 
+            className="mr-1"
+                />);
+        }
+        
+      } else {
+        ratingStars.push(<img 
+          key = {x} 
+          src = {"reviewStarUnfilled.svg"} 
+          className="mr-1"
+                />);
+      }
+
+    }
+    return ratingStars;
+  }
   
   return (
     <Link
@@ -152,55 +184,26 @@ export default function ClubCard({
           <label className="flex items-center text-xl font-bold text-black">
             {club.average_satisfaction ? (
               <>
-                {/* {club.average_satisfaction} */}
-                {/* <span className="ml-1 text-yellow-400">★</span> */}
-                <img
-                src = {`${(club.average_satisfaction < 0.5) ? "reviewStarUnfilled" : "reviewStarFilled"}.svg`}
-                className="mr-1"
-                />
-                <img
-                src = {"reviewStarFilled.svg"}
-                className="mr-1"
-                />
-                <img
-                src = {"reviewStarFilled.svg"}
-                className="mr-1"
-                />
-                <img
-                src = {"reviewStarFilled.svg"}
-                className="mr-1"
-                />
-                <img
-                src = {"reviewStarFilled.svg"}
-                className="mr-[-2px]"
-                
-                />
+                {renderRatingStars(club.average_satisfaction)}
               </>
             ) : (
               <>
-                N/A
                 <img
                 src = {"reviewStarFilled.svg"}
+                className="mr-[5px]"
                 />
-                <span className="ml-1 text-yellow-400">★</span>
+                N/A
               </>
             )}
           </label>
-          <label className="text-base  text-black">
-            <span className="font-bold mr-1">{club.average_satisfaction}</span>
-            {/* {club.average_satisfaction} */}
-            {/* satisfaction rating */}
+          <label className="text-base  text-[#303030]">
+            <span className="font-bold mr-1 ml-1 ">{club.average_satisfaction}</span>
+            {/* Reviews */}
             {club.total_num_reviews === 0 
-            ? "0 reviews"
+            ? "(0 reviews)"
           :`(${club.total_num_reviews} ${club.total_num_reviews === 1 ? "review" : "reviews"})`}
           </label>
         </div>
-        {/* <label className="text-base text-black italic">
-          {club.total_num_reviews === 0
-            ? "0 reviews"
-            : `from ${club.total_num_reviews} trusted ${club.total_num_reviews === 1 ? "student" : "students"
-            }`}
-        </label> */}
       </div>
 
        <p className="line-clamp-4 text-sm font-normal text-black md:text-base">

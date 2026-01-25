@@ -484,7 +484,7 @@ export default function ReviewPage() {
           {/* Club Name */}
           <div>
             <label className="mb-3 block text-lg font-bold">
-              Club Name <span className="text-red-500">*</span>
+              Club Name <span className="text-[#FFA1CD]">*</span>
             </label>
             <div className="max-w-md">
               <SearchableDropdown
@@ -502,7 +502,7 @@ export default function ReviewPage() {
             <div>
               <label className="mb-3 block text-lg font-bold">
                 Club Membership Start Date{" "}
-                <span className="text-red-500">*</span>
+                <span className="text-[#FFA1CD]">*</span>
               </label>
               <div className="flex space-x-2">
                 <div className="w-1/2">
@@ -519,7 +519,7 @@ export default function ReviewPage() {
 
             <div>
               <label className="mb-3 block text-lg font-bold">
-                Club Membership End Date <span className="text-red-500">*</span>
+                Club Membership End Date <span className="text-[#FFA1CD]">*</span>
               </label>
               <div className="mb-4 flex space-x-2">
                 <div className="w-1/2">
@@ -704,7 +704,7 @@ export default function ReviewPage() {
           <div>
             <label className="mt-20 mb-3 block text-lg font-bold">
               How satisfied are you with your club experience?{" "}
-              <span className="text-red-500">*</span>
+              <span className="text-[#FFA1CD]">*</span>
             </label>
             <StarRating
               rating={overallSatisfaction}
@@ -715,7 +715,7 @@ export default function ReviewPage() {
           {/* Review Text */}
           <div className="mt-10">
             <label className="mb-3 block text-sm font-bold text-gray-700">
-              Your Club Review <span className="text-red-500">*</span>
+              Your Club Review <span className="text-[#FFA1CD]">*</span>
             </label>
             <textarea
               className="h-32 w-full rounded-md border bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
