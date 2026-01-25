@@ -75,16 +75,16 @@ function RatingBar({ title, tooltipRating, value }) {
           {value ? value.toFixed(1) + "/5" : "N/A"}
         </span>
       </div>
-      <div className="h-3 w-full overflow-hidden rounded-full bg-gray-200 border-1 border-[#D9D9D9]">
-        {/* linear gradient border with linear gradient fill */}
-        <div className="h-full rounded-full bg-gradient-to-r from-[#FFA1CD] to-[#A3CD1B] p-[1px]"
+      <div className="h-3 w-full overflow-hidden rounded-full border border-[#D9D9D9] bg-gray-200">
+        <div
+          className="h-full rounded-full"
           style={{
             width: `${value ? (value / 5) * 100 : 0}%`,
-          }}>
-          <div
-            className="h-full w-full rounded-full bg-gradient-to-r from-[#FFA2CC] via-[#FEF38C] to-[#B8DF64]"
-          />
-        </div>
+            background: value ? 'linear-gradient(to right, #FFA2CC, #FEF38C, #B8DF64)' : 'none',
+            backgroundSize: value ? `${500 / value}% 100%` : 'auto',
+            backgroundPosition: 'left center',
+          }}
+        />
       </div>
       <div className="mt-1 flex justify-between text-xs text-gray-500">
         <span>low</span>
@@ -186,6 +186,7 @@ export default function ClubDetailsPage() {
   const [userSavedClub, setUserSavedClub] = useState(false);
   const [reviewLikesMap, setReviewLikesMap] = useState({});
   const [userLikedReviews, setUserLikedReviews] = useState([]);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = !isDesktop;
   const [isProcessing, setIsProcessing] = useState(false);
@@ -222,6 +223,7 @@ export default function ClubDetailsPage() {
           setClublikeCount(data.likeCount || 0);
           setUserLikedClub(data.currentUserLiked || false);
           setUserSavedClub(data.currentUserSaved || false);
+          setCurrentUserId(data.currentUserId || null);
         } else {
           setError(`No club found with name containing: ${id}`);
         }
@@ -260,6 +262,7 @@ export default function ClubDetailsPage() {
           setUserLikedClub(false);
           setUserSavedClub(false);
           setUserLikedReviews([]);
+          setCurrentUserId(null);
           // Update reviews to show user hasn't liked them
           setReviews(prev => prev.map(review => ({
             ...review,
@@ -303,7 +306,6 @@ export default function ClubDetailsPage() {
       return;
     }
 
-    console.log('Like review:', reviewId, isLiked);
     try {
       if (!isLiked) {
         const response = await fetch("/api/reviewLikes", {
@@ -312,7 +314,7 @@ export default function ClubDetailsPage() {
           body: JSON.stringify({ review_id: reviewId }),
         });
         if (response.ok) {
-          console.log("review unliked!");
+          // console.log("review unliked!");
           // setUserLikedClub(false);
           // setClublikeCount((prev) => Math.max(0, prev - 1));
         }
@@ -324,7 +326,7 @@ export default function ClubDetailsPage() {
           body: JSON.stringify({ review_id: reviewId }),
         });
         if (response.ok) {
-          console.log("review liked!");
+          // console.log("review liked!");
           // setUserLikedClub(true);
           // setClublikeCount((prev) => prev + 1);
         }
@@ -460,7 +462,7 @@ export default function ClubDetailsPage() {
     <>
       {/* Club Information */}
       <section className="relative p-6 md:p-20 bg-[url('/club-page/club-page-bg.svg')] bg-cover">
-        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-lg border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B] z-10">
+        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-3xl border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B]">
 
           {/* left side of the box */}
           <div className="lg:pr-5 lg:w-4/6">
@@ -473,17 +475,18 @@ export default function ClubDetailsPage() {
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className="flex items-center gap-2 p-2 transition-all"
+                  className="flex items-center gap-1 p-2 transition-all"
+                  aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
                   <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" />
-                  <span>{clubLikeCount}</span>
+                  <span className="text-gray-700">{clubLikeCount}</span>
                 </button>
 
                 {/* Save Button */}
                 <button
                   onClick={handleSaveToggle}
                   className="flex items-center gap-2 p-2 transition-all"
-                  title={userSavedClub ? "Unsave club" : "Save club"}
+                  aria-label={userSavedClub ? "Unsave club" : "Save club"}
                 >
                   <img src={userSavedClub ? "/saveFilled.svg" : "/saveUnfilled.svg"} alt="Save Icon" />
                 </button>
@@ -522,7 +525,7 @@ export default function ClubDetailsPage() {
             />
 
             {club.OrganizationEmail && (
-              <p className="mt-3">
+              <p className="mt-6">
                 Email:{" "}
                 <a
                   href={`mailto:${club.OrganizationEmail}`}
@@ -708,6 +711,7 @@ export default function ClubDetailsPage() {
                   status="displayed"
                   clickable={false}
                   onLike={handleLike}
+                  isCurrentUser={currentUserId && review.user_id === currentUserId}
                 />
               ))}
             </div>

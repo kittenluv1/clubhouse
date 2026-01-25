@@ -81,30 +81,29 @@ function Header() {
   if (!isMounted) return null;
 
   return (
-    <div className="flex w-full items-center justify-between bg-[#FFFFFF] p-3 md:px-20 lg:px-30 lg:py-6 min-h-[52px]">
+    <div className={`fixed top-0 left-0 z-10 flex w-full items-center justify-between bg-[#FFFFFF] p-2 md:px-20 lg:px-30 lg:py-4 min-h-[52px] ${pathname === "/" ? "shadow-[0_4px_8px_0_rgba(0,0,0,0.03)]" : "shadow-[0_4px_8px_0_rgba(0,0,0,0.07)]"}`}>
       {/* Header is separated into 3 parts: LEFT, CENTER, RIGHT */}
 
       {/* LEFT: Logo =======================================================*/}
-      {pathname !== "/" && (
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          className="flex items-center"
-        >
-          <object
-            type="image/svg+xml"
-            data="/clubhouse-logo-desktop.svg"
-            aria-label="ClubHouse Logo"
-            className="pointer-events-none hidden object-cover lg:block lg:w-[200px] mr-7"
-          />
-          <object
-            type="image/svg+xml"
-            data="/clubhouse-logo-mobile.svg"
-            aria-label="ClubHouse Logo"
-            className="pointer-events-none w-18 shrink-0 object-cover lg:hidden"
-          />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => router.push("/")}
+        className="flex items-center"
+      >
+        <object
+          type="image/svg+xml"
+          data="/clubhouse-logo-desktop.svg"
+          aria-label="ClubHouse Logo"
+          className="pointer-events-none hidden object-cover lg:block lg:w-[178px] mr-7"
+        />
+        <object
+          type="image/svg+xml"
+          data="/clubhouse-logo-mobile.svg"
+          aria-label="ClubHouse Logo"
+          className="pointer-events-none w-18 shrink-0 object-cover lg:hidden"
+        />
+      </button>
+
 
       {/* =============================CENTER: Search Bar============================ */}
       {pathname !== "/" ? (
@@ -222,7 +221,14 @@ function Header() {
           {!userEmail && (
             <Button
               type="CTA"
-              onClick={() => router.push("/sign-in")}
+              onClick={() => {
+                if (window.location.pathname == "/") { //home page
+                  router.push("/sign-in");
+                }
+                else {
+                  router.push(`/sign-in?returnUrl=${window.location.pathname + window.location.search + window.location.hash}`);
+                }
+              }}
             >
               Sign In
             </Button>
