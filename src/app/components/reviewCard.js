@@ -38,6 +38,7 @@ export default function ReviewCard({
     onLike, // callback for like button
     onEdit, // callback for edit button
     onDelete, // callback for delete button
+    isCurrentUser = false, // whether this review belongs to the current user
 }) {
     const [liked, setLiked] = useState(review.user_has_liked || false);
     const [likeCount, setLikeCount] = useState(review.likes || 0);
@@ -108,114 +109,90 @@ export default function ReviewCard({
 
     const cardContent = (
         <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
-            {/* Mobile Layout (stacked vertically) */}
-            <div className="flex flex-col gap-3 md:hidden">
-                {/* Profile image + username + like button row */}
-                <div className="flex items-center gap-3 justify-between">
-                    <div className="flex items-center gap-1 min-w-0 flex-1">
-                        {status === "displayed" && (
-                            <img
-                                src="/profile.svg"
-                                alt="Profile"
-                                className="w-12 h-12 flex-shrink-0"
-                            />
-                        )}
-                        <h2 className="text-sm sm:text-lg md:text-xl font-bold text-black m-0 leading-tight break-words">
-                            {status === "displayed"
-                                ? (review.user_alias || "Anonymous")
-                                : review.club_name
-                            }
-                        </h2>
-                    </div>
-
-                    {/* Like button on mobile */}
-                    {canLike && (
-                        <button
-                            onClick={toggleLike}
-                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0"
-                            aria-label={liked ? "Unlike review" : "Like review"}
-                        >
-                            <img
-                                src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
-                                alt="Heart Icon"
-                                className="w-[18px] h-[15px]"
-                            />
-                            <span className="text-sm font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
-                                {likeCount}
-                            </span>
-                        </button>
-                    )}
-                </div>
-
-                {/* Review date row */}
-                <div className="text-sm font-medium">
-                    {formatDate(review.created_at)}
-                </div>
-
-                {/* Membership date row */}
-                <div className="text-sm text-[#6E808D] font-medium flex-wrap">
-                    Member from {review.membership_start_quarter}{" "}{review.membership_start_year} - {review.membership_end_quarter}{" "}{review.membership_end_year}
-                </div>
-
-                {/* Stars row */}
-                <div className="flex items-center gap-1">
-                    {renderStars(review.overall_satisfaction, "text-sm sm:text-xl md:text-2xl")}
-                </div>
-            </div>
-
-            {/* Desktop Layout (original horizontal layout) */}
-            <div className="hidden md:flex justify-between items-start">
-                {/* Profile image + username + like button row */}
+            {/* Header section */}
+            <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-start">
+                {/* Left side */}
                 <div className="flex flex-col gap-2 min-w-0 flex-1">
-                    <div className="flex gap-3 items-center">
-                        {status === "displayed" && (
-                            <img
-                                src="/profile.svg"
-                                alt="Profile"
-                                className="w-15 h-15 flex-shrink-0"
-                            />
-                        )}
-                        <div className="flex flex-col gap-2 min-w-0">
-                            <h2 className="text-xl font-bold text-black m-0 leading-tight break-words">
-                                {status === "displayed"
-                                    ? (review.user_alias || "Anonymous")
-                                    : review.club_name
-                                }
-                            </h2>
+                    {/* Profile image + username row */}
+                    <div className="flex items-center gap-3 justify-between md:justify-start">
+                        <div className="flex items-center gap-1 md:gap-3 min-w-0 flex-1 md:flex-initial">
                             {status === "displayed" && (
-                                <span className="text-sm font-medium">{formatDate(review.created_at)}</span>
+                                <img
+                                    src="/profile.svg"
+                                    alt="Profile"
+                                    className="w-12 h-12 md:w-15 md:h-15 flex-shrink-0"
+                                />
                             )}
+                            <div className="flex flex-col gap-1 md:gap-2 min-w-0">
+                                <h2 className="text-sm sm:text-lg md:text-xl font-bold text-black m-0 leading-tight break-words">
+                                    {status === "displayed"
+                                        ? (review.user_alias || "Anonymous")
+                                        : review.club_name
+                                    }
+                                    {status === "displayed" && isCurrentUser && (
+                                        <span className="ml-1.5 text-s font-bold text-[#FFA1CD]">(you)</span>
+                                    )}
+                                </h2>
+                                {status === "approved" && review.user_alias && (
+                                    <span className="text-sm text-[#6E808D] font-medium">Displayed as: {review.user_alias}</span>
+                                )}
+                                {status === "displayed" && (
+                                    <span className="text-sm font-medium hidden md:block">{formatDate(review.created_at)}</span>
+                                )}
+                            </div>
                         </div>
+
+                        {/* Like button */}
+                        {canLike && (
+                            <button
+                                onClick={toggleLike}
+                                className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0 transition-all md:hidden"
+                                aria-label={liked ? "Unlike review" : "Like review"}
+                            >
+                                <img
+                                    src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
+                                    alt="Heart Icon"
+                                />
+                                <span className="text-gray-700 inline-block min-w-[1rem] text-left">{likeCount}</span>
+                            </button>
+                        )}
                     </div>
-                    {/* Satisfaction and Membership row */}
-                    <div className="flex items-center gap-2 text-sm text-[#6E808D] font-medium flex-wrap">
-                        <div className="flex items-center gap-1">
-                            {renderStars(review.overall_satisfaction, "text-base")}
+
+                    {/* Review date */}
+                    {status === "displayed" && (
+                        <div className="text-sm font-medium md:hidden">
+                            {formatDate(review.created_at)}
                         </div>
-                        <span className="text-[#7F7F7F]">•</span>
+                    )}
+
+                    {/* Stars and Membership */}
+                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-2 text-sm text-[#6E808D] font-medium">
+                        <div className="flex items-center gap-1">
+                            {renderStars(review.overall_satisfaction, "text-sm sm:text-xl md:text-base")}
+                        </div>
+                        <span className="hidden md:inline text-[#7F7F7F]">•</span>
                         <span className="break-words">
                             Member from {review.membership_start_quarter}{" "}{review.membership_start_year} - {review.membership_end_quarter}{" "}{review.membership_end_year}
                         </span>
                     </div>
                 </div>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                    {/* Review date row */}
+
+                {/* Right side */}
+                <div className="hidden md:flex flex-col items-end gap-2 flex-shrink-0">
                     {status !== "displayed" && (
                         <span className="text-sm italic font-medium">Reviewed on {formatDate(review.created_at)}</span>
                     )}
-                    {/* Like button - only for approved reviews */}
                     {canLike && (
                         <button
                             onClick={toggleLike}
-                            className="flex items-center gap-2 p-2 -m-2 min-w-[44px] min-h-[44px]"
+                            className="flex items-center gap-1 -m-2 min-w-[44px] min-h-[44px]"
                             aria-label={liked ? "Unlike review" : "Like review"}
                         >
                             <img
-                                src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+                                src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
                                 alt="Heart Icon"
-                                className="w-[20px] h-[17px]"
                             />
-                            <span className="text-md font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
+                            <span className="text-md text-gray-700 inline-block min-w-[1rem] text-left">
                                 {likeCount}
                             </span>
                         </button>
@@ -231,18 +208,12 @@ export default function ReviewCard({
                 </p>
                 {!showFull && isClamped && (
                     <button
-                        className="mt-1 text-sm text-blue-600 italic underline"
+                        className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
                         type="button"
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setShowFull(true);
-                        }}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            padding: 0,
-                            cursor: "pointer",
                         }}
                     >
                         ...see more
@@ -250,18 +221,12 @@ export default function ReviewCard({
                 )}
                 {showFull && (
                     <button
-                        className="mt-1 text-sm text-blue-600 italic underline"
+                        className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
                         type="button"
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setShowFull(false);
-                        }}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            padding: 0,
-                            cursor: "pointer",
                         }}
                     >
                         ...see less
