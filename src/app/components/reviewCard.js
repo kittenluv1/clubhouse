@@ -233,88 +233,8 @@ export default function ReviewCard({
                     </button>
                 )}
             </div>
-            <span className="text-[#7F7F7F]">•</span>
-            <span className="break-words">
-              Member from {review.membership_start_quarter}{" "}
-              {review.membership_start_year} - {review.membership_end_quarter}{" "}
-              {review.membership_end_year}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-shrink-0 flex-col items-end gap-2">
-          {/* Review date row */}
-          {status !== "displayed" && (
-            <span className="text-sm font-medium italic">
-              Reviewed on {formatDate(review.created_at)}
-            </span>
-          )}
-          {/* Like button - only for approved reviews */}
-          {canLike && (
-            <button
-              onClick={toggleLike}
-              className="-m-2 flex min-h-[44px] min-w-[44px] items-center gap-2 p-2"
-              aria-label={liked ? "Unlike review" : "Like review"}
-            >
-              <img
-                src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
-                alt="Heart Icon"
-                className="h-[17px] w-[20px]"
-              />
-              <span className="text-md inline-block min-w-[1rem] text-left font-semibold text-gray-700">
-                {likeCount}
-              </span>
-            </button>
-          )}
-        </div>
-      </div>
-      <div>
-        <p
-          ref={textRef}
-          className={`text-sm font-normal text-black transition-all duration-200 md:text-base ${!showFull ? "line-clamp-4" : ""}`}
-        >
-          {review.review_text}
-        </p>
-        {!showFull && isClamped && (
-          <button
-            className="mt-1 text-sm text-blue-600 italic underline"
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowFull(true);
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
-            }}
-          >
-            ...see more
-          </button>
-        )}
-        {showFull && (
-          <button
-            className="mt-1 text-sm text-blue-600 italic underline"
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowFull(false);
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
-            }}
-          >
-            ...see less
-          </button>
-        )}
-      </div>
 
-      {/* Edit/Delete buttons - only for rejected reviews */}
+            {/* Edit/Delete buttons - only for rejected reviews */}
       {(canEdit || canDelete) && (
         <div className="mt-4 flex w-full flex-col justify-end gap-2 sm:flex-row">
           {canEdit && (

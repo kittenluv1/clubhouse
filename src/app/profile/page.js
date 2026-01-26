@@ -450,10 +450,10 @@ function ProfilePage() {
             />
             {/* User Information Section */}
             <div
-                className="mb-20 rounded-lg bg-white bg-cover bg-center bg-no-repeat px-12 py-15 lg:px-26 lg:py-25 border-b border-[#E5EBF1]"
+                className="relative mb-22 rounded-lg bg-white bg-cover bg-center bg-no-repeat px-12 py-15 lg:px-26 lg:py-25 border-b border-[#E5EBF1]"
                 style={{ backgroundImage: "url('/profile_background.png')" }}
             >
-                <div className="absolute left-1/2 -translate-x-1/2 top-12 lg:top-25 lg:left-51 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
+                <div className="absolute left-1/2 -translate-x-1/2 -bottom-17 lg:-bottom-22 lg:left-52 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
                     <img
                         src="/bear-profile.svg"
                         alt="Profile"
