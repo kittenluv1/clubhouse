@@ -196,13 +196,13 @@ export default function Filter({
           <>
             {/* Backdrop to detect outside clicks */}
             <div
-              className="fixed inset-0 z-40 bg-transparent"
+              className="fixed inset-0 z-30 bg-transparent"
               onClick={handleClose}
             />
 
             <motion.div
               key="mobile-filter"
-              className="fixed inset-x-0 bottom-0 z-50 flex h-[80vh] flex-col rounded-t-2xl bg-white shadow-xl"
+              className="fixed inset-x-0 bottom-0 z-40 flex h-[80vh] flex-col rounded-t-2xl bg-white shadow-xl"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -294,7 +294,7 @@ export default function Filter({
         {showFilter && !isMobile && (
           <div
             ref={filterRef}
-            className="absolute top-12 left-0 z-50 w-lg rounded-xl bg-white p-6 shadow-lg lg:w-3xl"
+            className="absolute top-12 left-0 z-40 w-lg rounded-xl bg-white p-6 shadow-lg lg:w-3xl"
           >
             <div className="max-h-[50vh] overflow-y-auto p-4">
               {tempSelectedTags.length > 0 && (

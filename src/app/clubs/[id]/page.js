@@ -14,7 +14,11 @@ import SortModal from "@/app/components/sortModal";
 import ReviewCard from "@/app/components/reviewCard";
 
 function IconImg({ media }) {
-  return <img src={`/icons/${media}.svg`} alt={media} className="inline-block w-7 hover:opacity-80" />;
+  return (                                                                                                                                                       
+      <div className="inline-flex items-center justify-center w-8 h-8 border border-[#EC9304] rounded-full hover:opacity-80">                                   
+        <img src={`/icons/${media}.svg`} alt={media} className="w-full h-full" />                                                                                  
+      </div>                                                                                                                                                       
+    );   
 }
 
 const getIconByName = (name) => {
@@ -567,7 +571,7 @@ export default function ClubDetailsPage() {
           {/* right side */}
           <div className="lg:pl-5 lg:w-2/6">
             {/* Overall Rating */}
-            <div className="mt-2 mb-4 flex items-center">
+            <div className="mt-2 flex items-center">
               <span className="text-2xl font-bold">
                 {club.average_satisfaction
                   ? club.average_satisfaction.toFixed(1)
@@ -575,9 +579,12 @@ export default function ClubDetailsPage() {
               </span>
               <AiFillStar className="mr-2 text-2xl text-yellow-400" />
               <h2 className="text-lg font-bold text-nowrap">
-                satisfaction rating
+                Satisfaction Rating
               </h2>
             </div>
+            <p className="mb-4 text-sm text-[#6E808D]">
+              From {club.total_num_reviews || reviews.length || 0} trusted students
+            </p>
 
             <section>
               {/* Rating Bars - always show */}

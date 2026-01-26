@@ -195,7 +195,7 @@ export default function ClubCard({
             )}
           </label>
           <label className="text-base  text-[#303030]">
-            <span className="font-bold mr-1 ml-1 ">{club.average_satisfaction}</span>
+            <span className="font-bold mr-1 ml-1">{club.average_satisfaction ? club.average_satisfaction.toFixed(1) : ""}</span>
             {/* Reviews */}
             {club.total_num_reviews === 0 
             ? "(0 reviews)"
