@@ -175,7 +175,7 @@ const ClubSearchBar = forwardRef(
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder="Search for a club..."
-            className={`rounded-full drop-shadow-xs ${style} p-2 pl-8 pr-12 text-sm text-black md:text-base h-12 w-full min-w-20 text-ellipsis overflow-hidden`}
+            className={`bg-[#F0F2F9] rounded-full drop-shadow-xs ${style} p-2 pl-8 pr-12 text-sm text-black md:text-base h-12 w-full min-w-20 text-ellipsis overflow-hidden`}
           />
           <button
             className="absolute top-1/2 right-3 -translate-y-1/2 transform pr-2 text-gray-400"

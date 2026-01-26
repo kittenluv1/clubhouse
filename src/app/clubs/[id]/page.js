@@ -615,7 +615,7 @@ export default function ClubDetailsPage() {
             <h2 className="py-4 text-lg md:text-2xl font-bold">
               Student Reviews ({club.total_num_reviews || reviews.length || 0})
             </h2>
-            <p className="mb-6 hidden md:block">
+            <p className="mb-6 hidden md:block text-[16px] text-[#6E808D]">
               Have something to say? Share your experience...
             </p>
             <div className="mb-8 md:mb-12">
@@ -639,7 +639,13 @@ export default function ClubDetailsPage() {
                   size="small"
                   onClick={() => setShowSortModal(true)}
                 >
-                  Sort By
+                   <div className="flex gap-1">
+                <span className="font-font-semi text-[#6E808D]">Sort By:</span>
+                <span className="font-bold text-[#6E808D]">
+                  {sortType === "mostLiked" && "Most liked"}
+                  {sortType === "mostRecent" && "Most recent"}
+                </span>
+                </div>
                 </Button>
                 <SortModal
                   open={showSortModal}
@@ -657,16 +663,16 @@ export default function ClubDetailsPage() {
             ) : (
               <div className="relative">
                 <div
-                  className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
+                  className="flex flex-shrink-0 cursor-pointer items-center gap-1 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
                   onClick={() => setShowSortModal(!showSortModal)}
                 >
-                  <span className="font-medium text-black">Sort by:</span>
-                  <span className="font-bold text-black">
+                  <span className="font-semi text-[#6E808D]">Sort by:</span>
+                  <span className="font-bold text-[#6E808D]">
                     {sortType === "mostLiked" && "Most liked"}
                     {sortType === "mostRecent" && "Most recent"}
                   </span>
                   <svg
-                    className={`h-4 w-4 transition-transform ${showSortModal ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 transition-transform ml-1 ${showSortModal ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

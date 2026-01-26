@@ -207,7 +207,14 @@ function AllClubsPage() {
                 size="small"
                 onClick={() => setShowSortModal(true)}
               >
-                Sort By
+                <div className="flex gap-1">
+                <span className="font-medium text-[#6E808D]">Sort By:</span>
+                <span className="font-bold text-[#6E808D]">
+                  {sortType === "rating" && "Highest Rated"}
+                  {sortType === "reviews" && "Most Reviewed"}
+                  {sortType === "alphabetical" && "A–Z"}
+                </span>
+                </div>
               </Button>
               <SortModal
                 open={showSortModal}
