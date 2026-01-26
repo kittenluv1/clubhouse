@@ -237,14 +237,14 @@ function AllClubsPage() {
                 className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
                 onClick={() => setShowSortModal(!showSortModal)}
               >
-                <span className="font-medium text-black">Sort by:</span>
-                <span className="font-bold text-black">
+                <span className="font-medium text-[#6E808D]">Sort by:</span>
+                <span className="font-bold text-[#6E808D]">
                   {sortType === "rating" && "Highest Rated"}
                   {sortType === "reviews" && "Most Reviewed"}
                   {sortType === "alphabetical" && "A–Z"}
                 </span>
                 <svg
-                  className={`h-4 w-4 transition-transform ${showSortModal ? "rotate-180" : ""}`}
+                  className={`text-[#6E808D] h-4 w-4 transition-transform ${showSortModal ? "rotate-180" : ""}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

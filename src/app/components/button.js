@@ -20,7 +20,7 @@ export default function Button({
         ${type === 'tag' && (isSelected
           ? 'bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]'
           : 'border-[#6E808D] border-1 bg-white text-black hover:bg-[#E5EBF1]')}
-        ${type === 'border' && 'border-1 border-[#6E808D] hover:bg-[#E5EBF1]'}
+        ${type === 'border' && 'border-1 border-[#6E808D] hover:bg-[#E5EBF1] text-[#6E808D]'}
         ${type === 'pink' && 'hover:bg-[#FBB2D4] border-none bg-[#FFCEE5]'}
         ${type === 'delete' && 'font-medium border-none hover:bg-[#FF9090] hover:text-[#D54143] bg-[#FFC0C0] text-[#EB4A4D]'}
         ${type === 'gray' && 'hover:bg-[#B5BFC6] border-none bg-[#E5EBF1]'}

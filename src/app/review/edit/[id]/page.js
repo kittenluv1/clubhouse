@@ -400,7 +400,7 @@ export default function EditReviewPage() {
 					{/* Club Name */}
 					<div>
 						<label className="mb-3 block text-lg font-bold">
-							Club Name <span className="text-red-500">*</span>
+							Club Name <span className="text-[#FFA1CD]">*</span>
 						</label>
 						<div className="max-w-md pointer-events-none">
 							<SearchableDropdown
@@ -418,7 +418,7 @@ export default function EditReviewPage() {
 						<div>
 							<label className="mb-3 block text-lg font-bold">
 								Club Membership Start Date{" "}
-								<span className="text-red-500">*</span>
+								<span className="text-[#FFA1CD]">*</span>
 							</label>
 							<div className="flex space-x-2">
 								<div className="w-1/2">
@@ -435,7 +435,7 @@ export default function EditReviewPage() {
 
 						<div>
 							<label className="mb-3 block text-lg font-bold">
-								Club Membership End Date <span className="text-red-500">*</span>
+								Club Membership End Date <span className="text-[#FFA1CD]">*</span>
 							</label>
 							<div className="mb-4 flex space-x-2">
 								<div className="w-1/2">
@@ -620,7 +620,7 @@ export default function EditReviewPage() {
 					<div>
 						<label className="mt-20 mb-3 block text-lg font-bold">
 							How satisfied are you with your club experience?{" "}
-							<span className="text-red-500">*</span>
+							<span className="text-[#FFA1CD]">*</span>
 						</label>
 						<StarRating
 							rating={overallSatisfaction}
@@ -631,7 +631,7 @@ export default function EditReviewPage() {
 					{/* Review Text */}
 					<div className="mt-10">
 						<label className="mb-3 block text-sm font-bold text-gray-700">
-							Your Club Review <span className="text-red-500">*</span>
+							Your Club Review <span className="text-[#FFA1CD]">*</span>
 						</label>
 						<textarea
 							className="h-32 w-full rounded-md border bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
@@ -657,13 +657,13 @@ export default function EditReviewPage() {
 					)}
 
 					{/* Submit Button */}
-					<div className="mt-10 mb-15 flex justify-center">
+					<div className="mt-10 mb-15 flex justify-end">
 						<Button
 							type="submit"
 							disabled={isSubmitting || dateError}
 							className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
 						>
-							Submit
+							Submit Review
 						</Button>
 					</div>
 				</form>

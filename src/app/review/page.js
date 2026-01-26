@@ -485,7 +485,7 @@ export default function ReviewPage() {
             {/* Search for a club to review */}
             <div>
               <label className="mb-3 block text-2xl font-bold">
-                Search for a club to review <span className="text-red-500">*</span>
+                Search for a club to review <span className="text-[#FFA1CD]">*</span>
               </label>
               <label className="mb-5 block text-sm text-gray-600">
                 Help fellow students discover the best club experiences!
@@ -519,7 +519,7 @@ export default function ReviewPage() {
               <div>
                 <label className="mb-3 block text-2xl font-bold">
                   Club Membership Start Date{" "}
-                  <span className="text-red-500">*</span>
+                  <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="flex space-x-2">
                   <div className="w-1/2">
@@ -536,7 +536,7 @@ export default function ReviewPage() {
               <div>
 
                 <label className="mb-3 block text-2xl font-bold">
-                  Club Membership End Date <span className="text-red-500">*</span>
+                  Club Membership End Date <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="mb-5 flex space-x-2">
                   <div className="w-1/2">
@@ -581,7 +581,7 @@ export default function ReviewPage() {
           <div>
             <label className="mt-14 mb-3 block text-2xl font-bold">
               How satisfied are you with your club experience?{" "}
-              <span className="text-red-500">*</span>
+              <span className="text-[#FFA1CD]">*</span>
             </label>
             <div className="mb-14">
               <StarRating
@@ -599,7 +599,7 @@ export default function ReviewPage() {
           <div className="mt-14">
             <label className="mb-3 block text-2xl font-bold">
               Share your experience with the club in these areas{" "}
-              <span className="text-red-500">*</span>
+              <span className="text-[#FFA1CD]">*</span>
             </label>
             <p className="text-sm text-gray-500 mb-8">
               This is private between Clubhouse reviews
@@ -715,7 +715,7 @@ export default function ReviewPage() {
           {/* Review Text */}
           <div className="mt-14">
             <label className="block text-2xl font-bold">
-              Write Public Review <span className="text-red-500">*</span>
+              Write Public Review <span className="text-[#FFA1CD]">*</span>
             </label>
             <p className="text-sm text-gray-600 mb-5 ">Share insights to help future students understand what to expect from this club!</p>
             <textarea
@@ -742,13 +742,13 @@ export default function ReviewPage() {
           )}
 
           {/* Submit Button */}
-          <div className="mt-10 mb-15 flex justify-center">
+          <div className="mt-10 mb-15 flex justify-end">
             <Button
               type="submit"
               disabled={isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
             >
-              Submit
+              Submit Review
             </Button>
           </div>
         </form>

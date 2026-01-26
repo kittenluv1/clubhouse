@@ -627,7 +627,7 @@ export default function ClubDetailsPage() {
                   )
                 }
               >
-                Leave a Review
+                Write a Review
               </Button>
             </div>
           </div>
