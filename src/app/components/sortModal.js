@@ -87,11 +87,10 @@ export default function SortModal({
                 >
                   <span>{option.label}</span>
                   <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
-                      selected === option.value
+                    className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${selected === option.value
                         ? "border-blue-500 bg-blue-500"
                         : "border-blue-500"
-                    }`}
+                      }`}
                   >
                     {selected === option.value && (
                       <div className="h-2.5 w-2.5 rounded-full bg-white" />
