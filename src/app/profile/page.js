@@ -8,6 +8,7 @@ import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
 import LoadingScreen from "../components/LoadingScreen";
 import ConfirmationModal from "../components/confirmationModal";
+import Button from "../components/button";
 
 function ProfilePage() {
     const router = useRouter();
@@ -24,6 +25,7 @@ function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [reviewToDelete, setReviewToDelete] = useState(null);
+    const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
 
     // Authentication check
     useEffect(() => {
@@ -87,6 +89,7 @@ function ProfilePage() {
                     setApprovedReviews(data.approvedReviews || []);
                     setPendingReviews(data.pendingReviews || []);
                     setRejectedReviews(data.rejectedReviews || []);
+                    setUnreadRejectedCount(data.unreadRejectedCount || 0);
 
                     // Set clubs
                     setLikedClubs(data.likedClubs || []);
@@ -114,6 +117,19 @@ function ProfilePage() {
 
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
+    const attemptReview = async () => {
+        const {
+            data: { session },
+        } = await supabase.auth.getSession();
+
+        if (session) {
+            window.location.href = "/review";
+        } else {
+            const returnUrl = encodeURIComponent("/review");
+            window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+        }
+    };
+
     // Handler functions for review actions
     const handleLike = async (reviewId, isLiked) => {
         // TODO: Implement API call to like/unlike review
@@ -131,11 +147,18 @@ function ProfilePage() {
         setConfirmationModalOpen(true);
     };
 
-    const confirmDelete = async () => {
+    const deleteReview = async () => {
         if (!reviewToDelete) return;
 
         // TODO: Implement API call to delete review
-        console.log('Delete review:', reviewToDelete);
+        const response = await fetch(`/api/rejectedReviews/${reviewToDelete}`, { method: 'DELETE' });
+        if (response.ok) {
+            // console.log('Deleted review: ', reviewToDelete);
+            // Remove from local state
+            setRejectedReviews(prev => prev.filter(r => r.id !== reviewToDelete));
+        } else {
+            console.error('Error deleting review');
+        }
 
         // Reset state
         setReviewToDelete(null);
@@ -188,6 +211,18 @@ function ProfilePage() {
         }
     };
 
+    // Handler to mark rejected reviews as viewed
+    const handleViewRejected = async () => {
+        if (unreadRejectedCount > 0) {
+            setUnreadRejectedCount(0);
+            try {
+                await fetch('/api/profile/viewed-rejected', { method: 'POST' });
+            } catch (error) {
+                console.error('Error marking rejected reviews as viewed:', error);
+            }
+        }
+    };
+
     // Handler for club save/unsave
     const handleClubSave = async (clubId, isSaved) => {
         try {
@@ -222,108 +257,89 @@ function ProfilePage() {
     const getContentForSection = () => {
         switch (activeSection) {
             case "approved":
-                return approvedReviews.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-[#B5BEC7] mb-4">No approved reviews yet</p>
-                        <button
-                            onClick={() => router.push("/review")}
-                            className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
-                        >
-                            Write a Review
-                        </button>
-                    </div>
-                ) : (
-                    <>
-                        <div className="mx-8">
-                            <div className="text-center mb-8">
-                                <p className="text-[#000000] text-4xl font-bold mb-4">Approved Reviews</p>
-                                <p className="text-[#747474] text-[20px]">These reviews have been approved and posted on the club page!</p>
-                            </div>
-                            <h2 className="text-[16px] text-[#747474] mb-4">Approved Reviews ({approvedReviews.length})</h2>
-                            <div className="grid grid-cols-1">
-                                {
-                                    approvedReviews.map(review => (
-                                        <ReviewCard
-                                            key={review.id}
-                                            review={review}
-                                            status="approved"
-                                            clickable={true}
-                                            onLike={handleLike}
-                                            onEdit={handleEdit}
-                                            onDelete={handleDelete}
-                                        />
-                                    ))
-                                }
-                            </div>
+                return (
+                    <div className="mx-8">
+                        <div className="text-center mb-8">
+                            <p className="text-[#000000] text-4xl font-bold mb-4">Approved Reviews</p>
+                            <p className="text-[#747474] text-[20px]">These reviews have been approved and posted on the club page!</p>
                         </div>
-                    </>
+                        <h2 className="text-[16px] text-[#747474] mb-4">Approved Reviews ({approvedReviews.length})</h2>
+                        {approvedReviews.length === 0 ? (
+                            <div className="text-center py-12">
+                                <p className="text-[#B5BEC7]">No approved reviews</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1">
+                                {approvedReviews.map(review => (
+                                    <ReviewCard
+                                        key={review.id}
+                                        review={review}
+                                        status="approved"
+                                        clickable={true}
+                                        onLike={handleLike}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 );
 
             case "pending":
-                return pendingReviews.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-[#B5BEC7] mb-4">No pending reviews</p>
-                        <button
-                            onClick={() => router.push("/review")}
-                            className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
-                        >
-                            Write a Review
-                        </button>
-                    </div>
-                ) : (
-                    <>
-                        <div className="mx-8">
-                            <div className="text-center mb-8">
-                                <p className="text-[#000000] text-4xl font-bold mb-4">Pending Reviews</p>
-                                <p className="text-[#747474] text-[20px]">These reviews are currently being processed for approval.</p>
-                            </div>
-                            <h2 className="text-[16px] text-[#747474] mb-4">Pending Reviews ({pendingReviews.length})</h2>
-                            <div className="grid grid-cols-1 gap-12">
-                                {
-                                    pendingReviews.map(review => (
-                                        <ReviewCard
-                                            key={review.id}
-                                            review={review}
-                                            status="pending"
-                                            clickable={true}
-                                            onLike={handleLike}
-                                            onEdit={handleEdit}
-                                            onDelete={handleDelete}
-                                        />
-                                    ))
-                                }
-                            </div>
+                return (
+                    <div className="mx-8">
+                        <div className="text-center mb-8">
+                            <p className="text-[#000000] text-4xl font-bold mb-4">Pending Reviews</p>
+                            <p className="text-[#747474] text-[20px]">These reviews are currently being processed for approval.</p>
                         </div>
-                    </>
+                        <h2 className="text-[16px] text-[#747474] mb-4">Pending Reviews ({pendingReviews.length})</h2>
+                        {pendingReviews.length === 0 ? (
+                            <div className="text-center py-12">
+                                <p className="text-[#B5BEC7] mb-4">No pending reviews</p>
+                                <Button type="CTA" onClick={attemptReview}>
+                                    Write a Review
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-12">
+                                {pendingReviews.map(review => (
+                                    <ReviewCard
+                                        key={review.id}
+                                        review={review}
+                                        status="pending"
+                                        clickable={true}
+                                        onLike={handleLike}
+                                        onEdit={handleEdit}
+                                        onDelete={handleDelete}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 );
 
             case "rejected":
-                return rejectedReviews.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-[#B5BEC7]">
-                            These reviews did not pass our{" "}
-                            <Link href="/community-guidelines" className="underline text-[#5058B2]">
-                                Community Guidelines
-                            </Link>
-                            . Please edit them and resubmit for approval.
-                        </p>
-                        <p className="text-[#B5BEC7]">No rejected reviews</p>
-                    </div>
-                ) : (
-                    <>
+                return (
+                    <div className="mx-8">
                         <div className="text-center mb-8">
                             <p className="text-[#000000] text-4xl font-bold mb-4">Rejected Reviews</p>
-                            <p className="text-[#B5BEC7]">
+                            <p className="text-[#747474] text-[20px]">
                                 These reviews did not pass our{" "}
-                                <Link href="/community-guidelines" className="underline text-[#5058B2]">
+                                <Link href="/community-guidelines" className="underline text-[#7fbefa]">
                                     Community Guidelines
                                 </Link>
                                 . Please edit them and resubmit for approval.
-                            </p>                            </div>
+                            </p>
+                        </div>
                         <h2 className="text-[16px] text-[#747474] mb-4">Rejected Reviews ({rejectedReviews.length})</h2>
-                        <div className="grid grid-cols-1 gap-12">
-                            {
-                                rejectedReviews.map(review => (
+                        {rejectedReviews.length === 0 ? (
+                            <div className="text-center py-12">
+                                <p className="text-[#B5BEC7]">No rejected reviews</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-12">
+                                {rejectedReviews.map(review => (
                                     <ReviewCard
                                         key={review.id}
                                         review={review}
@@ -333,28 +349,11 @@ function ProfilePage() {
                                         onEdit={handleEdit}
                                         onDelete={handleDelete}
                                     />
-                                ))
-                            }
-                        </div>
-                    </>
-
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 );
-
-            // case "liked-reviews":
-            //     return likedReviews.length === 0 ? (
-            //         <div className="text-center">
-            //             <p className="text-[#B5BEC7]">No liked reviews</p>
-            //         </div>
-            //     ) : (
-            //         <>
-            //             <h2 className="text-[16px] text-[#747474] mb-6">Liked Reviews ({likedReviews.length})</h2>
-            //             <div className="space-y-6">
-            //                 {
-            //                     //TODO CARD
-            //                 }
-            //             </div>
-            //         </>
-            //     );
 
             case "liked-clubs":
                 return (
@@ -445,7 +444,7 @@ function ProfilePage() {
                     setConfirmationModalOpen(false);
                     setReviewToDelete(null);
                 }}
-                onConfirm={confirmDelete}
+                onConfirm={deleteReview}
                 title="Confirm Deletion"
                 message="Are you sure you want to delete this review?"
             />
@@ -513,13 +512,26 @@ function ProfilePage() {
                                     ].map((item) => (
                                         <button
                                             key={item.value}
-                                            onClick={() => setActiveSection(item.value)}
-                                            className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${activeSection === item.value
-                                                ? "bg-[#E6F4FF]"
-                                                : "hover:bg-[#F5FAFF]"
+                                            onClick={() => {
+                                                setActiveSection(item.value);
+                                                if (item.value === "rejected") {
+                                                    handleViewRejected();
+                                                }
+                                            }}
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
                                                 }`}
                                         >
-                                            {item.label}
+                                            <span className="flex items-center justify-between">
+                                                {item.label}
+                                                {item.value === "rejected" && unreadRejectedCount > 0 && (
+                                                    <span
+                                                        className="ml-2 text-white text-xs font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1"
+                                                        style={{ background: 'linear-gradient(to right, #FFB464, #FFA1CD)' }}
+                                                    >
+                                                        {unreadRejectedCount}
+                                                    </span>
+                                                )}
+                                            </span>
                                         </button>
                                     ))}
                                 </div>
@@ -567,9 +579,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${activeSection === item.value
-                                                ? "bg-[#E6F4FF]"
-                                                : "hover:bg-[#F5FAFF]"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
                                                 }`}
                                         >
                                             {item.label}

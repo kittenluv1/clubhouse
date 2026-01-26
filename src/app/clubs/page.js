@@ -207,7 +207,14 @@ function AllClubsPage() {
                 size="small"
                 onClick={() => setShowSortModal(true)}
               >
-                Sort By
+                <div className="flex gap-1">
+                <span className="font-medium text-[#6E808D]">Sort By:</span>
+                <span className="font-bold text-[#6E808D]">
+                  {sortType === "rating" && "Highest Rated"}
+                  {sortType === "reviews" && "Most Reviewed"}
+                  {sortType === "alphabetical" && "A–Z"}
+                </span>
+                </div>
               </Button>
               <SortModal
                 open={showSortModal}
@@ -282,7 +289,7 @@ function AllClubsPage() {
 
         <div className="mt-16 flex items-center justify-center gap-4">
           <Button
-            type="pink"
+            type="gray"
             size="small"
             onClick={handlePreviousPage}
             disabled={currPage === 1}
@@ -297,7 +304,7 @@ function AllClubsPage() {
             Page {currPage} of {pageTotal}
           </span>
           <Button
-            type="pink"
+            type="gray"
             size="small"
             onClick={handleNextPage}
             disabled={currPage === pageTotal}

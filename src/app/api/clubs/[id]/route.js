@@ -44,13 +44,17 @@ export async function GET(request, context) {
     let currentUserSaved = false;
     let reviewLikesMap = {};
     let userLikedReviews = [];
+    let currentUserId = null;
+
+    // Get current user once (if authenticated)
+    const authSupabase = await createAuthenticatedClient();
+    const { data: { user }, error: authError } = await authSupabase.auth.getUser();
+    if (!authError && user) {
+      currentUserId = user.id;
+    }
 
     if (data && data.length > 0) {
       const clubData = data[0];
-
-      // Get current user once (if authenticated)
-      const authSupabase = await createAuthenticatedClient();
-      const { data: { user }, error: authError } = await authSupabase.auth.getUser();
 
       // Fetch reviews
       const { data: reviewsData, error: reviewsError } = await supabase
@@ -137,7 +141,8 @@ export async function GET(request, context) {
       currentUserLiked,
       currentUserSaved,
       reviewLikesMap,
-      userLikedReviews
+      userLikedReviews,
+      currentUserId
     });
   } catch (error) {
     console.error("Error fetching data:", error);

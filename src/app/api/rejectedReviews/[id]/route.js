@@ -81,3 +81,32 @@ export async function POST(req, { params }) {
 		);
 	}
 }
+
+export async function DELETE(req, { params }) {
+	const { id } = await params;
+
+	try {
+		const supabase = await createAuthenticatedClient();
+		const { error: deleteError } = await supabase
+			.from('rejected_reviews')
+			.delete()
+			.eq('id', id);
+		if (deleteError) {
+			console.error('Error deleting rejected review:', deleteError);
+			return new Response(
+				JSON.stringify({ error: "Error deleting rejected review" }),
+				{ status: 500 }
+			);
+		}
+		return new Response(
+			JSON.stringify({ message: "Rejected review deleted successfully" }),
+			{ status: 200 }
+		);
+	} catch (error) {
+		console.error('Unexpected error in deleting rejected review API:', error);
+		return new Response(
+			JSON.stringify({ error: "Internal Server Error" }),
+			{ status: 500 }
+		);
+	}
+}

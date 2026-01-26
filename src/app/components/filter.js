@@ -42,6 +42,7 @@ const GROUPED_TAGS = {
   ],
   "Arts & Media": ["Arts", "Dance", "Film", "Music", "Media", "Theater"],
   "Health & Wellness": [
+    "Club Sports",
     "Fitness",
     "Health and Wellness",
     "Self Improvement",

@@ -123,6 +123,16 @@ export async function GET(req) {
       like_count: likeCounts[club?.OrganizationID] || 0
     }));
 
+    const lastViewedRejectedAt = profileData?.last_viewed_rejected_at;
+    const unreadRejectedCount = (rejectedReviews || []).filter(review => {
+      if (!lastViewedRejectedAt) return true;
+      // Ensure consistent timezone parsing - append Z if no timezone info present
+      const updatedAt = review.updated_at.endsWith('Z') || review.updated_at.includes('+')
+        ? review.updated_at
+        : review.updated_at + 'Z';
+      return new Date(updatedAt) > new Date(lastViewedRejectedAt);
+    }).length;
+
     // Return all data
     return new Response(
       JSON.stringify({
@@ -132,6 +142,7 @@ export async function GET(req) {
         rejectedReviews: rejectedReviews || [],
         likedClubs: likedClubsWithCounts,
         savedClubs: savedClubsWithCounts,
+        unreadRejectedCount,
       }),
       { status: 200 }
     );

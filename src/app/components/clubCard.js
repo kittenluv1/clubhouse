@@ -106,6 +106,38 @@ export default function ClubCard({
     const encoded = encodeURIComponent(categoryName);
     router.push(`/clubs?categories=${encoded}`);
   };
+
+  const renderRatingStars = (rating) =>  {
+    const ratingStars = [];
+    const intRating = Math.round(rating || 0); 
+    const ratingDecimal = rating - Math.floor(rating); 
+    for(let x = 0; x<5; x++){
+      if(x<intRating){
+        if((rating - ratingDecimal) == x && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)){
+          ratingStars.push(<img 
+            key = {x} 
+            src = {"reviewStarHalf.svg"} 
+            className="mr-1"
+                />);
+        } else {
+          ratingStars.push(<img 
+            key = {x} 
+            src = {"reviewStarFilled.svg"} 
+            className="mr-1"
+                />);
+        }
+        
+      } else {
+        ratingStars.push(<img 
+          key = {x} 
+          src = {"reviewStarUnfilled.svg"} 
+          className="mr-1"
+                />);
+      }
+
+    }
+    return ratingStars;
+  }
   
   return (
     <Link
@@ -120,18 +152,15 @@ export default function ClubCard({
           {/* Like button */}
           <button
             onClick={toggleLike}
-            className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px]"
+            className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] transition-all"
             disabled={isProcessing}
             aria-label={liked ? "Unlike club" : "Like club"}
           >
             <img
-              src={`/${liked ? "heart_liked" : "heart_unliked"}.svg`}
+              src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
               alt="Heart Icon"
-              className="w-[18px] h-[15px]"
             />
-            <span className="text-sm font-semibold text-gray-700 inline-block min-w-[1rem] text-left">
-              {clubLikeCount}
-            </span>
+            <span className="text-gray-700">{clubLikeCount}</span>
           </button>
           {/* Save button */}
           <button
@@ -141,13 +170,44 @@ export default function ClubCard({
             aria-label={saved ? "Unsave club" : "Save club"}
           >
             <img
-              src={`/${saved ? "saved" : "unsaved"}.svg`}
+              src={`/${saved ? "saveFilled" : "saveUnfilled"}.svg`}
               alt="Save Icon"
-              className="w-[18px] h-[18px]"
             />
           </button>
         </div>
       </div>
+
+      <div>
+        <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
+          <label className="flex items-center text-xl font-bold text-black">
+            {club.average_satisfaction ? (
+              <>
+                {renderRatingStars(club.average_satisfaction)}
+              </>
+            ) : (
+              <>
+                <img
+                src = {"reviewStarFilled.svg"}
+                className="mr-[5px]"
+                />
+                N/A
+              </>
+            )}
+          </label>
+          <label className="text-base  text-[#303030]">
+            <span className="font-bold mr-1 ml-1 ">{club.average_satisfaction}</span>
+            {/* Reviews */}
+            {club.total_num_reviews === 0 
+            ? "(0 reviews)"
+          :`(${club.total_num_reviews} ${club.total_num_reviews === 1 ? "review" : "reviews"})`}
+          </label>
+        </div>
+      </div>
+
+       <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
+        {club.OrganizationDescription}
+      </p>
+
       <div className="flex flex-wrap gap-2">
         {club.Category1Name &&
           <button
@@ -165,36 +225,9 @@ export default function ClubCard({
           </button>}
       </div>
 
-      <p className="line-clamp-4 text-sm font-normal text-black md:text-base">
-        {club.OrganizationDescription}
-      </p>
+     
 
-      <div>
-        <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-          <label className="flex items-center text-xl font-bold text-black">
-            {club.average_satisfaction ? (
-              <>
-                {club.average_satisfaction}
-                <span className="ml-1 text-yellow-400">★</span>
-              </>
-            ) : (
-              <>
-                N/A
-                <span className="ml-1 text-yellow-400">★</span>
-              </>
-            )}
-          </label>
-          <label className="text-base font-bold text-black">
-            satisfaction rating
-          </label>
-        </div>
-        <label className="text-base text-black italic">
-          {club.total_num_reviews === 0
-            ? "0 reviews"
-            : `from ${club.total_num_reviews} trusted ${club.total_num_reviews === 1 ? "student" : "students"
-            }`}
-        </label>
-      </div>
+      
     </Link>
   );
 }
