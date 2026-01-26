@@ -475,24 +475,24 @@ export default function ClubDetailsPage() {
                 {club.OrganizationName}
               </h1>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-0 md:gap-2 flex-shrink-0">
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className="flex items-center gap-1 p-2 transition-all"
+                  className="flex items-center gap-0 md:gap-1 p-1 transition-all min-w-[44px] min-h-[44px]"
                   aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
-                  <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" />
+                  <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" className="flex-shrink-0" />
                   <span className="text-gray-700">{clubLikeCount}</span>
                 </button>
 
                 {/* Save Button */}
                 <button
                   onClick={handleSaveToggle}
-                  className="flex items-center gap-2 p-2 transition-all"
+                  className="flex items-center gap-0 md:gap-2 p-1 transition-all min-w-[44px] min-h-[44px]"
                   aria-label={userSavedClub ? "Unsave club" : "Save club"}
                 >
-                  <img src={userSavedClub ? "/saveFilled.svg" : "/saveUnfilled.svg"} alt="Save Icon" />
+                  <img src={userSavedClub ? "/saveFilled.svg" : "/saveUnfilled.svg"} alt="Save Icon" className="flex-shrink-0" />
                 </button>
               </div>
             </div>
@@ -529,11 +529,11 @@ export default function ClubDetailsPage() {
             />
 
             {club.OrganizationEmail && (
-              <p className="mt-6">
+              <p className="mt-6 break-words">
                 Email:{" "}
                 <a
                   href={`mailto:${club.OrganizationEmail}`}
-                  className="underline"
+                  className="underline break-all"
                 >
                   {club.OrganizationEmail}
                 </a>
