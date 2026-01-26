@@ -22,6 +22,7 @@ export default function Button({
           : 'border-[#6E808D] border-1 bg-white text-black hover:bg-[#E5EBF1]')}
         ${type === 'border' && 'border-1 border-[#6E808D] hover:bg-[#E5EBF1]'}
         ${type === 'pink' && 'hover:bg-[#FBB2D4] border-none bg-[#FFCEE5]'}
+        ${type === 'delete' && 'font-medium border-none hover:bg-[#FF9090] hover:text-[#D54143] bg-[#FFC0C0] text-[#EB4A4D]'}
         ${type === 'gray' && 'hover:bg-[#B5BFC6] border-none bg-[#E5EBF1]'}
         ${style}
         rounded-full text-nowrap transition-colors duration-300 disabled:bg-[#E5EBF1] disabled:bg-none disabled:opacity-50 disabled:text-[#6E808D] disabled:!cursor-not-allowed

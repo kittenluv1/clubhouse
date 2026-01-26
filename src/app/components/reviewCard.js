@@ -4,32 +4,32 @@ import Button from "./button";
 import { supabase } from "@/app/lib/db";
 
 const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
 
 const formatMembership = (review) => {
-    if (!review.membership_start_quarter || !review.membership_end_quarter) {
-        return "";
-    }
-    return `${review.membership_start_quarter} Quarter ${review.membership_start_year} - ${review.membership_end_quarter} Quarter ${review.membership_end_year}`;
+  if (!review.membership_start_quarter || !review.membership_end_quarter) {
+    return "";
+  }
+  return `${review.membership_start_quarter} Quarter ${review.membership_start_year} - ${review.membership_end_quarter} Quarter ${review.membership_end_year}`;
 };
 
 const renderStars = (rating, sizeClasses = "") => {
-    const stars = [];
-    const numStars = Math.round(rating || 0);
-    for (let i = 0; i < 5; i++) {
-        if (i < numStars) {
-            stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
-        } else {
-            stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
-        }
+  const stars = [];
+  const numStars = Math.round(rating || 0);
+  for (let i = 0; i < 5; i++) {
+    if (i < numStars) {
+      stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
+    } else {
+      stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
     }
-    return stars;
+  }
+  return stars;
 };
 
 export default function ReviewCard({
@@ -40,72 +40,72 @@ export default function ReviewCard({
     onDelete, // callback for delete button
     isCurrentUser = false, // whether this review belongs to the current user
 }) {
-    const [liked, setLiked] = useState(review.user_has_liked || false);
-    const [likeCount, setLikeCount] = useState(review.likes || 0);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [showFull, setShowFull] = useState(false);
-    const [isClamped, setIsClamped] = useState(false);
-    const textRef = useRef(null);
+  const [liked, setLiked] = useState(review.user_has_liked || false);
+  const [likeCount, setLikeCount] = useState(review.likes || 0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showFull, setShowFull] = useState(false);
+  const [isClamped, setIsClamped] = useState(false);
+  const textRef = useRef(null);
 
-    // Sync internal state with props when they change (e.g., after logout)
-    useEffect(() => {
-        setLiked(review.user_has_liked || false);
-    }, [review.user_has_liked]);
+  // Sync internal state with props when they change (e.g., after logout)
+  useEffect(() => {
+    setLiked(review.user_has_liked || false);
+  }, [review.user_has_liked]);
 
-    useEffect(() => {
-        setLikeCount(review.likes || 0);
-    }, [review.likes]);
+  useEffect(() => {
+    setLikeCount(review.likes || 0);
+  }, [review.likes]);
 
-    // Check if the review text is clamped (truncated)
-    useLayoutEffect(() => {
-        function checkClamp() {
-            if (textRef.current) {
-                setIsClamped(textRef.current.scrollHeight > textRef.current.clientHeight);
-            }
-        }
-        checkClamp();
-        window.addEventListener("resize", checkClamp);
-        return () => window.removeEventListener("resize", checkClamp);
-    }, [review.review_text, showFull]);
+  // Check if the review text is clamped (truncated)
+  useLayoutEffect(() => {
+    function checkClamp() {
+      if (textRef.current) {
+        setIsClamped(textRef.current.scrollHeight > textRef.current.clientHeight);
+      }
+    }
+    checkClamp();
+    window.addEventListener("resize", checkClamp);
+    return () => window.removeEventListener("resize", checkClamp);
+  }, [review.review_text, showFull]);
 
-    const toggleLike = async () => {
-        if (isProcessing) return; // Ignore clicks while processing
-        if (status !== "displayed" || !onLike) return;
+  const toggleLike = async () => {
+    if (isProcessing) return; // Ignore clicks while processing
+    if (status !== "displayed" || !onLike) return;
 
-        // Check if user is authenticated
-        const {
-            data: { session },
-        } = await supabase.auth.getSession();
+    // Check if user is authenticated
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-        if (!session) {
-            const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-            return;
-        }
+    if (!session) {
+      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      return;
+    }
 
-        setIsProcessing(true);
-        const newLiked = !liked;
+    setIsProcessing(true);
+    const newLiked = !liked;
 
-        // Optimistic update
-        setLiked(newLiked);
-        setLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
+    // Optimistic update
+    setLiked(newLiked);
+    setLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
 
-        try {
-            await onLike(review.id, newLiked);
-        } catch (error) {
-            // Revert on failure
-            setLiked(!newLiked);
-            setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
-            console.error('Failed to toggle like:', error);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
+    try {
+      await onLike(review.id, newLiked);
+    } catch (error) {
+      // Revert on failure
+      setLiked(!newLiked);
+      setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
+      console.error('Failed to toggle like:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
-    // Determine what actions are available based on status
-    const canLike = status === "displayed" && onLike;
-    const canEdit = status === "rejected" && onEdit;
-    const canDelete = status === "rejected" && onDelete;
+  // Determine what actions are available based on status
+  const canLike = status === "displayed" && onLike;
+  const canEdit = status === "rejected" && onEdit;
+  const canDelete = status === "rejected" && onDelete;
 
     const cardContent = (
         <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
@@ -235,37 +235,51 @@ export default function ReviewCard({
             </div>
 
             {/* Edit/Delete buttons - only for rejected reviews */}
-            {(canEdit || canDelete) && (
-                <div className="w-full flex flex-col sm:flex-row justify-end gap-2 mt-4">
-                    {canEdit && (
-                        <Button
-                            type="CTA"
-                            className="w-full sm:w-auto"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onEdit(review);
-                            }}
-                        >
-                            Edit Review
-                        </Button>
-                    )}
-                    {canDelete && (
-                        <Button
-                            className="w-full sm:w-auto"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onDelete(review.id);
-                            }}
-                        >
-                            Delete
-                        </Button>
-                    )}
-                </div>
-            )}
+      {(canEdit || canDelete) && (
+        <div className="mt-4 flex w-full flex-col justify-end gap-2 sm:flex-row">
+          {canEdit && (
+            <Button
+              type="CTA"
+              className="w-full sm:w-auto"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit(review);
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <img src={"/edit-2.svg"}
+                  className="h-6 w-6"
+                />
+                Edit Review
+              </div>
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              type="delete"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(review.id);
+              }}
+              style="group"
+            >
+              <div className="flex items-center gap-3">
+                <img src="/trash.svg"
+                  className="h-6 w-6 block group-hover:hidden"
+                />
+                <img src="/trash-hover.svg"
+                  className="hidden h-6 w-6 group-hover:block"
+                />
+                Delete
+              </div>
+            </Button>
+          )}
         </div>
-    );
+      )}
+    </div>
+  );
 
-    return cardContent;
+  return cardContent;
 }
