@@ -205,16 +205,17 @@ function AllClubsPage() {
               <Button
                 type="border"
                 size="small"
+                style="h-[34px] lg:h-auto flex items-center justify-center"
                 onClick={() => setShowSortModal(true)}
               >
-                <div className="flex gap-1">
-                <span className="font-medium text-[#6E808D]">Sort By:</span>
+                <span className="flex gap-1 text-xs lg:text-sm">
+                <span className="font-medium text-[#6E808D]">Sort:</span>
                 <span className="font-bold text-[#6E808D]">
                   {sortType === "rating" && "Highest Rated"}
                   {sortType === "reviews" && "Most Reviewed"}
                   {sortType === "alphabetical" && "A–Z"}
                 </span>
-                </div>
+                </span>
               </Button>
               <SortModal
                 open={showSortModal}

@@ -166,10 +166,13 @@ export default function Filter({
         <Button
           type="border"
           size="small"
+          style="h-[34px] lg:h-auto flex items-center justify-center"
           ref={buttonRef}
           onClick={toggleFilter}
         >
-          Search by Category
+          <span className="text-xs lg:text-sm">
+            {isMobile ? 'Categories' : 'Search by Category'}
+          </span>
         </Button>
 
         {!isMobile && selectedCategories.length > 0 && (
