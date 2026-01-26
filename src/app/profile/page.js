@@ -507,7 +507,7 @@ function ProfilePage() {
                                                     handleViewRejected();
                                                 }
                                             }}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#E6F4FFD4]"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
                                                 }`}
                                         >
                                             <span className="flex items-center justify-between">
@@ -559,7 +559,7 @@ function ProfilePage() {
                                         <button
                                             key={item.value}
                                             onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#E6F4FFD4]"
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
                                                 }`}
                                         >
                                             {item.label}
