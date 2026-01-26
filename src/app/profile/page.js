@@ -367,12 +367,9 @@ function ProfilePage() {
                             likedClubs.length === 0 ? (
                                 <div className="text-center py-12">
                                     <p className="text-[#B5BEC7] mb-4">No liked clubs yet</p>
-                                    <button
-                                        onClick={() => router.push("/clubs")}
-                                        className="rounded-lg border border-black bg-[#FFB0D8] px-6 py-2 font-medium hover:bg-[#F6E18C]"
-                                    >
+                                    <Button type="CTA" onClick={() => router.push("/clubs")}>
                                         Browse Clubs
-                                    </button>
+                                    </Button>
                                 </div>
                             ) : (
                                 <>
