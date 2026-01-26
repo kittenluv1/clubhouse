@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
 import { useSearchParams } from "next/navigation";
+import { isValidReturnUrl } from "../utils/redirect";
 
 export default function GoogleSignIn() {
   // userEmail is either:
@@ -72,13 +73,25 @@ export default function GoogleSignIn() {
       if (session) {
         setUserEmail(session.user.email); // Update email when signed in
         console.log("Auth state changed:", event, session.user.email);
+
+        // Check for returnUrl parameter first
+        const returnUrl = searchParams.get('returnUrl');
+        if (returnUrl && isValidReturnUrl(returnUrl)) {
+          console.log("redirect to returnUrl:", returnUrl);
+          window.location.href = returnUrl;
+          return;
+        }
+
+        // Fallback: Keep backward compatibility with club/clubId params
         if (club != null) {
           console.log("redirect to:" + club);
           if (clubId != null) { // redirect to review page
             window.location.href = `/review?club=${club}&clubId=${clubId}`;
-          } else { //redirect to club general page (currently unused)
+          } else { //redirect to club general page
             window.location.href = `/clubs/${club}`;
           }
+        } else {
+          window.location.href = `/profile`;
         }
       } else {
         setUserEmail(null); // Clear email when signed out
