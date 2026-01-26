@@ -89,7 +89,7 @@ export async function GET(request, context) {
 
       // Check if current user has saved (only if authenticated)
       if (!authError && user) {
-        const { data: saveData, error: saveError } = await supabase
+        const { data: saveData, error: saveError } = await authSupabase
           .from("club_saves")
           .select("club_id")
           .eq("user_id", user.id)
@@ -120,7 +120,7 @@ export async function GET(request, context) {
 
           // Fetch only current user's likes for these reviews
           if (!authError && user) {
-            const { data: userReviewLikes, error: userReviewLikesError } = await supabase
+            const { data: userReviewLikes, error: userReviewLikesError } = await authSupabase
               .from('review_likes')
               .select('review_id')
               .eq('user_id', user.id)
