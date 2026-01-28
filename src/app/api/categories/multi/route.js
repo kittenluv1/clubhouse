@@ -58,13 +58,21 @@ export async function GET(request) {
         { column: "average_satisfaction", ascending: false },
         { column: "total_num_reviews", ascending: false },
       ];
+    } else if (sortType === "likes") {
+      sortConfig = [
+        { column: "like_count", ascending: false },
+        { column: "average_satisfaction", ascending: false },
+        { column: "OrganizationName", ascending: true },
+      ];
     }
 
     // Build query with filter
     let query = supabase
       .from("clubs")
-      .select("*", { count: "exact" })
+      .select(`*`, { count: "exact" })
       .or(filters.join(","));
+
+    //let squery = supabase.from("clubs_likes").select("club_id, likes:count()");
 
     // Apply all sorts from config
     for (const sort of sortConfig) {
