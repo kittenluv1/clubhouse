@@ -72,8 +72,6 @@ export async function GET(request) {
       .select(`*`, { count: "exact" })
       .or(filters.join(","));
 
-    //let squery = supabase.from("clubs_likes").select("club_id, likes:count()");
-
     // Apply all sorts from config
     for (const sort of sortConfig) {
       query = query.order(sort.column, { ascending: sort.ascending, nullsFirst: false });
