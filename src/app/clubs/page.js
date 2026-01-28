@@ -209,12 +209,13 @@ function AllClubsPage() {
                 onClick={() => setShowSortModal(true)}
               >
                 <span className="flex gap-1 text-xs lg:text-sm">
-                <span className="font-medium text-[#6E808D]">Sort:</span>
-                <span className="font-bold text-[#6E808D]">
-                  {sortType === "rating" && "Highest Rated"}
-                  {sortType === "reviews" && "Most Reviewed"}
-                  {sortType === "alphabetical" && "A–Z"}
-                </span>
+                  <span className="font-medium text-[#6E808D]">Sort:</span>
+                  <span className="font-bold text-[#6E808D]">
+                    {sortType === "rating" && "Highest Rated"}
+                    {sortType === "likes" && "Most Liked"}
+                    {sortType === "reviews" && "Most Reviewed"}
+                    {sortType === "alphabetical" && "A–Z"}
+                  </span>
                 </span>
               </Button>
               <SortModal
@@ -227,6 +228,7 @@ function AllClubsPage() {
                 }}
                 sortOptions={[
                   { label: "Highest Rated", value: "rating" },
+                  { label: "Most Liked", value: "likes" },
                   { label: "Most Reviewed", value: "reviews" },
                   { label: "A – Z", value: "alphabetical" },
                 ]}
@@ -241,6 +243,7 @@ function AllClubsPage() {
                 <span className="font-medium text-[#6E808D]">Sort by:</span>
                 <span className="font-bold text-[#6E808D]">
                   {sortType === "rating" && "Highest Rated"}
+                  {sortType === "likes" && "Most Liked"}
                   {sortType === "reviews" && "Most Reviewed"}
                   {sortType === "alphabetical" && "A–Z"}
                 </span>
@@ -263,6 +266,7 @@ function AllClubsPage() {
                 }}
                 sortOptions={[
                   { label: "Highest Rated", value: "rating" },
+                  { label: "Most Liked", value: "likes" },
                   { label: "Most Reviewed", value: "reviews" },
                   { label: "A – Z", value: "alphabetical" },
                 ]}
