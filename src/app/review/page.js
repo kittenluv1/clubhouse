@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useState, useEffect } from "react";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
@@ -7,11 +8,13 @@ import CustomSlider from "../components/custom-slider";
 import { supabase } from "../lib/db";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { AiFillStar } from "react-icons/ai";
+import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import { FaStarHalfAlt } from "react-icons/fa";
 import Tooltip from "../components/tooltip";
 import LoadingScreen from "../components/LoadingScreen";
 import Button from "../components/button";
 import Image from "next/image";
+
 
 const nouns = [
   "Panda",
@@ -170,12 +173,15 @@ const anonymousName = () => {
   return `${randomVerb}${randomNoun}`;
 };
 
+
 const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
   if (!startQuarter || !startYear || !endQuarter || !endYear) return true;
   const startYearNum = parseInt(startYear);
   const endYearNum = parseInt(endYear);
 
+
   if (endYearNum > startYearNum) return true;
+
 
   if (endYearNum === startYearNum) {
     const quarters = ["Winter", "Spring", "Fall"];
@@ -184,9 +190,11 @@ const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
   return false;
 };
 
+
 // Helper function to determine the current quarter
 const getCurrentQuarter = () => {
   const month = new Date().getMonth() + 1;
+
 
   if (month >= 9 && month <= 12) {
     return "Fall";
@@ -197,9 +205,11 @@ const getCurrentQuarter = () => {
   }
 };
 
+
 export default function ReviewPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
 
   const [selectedClub, setSelectedClub] = useState("");
   const [clubId, setClubId] = useState(null);
@@ -218,10 +228,12 @@ export default function ReviewPage() {
   const [isMember, setIsMember] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
   const [success, setSuccess] = useState(false);
+
 
   useEffect(() => {
     const getUser = async () => {
@@ -229,6 +241,7 @@ export default function ReviewPage() {
         data: { user },
         error,
       } = await supabase.auth.getUser();
+
 
       if (user) {
         setCurrentUser(user);
@@ -238,7 +251,9 @@ export default function ReviewPage() {
       }
     };
 
+
     getUser();
+
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
@@ -251,25 +266,30 @@ export default function ReviewPage() {
       },
     );
 
+
     // cleanup
     return () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
 
+
   // Getting club name and ID from URL parameters
   useEffect(() => {
     const clubFromUrl = searchParams.get("club");
     const clubIdFromUrl = searchParams.get("clubId");
 
+
     if (clubFromUrl) {
       setSelectedClub(decodeURIComponent(clubFromUrl));
     }
+
 
     if (clubIdFromUrl) {
       setClubId(parseInt(clubIdFromUrl));
     }
   }, [searchParams]);
+
 
   useEffect(() => {
     if (startQuarter && startYear && endQuarter && endYear) {
@@ -287,6 +307,7 @@ export default function ReviewPage() {
     }
   }, [startQuarter, startYear, endQuarter, endYear]);
 
+
   const handleMembershipCheckbox = (e) => {
     const checked = e.target.checked;
     if (checked) {
@@ -303,6 +324,7 @@ export default function ReviewPage() {
     setIsMember(checked);
   };
 
+
   const handleClubSelect = async (club) => {
     setSelectedClub(club);
     try {
@@ -311,6 +333,7 @@ export default function ReviewPage() {
         .select("OrganizationID")
         .eq("OrganizationName", club)
         .single();
+
 
       if (error) {
         console.error("Full error object:", error);
@@ -325,13 +348,16 @@ export default function ReviewPage() {
     }
   };
 
+
   const handleStartQuarterChange = (e) => {
     setStartQuarter(e.target.value);
   };
 
+
   const handleStartYearChange = (e) => {
     setStartYear(e.target.value);
   };
+
 
   const handleEndQuarterChange = (e) => {
     if (!isMember) {
@@ -339,11 +365,13 @@ export default function ReviewPage() {
     }
   };
 
+
   const handleEndYearChange = (e) => {
     if (!isMember) {
       setEndYear(e.target.value);
     }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -351,12 +379,15 @@ export default function ReviewPage() {
     setSuccess(false);
     setDateError(null);
 
+
     if (!isEndDateValid(startQuarter, startYear, endQuarter, endYear)) {
       setDateError("End date cannot be earlier than start date");
       return;
     }
 
+
     setIsSubmitting(true);
+
 
     try {
       if (!clubId) throw new Error("Please select a club");
@@ -365,10 +396,13 @@ export default function ReviewPage() {
       if (!endQuarter || !endYear) throw new Error("Please select an end date");
       if (!reviewText) throw new Error("Please write a review");
 
+
       if (overallSatisfaction === null)
         throw new Error("Please rate your overall satisfaction");
 
+
       let userAlias = anonymousName();
+
 
       const reviewData = {
         club_id: clubId,
@@ -389,12 +423,15 @@ export default function ReviewPage() {
         user_alias: userAlias,
       };
 
+
       const { data, error } = await supabase
         .from("pending_reviews")
         .insert(reviewData)
         .select();
 
+
       if (error) throw new Error(error.message);
+
 
       await fetch(
         `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-review-email`,
@@ -411,7 +448,9 @@ export default function ReviewPage() {
         console.log("HERE IS EMAIL", data[0].user_email),
       );
 
+
       router.push("/review/thankyou");
+
 
     } catch (error) {
       console.error("Error submitting review:", error);
@@ -419,6 +458,7 @@ export default function ReviewPage() {
       setIsSubmitting(false);
     }
   };
+
 
   const resetForm = () => {
     setSelectedClub("");
@@ -439,35 +479,69 @@ export default function ReviewPage() {
     setDateError(null);
   };
 
-  const StarRating = ({ rating, setRating }) => {
-    return (
-      <div className="flex">
-        {[1, 2, 3, 4, 5].map((star) => (
+
+{/* Star Rating */}
+const StarRating = ({ rating, setRating }) => {
+  const handleClick = (e, star) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const value = x < rect.width / 2 ? star - 0.5 : star;
+    setRating(value);
+  };
+
+
+  const getStarFill = (star) => {
+    if (rating >= star) return "full";
+    if (rating >= star - 0.5) return "half";
+    return "empty";
+  };
+
+
+  return (
+    <div className="flex">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const fill = getStarFill(star);
+
+
+        return (
           <button
             key={star}
             type="button"
-            onClick={() => setRating(star)}
-            className="text-6xl focus:outline-none"
+            onClick={(e) => handleClick(e, star)}
+            className="mr-1 focus:outline-none relative inline-block"
           >
-            {star <= (rating || 0) ? (
-              <AiFillStar className="mr-2 text-4xl text-yellow-400" />
-            ) : (
-              <AiFillStar className="mr-2 text-4xl text-[#E5EBF1]" />
+            <AiFillStar className="text-5xl text-[#E5EBF1]" />
+
+
+            {fill !== "empty" && (
+              <span
+                className="absolute top-0 left-0 overflow-hidden"
+                style={{
+                  width: fill === "half" ? "50%" : "100%",
+                }}
+              >
+                <AiFillStar className="text-5xl text-yellow-400" />
+              </span>
             )}
           </button>
-        ))}
-      </div>
-    );
-  };
+        );
+      })}
+    </div>
+  );
+};
+
+
+
 
   if (isSubmitting) return LoadingScreen();
+
 
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-6">Write a Review</h1>
-          <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto px-6 mb-14">
+          <p className="text-sm text-[#6E808D] leading-relaxed max-w-2xl mx-auto px-6 mb-14">
             Your review is completely anonymous, so feel free to be honest! Your
             insights help other students get a better sense of what the club is
             really like. Be real, respectful, and specific—your voice makes a
@@ -475,9 +549,12 @@ export default function ReviewPage() {
           </p>
         </div>
 
+
         <div>
           <hr className="border-t border-gray-300" />
         </div>
+
+
 
 
         <form onSubmit={handleSubmit} className="px-16">
@@ -487,7 +564,7 @@ export default function ReviewPage() {
               <label className="mb-3 block text-2xl font-bold">
                 Search for a club to review <span className="text-[#FFA1CD]">*</span>
               </label>
-              <label className="mb-5 block text-sm text-gray-600">
+              <label className="mb-5 block text-sm text-[#6E808D]">
                 Help fellow students discover the best club experiences!
               </label>
               <div className="max-w-md mb-5 text-sm text-gray-600">
@@ -500,7 +577,7 @@ export default function ReviewPage() {
                 />
               </div>
             </div>
-            <p className="mb-14 text-sm text-gray-600">
+            <p className="mb-14 text-sm text-[#6E808D]">
               Review our community guidelines{" "}
               <Link href="/community-guidelines" className="underline text-blue-600">
                 here
@@ -509,9 +586,11 @@ export default function ReviewPage() {
             </p>
           </div>
 
+
           <div className="mb-12">
             <hr className="border-t border-gray-300" />
           </div>
+
 
           {/* Membership dates */}
           <div className="mx-auto">
@@ -535,6 +614,7 @@ export default function ReviewPage() {
               </div>
               <div>
 
+
                 <label className="mb-3 block text-2xl font-bold">
                   Club Membership End Date <span className="text-[#FFA1CD]">*</span>
                 </label>
@@ -551,7 +631,7 @@ export default function ReviewPage() {
                   </div>
                 </div>
                 {dateError && (
-                  <p className="mt-1 text-xs text-red-500">{dateError}</p>
+                  <p className="mt-1 text-xs text-[#FFA1CD]">{dateError}</p>
                 )}
                 {/* Current Member Checkbox */}
                 <div className="flex">
@@ -573,13 +653,15 @@ export default function ReviewPage() {
             </div>
           </div>
 
+
           <div className="mb-12">
             <hr className="border-t border-gray-300" />
           </div>
 
+
           {/* Satisfaction Stars */}
           <div>
-            <label className="mt-14 mb-3 block text-2xl font-bold">
+            <label className="mb-3 block text-2xl font-bold">
               How satisfied are you with your club experience?{" "}
               <span className="text-[#FFA1CD]">*</span>
             </label>
@@ -591,9 +673,11 @@ export default function ReviewPage() {
             </div>
           </div>
 
+
           <div className="mb-12">
             <hr className="border-t border-gray-300" />
           </div>
+
 
           {/* Ratings */}
           <div className="mt-14">
@@ -601,13 +685,13 @@ export default function ReviewPage() {
               Share your experience with the club in these areas{" "}
               <span className="text-[#FFA1CD]">*</span>
             </label>
-            <p className="text-sm text-gray-500 mb-8">
+            <p className="text-sm text-[#6E808D] mb-8">
               This is private between Clubhouse reviews
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
               {/* time commitment w/ svg */}
               <div>
-                <div className="flex items-center gap-1 mb-4">
+                <div className="flex items-center gap-2 mb-4">
                   <span className="text-base font-semibold">Time Commitment</span>
                   <Image
                     src="/time.svg"
@@ -629,6 +713,7 @@ export default function ReviewPage() {
                   />
                 </div>
               </div>
+
 
               {/* inclusivity w/ svg */}
               <div>
@@ -655,6 +740,7 @@ export default function ReviewPage() {
                 </div>
               </div>
 
+
               {/* social community w/ svg */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -679,6 +765,7 @@ export default function ReviewPage() {
                   />
                 </div>
               </div>
+
 
               {/* competitiveness w/ svg */}
               <div>
@@ -708,18 +795,20 @@ export default function ReviewPage() {
             </div>
           </div>
 
+
           <div className="mt-14 mb-14">
             <hr className="border-t border-gray-300" />
           </div>
 
+
           {/* Review Text */}
           <div className="mt-14">
-            <label className="block text-2xl font-bold">
-              Write Public Review <span className="text-[#FFA1CD]">*</span>
+            <label className="mb-3 block text-3xl font-bold">
+              Write a public review <span className="text-[#FFA1CD]">*</span>
             </label>
-            <p className="text-sm text-gray-600 mb-5 ">Share insights to help future students understand what to expect from this club!</p>
+            <p className="text-sm text-[#6E808D] mb-5 ">Share insights to help future students understand what to expect from this club!</p>
             <textarea
-              className="h-32 w-full rounded-md border bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              className="h-32 w-full rounded-2xl border border-[#B4BEC5] bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
               value={reviewText}
               onChange={(e) => {
@@ -730,16 +819,18 @@ export default function ReviewPage() {
               maxLength={2500}
               required
             ></textarea>
-            <div className={`mt-1 text-right text-sm ${reviewText.length >= 2500 ? 'text-red-500' : 'text-gray-500'}`}>
+            <div className={`mt-1 text-right text-sm ${reviewText.length >= 2500 ? 'text-[#FFA1CD]' : 'text-gray-500'}`}>
               {reviewText.length} / 2500 Characters
             </div>
           </div>
+
 
           {error && (
             <div className="mb-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700">
               {error}
             </div>
           )}
+
 
           {/* Submit Button */}
           <div className="mt-10 mb-15 flex justify-end">
@@ -756,3 +847,7 @@ export default function ReviewPage() {
     </div>
   );
 }
+
+
+
+
