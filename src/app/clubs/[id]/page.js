@@ -571,14 +571,14 @@ export default function ClubDetailsPage() {
           {/* right side */}
           <div className="lg:pl-5 lg:w-2/6">
             {/* Overall Rating */}
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex flex-wrap items-center">
               <span className="text-2xl font-bold">
                 {club.average_satisfaction
                   ? club.average_satisfaction.toFixed(1)
                   : "N/A"}
               </span>
-              <AiFillStar className="mr-1 ml-1 text-2xl text-yellow-400" />
-              <h2 className="text-2xl font-bold text-nowrap">
+              <AiFillStar className="mr-1 ml-1 text-2xl text-yellow-400 flex-shrink-0" />
+              <h2 className="text-2xl font-bold">
                 Satisfaction Rating
               </h2>
             </div>
