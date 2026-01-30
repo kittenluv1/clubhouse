@@ -22,23 +22,39 @@ const formatMembership = (review) => {
 const renderStars = (rating, sizeClasses = "") => {
   const stars = [];
   const numStars = Math.round(rating || 0);
+  const ratingDecimal = rating - Math.floor(rating); 
   for (let i = 0; i < 5; i++) {
     if (i < numStars) {
-      stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
+      if((rating - ratingDecimal) == i && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)){
+      stars.push(<img 
+        key={i} 
+        src="/reviewStarHalf.svg" 
+        className={` ${sizeClasses}`} />);
+      }else {
+      stars.push(<img 
+        key={i} 
+        src="/reviewStarFilled.svg" 
+        className={` ${sizeClasses}`} />);
+      }
+      // stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
     } else {
-      stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
+      // stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
+      stars.push(<img 
+        src="/reviewStarUnfilled.svg" 
+        key={i} 
+        className={`text-gray-300`} />);
     }
   }
   return stars;
 };
 
 export default function ReviewCard({
-    review,
-    status = "displayed", // 'approved' | 'pending' | 'rejected' | 'displayed'
-    onLike, // callback for like button
-    onEdit, // callback for edit button
-    onDelete, // callback for delete button
-    isCurrentUser = false, // whether this review belongs to the current user
+  review,
+  status = "displayed", // 'approved' | 'pending' | 'rejected' | 'displayed'
+  onLike, // callback for like button
+  onEdit, // callback for edit button
+  onDelete, // callback for delete button
+  isCurrentUser = false, // whether this review belongs to the current user
 }) {
   const [liked, setLiked] = useState(review.user_has_liked || false);
   const [likeCount, setLikeCount] = useState(review.likes || 0);
@@ -107,134 +123,134 @@ export default function ReviewCard({
   const canEdit = status === "rejected" && onEdit;
   const canDelete = status === "rejected" && onDelete;
 
-    const cardContent = (
-        <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 my-4 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
-            {/* Header section */}
-            <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-start">
-                {/* Left side */}
-                <div className="flex flex-col gap-2 min-w-0 flex-1">
-                    {/* Profile image + username row */}
-                    <div className="flex items-center gap-3 justify-between md:justify-start">
-                        <div className="flex items-center gap-1 md:gap-3 min-w-0 flex-1 md:flex-initial">
-                            {status === "displayed" && (
-                                <img
-                                    src="/profile.svg"
-                                    alt="Profile"
-                                    className="w-12 h-12 md:w-15 md:h-15 flex-shrink-0"
-                                />
-                            )}
-                            <div className="flex flex-col gap-1 md:gap-2 min-w-0">
-                                <h2 className="text-sm sm:text-lg md:text-xl font-bold text-black m-0 leading-tight break-words">
-                                    {status === "displayed"
-                                        ? (review.user_alias || "Anonymous")
-                                        : review.club_name
-                                    }
-                                    {status === "displayed" && isCurrentUser && (
-                                        <span className="ml-1.5 text-s font-bold text-[#FFA1CD]">(you)</span>
-                                    )}
-                                </h2>
-                                {status === "approved" && review.user_alias && (
-                                    <span className="text-sm text-[#6E808D] font-medium">Displayed as: {review.user_alias}</span>
-                                )}
-                                {status === "displayed" && (
-                                    <span className="text-sm font-medium hidden md:block">{formatDate(review.created_at)}</span>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Like button */}
-                        {canLike && (
-                            <button
-                                onClick={toggleLike}
-                                className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0 transition-all md:hidden"
-                                aria-label={liked ? "Unlike review" : "Like review"}
-                            >
-                                <img
-                                    src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
-                                    alt="Heart Icon"
-                                />
-                                <span className="text-gray-700 inline-block min-w-[1rem] text-left">{likeCount}</span>
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Review date */}
-                    {status === "displayed" && (
-                        <div className="text-sm font-medium md:hidden">
-                            {formatDate(review.created_at)}
-                        </div>
-                    )}
-
-                    {/* Stars and Membership */}
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-2 text-sm text-[#6E808D] font-medium">
-                        <div className="flex items-center gap-1">
-                            {renderStars(review.overall_satisfaction, "text-sm sm:text-xl md:text-base")}
-                        </div>
-                        <span className="hidden md:inline text-[#7F7F7F]">•</span>
-                        <span className="break-words">
-                            Member from {review.membership_start_quarter}{" "}{review.membership_start_year} - {review.membership_end_quarter}{" "}{review.membership_end_year}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Right side */}
-                <div className="hidden md:flex flex-col items-end gap-2 flex-shrink-0">
-                    {status !== "displayed" && (
-                        <span className="text-sm italic font-medium">Reviewed on {formatDate(review.created_at)}</span>
-                    )}
-                    {canLike && (
-                        <button
-                            onClick={toggleLike}
-                            className="flex items-center gap-1 -m-2 min-w-[44px] min-h-[44px]"
-                            aria-label={liked ? "Unlike review" : "Like review"}
-                        >
-                            <img
-                                src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
-                                alt="Heart Icon"
-                            />
-                            <span className="text-md text-gray-700 inline-block min-w-[1rem] text-left">
-                                {likeCount}
-                            </span>
-                        </button>
-                    )}
-                </div>
-            </div>
-            <div>
-                <p
-                    ref={textRef}
-                    className={`text-sm font-normal text-black md:text-base transition-all duration-200 ${!showFull ? "line-clamp-4" : ""}`}
-                >
-                    {review.review_text}
-                </p>
-                {!showFull && isClamped && (
-                    <button
-                        className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
-                        type="button"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setShowFull(true);
-                        }}
-                    >
-                        ...see more
-                    </button>
+  const cardContent = (
+    <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 my-4 transition-all duration-300 ease-out mt-15 md:space-y-5 md:px-10 md:py-10`}>
+      {/* Header section */}
+      <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-start">
+        {/* Left side */}
+        <div className="flex flex-col gap-2 min-w-0 flex-1">
+          {/* Profile image + username row */}
+          <div className="flex items-center gap-3 justify-between md:justify-start">
+            <div className="flex items-center gap-1 md:gap-3 min-w-0 flex-1 md:flex-initial">
+              {status === "displayed" && (
+                <img
+                  src="/profile.svg"
+                  alt="Profile"
+                  className="w-10 h-15 md:w-15 md:h-15 flex-shrink-0"
+                />
+              )}
+              <div className="flex flex-col gap-1 md:gap-2 min-w-0">
+                <h2 className="text-sm sm:text-lg md:text-xl font-bold text-black m-0 leading-tight break-words">
+                  {status === "displayed"
+                    ? (review.user_alias || "Anonymous")
+                    : review.club_name
+                  }
+                  {status === "displayed" && isCurrentUser && (
+                    <span className="ml-1.5 text-s font-bold text-[#FFA1CD]">(you)</span>
+                  )}
+                </h2>
+                {status === "approved" && review.user_alias && (
+                  <span className="text-sm text-[#6E808D] font-medium">Displayed as: {review.user_alias}</span>
                 )}
-                {showFull && (
-                    <button
-                        className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
-                        type="button"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setShowFull(false);
-                        }}
-                    >
-                        ...see less
-                    </button>
+                {status === "displayed" && (
+                  <span className="text-sm font-medium hidden md:block">{formatDate(review.created_at)}</span>
                 )}
+              </div>
             </div>
 
-            {/* Edit/Delete buttons - only for rejected reviews */}
+            {/* Like button */}
+            {canLike && (
+              <button
+                onClick={toggleLike}
+                className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0 transition-all md:hidden"
+                aria-label={liked ? "Unlike review" : "Like review"}
+              >
+                <img
+                  src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
+                  alt="Heart Icon"
+                />
+                <span className="text-gray-700 inline-block min-w-[1rem] text-left">{likeCount}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Review date */}
+          {status === "displayed" && (
+            <div className="text-sm font-medium md:hidden">
+              {formatDate(review.created_at)}
+            </div>
+          )}
+
+          {/* Stars and Membership */}
+          <div className="flex flex-col  gap-2 md:flex-row md:items-center md:gap-2 text-sm text-[#6E808D] font-medium">
+            <div className="flex items-center gap-1 ">
+              {renderStars(review.overall_satisfaction, "")}
+            </div>
+            <span className="mt-1 hidden md:inline text-[#7F7F7F]">•</span>
+            <span className="mt-1 break-words ">
+              Member from {review.membership_start_quarter}{" "}{review.membership_start_year} - {review.membership_end_quarter}{" "}{review.membership_end_year}
+            </span>
+          </div>
+        </div>
+
+        {/* Right side */}
+        <div className="hidden md:flex flex-col items-end gap-2 flex-shrink-0">
+          {status !== "displayed" && (
+            <span className="text-sm italic font-medium">Reviewed on {formatDate(review.created_at)}</span>
+          )}
+          {canLike && (
+            <button
+              onClick={toggleLike}
+              className="flex items-center gap-1 -m-2 min-w-[44px] min-h-[44px]"
+              aria-label={liked ? "Unlike review" : "Like review"}
+            >
+              <img
+                src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
+                alt="Heart Icon"
+              />
+              <span className="text-md text-gray-700 inline-block min-w-[1rem] text-left">
+                {likeCount}
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
+      <div>
+        <p
+          ref={textRef}
+          className={`text-sm -mt-4 font-normal text-black md:text-base transition-all duration-200 ${!showFull ? "line-clamp-4" : ""}`}
+        >
+          {review.review_text}
+        </p>
+        {!showFull && isClamped && (
+          <button
+            className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowFull(true);
+            }}
+          >
+            ...see more
+          </button>
+        )}
+        {showFull && (
+          <button
+            className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowFull(false);
+            }}
+          >
+            ...see less
+          </button>
+        )}
+      </div>
+
+      {/* Edit/Delete buttons - only for rejected reviews */}
       {(canEdit || canDelete) && (
         <div className="mt-4 flex w-full flex-col justify-end gap-2 sm:flex-row">
           {canEdit && (

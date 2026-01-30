@@ -44,7 +44,7 @@ const parseSocialLinks = (htmlString) => {
   const links = doc.querySelectorAll("a");
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       {Array.from(links).map((link, index) => {
         const href = link.getAttribute("href");
         const text = link.textContent.trim();
@@ -72,7 +72,7 @@ function RatingBar({ title, tooltipRating, value }) {
     <div>
       <div className="mb-1 flex justify-between">
         <div className="flex items-center gap-1">
-          <span>{title}</span>
+          <span className="font-semibold">{title}</span>
           <Tooltip rating={tooltipRating} />
         </div>
         <span>
@@ -91,8 +91,8 @@ function RatingBar({ title, tooltipRating, value }) {
         />
       </div>
       <div className="mt-1 flex justify-between text-xs text-gray-500">
-        <span>low</span>
-        <span>high</span>
+        <span>Low</span>
+        <span>High</span>
       </div>
     </div>
   );
@@ -565,7 +565,7 @@ export default function ClubDetailsPage() {
 
           {/* vertical line */}
           <div className="hidden justify-center lg:flex">
-            <div className="w-px bg-gray-400" style={{ height: "100%" }} />
+            <div className="w-px bg-[#4162114D]" style={{ height: "100%" }} />
           </div>
 
           {/* right side */}
@@ -577,8 +577,8 @@ export default function ClubDetailsPage() {
                   ? club.average_satisfaction.toFixed(1)
                   : "N/A"}
               </span>
-              <AiFillStar className="mr-2 text-2xl text-yellow-400" />
-              <h2 className="text-lg font-bold text-nowrap">
+              <AiFillStar className="mr-1 ml-1 text-2xl text-yellow-400" />
+              <h2 className="text-2xl font-bold text-nowrap">
                 Satisfaction Rating
               </h2>
             </div>
@@ -679,7 +679,7 @@ export default function ClubDetailsPage() {
                     {sortType === "mostRecent" && "Most recent"}
                   </span>
                   <svg
-                    className={`h-4 w-4 transition-transform ml-1 ${showSortModal ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 text-[#6E808D] transition-transform ml-1 ${showSortModal ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
