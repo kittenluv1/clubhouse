@@ -133,7 +133,6 @@ export default function EditReviewPage() {
 				if (response.ok) {
 
 					const review = result.review;
-					console.log(review);
 
 					setSelectedClub(review.club_name);
 					setClubId(review.club_id);
@@ -189,10 +188,8 @@ export default function EditReviewPage() {
 
 		if (currentUser.id == reviewAuthorId) {
 			setIsUnauthorized(false);
-			console.log("AUTHORIZED");
 		} else {
 			setIsUnauthorized(true);
-			console.log("NOT AUTHORIZED");
 		}
 	}, [currentUser, reviewAuthorId, isUserLoading, isReviewLoading]);
 
@@ -318,7 +315,6 @@ export default function EditReviewPage() {
 						user_email: reviewData.user_email,
 					}),
 				},
-				console.log("HERE IS EMAIL", reviewData.user_email),
 			);
 
 			router.push("/review/thankyou");

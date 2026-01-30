@@ -16,13 +16,20 @@ export async function GET(req) {
 
     const supabase = createServerClient(authHeader);
 
-    // Verify the token is valid
+    // Verify the token is valid and user is admin
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }), 
+        JSON.stringify({ error: "Unauthorized" }),
         { status: 401 }
+      );
+    }
+
+    if (user.email !== process.env.ADMIN_EMAIL) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403 }
       );
     }
 
@@ -57,6 +64,23 @@ export async function POST(req) {
   }
 
   const supabase = createServerClient(authHeader);
+
+  // Verify the token is valid and user is admin
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401 }
+    );
+  }
+
+  if (user.email !== process.env.ADMIN_EMAIL) {
+    return new Response(
+      JSON.stringify({ error: "Forbidden" }),
+      { status: 403 }
+    );
+  }
 
   try {
     const { reviewID, approve } = await req.json();

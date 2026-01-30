@@ -24,7 +24,7 @@ const Page = () => {
   useEffect(() => {
     const checkSession = async (session) => {
       const email = session?.user?.email;
-      if (email !== "clubhouseucla@gmail.com") {
+      if (email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
         window.location.href = "./sign-in";
       } else {
         setAuthChecked(true);
@@ -118,7 +118,6 @@ const Page = () => {
             user_email: record.user_email,
           }),
         },
-        console.log("Sending approval email TO:", record.user_email),
       );
 
       if (!emailRes.ok) {
@@ -127,7 +126,6 @@ const Page = () => {
         return;
       }
 
-      console.log("Review approved and email sent");
       fetchPendingReviews();
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -187,7 +185,6 @@ const Page = () => {
         return;
       }
 
-      console.log("Review disapproved and email sent");
       fetchPendingReviews();
     } catch (error) {
       console.error("Unexpected error:", error);
