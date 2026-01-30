@@ -10,9 +10,8 @@ export async function GET(request, context) {
     return Response.json({ error: "ID parameter is missing" }, { status: 400 });
   }
 
-  let decodedClubName;
   try {
-    decodedClubName = decodeURIComponent(encodedClubId);
+    decodeURIComponent(encodedClubId);
   } catch (e) {
     console.error("API Error: Failed to decode ID parameter:", encodedClubId, e);
     return Response.json(
@@ -20,8 +19,6 @@ export async function GET(request, context) {
       { status: 400 },
     );
   }
-
-  console.log("Decoded club name for search:", decodedClubName);
 
   try {
     // Fetch club data
@@ -34,8 +31,6 @@ export async function GET(request, context) {
       console.error("Supabase error:", clubError);
       return Response.json({ error: "Database query failed" }, { status: 500 });
     }
-
-    console.log("Search results:", data.length, "clubs found");
 
     // Fetch reviews and likes if we found a club
     let reviews = [];

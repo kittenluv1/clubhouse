@@ -22,8 +22,9 @@ export async function GET(request) {
 
     const categories = decodeURIComponent(rawList)
       .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+      .map((s) => s.trim().slice(0, 200).replace(/[%_\\]/g, '\\$&'))
+      .filter(Boolean)
+      .slice(0, 20);
 
     if (!categories.length) {
       return new Response(

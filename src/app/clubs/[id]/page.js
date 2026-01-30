@@ -115,13 +115,6 @@ function DescriptionWithClamp({ description }) {
     return () => window.removeEventListener("resize", checkClamp);
   }, [description, showFull]);
 
-  useEffect(() => {
-    console.log("isClamped", isClamped);
-  }, [isClamped]);
-  useEffect(() => {
-    console.log("showFull", showFull);
-  }, [showFull]);
-
   if (!description) {
     return (
       <p className="text-m mb-6 italic">
@@ -365,10 +358,8 @@ export default function ClubDetailsPage() {
     } = await supabase.auth.getSession();
 
     if (session) {
-      console.log("GO TO REVIEWS");
       window.location.href = href;
     } else {
-      console.log("GO TO SIGN IN");
       const returnUrl = encodeURIComponent(href);
       window.location.href = `/sign-in?returnUrl=${returnUrl}`;
     }

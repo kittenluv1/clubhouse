@@ -22,7 +22,7 @@ function Header() {
       const { data } = await supabase.auth.getSession();
       const s = data?.session ?? null;
       setUserEmail(s?.user?.email ?? null);
-      setIsAdmin(s?.user?.email === "clubhouseucla@gmail.com");
+      setIsAdmin(s?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
     };
 
     checkAdmin();
@@ -31,7 +31,7 @@ function Header() {
       (_event, session) => {
         const current = session ?? null;
         setUserEmail(current?.user?.email ?? null);
-        setIsAdmin(current?.user?.email === "clubhouseucla@gmail.com");
+        setIsAdmin(current?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
       },
     );
 
@@ -59,7 +59,6 @@ function Header() {
       console.error("Error signing out:", error.message);
     } else {
       setUserEmail(null);
-      console.log("User signed out successfully");
     }
   };
 
@@ -73,10 +72,6 @@ function Header() {
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    console.log("profile menu: ", showProfileMenu);
-  }, [showProfileMenu]);
 
   if (!isMounted) return null;
 
