@@ -541,7 +541,7 @@ const StarRating = ({ rating, setRating }) => {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-6">Write a Review</h1>
-          <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto px-6 mb-14">
+          <p className="text-sm text-[#6E808D] leading-relaxed max-w-2xl mx-auto px-6 mb-14">
             Your review is completely anonymous, so feel free to be honest! Your
             insights help other students get a better sense of what the club is
             really like. Be real, respectful, and specific—your voice makes a
@@ -564,7 +564,7 @@ const StarRating = ({ rating, setRating }) => {
               <label className="mb-3 block text-2xl font-bold">
                 Search for a club to review <span className="text-[#FFA1CD]">*</span>
               </label>
-              <label className="mb-5 block text-sm text-gray-600">
+              <label className="mb-5 block text-sm text-[#6E808D]">
                 Help fellow students discover the best club experiences!
               </label>
               <div className="max-w-md mb-5 text-sm text-gray-600">
@@ -577,7 +577,7 @@ const StarRating = ({ rating, setRating }) => {
                 />
               </div>
             </div>
-            <p className="mb-14 text-sm text-gray-600">
+            <p className="mb-14 text-sm text-[#6E808D]">
               Review our community guidelines{" "}
               <Link href="/community-guidelines" className="underline text-blue-600">
                 here
@@ -685,7 +685,7 @@ const StarRating = ({ rating, setRating }) => {
               Share your experience with the club in these areas{" "}
               <span className="text-[#FFA1CD]">*</span>
             </label>
-            <p className="text-sm text-gray-500 mb-8">
+            <p className="text-sm text-[#6E808D] mb-8">
               This is private between Clubhouse reviews
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
@@ -806,7 +806,7 @@ const StarRating = ({ rating, setRating }) => {
             <label className="mb-3 block text-3xl font-bold">
               Write a public review <span className="text-[#FFA1CD]">*</span>
             </label>
-            <p className="text-sm text-gray-600 mb-5 ">Share insights to help future students understand what to expect from this club!</p>
+            <p className="text-sm text-[#6E808D] mb-5 ">Share insights to help future students understand what to expect from this club!</p>
             <textarea
               className="h-32 w-full rounded-2xl border border-[#B4BEC5] bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
@@ -833,13 +833,13 @@ const StarRating = ({ rating, setRating }) => {
 
 
           {/* Submit Button */}
-          <div className="mt-10 mb-15 flex justify-center">
+          <div className="mt-10 mb-15 flex justify-end">
             <Button
               type="submit"
               disabled={isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
             >
-              Submit
+              Submit Review
             </Button>
           </div>
         </form>
