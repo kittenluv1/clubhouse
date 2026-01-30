@@ -25,7 +25,6 @@ export default function GoogleSignIn() {
         use_fedcm_for_prompt: true,
       });
 
-      console.log("RENDERING BUTTON");
       window.google.accounts.id.renderButton(
         document.getElementById("google-button"),
         {
@@ -50,7 +49,6 @@ export default function GoogleSignIn() {
 
       // if signin fails profiles email constraint, supabase will return a database error
       if (error) {
-        console.log("NOT A UCLA EMAIL");
         await supabase.auth.signOut(); // Clear any partial/corrupted session
         setUserEmail("INVALID");
         setLoading(false);
@@ -72,19 +70,16 @@ export default function GoogleSignIn() {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setUserEmail(session.user.email); // Update email when signed in
-        console.log("Auth state changed:", event, session.user.email);
 
         // Check for returnUrl parameter first
         const returnUrl = searchParams.get('returnUrl');
         if (returnUrl && isValidReturnUrl(returnUrl)) {
-          console.log("redirect to returnUrl:", returnUrl);
           window.location.href = returnUrl;
           return;
         }
 
         // Fallback: Keep backward compatibility with club/clubId params
         if (club != null) {
-          console.log("redirect to:" + club);
           if (clubId != null) { // redirect to review page
             window.location.href = `/review?club=${club}&clubId=${clubId}`;
           } else { //redirect to club general page
@@ -95,7 +90,6 @@ export default function GoogleSignIn() {
         }
       } else {
         setUserEmail(null); // Clear email when signed out
-        console.log("Auth state changed:", event);
       }
     });
 
@@ -112,7 +106,6 @@ export default function GoogleSignIn() {
         strategy="afterInteractive"
         onLoad={() => {
           if (window.google) {
-            console.log("Google Sign-In script loaded");
             renderGoogleButton();
             setLoading(false);
             // Google One Tap

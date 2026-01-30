@@ -56,7 +56,8 @@ export async function GET(req) {
 
     // Apply search filter if provided
     if (name) {
-      query = query.ilike("OrganizationName", `%${name}%`);
+      const sanitizedName = name.slice(0, 200).replace(/[%_\\]/g, '\\$&');
+      query = query.ilike("OrganizationName", `%${sanitizedName}%`);
     }
 
     // Apply pagination
@@ -70,9 +71,6 @@ export async function GET(req) {
         status: 500,
       });
     }
-
-    console.log("success");
-    console.log(count, "total number of rows");
 
     const totalNumPages = Math.ceil(count / pageSize);
 

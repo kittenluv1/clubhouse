@@ -445,7 +445,6 @@ export default function ReviewPage() {
             user_email: data[0].user_email,
           }),
         },
-        console.log("HERE IS EMAIL", data[0].user_email),
       );
 
 
