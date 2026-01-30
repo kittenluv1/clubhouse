@@ -86,7 +86,7 @@ export async function GET(req) {
         // Fetch only current user's likes for these clubs
         let userLikedSet = new Set();
         if (!authError && user) {
-          const { data: userLikes, error: userLikesError } = await supabase
+          const { data: userLikes, error: userLikesError } = await authSupabase
             .from('club_likes')
             .select('club_id')
             .eq('user_id', user.id)
@@ -109,7 +109,7 @@ export async function GET(req) {
 
       // Fetch user's saves (only if authenticated)
       if (!authError && user) {
-        const { data: userSaves, error: savesError } = await supabase
+        const { data: userSaves, error: savesError } = await authSupabase
           .from('club_saves')
           .select('club_id')
           .eq('user_id', user.id)

@@ -44,7 +44,7 @@ const parseSocialLinks = (htmlString) => {
   const links = doc.querySelectorAll("a");
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       {Array.from(links).map((link, index) => {
         const href = link.getAttribute("href");
         const text = link.textContent.trim();
@@ -72,7 +72,7 @@ function RatingBar({ title, tooltipRating, value }) {
     <div>
       <div className="mb-1 flex justify-between">
         <div className="flex items-center gap-1">
-          <span>{title}</span>
+          <span className="font-semibold">{title}</span>
           <Tooltip rating={tooltipRating} />
         </div>
         <span>
@@ -91,8 +91,8 @@ function RatingBar({ title, tooltipRating, value }) {
         />
       </div>
       <div className="mt-1 flex justify-between text-xs text-gray-500">
-        <span>low</span>
-        <span>high</span>
+        <span>Low</span>
+        <span>High</span>
       </div>
     </div>
   );
@@ -475,24 +475,24 @@ export default function ClubDetailsPage() {
                 {club.OrganizationName}
               </h1>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-0 md:gap-2 flex-shrink-0">
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className="flex items-center gap-1 p-2 transition-all"
+                  className="flex items-center gap-0 md:gap-1 p-1 transition-all min-w-[44px] min-h-[44px]"
                   aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
-                  <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" />
+                  <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" className="flex-shrink-0" />
                   <span className="text-gray-700">{clubLikeCount}</span>
                 </button>
 
                 {/* Save Button */}
                 <button
                   onClick={handleSaveToggle}
-                  className="flex items-center gap-2 p-2 transition-all"
+                  className="flex items-center gap-0 md:gap-2 p-1 transition-all min-w-[44px] min-h-[44px]"
                   aria-label={userSavedClub ? "Unsave club" : "Save club"}
                 >
-                  <img src={userSavedClub ? "/saveFilled.svg" : "/saveUnfilled.svg"} alt="Save Icon" />
+                  <img src={userSavedClub ? "/saveFilled.svg" : "/saveUnfilled.svg"} alt="Save Icon" className="flex-shrink-0" />
                 </button>
               </div>
             </div>
@@ -529,11 +529,11 @@ export default function ClubDetailsPage() {
             />
 
             {club.OrganizationEmail && (
-              <p className="mt-6">
+              <p className="mt-6 break-words">
                 Email:{" "}
                 <a
                   href={`mailto:${club.OrganizationEmail}`}
-                  className="underline"
+                  className="underline break-all"
                 >
                   {club.OrganizationEmail}
                 </a>
@@ -565,20 +565,20 @@ export default function ClubDetailsPage() {
 
           {/* vertical line */}
           <div className="hidden justify-center lg:flex">
-            <div className="w-px bg-gray-400" style={{ height: "100%" }} />
+            <div className="w-px bg-[#4162114D]" style={{ height: "100%" }} />
           </div>
 
           {/* right side */}
           <div className="lg:pl-5 lg:w-2/6">
             {/* Overall Rating */}
-            <div className="mt-2 flex items-center">
+            <div className="mt-2 flex flex-wrap items-center">
               <span className="text-2xl font-bold">
                 {club.average_satisfaction
                   ? club.average_satisfaction.toFixed(1)
                   : "N/A"}
               </span>
-              <AiFillStar className="mr-2 text-2xl text-yellow-400" />
-              <h2 className="text-lg font-bold text-nowrap">
+              <AiFillStar className="mr-1 ml-1 text-2xl text-yellow-400 flex-shrink-0" />
+              <h2 className="text-2xl font-bold">
                 Satisfaction Rating
               </h2>
             </div>
@@ -679,7 +679,7 @@ export default function ClubDetailsPage() {
                     {sortType === "mostRecent" && "Most recent"}
                   </span>
                   <svg
-                    className={`h-4 w-4 transition-transform ml-1 ${showSortModal ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 text-[#6E808D] transition-transform ml-1 ${showSortModal ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

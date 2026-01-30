@@ -45,25 +45,35 @@ export async function GET(request) {
         { column: "average_satisfaction", ascending: false },
         { column: "total_num_reviews", ascending: false },
         { column: "OrganizationName", ascending: true },
+        { column: "like_count", ascending: false },
       ];
     } else if (sortType === "reviews") {
       sortConfig = [
         { column: "total_num_reviews", ascending: false },
         { column: "average_satisfaction", ascending: false },
         { column: "OrganizationName", ascending: true },
+        { column: "like_count", ascending: false },
       ];
     } else if (sortType === "alphabetical") {
       sortConfig = [
         { column: "OrganizationName", ascending: true },
         { column: "average_satisfaction", ascending: false },
         { column: "total_num_reviews", ascending: false },
+        { column: "like_count", ascending: false },
+      ];
+    } else if (sortType === "likes") {
+      sortConfig = [
+        { column: "like_count", ascending: false },
+        { column: "average_satisfaction", ascending: false },
+        { column: "total_num_reviews", ascending: false },
+        { column: "OrganizationName", ascending: true },
       ];
     }
 
     // Build query with filter
     let query = supabase
       .from("clubs")
-      .select("*", { count: "exact" })
+      .select(`*`, { count: "exact" })
       .or(filters.join(","));
 
     // Apply all sorts from config

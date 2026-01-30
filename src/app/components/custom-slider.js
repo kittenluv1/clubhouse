@@ -34,36 +34,38 @@ const CustomSlider = ({
     <div className="w-full py-2">
       <div className="relative mb-2">
         {/* Slider track */}
-        <div className="absolute top-1/2 left-0 h-4 w-full -translate-y-1/2 transform rounded-full bg-gray-200"></div>
+        <div className="absolute top-1/2 left-0 h-4 w-full -translate-y-1/2 transform rounded-full bg-[#E5EBF1]"></div>
 
         {/* Filled portion */}
         <div
-          className="absolute top-1/2 left-0 h-3 -translate-y-1/2 transform rounded-full bg-[#B8DF64]"
+          className="absolute top-1/2 left-0 h-4 -translate-y-1/2 transform rounded-full bg-[#B8DF64]"
           style={{ width: `${calculateFillPercentage()}%` }}
         ></div>
 
         {/* Thumb */}
         <div
-          className="absolute top-1/2 z-10 h-7 w-7 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-[#B8DF64] shadow-md"
-          style={{ left: `${calculateFillPercentage()}%` }}
-        ></div>
+  className="absolute top-1/2 z-10 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B8DF64] shadow-md pointer-events-none"
+  style={{ left: `${calculateFillPercentage()}%` }}
+></div>
+
         
 
         {/* Range input  */}
         <input
           id="sliderStyling"
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={sliderValue}
-          onChange={handleChange}
-          className="absolute top-0 left-0 z-20 h-6 w-full cursor-pointer opacity-0"
+  type="range"
+  min={min}
+  max={max}
+  step={step}
+  value={sliderValue}
+  onChange={handleChange}
+  className="absolute top-1/2 left-0 z-20 h-8 w-full -translate-y-1/2 cursor-pointer opacity-0"
+  style={{ touchAction: "none" }}
         />
       </div>
 
       {/* Labels */}
-      <div className="mt-3 flex w-full flex-col">
+      <div className="mt-8 flex w-full flex-col">
         {/* Number markers with exact spacing */}
         <div className="relative flex h-6 w-full">
           {steps.map((num) => {
@@ -71,7 +73,7 @@ const CustomSlider = ({
             return (
               <div
                 key={num}
-                className="absolute flex flex-col items-center text-xs text-green-800"
+                className="absolute flex flex-col items-center text-xs text-[#6E808D]"
                 style={{
                   left: `${percentage}%`,
                   transform: "translateX(-50%)",
@@ -79,10 +81,10 @@ const CustomSlider = ({
               >
                 <span>{num}</span>
                 {num === min && (
-                  <span className="mt-2 text-green-800">{lowLabel}</span>
+                  <span className="mt-2 text-[#6E808D]">{lowLabel}</span>
                 )}
                 {num === max && (
-                  <span className="mt-2 text-green-800">{highLabel}</span>
+                  <span className="mt-2 text-[#6E808D]">{highLabel}</span>
                 )}
               </div>
             );

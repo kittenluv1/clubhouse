@@ -110,9 +110,9 @@ export default function ClubCard({
   const renderRatingStars = (rating) =>  {
     const ratingStars = [];
     const intRating = Math.round(rating || 0); 
-    const ratingDecimal = rating - Math.floor(rating); 
+    const ratingDecimal = (Math.round(club.average_satisfaction*10) / 10) - Math.floor(rating); 
     for(let x = 0; x<5; x++){
-      if(x<intRating){
+      if(x<intRating){ 
         if((rating - ratingDecimal) == x && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)){
           ratingStars.push(<img 
             key = {x} 
