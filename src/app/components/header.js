@@ -22,7 +22,7 @@ function Header() {
       const { data } = await supabase.auth.getSession();
       const s = data?.session ?? null;
       setUserEmail(s?.user?.email ?? null);
-      setIsAdmin(s?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
+      setIsAdmin(!!s?.user?.email && s?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
     };
 
     checkAdmin();
@@ -31,7 +31,7 @@ function Header() {
       (_event, session) => {
         const current = session ?? null;
         setUserEmail(current?.user?.email ?? null);
-        setIsAdmin(current?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
+        setIsAdmin(!!current?.user?.email && current?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
       },
     );
 
@@ -85,16 +85,14 @@ function Header() {
         onClick={() => router.push("/")}
         className="flex items-center"
       >
-        <object
-          type="image/svg+xml"
-          data="/clubhouse-logo-desktop.svg"
-          aria-label="ClubHouse Logo"
+        <img
+          src="/clubhouse-logo-desktop.svg"
+          alt="ClubHouse Logo"
           className="pointer-events-none hidden object-cover lg:block lg:w-[178px] mr-7"
         />
-        <object
-          type="image/svg+xml"
-          data="/clubhouse-logo-mobile.svg"
-          aria-label="ClubHouse Logo"
+        <img
+          src="/clubhouse-logo-mobile.svg"
+          alt="ClubHouse Logo"
           className="pointer-events-none w-18 shrink-0 object-cover lg:hidden"
         />
       </button>
