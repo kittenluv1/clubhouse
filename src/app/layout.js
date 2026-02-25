@@ -8,6 +8,7 @@ import { SearchProvider } from "./context/SearchContext";
 import { Suspense } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import { Analytics } from '@vercel/analytics/next';
+import OnboardingGuard from "./components/OnboardingGuard";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
       >
         <Suspense fallback={<LoadingScreen />}>
           <SearchProvider>
+            <OnboardingGuard />
             <Header />
             <main className="relative min-h-screen overflow-hidden pt-[84px]">
               <Gradient />
