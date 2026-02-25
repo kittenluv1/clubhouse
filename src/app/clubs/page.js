@@ -9,6 +9,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
 import Button from "../components/button";
 import { supabase } from "../lib/db";
+import ClubSlider from "../components/ClubSlider";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -275,7 +276,7 @@ function AllClubsPage() {
             </div>
           )}
         </div>
-
+        <ClubSlider></ClubSlider>
         <h1 className="mb-4 text-[16px] font-normal">{title}</h1>
 
         <div className="grid grid-cols-1 gap-12">
