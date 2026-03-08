@@ -28,10 +28,13 @@ export default function OnboardingGuard() {
         .eq("id", session.user.id)
         .single();
       
-      //If profiles.onboarding_done is false/null, redirects to /onboarding.
+      // If onboarding_done is false/null, mark it done and redirect once.
       if (!profile?.onboarding_done) {
-        console.log("redirecting to onboarding")
-        // TODO: redirect to /onboarding once the onboarding flow is implemented
+        await supabase
+          .from("profiles")
+          .update({ onboarding_done: true })
+          .eq("id", session.user.id);
+        console.log('pushing to onboarding')
       }
     };
 
