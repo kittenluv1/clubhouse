@@ -34,7 +34,7 @@ export default function OnboardingGuard() {
           .from("profiles")
           .update({ onboarding_done: true })
           .eq("id", session.user.id);
-        console.log('pushing to onboarding')
+        router.push(`/onboarding`);
       }
     };
 
