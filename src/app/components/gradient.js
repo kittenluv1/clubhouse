@@ -9,7 +9,8 @@ export default function Gradient() {
     <>
       {pathname === "/" ||
       pathname === "/sign-in" ||
-      pathname === "/review/thankyou" ? (
+      pathname === "/review/thankyou" ||
+      pathname === "/onboarding" ? (
         <>
           <div className="absolute top-0 bottom-0 left-0 -z-10 w-full bg-gradient-to-t from-[#CDE5FC] to-[#FFFFFF]" />
         </>
