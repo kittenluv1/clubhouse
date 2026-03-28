@@ -24,15 +24,15 @@ export default function OnboardingGuard() {
       // Detects whether the logged-in user has completed onboarding.
       const { data: profile } = await supabase
         .from("profiles")
-        .select("onboarding_done")
+        .select("onboarding_started")
         .eq("id", session.user.id)
         .single();
-      
-      // If onboarding_done is false/null, mark it done and redirect once.
-      if (!profile?.onboarding_done) {
+
+      // If onboarding_started is false/null, mark it started and redirect once.
+      if (!profile?.onboarding_started) {
         await supabase
           .from("profiles")
-          .update({ onboarding_done: true })
+          .update({ onboarding_started: true })
           .eq("id", session.user.id);
         router.push(`/onboarding`);
       }
