@@ -9,7 +9,7 @@ import OnboardingCard from "./components/OnboardingCard";
 import OnboardingNav from "./components/OnboardingNav";
 
 const STEPS = [Majors];
-const TOTAL_STEPS = STEPS.length;
+const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {
     const router = useRouter();
