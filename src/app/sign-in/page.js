@@ -2,7 +2,7 @@ import GoogleSignIn from "../components/google-sign-in";
 
 function SignInPage() {
   return (
-    <div className="flex flex-col items-center justify-center p-10 text-center p-30">
+    <div className="flex flex-col items-center justify-center text-center p-30">
       <img
         src="/envelope.png"
         className="mb-6 align-middle leading-none w-25"
