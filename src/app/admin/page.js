@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/db";
-import { useAuth } from "../context/AuthContext";
+import { useRequireAuth } from "../context/AuthContext";
 import PendingCard from "../components/pendingCard";
 import SortModal from "../components/sortModal";
 
 const Page = () => {
-  const { isAdmin, loading: authLoading } = useAuth();
+  const { isAdmin } = useRequireAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState("newest");
@@ -51,10 +51,10 @@ const Page = () => {
   };
 
   useEffect(() => {
-    if (!authLoading && isAdmin) {
+    if (isAdmin) {
       fetchPendingReviews();
     }
-  }, [sortType, authLoading, isAdmin]);
+  }, [sortType, isAdmin]);
 
   const handleSortChange = (e) => {
     setSortType(e.target.value);
@@ -167,7 +167,7 @@ const Page = () => {
     }
   };
 
-  if (authLoading || !isAdmin) return null;
+  if (!isAdmin) return null;
 
   if (loading) {
     return <div className="space-y-6 p-6 md:p-[80px]">Loading reviews...</div>;

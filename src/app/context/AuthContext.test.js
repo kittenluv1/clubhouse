@@ -1,6 +1,6 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { AuthProvider, useAuth } from "./AuthContext";
+import { AuthProvider, useAuth, useRequireAuth } from "./AuthContext";
 
 // --- Supabase mock wiring ---
 
@@ -20,6 +20,17 @@ jest.mock("../lib/db", () => ({
       signOut: (...args) => mockSignOut(...args),
     },
   },
+}));
+
+// --- next/navigation mock ---
+
+let mockPathname = "/profile";
+
+const mockRouter = { replace: jest.fn(), push: jest.fn() };
+
+jest.mock("next/navigation", () => ({
+  usePathname: () => mockPathname,
+  useRouter: () => mockRouter,
 }));
 
 // --- Helpers ---
@@ -327,6 +338,130 @@ describe("AuthContext", () => {
       }).toThrow("useAuth must be used within an AuthProvider");
 
       consoleSpy.mockRestore();
+    });
+  });
+
+  // ---- useRequireAuth ----
+
+  describe("useRequireAuth", () => {
+    beforeEach(() => {
+      mockPathname = "/profile";
+    });
+
+    function RequireAuthConsumer() {
+      const { user, loading } = useRequireAuth();
+      return (
+        <div>
+          <span data-testid="ra-loading">{String(loading)}</span>
+          <span data-testid="ra-user">{user ? user.id : "null"}</span>
+        </div>
+      );
+    }
+
+    function renderRequireAuth() {
+      return render(
+        <AuthProvider>
+          <RequireAuthConsumer />
+        </AuthProvider>
+      );
+    }
+
+    it("redirects to /sign-in with returnUrl when user is null and not loading", async () => {
+      mockGetSession.mockResolvedValue({ data: { session: null } });
+      renderRequireAuth();
+
+      await waitFor(() => {
+        expect(mockRouter.replace).toHaveBeenCalledWith("/sign-in?returnUrl=%2Fprofile");
+      });
+    });
+
+    it("includes the current pathname in returnUrl", async () => {
+      mockPathname = "/review/edit/42";
+      mockGetSession.mockResolvedValue({ data: { session: null } });
+      renderRequireAuth();
+
+      await waitFor(() => {
+        expect(mockRouter.replace).toHaveBeenCalledWith("/sign-in?returnUrl=%2Freview%2Fedit%2F42");
+      });
+    });
+
+    it("does not redirect while loading", () => {
+      mockGetSession.mockReturnValue(new Promise(() => {}));
+      renderRequireAuth();
+
+      expect(mockRouter.replace).not.toHaveBeenCalled();
+    });
+
+    it("does not redirect when user exists", async () => {
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "tok",
+            user: { id: "u1", email: "a@test.com" },
+          },
+        },
+      });
+      renderRequireAuth();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("ra-user").textContent).toBe("u1");
+      });
+      expect(mockRouter.replace).not.toHaveBeenCalled();
+    });
+
+    it("redirects when user signs out", async () => {
+      const session = {
+        access_token: "tok",
+        user: { id: "u1", email: "a@test.com" },
+      };
+      mockGetSession.mockResolvedValue({ data: { session } });
+      renderRequireAuth();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("ra-user").textContent).toBe("u1");
+      });
+      expect(mockRouter.replace).not.toHaveBeenCalled();
+
+      // Simulate sign-out
+      act(() => {
+        authChangeCallback("SIGNED_OUT", null);
+      });
+
+      await waitFor(() => {
+        expect(mockRouter.replace).toHaveBeenCalledWith("/sign-in?returnUrl=%2Fprofile");
+      });
+    });
+
+    it("returns the same auth context values as useAuth", async () => {
+      mockGetSession.mockResolvedValue({
+        data: {
+          session: {
+            access_token: "tok",
+            user: { id: "u1", email: ADMIN_EMAIL },
+          },
+        },
+      });
+
+      let capturedAuth;
+      function Capturer() {
+        capturedAuth = useRequireAuth();
+        return null;
+      }
+
+      render(
+        <AuthProvider>
+          <Capturer />
+        </AuthProvider>
+      );
+
+      await waitFor(() => {
+        expect(capturedAuth.loading).toBe(false);
+      });
+
+      expect(capturedAuth.user.id).toBe("u1");
+      expect(capturedAuth.session.access_token).toBe("tok");
+      expect(capturedAuth.isAdmin).toBe(true);
+      expect(typeof capturedAuth.signOut).toBe("function");
     });
   });
 });

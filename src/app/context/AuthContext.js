@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 
 const AuthContext = createContext(undefined);
@@ -55,4 +56,17 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+}
+
+export function useRequireAuth() {
+  const auth = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
+  useEffect(() => {
+    if (!auth.loading && !auth.user) {
+      const returnUrl = encodeURIComponent(pathname);
+      router.replace(`/sign-in?returnUrl=${returnUrl}`);
+    }
+  }, [auth.user, auth.loading, pathname, router]);
+  return auth;
 }

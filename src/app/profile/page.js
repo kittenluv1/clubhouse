@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../context/AuthContext";
+import { useRequireAuth } from "../context/AuthContext";
 import ClubCard from "../components/clubCard";
 import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
@@ -12,7 +12,7 @@ import Button from "../components/button";
 
 function ProfilePage() {
     const router = useRouter();
-    const { user, loading: authLoading } = useAuth();
+    const { user } = useRequireAuth();
     const [activeSection, setActiveSection] = useState("approved");
     const [reviewsExpanded, setReviewsExpanded] = useState(true);
     const [clubsExpanded, setClubsExpanded] = useState(false);
@@ -73,10 +73,6 @@ function ProfilePage() {
         fetchProfileData();
     }, [user]);
 
-    if (authLoading || !user) {
-        return null;
-    }
-
     if (loading) {
         return <LoadingScreen />;
     }
@@ -84,12 +80,7 @@ function ProfilePage() {
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
     const attemptReview = () => {
-        if (user) {
-            window.location.href = "/review";
-        } else {
-            const returnUrl = encodeURIComponent("/review");
-            window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-        }
+        window.location.href = "/review";
     };
 
     // Handler functions for review actions

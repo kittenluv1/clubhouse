@@ -6,7 +6,7 @@ import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
 import CustomSlider from "../components/custom-slider";
 import { supabase } from "../lib/db";
-import { useAuth } from "../context/AuthContext";
+import { useRequireAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
@@ -210,7 +210,7 @@ const getCurrentQuarter = () => {
 export default function ReviewPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useRequireAuth();
 
 
   const [selectedClub, setSelectedClub] = useState("");

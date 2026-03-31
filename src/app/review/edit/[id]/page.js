@@ -5,7 +5,7 @@ import SearchableDropdown from "../../../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../../../components/dropdowns";
 import CustomSlider from "../../../components/custom-slider";
 import { supabase } from "../../../lib/db";
-import { useAuth } from "../../../context/AuthContext";
+import { useRequireAuth } from "../../../context/AuthContext";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
@@ -46,7 +46,7 @@ export default function EditReviewPage() {
 	const id = params.id;
 
 	const router = useRouter();
-	const { user, loading: authLoading } = useAuth();
+	const { user } = useRequireAuth();
 
 	const [selectedClub, setSelectedClub] = useState("");
 	const [clubId, setClubId] = useState(null);
@@ -144,14 +144,14 @@ export default function EditReviewPage() {
 	}, [startQuarter, startYear, endQuarter, endYear]);
 
 	useEffect(() => {
-		if (authLoading || isReviewLoading) return;
+		if (isReviewLoading) return;
 
 		if (user?.id == reviewAuthorId) {
 			setIsUnauthorized(false);
 		} else {
 			setIsUnauthorized(true);
 		}
-	}, [user, reviewAuthorId, authLoading, isReviewLoading]);
+	}, [user, reviewAuthorId, isReviewLoading]);
 
 	const handleMembershipCheckbox = (e) => {
 		const checked = e.target.checked;
@@ -326,7 +326,7 @@ export default function EditReviewPage() {
 		);
 	};
 
-	if (authLoading || isReviewLoading) return LoadingScreen();
+	if (isReviewLoading) return LoadingScreen();
 
 	if (isUnauthorized)
 		return <ErrorScreen error="You are not authorized to edit this review." />;
