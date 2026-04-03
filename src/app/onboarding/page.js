@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 import { AnimatePresence, motion } from "framer-motion";
 import Majors from "./steps/Majors";
+import Clubs from "./steps/Clubs";
+import Categories from "./steps/Categories";
 import OnboardingCard from "./components/OnboardingCard";
 import OnboardingNav from "./components/OnboardingNav";
 
-const STEPS = [Majors];
+const STEPS = [Majors, Clubs, Categories];
 const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {
