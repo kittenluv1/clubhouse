@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../lib/db";
+import { useRequireAuth } from "../context/AuthContext";
 import ClubCard from "../components/clubCard";
 import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
@@ -12,10 +12,10 @@ import Button from "../components/button";
 
 function ProfilePage() {
     const router = useRouter();
+    const { user } = useRequireAuth();
     const [activeSection, setActiveSection] = useState("approved");
     const [reviewsExpanded, setReviewsExpanded] = useState(true);
     const [clubsExpanded, setClubsExpanded] = useState(false);
-    const [currentUser, setCurrentUser] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [approvedReviews, setApprovedReviews] = useState([]);
     const [pendingReviews, setPendingReviews] = useState([]);
@@ -27,43 +27,9 @@ function ProfilePage() {
     const [reviewToDelete, setReviewToDelete] = useState(null);
     const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
 
-    // Authentication check
-    useEffect(() => {
-        const getUser = async () => {
-            const {
-                data: { user },
-                error,
-            } = await supabase.auth.getUser();
-
-            if (user) {
-                setCurrentUser(user);
-            } else {
-                console.error("Error getting user:", error);
-                window.location.href = "/sign-in";
-            }
-        };
-
-        getUser();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                if (session?.user) {
-                    setCurrentUser(session.user);
-                } else {
-                    setCurrentUser(null);
-                    window.location.href = "/sign-in";
-                }
-            },
-        );
-
-        return () => {
-            authListener.subscription.unsubscribe();
-        };
-    }, []);
-
     // Fetch all profile data from API
     useEffect(() => {
-        if (!currentUser) return;
+        if (!user) return;
 
         const fetchProfileData = async () => {
             try {
@@ -105,11 +71,7 @@ function ProfilePage() {
         };
 
         fetchProfileData();
-    }, [currentUser]);
-
-    if (!currentUser) {
-        return null;
-    }
+    }, [user]);
 
     if (loading) {
         return <LoadingScreen />;
@@ -117,17 +79,8 @@ function ProfilePage() {
 
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
-    const attemptReview = async () => {
-        const {
-            data: { session },
-        } = await supabase.auth.getSession();
-
-        if (session) {
-            window.location.href = "/review";
-        } else {
-            const returnUrl = encodeURIComponent("/review");
-            window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-        }
+    const attemptReview = () => {
+        window.location.href = "/review";
     };
 
     // Handler functions for review actions
