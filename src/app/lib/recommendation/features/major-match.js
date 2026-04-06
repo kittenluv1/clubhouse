@@ -9,23 +9,25 @@ export class MajorMatch extends BaseFeature {
   }
 
   compute(user, club, context) {
-    const major = user.major?.toLowerCase()?.trim();
-    if (!major) return 0.0;
+    const majors = (user.majors || []).map(m => m.toLowerCase().trim()).filter(Boolean);
+    if (majors.length === 0) return 0.0;
 
     const categories = [
       club.Category1Name,
       club.Category2Name,
     ].filter(Boolean).map(c => c.toLowerCase());
 
-    if (categories.some(cat => cat.includes(major) || major.includes(cat))) {
-      return 1.0;
-    }
-
     const description = (club.OrganizationDescription || '').toLowerCase();
-    if (description.includes(major)) {
-      return 0.5;
-    }
 
-    return 0.0;
+    let bestScore = 0.0;
+    for (const major of majors) {
+      if (categories.some(cat => cat.includes(major) || major.includes(cat))) {
+        return 1.0;
+      }
+      if (description.includes(major)) {
+        bestScore = Math.max(bestScore, 0.5);
+      }
+    }
+    return bestScore;
   }
 }

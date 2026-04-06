@@ -21,7 +21,7 @@ export async function GET(req) {
     // Fetch user profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('major, minor, interests, categories')
+      .select('majors, minors')
       .eq('id', userId)
       .single();
 
@@ -29,7 +29,21 @@ export async function GET(req) {
       console.error('[Recommendations API] Profile fetch error:', profileError);
     }
 
-    const userProfile = profile || {};
+    // Fetch user interest categories from user_interests table
+    const { data: userInterestsData, error: interestsError } = await supabase
+      .from('user_interests')
+      .select('category')
+      .eq('user_id', userId);
+
+    if (interestsError) {
+      console.error('[Recommendations API] User interests fetch error:', interestsError);
+    }
+
+    const userProfile = {
+      majors: profile?.majors || [],
+      minors: profile?.minors || [],
+      interests: (userInterestsData || []).map(row => row.category),
+    };
 
     // Fetch user's liked clubs to build context and exclusion set
     const { data: likedClubsData, error: likedError } = await supabase
@@ -67,6 +81,10 @@ export async function GET(req) {
     if (savedError) {
       console.error('[Recommendations API] Saved clubs fetch error:', savedError);
     }
+
+    const savedClubIds = new Set(
+      (savedClubsData || []).map(item => item.club_id)
+    );
 
     // Build savedCategories context from saved clubs
     const savedCategories = [];
@@ -112,9 +130,11 @@ export async function GET(req) {
       );
     }
 
-    // Filter out clubs the user already liked or is a member of
+    // Filter out clubs the user already liked, saved, or is a member of
     const candidateClubs = (allClubs || []).filter(
-      club => !likedClubIds.has(club.OrganizationID) && !memberClubIds.has(club.OrganizationID)
+      club => !likedClubIds.has(club.OrganizationID)
+        && !savedClubIds.has(club.OrganizationID)
+        && !memberClubIds.has(club.OrganizationID)
     );
 
     // Score and rank
@@ -123,10 +143,9 @@ export async function GET(req) {
 
     // Check if profile is complete enough for meaningful recommendations
     const profileComplete = Boolean(
-      userProfile.major ||
-      userProfile.minor ||
-      (userProfile.interests && userProfile.interests.length > 0) ||
-      (userProfile.categories && userProfile.categories.length > 0)
+      (userProfile.majors && userProfile.majors.length > 0) ||
+      (userProfile.minors && userProfile.minors.length > 0) ||
+      (userProfile.interests && userProfile.interests.length > 0)
     );
 
     const results = ranked.slice(0, limit).map(({ club, score, breakdown }) => ({

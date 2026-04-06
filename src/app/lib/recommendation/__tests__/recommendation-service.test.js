@@ -11,10 +11,9 @@ const makeClub = (id, name, cat1, cat2 = null) => ({
 describe('RecommendationService', () => {
   it('ranks clubs by score descending', () => {
     const user = {
-      major: 'Computer Science',
-      minor: null,
+      majors: ['Computer Science'],
+      minors: [],
       interests: ['Technology'],
-      categories: ['Computer Science'],
     };
     const clubs = [
       makeClub(1, 'Art Club', 'Art', 'Design'),
@@ -61,7 +60,7 @@ describe('RecommendationService', () => {
   });
 
   it('includes breakdown in results', () => {
-    const user = { major: 'Sports' };
+    const user = { majors: ['Sports'] };
     const clubs = [makeClub(1, 'Sports Club', 'Sports')];
 
     const service = new RecommendationService();
@@ -72,7 +71,7 @@ describe('RecommendationService', () => {
   });
 
   it('accepts custom weights', () => {
-    const user = { major: 'Sports' };
+    const user = { majors: ['Sports'] };
     const clubs = [makeClub(1, 'Sports Club', 'Sports')];
 
     const defaultService = new RecommendationService();

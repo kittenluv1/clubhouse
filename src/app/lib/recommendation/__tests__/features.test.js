@@ -1,7 +1,6 @@
 import { MajorMatch } from '../features/major-match';
 import { MinorMatch } from '../features/minor-match';
 import { InterestOverlap } from '../features/interest-overlap';
-import { CategoryOverlap } from '../features/category-overlap';
 import { LikeHistory } from '../features/like-history';
 import { SaveHistory } from '../features/save-history';
 import { MembershipSimilarity } from '../features/membership-similarity';
@@ -35,32 +34,44 @@ describe('MajorMatch', () => {
   });
 
   it('returns 1.0 when major matches category', () => {
-    const user = { major: 'Computer Science' };
+    const user = { majors: ['Computer Science'] };
     const club = makeClub('Computer Science', null);
     expect(feature.compute(user, club, {})).toBe(1.0);
   });
 
   it('returns 0.5 when major matches description only', () => {
-    const user = { major: 'biology' };
+    const user = { majors: ['biology'] };
     const club = makeClub('Science', null, 'A club for biology enthusiasts');
     expect(feature.compute(user, club, {})).toBe(0.5);
   });
 
   it('returns 0.0 when no match', () => {
-    const user = { major: 'History' };
+    const user = { majors: ['History'] };
     const club = makeClub('Computer Science', 'Engineering');
     expect(feature.compute(user, club, {})).toBe(0.0);
   });
 
-  it('returns 0.0 when user has no major', () => {
+  it('returns 0.0 when user has no majors', () => {
     expect(feature.compute({}, makeClub('CS', null), {})).toBe(0.0);
-    expect(feature.compute({ major: '' }, makeClub('CS', null), {})).toBe(0.0);
+    expect(feature.compute({ majors: [] }, makeClub('CS', null), {})).toBe(0.0);
   });
 
   it('is case insensitive', () => {
-    const user = { major: 'computer science' };
+    const user = { majors: ['computer science'] };
     const club = makeClub('Computer Science', null);
     expect(feature.compute(user, club, {})).toBe(1.0);
+  });
+
+  it('returns best score across multiple majors', () => {
+    const user = { majors: ['History', 'Computer Science'] };
+    const club = makeClub('Computer Science', null);
+    expect(feature.compute(user, club, {})).toBe(1.0);
+  });
+
+  it('returns 0.5 when one of multiple majors matches description', () => {
+    const user = { majors: ['Art', 'biology'] };
+    const club = makeClub('Science', null, 'A club for biology enthusiasts');
+    expect(feature.compute(user, club, {})).toBe(0.5);
   });
 });
 
@@ -72,13 +83,20 @@ describe('MinorMatch', () => {
   });
 
   it('returns 1.0 when minor matches category', () => {
-    const user = { minor: 'Mathematics' };
+    const user = { minors: ['Mathematics'] };
     const club = makeClub('Mathematics', null);
     expect(feature.compute(user, club, {})).toBe(1.0);
   });
 
-  it('returns 0.0 when user has no minor', () => {
+  it('returns 0.0 when user has no minors', () => {
     expect(feature.compute({}, makeClub('Math', null), {})).toBe(0.0);
+    expect(feature.compute({ minors: [] }, makeClub('Math', null), {})).toBe(0.0);
+  });
+
+  it('returns best score across multiple minors', () => {
+    const user = { minors: ['Art', 'Mathematics'] };
+    const club = makeClub('Mathematics', null);
+    expect(feature.compute(user, club, {})).toBe(1.0);
   });
 });
 
@@ -108,36 +126,6 @@ describe('InterestOverlap', () => {
     const user = { interests: ['Sports'] };
     const club = makeClub('Sports', null);
     expect(feature.compute(user, club, {})).toBe(1.0);
-  });
-});
-
-describe('CategoryOverlap', () => {
-  const feature = new CategoryOverlap();
-
-  it('has correct name', () => {
-    expect(feature.name).toBe('category_overlap');
-  });
-
-  it('returns 1.0 when all club categories match user preferences', () => {
-    const user = { categories: ['Sports', 'Music'] };
-    const club = makeClub('Sports', 'Music');
-    expect(feature.compute(user, club, {})).toBe(1.0);
-  });
-
-  it('returns 0.5 when half match', () => {
-    const user = { categories: ['Sports'] };
-    const club = makeClub('Sports', 'Music');
-    expect(feature.compute(user, club, {})).toBe(0.5);
-  });
-
-  it('returns 0.0 when no match', () => {
-    const user = { categories: ['Art'] };
-    const club = makeClub('Sports', 'Music');
-    expect(feature.compute(user, club, {})).toBe(0.0);
-  });
-
-  it('returns 0.0 when user has no categories', () => {
-    expect(feature.compute({ categories: [] }, makeClub('Sports', null), {})).toBe(0.0);
   });
 });
 

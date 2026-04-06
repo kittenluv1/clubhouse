@@ -1,8 +1,7 @@
 const DEFAULT_WEIGHTS = {
   membership_similarity: 0.28,
   major_match: 0.20,
-  interest_overlap: 0.16,
-  category_overlap: 0.13,
+  interest_overlap: 0.29,
   minor_match: 0.09,
   like_history: 0.08,
   save_history: 0.06,

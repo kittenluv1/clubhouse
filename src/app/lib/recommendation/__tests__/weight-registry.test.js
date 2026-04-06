@@ -5,18 +5,17 @@ describe('WeightRegistry', () => {
     const registry = new WeightRegistry();
     expect(registry.getWeight('membership_similarity')).toBe(0.28);
     expect(registry.getWeight('major_match')).toBe(0.20);
-    expect(registry.getWeight('interest_overlap')).toBe(0.16);
-    expect(registry.getWeight('category_overlap')).toBe(0.13);
+    expect(registry.getWeight('interest_overlap')).toBe(0.29);
     expect(registry.getWeight('minor_match')).toBe(0.09);
     expect(registry.getWeight('like_history')).toBe(0.08);
     expect(registry.getWeight('save_history')).toBe(0.06);
   });
 
-  it('weights membership_similarity highest', () => {
+  it('weights interest_overlap highest', () => {
     const registry = new WeightRegistry();
     const all = registry.getAllWeights();
     const maxWeight = Math.max(...Object.values(all));
-    expect(registry.getWeight('membership_similarity')).toBe(maxWeight);
+    expect(registry.getWeight('interest_overlap')).toBe(maxWeight);
   });
 
   it('weights like_history more than save_history', () => {

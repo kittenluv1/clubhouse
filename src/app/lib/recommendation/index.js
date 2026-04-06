@@ -6,7 +6,6 @@ export {
   MajorMatch,
   MinorMatch,
   InterestOverlap,
-  CategoryOverlap,
   LikeHistory,
   SaveHistory,
   MembershipSimilarity,
