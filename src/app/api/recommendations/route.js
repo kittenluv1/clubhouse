@@ -21,7 +21,7 @@ export async function GET(req) {
     // Fetch user profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('majors, minors')
+      .select('majors, minors, current_clubs')
       .eq('id', userId)
       .single();
 
@@ -93,30 +93,6 @@ export async function GET(req) {
       if (item.clubs?.Category2Name) savedCategories.push(item.clubs.Category2Name);
     }
 
-    // Fetch user's club memberships (clubs they are already in)
-    const { data: memberClubsData, error: memberError } = await supabase
-      .from('club_memberships')
-      .select(`
-        club_id,
-        clubs!club_memberships_club_id_fkey(Category1Name, Category2Name)
-      `)
-      .eq('user_id', userId);
-
-    if (memberError) {
-      console.error('[Recommendations API] Member clubs fetch error:', memberError);
-    }
-
-    const memberClubIds = new Set(
-      (memberClubsData || []).map(item => item.club_id)
-    );
-
-    // Build memberCategories context from clubs the user is in
-    const memberCategories = [];
-    for (const item of (memberClubsData || [])) {
-      if (item.clubs?.Category1Name) memberCategories.push(item.clubs.Category1Name);
-      if (item.clubs?.Category2Name) memberCategories.push(item.clubs.Category2Name);
-    }
-
     // Fetch all clubs
     const { data: allClubs, error: clubsError } = await supabaseServer
       .from('clubs')
@@ -128,6 +104,20 @@ export async function GET(req) {
         JSON.stringify({ error: 'Failed to fetch clubs' }),
         { status: 500 }
       );
+    }
+
+    // Derive member club IDs and categories from current_clubs (names) on profile
+    const currentClubNames = new Set(
+      (profile?.current_clubs || []).map(name => name.toLowerCase().trim())
+    );
+    const memberClubIds = new Set();
+    const memberCategories = [];
+    for (const club of (allClubs || [])) {
+      if (currentClubNames.has((club.OrganizationName || '').toLowerCase().trim())) {
+        memberClubIds.add(club.OrganizationID);
+        if (club.Category1Name) memberCategories.push(club.Category1Name);
+        if (club.Category2Name) memberCategories.push(club.Category2Name);
+      }
     }
 
     // Filter out clubs the user already liked, saved, or is a member of
