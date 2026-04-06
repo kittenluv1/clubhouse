@@ -33,10 +33,8 @@ export class RecommendationService {
 
     scored.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      // Stable sort on ties: alphabetical by OrganizationName
-      const nameA = a.club.OrganizationName || '';
-      const nameB = b.club.OrganizationName || '';
-      return nameA.localeCompare(nameB);
+      // Randomize ties so users see different clubs each request
+      return Math.random() - 0.5;
     });
 
     return scored;

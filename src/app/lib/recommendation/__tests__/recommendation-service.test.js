@@ -44,7 +44,7 @@ describe('RecommendationService', () => {
     results.forEach(r => expect(r.score).toBe(0));
   });
 
-  it('sorts alphabetically on tie scores', () => {
+  it('returns all tied clubs with equal scores', () => {
     const user = {};
     const clubs = [
       makeClub(1, 'Zebra Club', 'Sports'),
@@ -54,9 +54,9 @@ describe('RecommendationService', () => {
     const service = new RecommendationService();
     const results = service.rankClubs(user, clubs, {});
 
-    // Both score 0, so alphabetical
-    expect(results[0].club.OrganizationName).toBe('Alpha Club');
-    expect(results[1].club.OrganizationName).toBe('Zebra Club');
+    // Both score 0 — order is randomized, but both should be present
+    expect(results.length).toBe(2);
+    expect(results[0].score).toBe(results[1].score);
   });
 
   it('includes breakdown in results', () => {
