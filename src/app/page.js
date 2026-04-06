@@ -87,16 +87,14 @@ function Home() {
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
       <div className="max-w-2xl lg:p-15">
-        <object
-          type="image/svg+xml"
-          data="/clubhouse-logo-desktop.svg"
-          aria-label="ClubHouse Logo"
+        <img
+          src="/clubhouse-logo-desktop.svg"
+          alt="ClubHouse Logo"
           className="hidden w-sm object-cover lg:block"
         />
-        <object
-          type="image/svg+xml"
-          data="/clubhouse-logo-mobile.svg"
-          aria-label="ClubHouse Logo"
+        <img
+          src="/clubhouse-logo-mobile.svg"
+          alt="ClubHouse Logo"
           className="w-4xs object-cover lg:hidden"
         />
       </div>
