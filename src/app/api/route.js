@@ -1,5 +1,6 @@
 import { supabaseServer } from "../lib/server-db.js";
 
+// keep all logic in GET route - Vercel cron jobs only support GET requests
 export async function GET(req) {
   if (!supabaseServer) {
     console.error("supabaseServer client is not initialized.");
