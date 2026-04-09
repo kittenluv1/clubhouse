@@ -55,3 +55,28 @@ body {
 .slick-slide > div {
   margin: 0 10px;
 }
+
+.column {
+  float: left;
+}
+
+.left {
+  width: 5%;
+  transform: translateY(600%);
+}
+
+.right {
+  width: 5%;
+ vertical-align:middle;
+}
+
+.middle {
+  width: 90%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}

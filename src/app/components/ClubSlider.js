@@ -2,7 +2,7 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import Button from "../components/button";
 /*
 position: absolute;
 width: 28.97px;
@@ -25,15 +25,19 @@ border: 1px solid #A4CDED;
 transform: matrix(-1, 0, 0, 1, 0, 0);
 */
 
+
+
 function NextArrow(props) {
     const { className, style, onClick } = props;
-
+    console.log(className);
     return (
         <button
             onClick={onClick}
-            className={`${className}`}
-            // className='bg-gray-500  text-white border-2  text-lg px-1 py-1 rounded-xl'className={`${className}`}
-            style={{ ...style, display: "block", background: "red" }}
+            // className={`${className}`}
+            className={'bg-gray-500  text-white border-2  text-lg px-1 py-1 rounded-xl' + `${className}`}
+
+            style={{ ...style, display: "block", background: "#EEF7FE" }
+            }
         //style={{ border: '1px solid #A4CDED;', background: "#EEF7FE;", borderRadius: "50%" }}
         >
             <svg
@@ -50,7 +54,7 @@ function NextArrow(props) {
                     d="M19 9l-7 7-7-7"
                 />
             </svg>
-        </button>
+        </button >
     );
 }
 
@@ -60,10 +64,10 @@ function PrevArrow(props) {
         <button
             onClick={onClick}
             className={`${className}`}
-            style={{ ...style, display: "block", background: "red" }}
+            style={{ ...style, display: "block", background: "#cb2b7e" }}
         //className='bg-btn btn-defaultgray-500  text-white border-2 border-black text-lg px-1 py-1 rounded-xl'
         >
-            <svg
+            {/* <svg
                 className={`h-4 w-4 transition-transform rotate-90`}
                 fill="none"
                 stroke="currentColor"
@@ -75,7 +79,7 @@ function PrevArrow(props) {
                     strokeWidth={2}
                     d="M19 9l-7 7-7-7"
                 />
-            </svg>
+            </svg> */}
         </ button>
     );
 }
@@ -97,32 +101,37 @@ function tempClubCard(d) {
 }
 
 function ClubSlider() {
+    const slider = React.useRef(null);
     const settings = {
         //dots: true,
         infinite: true,
         speed: 500,
         slidesToShow: 3,
         arrows: true,
-        slidesToScroll: 1,
-        nextArrow: <NextArrow />,
-        prevArrow: <PrevArrow />,
+        slidesToScroll: 3,
 
     };
     return (
-
         <div className='w-3/4 m-auto'>
             <h2 className="text-xl font-bold text-black md:text-2xl flex-1 min-w-0 break-words">
                 Club Recommendations
             </h2>
-            <div className="slider-container mt-10 mb-10">
-                <Slider {...settings}>
-                    {data.map((d) => (
-                        tempClubCard(d)
-                    ))}
-                </Slider>
+            <div className="row" >
+                <div className="column left"><Button onClick={() => slider?.current?.slickPrev()} type="gray"
+                    size="small">&lt;</Button></div>
+                <div className="column middle slider-container mt-10 mb-10">
+                    <Slider ref={slider} {...settings}>
+                        {data.map((d) => (
+                            tempClubCard(d)
+                        ))}
+                    </Slider>
+                </div>
+                <div className="column right"><Button onClick={() => slider?.current?.slickNext()} type="gray"
+                    size="small">&gt;</Button>
+                </div>
             </div>
 
-        </div>
+        </div >
     );
 }
 
