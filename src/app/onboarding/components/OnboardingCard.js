@@ -1,6 +1,5 @@
 "use client";
 
-import { progress } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { IoClose } from "react-icons/io5";
 
