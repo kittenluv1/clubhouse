@@ -29,7 +29,7 @@ export default function OnboardingPage() {
                 router.push("/sign-in");
                 return;
             }
-            
+
             const res = await fetch("/api/onboarding");
             const { onboarding_completed } = await res.json().catch(() => ({}));
             console.log(onboarding_completed);
@@ -50,7 +50,7 @@ export default function OnboardingPage() {
         <div className="flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-8">
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={step}
+                    key={0}
                     initial={{ opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -40 }}
