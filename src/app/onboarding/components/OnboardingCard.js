@@ -1,5 +1,6 @@
 "use client";
 
+import { progress } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { IoClose } from "react-icons/io5";
 
@@ -10,10 +11,10 @@ export default function OnboardingCard({ step, totalSteps, children }) {
   return (
     <div className="w-full rounded-2xl bg-white shadow-sm overflow-hidden">
       {/* Progress bar */}
-      <div className="h-1.5 w-full bg-[#E5EBF1]">
+      <div className="h-3 w-full bg-[#E5EBF1]">
         <div
-          className="h-full bg-gradient-to-r from-[#FFA1CD] to-[#FFB464] transition-[width] duration-300 ease-in-out"
-          style={{ width: `${progressPct}%` }}
+          className="h-full bg-gradient-to-r from-[#FFA2CC] via-[#FEF38C] to-[#B8DF64] transition-[width] duration-300 ease-in-out"
+          style={{ clipPath: `inset(0 ${100 - progressPct}% 0 0)` }}
         />
       </div>
 
