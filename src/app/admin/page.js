@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/db";
 import PendingCard from "../components/pendingCard";
 import SortModal from "../components/sortModal";
+import posthog from "posthog-js";
 
 const Page = () => {
   const [reviews, setReviews] = useState([]);
@@ -126,6 +127,7 @@ const Page = () => {
         return;
       }
 
+      posthog.capture("review_approved", { review_id: record.id, club_name: record.club_name });
       fetchPendingReviews();
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -185,6 +187,7 @@ const Page = () => {
         return;
       }
 
+      posthog.capture("review_rejected", { review_id: record.id, club_name: record.club_name });
       fetchPendingReviews();
     } catch (error) {
       console.error("Unexpected error:", error);

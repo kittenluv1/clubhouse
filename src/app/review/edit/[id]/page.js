@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import posthog from "posthog-js";
 import SearchableDropdown from "../../../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../../../components/dropdowns";
 import CustomSlider from "../../../components/custom-slider";
@@ -302,6 +303,13 @@ export default function EditReviewPage() {
 			if (!response.ok) {
 				throw new Error(result.error || 'Failed to submit review');
 			}
+
+			posthog.capture("review_edit_submitted", {
+				club_id: clubId,
+				club_name: selectedClub,
+				overall_satisfaction: overallSatisfaction,
+				is_current_member: isMember,
+			});
 
 			await fetch(
 				`${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-review-email`,
