@@ -6,11 +6,13 @@ import { supabase } from "../lib/db";
 import { AnimatePresence, motion } from "framer-motion";
 import Majors from "./steps/Majors";
 import Clubs from "./steps/Clubs";
+import Interests from "./steps/Interests";
+import OnboardingFinish from "./steps/OnboardingFinish";
 import Categories from "./steps/Categories";
 import OnboardingCard from "./components/OnboardingCard";
 import OnboardingNav from "./components/OnboardingNav";
 
-const STEPS = [Majors, Clubs, Categories];
+const STEPS = [Majors, Clubs, Categories, Interests, OnboardingFinish];
 const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {
@@ -27,9 +29,10 @@ export default function OnboardingPage() {
                 router.push("/sign-in");
                 return;
             }
-
+            
             const res = await fetch("/api/onboarding");
-            const { onboarding_completed } = await res.json();
+            const { onboarding_completed } = await res.json().catch(() => ({}));
+            console.log(onboarding_completed);
             if (onboarding_completed) {
                 router.push("/");
                 return;
@@ -39,7 +42,6 @@ export default function OnboardingPage() {
         };
         checkAccess();
     }, []);
-
     if (!user) return null;
 
     const StepComponent = STEPS[step];
