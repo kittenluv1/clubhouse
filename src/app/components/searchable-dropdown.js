@@ -110,7 +110,7 @@ const SearchableDropdown = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="placeholder-custom w-full rounded-full bg-[#F4F5F6] hover:bg-[#E5EBF1] active:bg-[#B5BFC6] focus:bg-[#B5BFC6] px-5 py-3 text-gray-700 text-base focus:outline-none"
+          className="placeholder-custom w-full rounded-full bg-[#F4F5F6] hover:bg-[#E5EBF1] active:bg-[#B5BFC6] focus:bg-[#B5BFC6] pl-5 pr-12 py-3 text-gray-700 text-base focus:outline-none text-ellipsis overflow-hidden"
           required={required}
           style={{
             "--placeholder-color": placeholderColor,
@@ -143,7 +143,8 @@ const SearchableDropdown = ({
             <li
               key={index}
               onClick={() => handleOptionClick(option)}
-              className="relative cursor-pointer py-2 pr-9 pl-3 select-none hover:bg-gray-100"
+              className="relative cursor-pointer py-2 pr-3 pl-3 select-none hover:bg-gray-100 truncate"
+              title={option}
             >
               {option}
             </li>
@@ -152,8 +153,8 @@ const SearchableDropdown = ({
       )}
 
       {isOpen && inputValue && filteredOptions.length === 0 && !isLoading && (
-        <div className="absolute z-10 mt-1 w-full rounded-md bg-white px-3 py-3 text-sm shadow-lg">
-          No clubs found matching &quot;{inputValue}&quot;
+        <div className="absolute z-10 mt-1 w-full rounded-md bg-white px-3 py-3 text-sm shadow-lg overflow-hidden">
+          <span className="block truncate">No clubs found matching &quot;{inputValue}&quot;</span>
         </div>
       )}
 

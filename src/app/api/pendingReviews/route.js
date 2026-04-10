@@ -16,13 +16,20 @@ export async function GET(req) {
 
     const supabase = createServerClient(authHeader);
 
-    // Verify the token is valid
+    // Verify the token is valid and user is admin
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }), 
+        JSON.stringify({ error: "Unauthorized" }),
         { status: 401 }
+      );
+    }
+
+    if (user.email !== process.env.ADMIN_EMAIL) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403 }
       );
     }
 
@@ -58,6 +65,23 @@ export async function POST(req) {
 
   const supabase = createServerClient(authHeader);
 
+  // Verify the token is valid and user is admin
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401 }
+    );
+  }
+
+  if (user.email !== process.env.ADMIN_EMAIL) {
+    return new Response(
+      JSON.stringify({ error: "Forbidden" }),
+      { status: 403 }
+    );
+  }
+
   try {
     const { reviewID, approve } = await req.json();
 
@@ -70,7 +94,7 @@ export async function POST(req) {
       );
     }
 
-    // Approve flow: insert → delete
+    // Approve flow: insert into reviews → delete
     if (approve) {
       const { data: review, error } = await supabase
         .from("pending_reviews")
@@ -90,6 +114,26 @@ export async function POST(req) {
         throw new Error(insertError.message);
       }
     }
+    // Reject flow: insert into rejected_review → delete
+    else {
+      const { data: review, error } = await supabase
+        .from("pending_reviews")
+        .select("*")
+        .eq("id", reviewID)
+        .single();
+
+      if (error || !review) {
+        throw new Error(error?.message || "Review not found");
+      }
+
+      const { error: rejectError } = await supabase
+        .from("rejected_reviews")
+        .insert({ ...review, updated_at: new Date().toISOString() });
+
+      if (rejectError) {
+        throw new Error(rejectError.message);
+      }
+    }
 
     // Delete the pending review (always, regardless of approve or reject)
     const { error: deleteError } = await supabase
@@ -105,7 +149,7 @@ export async function POST(req) {
       JSON.stringify({
         message: approve
           ? "Review approved and moved to reviews table"
-          : "Review rejected and deleted from pending table",
+          : "Review rejected and moved to rejected reviews table",
       }),
       { status: 200 },
     );

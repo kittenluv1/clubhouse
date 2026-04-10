@@ -1,5 +1,6 @@
 import { supabaseServer } from "../lib/server-db.js";
 
+// keep all logic in GET route - Vercel cron jobs only support GET requests
 export async function GET(req) {
   if (!supabaseServer) {
     console.error("supabaseServer client is not initialized.");
@@ -19,7 +20,7 @@ export async function GET(req) {
     );
 
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
+      throw new Error(`Clubs response status: ${response.status}`);
     }
 
     const data = await response.json();
@@ -85,24 +86,46 @@ export async function GET(req) {
 
     const sanitizedOrgList = combinedOrgList.map(sanitizeObject);
 
-    // Insert data into the Supabase database
-    const { error } = await supabaseServer
-      .from("clubs")
-      .upsert(sanitizedOrgList, { onConflict: "OrganizationID" });
+    // Insert data into the Supabase database using manual update/insert logic
+    for (const org of sanitizedOrgList) {
+      const { id, ...fields } = org;
 
-    if (error) {
-      console.error("Error inserting data into Supabase:", error);
-      return new Response(
-        JSON.stringify({ error: "Failed to insert data into database" }),
-        { status: 500 },
-      );
+      const { count, error: updateError } = await supabaseServer
+        .from("clubs")
+        .update(fields)
+        .eq("OrganizationID", org.OrganizationID)
+        .select("OrganizationID", { count: "exact", head: true });
+
+      if (updateError) {
+        console.error("Error updating data in Supabase:", updateError);
+        return new Response(
+          JSON.stringify({ error: `Failed to update data in database for club: ${org.OrganizationName}` }),
+          { status: 500 },
+        );
+      }
+
+      // if the update did not find a matching record, insert a new one
+      if (count === 0) {
+        const { error } = await supabaseServer
+          .from("clubs")
+          .insert(org);
+
+        if (error) {
+          console.error("Error inserting data into Supabase:", error);
+          return new Response(
+            JSON.stringify({ error: `Failed to insert data into database for club: ${org.OrganizationName}` }),
+            { status: 500 },
+          );
+        }
+      }
     }
 
     return new Response(
       JSON.stringify({
         totalClubs: sanitizedOrgList.length,
         regularClubs: orgList.length,
-        clubSports: clubSportsOrgList.length
+        clubSports: clubSportsOrgList.length,
+        clubs: sanitizedOrgList,
       }, null, 2),
       { status: 200 }
     );

@@ -42,6 +42,7 @@ const GROUPED_TAGS = {
   ],
   "Arts & Media": ["Arts", "Dance", "Film", "Music", "Media", "Theater"],
   "Health & Wellness": [
+    "Club Sports",
     "Fitness",
     "Health and Wellness",
     "Self Improvement",
@@ -165,10 +166,13 @@ export default function Filter({
         <Button
           type="border"
           size="small"
+          style="h-[34px] lg:h-auto flex items-center justify-center"
           ref={buttonRef}
           onClick={toggleFilter}
         >
-          Search by Category
+          <span className="text-xs lg:text-sm">
+            {isMobile ? 'Categories' : 'Search by Category'}
+          </span>
         </Button>
 
         {!isMobile && selectedCategories.length > 0 && (
@@ -195,13 +199,13 @@ export default function Filter({
           <>
             {/* Backdrop to detect outside clicks */}
             <div
-              className="fixed inset-0 z-40 bg-transparent"
+              className="fixed inset-0 z-30 bg-transparent"
               onClick={handleClose}
             />
 
             <motion.div
               key="mobile-filter"
-              className="fixed inset-x-0 bottom-0 z-50 flex h-[80vh] flex-col rounded-t-2xl bg-white shadow-xl"
+              className="fixed inset-x-0 bottom-0 z-40 flex h-[80vh] flex-col rounded-t-2xl bg-white shadow-xl"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -293,7 +297,7 @@ export default function Filter({
         {showFilter && !isMobile && (
           <div
             ref={filterRef}
-            className="absolute top-12 left-0 z-50 w-lg rounded-xl bg-white p-6 shadow-lg lg:w-3xl"
+            className="absolute top-12 left-0 z-40 w-lg rounded-xl bg-white p-6 shadow-lg lg:w-3xl"
           >
             <div className="max-h-[50vh] overflow-y-auto p-4">
               {tempSelectedTags.length > 0 && (
