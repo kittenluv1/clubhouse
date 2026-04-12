@@ -9,6 +9,7 @@ import ReviewCard from "../components/reviewCard";
 import LoadingScreen from "../components/LoadingScreen";
 import ConfirmationModal from "../components/confirmationModal";
 import Button from "../components/button";
+import PreferencesSection from "./components/PreferencesSection";
 
 function ProfilePage() {
     const router = useRouter();
@@ -26,6 +27,8 @@ function ProfilePage() {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [reviewToDelete, setReviewToDelete] = useState(null);
     const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
+    const [preferencesExpanded, setPreferencesExpanded] = useState(false);
+    const [profilePreferences, setProfilePreferences] = useState(null);
 
     // Authentication check
     useEffect(() => {
@@ -71,6 +74,7 @@ function ProfilePage() {
                 if (!userProfile) {
                     setLoading(true);
                 }
+                setProfilePreferences(null);
 
                 // No userId param needed - API gets it from session cookies
                 const response = await fetch(`/api/profile`);
@@ -90,6 +94,12 @@ function ProfilePage() {
                     setPendingReviews(data.pendingReviews || []);
                     setRejectedReviews(data.rejectedReviews || []);
                     setUnreadRejectedCount(data.unreadRejectedCount || 0);
+                    setProfilePreferences({
+                        majors: data.profile?.majors || [],
+                        minors: data.profile?.minors || [],
+                        currentClubs: data.profile?.current_clubs || [],
+                        userInterests: data.userInterests || [],
+                    });
 
                     // Set clubs
                     setLikedClubs(data.likedClubs || []);
@@ -428,6 +438,18 @@ function ProfilePage() {
                     </div>
                 );
 
+            case "preferences":
+                return profilePreferences ? (
+                    <PreferencesSection
+                        majors={profilePreferences.majors}
+                        minors={profilePreferences.minors}
+                        currentClubs={profilePreferences.currentClubs}
+                        userInterests={profilePreferences.userInterests}
+                    />
+                ) : (
+                    <LoadingScreen />
+                );
+
             default:
                 return null;
         }
@@ -582,6 +604,48 @@ function ProfilePage() {
                                             {item.label}
                                         </button>
                                     ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Preferences Section */}
+                        <div className="mt-4">
+                            <button
+                                onClick={() => setPreferencesExpanded(!preferencesExpanded)}
+                                className="mb-2 flex w-full items-center justify-between text-left font-semibold"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="/edit-2.svg"
+                                        alt="preferences icon"
+                                        className="max-w-[20px]"
+                                    />
+                                    <span className="text-2xl">Preferences</span>
+                                </div>
+                                <svg
+                                    className={`h-4 w-4 transition-transform ${preferencesExpanded ? "rotate-180" : ""}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </button>
+
+                            {preferencesExpanded && (
+                                <div className="relative ml-2 space-y-1">
+                                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+                                    <button
+                                        onClick={() => setActiveSection("preferences")}
+                                        className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === "preferences" ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"}`}
+                                    >
+                                        Edit Preferences
+                                    </button>
                                 </div>
                             )}
                         </div>
