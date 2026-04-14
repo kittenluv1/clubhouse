@@ -16,9 +16,9 @@ function SignInPage() {
           <h2 className="text-2xl font-semibold text-[#6E808D]">Start your journey with us</h2>
 
           <div className="relative w-70 h-64 mt-8">
-            <img src="/blueflower.svg" className="absolute left-10 top-8 w-36 h-30" />
-            <img src="/greenflower.svg" className="absolute left-45 top-0 w-30 h-26" />
-            <img src="/pinkflower.svg" className="absolute left-35 top-33 w-36 h-26" />
+            <img src="/blueflower.svg" className="absolute left-10 top-8 w-36 h-30 transition-transform hover:-rotate-90 duration-300 ease-out" />
+            <img src="/greenflower.svg" className="absolute left-45 top-0 w-30 h-26 transition-transform hover:-rotate-90 duration-300 ease-out" />
+            <img src="/pinkflower.svg" className="absolute left-35 top-33 w-36 h-26 transition-transform hover:-rotate-90 duration-300 ease-out" />
           </div>
         </div>
 
