@@ -7,21 +7,9 @@ import MINORS from "../../onboarding/data/minors.json";
 import INTERESTS from "../../onboarding/data/interests.json";
 import Button from "../../components/button";
 import { supabase } from "../../lib/db";
+import { splitUserInterests } from "../../utils/splitUserInterests";
 
 const BROAD_CATEGORIES = Object.keys(INTERESTS);
-
-/**
- * Splits a flat user_interests array (as returned by GET /api/profile)
- * into broad categories and subcategories.
- *
- * Broad categories are the 7 top-level keys in interests.json.
- * Everything else is treated as a subcategory.
- */
-export function splitUserInterests(interests, broadCategories = BROAD_CATEGORIES) {
-  const broad = interests.filter((i) => broadCategories.includes(i));
-  const sub = interests.filter((i) => !broadCategories.includes(i));
-  return { broadCategories: broad, subcategories: sub };
-}
 
 export default function PreferencesSection({
   majors: initialMajors = [],

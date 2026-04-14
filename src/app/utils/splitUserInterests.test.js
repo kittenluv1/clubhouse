@@ -1,4 +1,4 @@
-import { splitUserInterests } from './PreferencesSection';
+import { splitUserInterests } from './splitUserInterests';
 
 describe('splitUserInterests', () => {
   test('separates broad categories from subcategories', () => {
