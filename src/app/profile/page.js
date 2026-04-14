@@ -9,6 +9,7 @@ import ReviewCard from "../components/reviewCard";
 import LoadingScreen from "../components/LoadingScreen";
 import ConfirmationModal from "../components/confirmationModal";
 import Button from "../components/button";
+import PreferencesSection from "./components/PreferencesSection";
 
 function ProfilePage() {
     const router = useRouter();
@@ -26,6 +27,7 @@ function ProfilePage() {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [reviewToDelete, setReviewToDelete] = useState(null);
     const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
+    const [profilePreferences, setProfilePreferences] = useState(null);
 
     // Authentication check
     useEffect(() => {
@@ -48,7 +50,9 @@ function ProfilePage() {
         const { data: authListener } = supabase.auth.onAuthStateChange(
             (_event, session) => {
                 if (session?.user) {
-                    setCurrentUser(session.user);
+                    setCurrentUser((prev) =>
+                        prev?.id === session.user.id ? prev : session.user
+                    );
                 } else {
                     setCurrentUser(null);
                     window.location.href = "/sign-in";
@@ -90,6 +94,12 @@ function ProfilePage() {
                     setPendingReviews(data.pendingReviews || []);
                     setRejectedReviews(data.rejectedReviews || []);
                     setUnreadRejectedCount(data.unreadRejectedCount || 0);
+                    setProfilePreferences({
+                        majors: data.profile?.majors || [],
+                        minors: data.profile?.minors || [],
+                        currentClubs: data.profile?.current_clubs || [],
+                        userInterests: data.userInterests || [],
+                    });
 
                     // Set clubs
                     setLikedClubs(data.likedClubs || []);
@@ -428,6 +438,18 @@ function ProfilePage() {
                     </div>
                 );
 
+            case "preferences":
+                return profilePreferences ? (
+                    <PreferencesSection
+                        majors={profilePreferences.majors}
+                        minors={profilePreferences.minors}
+                        currentClubs={profilePreferences.currentClubs}
+                        userInterests={profilePreferences.userInterests}
+                    />
+                ) : (
+                    <LoadingScreen />
+                );
+
             default:
                 return null;
         }
@@ -584,6 +606,23 @@ function ProfilePage() {
                                     ))}
                                 </div>
                             )}
+                        </div>
+
+                        {/* Preferences Section */}
+                        <div className="mt-4">
+                            <button
+                                onClick={() => setActiveSection("preferences")}
+                                className={`mb-2 flex w-full items-center justify-between text-left font-semibold rounded-full px-2 py-1 ${activeSection === "preferences" ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"}`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="/edit-2.svg"
+                                        alt="preferences icon"
+                                        className="max-w-[20px]"
+                                    />
+                                    <span className="text-2xl">Preferences</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -11,24 +11,32 @@ export default function MultiSelectSearch({
   onSelect,
   onRemove,
   required = false,
+  onQueryChange,   // optional: called with the raw query string on every keystroke
+  serverSearch = false, // when true, skip client-side filtering (parent provides pre-filtered options)
 }) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
   const lowerQuery = query.toLowerCase();
-  const filtered = query.trim() === ""
-    ? []
-    : options
-        .filter((o) => !selected.includes(o))
-        .filter((o) => o.toLowerCase().includes(lowerQuery))
-        .sort((a, b) => {
-          const indexA = a.toLowerCase().indexOf(lowerQuery);
-          const indexB = b.toLowerCase().indexOf(lowerQuery);
-          if (indexA !== indexB) return indexA - indexB;
-          return a.toLowerCase().localeCompare(b.toLowerCase());
-        })
-        .slice(0, 8);
+
+  const sortByMatchIndex = (list) =>
+    list.sort((a, b) => {
+      const indexA = a.toLowerCase().indexOf(lowerQuery);
+      const indexB = b.toLowerCase().indexOf(lowerQuery);
+      if (indexA !== indexB) return indexA - indexB;
+      return a.toLowerCase().localeCompare(b.toLowerCase());
+    });
+
+  const filtered = serverSearch
+    ? sortByMatchIndex(options.filter((o) => !selected.includes(o))).slice(0, 8)
+    : query.trim() === ""
+      ? []
+      : sortByMatchIndex(
+          options
+            .filter((o) => !selected.includes(o))
+            .filter((o) => o.toLowerCase().includes(lowerQuery))
+        ).slice(0, 8);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -43,6 +51,7 @@ export default function MultiSelectSearch({
   const handleSelect = (option) => {
     onSelect(option);
     setQuery("");
+    if (onQueryChange) onQueryChange("");
     setIsOpen(false);
   };
 
@@ -57,7 +66,11 @@ export default function MultiSelectSearch({
         <input
           type="text"
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setIsOpen(true); }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setIsOpen(true);
+            if (onQueryChange) onQueryChange(e.target.value);
+          }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
           className="w-full rounded-full bg-[#F4F5F6] py-3 pl-5 pr-12 text-sm text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#E5EBF1] focus:outline-none"
@@ -83,7 +96,7 @@ export default function MultiSelectSearch({
           </ul>
         )}
 
-        {isOpen && query.trim() && filtered.length === 0 && (
+        {isOpen && filtered.length === 0 && (query.trim() || serverSearch) && (
           <div className="absolute z-10 mt-1 w-full rounded-xl bg-white px-4 py-3 text-sm text-gray-500 shadow-lg">
             No results for &quot;{query}&quot;
           </div>
@@ -99,7 +112,7 @@ export default function MultiSelectSearch({
             >
               {item}
               <button
-                onClick={() => onRemove(item)}
+                onClick={() => { onRemove(item); if (onQueryChange) onQueryChange(""); }}
                 className="ml-0.5 text-gray-500 hover:text-gray-700"
                 aria-label={`Remove ${item}`}
               >

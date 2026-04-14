@@ -15,7 +15,7 @@ export default function Interests({formData, onUpdate, onValidChange}) {
         // onValidChange(clicked>=2);
 
     }, [clicked])
-    const select = (interest) => {  
+    const select = (interest) => {
 
     }
     return (
@@ -25,7 +25,7 @@ export default function Interests({formData, onUpdate, onValidChange}) {
 
                 <h1 className="text-2xl font-bold text-[#1C350F]">Choose Your Interest</h1>
                 <p className="text-[0.8rem] mt-1 text-black">
-                    We'll be using this information to personalize club recommendations for you. 
+                    We'll be using this information to personalize club recommendations for you.
                     Please select at least 2 categories to continue.</p>
                 <h1 className="text-2xl mt-15 font-bold text-[#1C350F]">Main Category 1</h1>
                 <div className="flex flex-wrap gap-2 mt-3">
