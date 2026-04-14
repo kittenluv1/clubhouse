@@ -20,20 +20,23 @@ export default function MultiSelectSearch({
 
   const lowerQuery = query.toLowerCase();
 
+  const sortByMatchIndex = (list) =>
+    list.sort((a, b) => {
+      const indexA = a.toLowerCase().indexOf(lowerQuery);
+      const indexB = b.toLowerCase().indexOf(lowerQuery);
+      if (indexA !== indexB) return indexA - indexB;
+      return a.toLowerCase().localeCompare(b.toLowerCase());
+    });
+
   const filtered = serverSearch
-    ? options.filter((o) => !selected.includes(o)).slice(0, 8)
+    ? sortByMatchIndex(options.filter((o) => !selected.includes(o))).slice(0, 8)
     : query.trim() === ""
       ? []
-      : options
-          .filter((o) => !selected.includes(o))
-          .filter((o) => o.toLowerCase().includes(lowerQuery))
-          .sort((a, b) => {
-            const indexA = a.toLowerCase().indexOf(lowerQuery);
-            const indexB = b.toLowerCase().indexOf(lowerQuery);
-            if (indexA !== indexB) return indexA - indexB;
-            return a.toLowerCase().localeCompare(b.toLowerCase());
-          })
-          .slice(0, 8);
+      : sortByMatchIndex(
+          options
+            .filter((o) => !selected.includes(o))
+            .filter((o) => o.toLowerCase().includes(lowerQuery))
+        ).slice(0, 8);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

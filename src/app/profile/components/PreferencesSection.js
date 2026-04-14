@@ -6,6 +6,7 @@ import MAJORS from "../../onboarding/data/majors.json";
 import MINORS from "../../onboarding/data/minors.json";
 import INTERESTS from "../../onboarding/data/interests.json";
 import Button from "../../components/button";
+import { supabase } from "../../lib/db";
 
 const BROAD_CATEGORIES = Object.keys(INTERESTS);
 
@@ -39,35 +40,25 @@ export default function PreferencesSection({
   const [clubOptions, setClubOptions] = useState([]);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // "success" | "error" | null
-  const debounceRef = useRef(null);
   const saveTimerRef = useRef(null);
 
   useEffect(() => {
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
   }, []);
 
-  const handleClubQuery = (query) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!query.trim()) {
-      setClubOptions([]);
-      return;
-    }
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `/api/clubs?name=${encodeURIComponent(query)}&page=1&sort=alphabetical`
-        );
-        if (!res.ok) { setClubOptions([]); return; }
-        const data = await res.json();
-        setClubOptions((data.orgList || []).map((c) => c.OrganizationName));
-      } catch {
-        setClubOptions([]);
+  useEffect(() => {
+    const fetchClubNames = async () => {
+      const { data, error } = await supabase
+        .from("clubs")
+        .select("OrganizationName");
+      if (!error && data) {
+        setClubOptions(data.map((c) => c.OrganizationName));
       }
-    }, 300);
-  };
+    };
+    fetchClubNames();
+  }, []);
 
   const toggleCategory = (category) => {
     const updated = broadCategories.includes(category)
@@ -161,8 +152,6 @@ export default function PreferencesSection({
             selected={clubs}
             onSelect={(c) => setClubs((prev) => prev.includes(c) ? prev : [...prev, c])}
             onRemove={(c) => setClubs((prev) => prev.filter((x) => x !== c))}
-            onQueryChange={handleClubQuery}
-            serverSearch
           />
         </section>
 
