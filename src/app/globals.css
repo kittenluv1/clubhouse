@@ -60,23 +60,20 @@ body {
   float: left;
 }
 
-.left {
+.left, .right {
   width: 5%;
   transform: translateY(600%);
 }
 
-.right {
-  width: 5%;
- vertical-align:middle;
-}
-
 .middle {
-  width: 90%;
+  width: 80%;
+  margin-right: 5px;
 }
 
 /* Clear floats after the columns */
 .row:after {
   content: "";
-  display: table;
+  display: flex;
   clear: both;
 }
+
