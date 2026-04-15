@@ -5,9 +5,11 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 import Gradient from "./components/gradient";
 import { SearchProvider } from "./context/SearchContext";
+import { AuthProvider } from "./context/AuthContext";
 import { Suspense } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import { Analytics } from '@vercel/analytics/next';
+import OnboardingGuard from "./components/OnboardingGuard";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -44,15 +46,18 @@ export default function RootLayout({ children }) {
         className={`${dmSans.variable} ${geistSans.variable} ${geistMono.variable} ${inter.variable} flex min-h-screen flex-col antialiased`}
       >
         <Suspense fallback={<LoadingScreen />}>
-          <SearchProvider>
-            <Header />
-            <main className="relative min-h-screen overflow-hidden pt-[84px]">
-              <Gradient />
-              {children}
-              <Analytics />
-            </main>
-            <Footer />
-          </SearchProvider>
+          <AuthProvider>
+            <SearchProvider>
+              <OnboardingGuard />
+              <Header />
+              <main className="relative min-h-screen overflow-hidden pt-[84px]">
+                <Gradient />
+                {children}
+                <Analytics />
+              </main>
+              <Footer />
+            </SearchProvider>
+          </AuthProvider>
         </Suspense>
       </body>
     </html>
