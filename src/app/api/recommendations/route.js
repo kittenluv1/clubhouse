@@ -150,7 +150,7 @@ export async function GET(req) {
         profileComplete,
         total: ranked.length,
         limit,
-      }),
+      }, null, 2),
       { status: 200 }
     );
   } catch (error) {
