@@ -22,26 +22,26 @@ const formatMembership = (review) => {
 const renderStars = (rating, sizeClasses = "") => {
   const stars = [];
   const numStars = Math.round(rating || 0);
-  const ratingDecimal = rating - Math.floor(rating); 
+  const ratingDecimal = rating - Math.floor(rating);
   for (let i = 0; i < 5; i++) {
     if (i < numStars) {
-      if((rating - ratingDecimal) == i && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)){
-      stars.push(<img 
-        key={i} 
-        src="/reviewStarHalf.svg" 
-        className={` ${sizeClasses}`} />);
-      }else {
-      stars.push(<img 
-        key={i} 
-        src="/reviewStarFilled.svg" 
-        className={` ${sizeClasses}`} />);
+      if ((rating - ratingDecimal) == i && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)) {
+        stars.push(<img
+          key={i}
+          src="/reviewStarHalf.svg"
+          className={` ${sizeClasses}`} />);
+      } else {
+        stars.push(<img
+          key={i}
+          src="/reviewStarFilled.svg"
+          className={` ${sizeClasses}`} />);
       }
       // stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
     } else {
       // stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
-      stars.push(<img 
-        src="/reviewStarUnfilled.svg" 
-        key={i} 
+      stars.push(<img
+        src="/reviewStarUnfilled.svg"
+        key={i}
         className={`text-gray-300`} />);
     }
   }
