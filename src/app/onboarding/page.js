@@ -21,6 +21,7 @@ export default function OnboardingPage() {
     const [step, setStep] = useState(0);
     const [formData, setFormData] = useState({});
     const [canAdvance, setCanAdvance] = useState(true);
+    const [clubOptions, setClubOptions] = useState([]);
 
     useEffect(() => {
         const checkAccess = async () => {
@@ -41,6 +42,16 @@ export default function OnboardingPage() {
             setUser(user);
         };
         checkAccess();
+
+        const fetchClubNames = async () => {
+            const { data, error } = await supabase
+                .from("clubs")
+                .select("OrganizationName");
+            if (!error && data) {
+                setClubOptions(data.map((c) => c.OrganizationName));
+            }
+        };
+        fetchClubNames();
     }, []);
     if (!user) return null;
 
@@ -62,6 +73,7 @@ export default function OnboardingPage() {
                             formData={formData}
                             onUpdate={(data) => setFormData((prev) => ({ ...prev, ...data }))}
                             onValidChange={setCanAdvance}
+                            clubOptions={clubOptions}
                         />
                         {/* Confirmation step (last) uses its own CTAs instead of standard nav */}
                         {step < TOTAL_STEPS - 1 && (

@@ -1,40 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import MultiSelectSearch from "../components/MultiSelectSearch";
 
-export default function Clubs({ formData, onUpdate, onValidChange }) {
+export default function Clubs({ formData, onUpdate, onValidChange, clubOptions = [] }) {
   const [selectedClubs, setSelectedClubs] = useState(formData.clubs ?? []);
-  const [clubOptions, setClubOptions] = useState([]);
-  const debounceRef = useRef(null);
 
   useEffect(() => {
     onValidChange(true); // optional step
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleQueryChange = (query) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!query.trim()) {
-      setClubOptions([]);
-      return;
-    }
-    debounceRef.current = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `/api/clubs?name=${encodeURIComponent(query)}&page=1&sort=alphabetical`
-        );
-        if (!res.ok) { setClubOptions([]); return; }
-        const data = await res.json();
-        setClubOptions((data.orgList || []).map((c) => c.OrganizationName));
-      } catch {
-        setClubOptions([]);
-      }
-    }, 300);
-  };
 
   const handleSelect = (club) => {
     if (selectedClubs.includes(club)) return;
@@ -68,8 +43,6 @@ export default function Clubs({ formData, onUpdate, onValidChange }) {
         selected={selectedClubs}
         onSelect={handleSelect}
         onRemove={handleRemove}
-        onQueryChange={handleQueryChange}
-        serverSearch
       />
 
       {selectedClubs.length === 0 && (
