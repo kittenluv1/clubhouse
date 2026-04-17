@@ -228,7 +228,7 @@ export default function PreferencesSection({
         </section>
 
         {/* Save */}
-        <div className="flex flex-col gap-2 pb-8">
+        <div className="flex flex-col items-center gap-2 pb-8">
           {!canSave && (
             <p className="text-sm text-[#747474]">
               {majors.length === 0
