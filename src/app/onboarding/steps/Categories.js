@@ -54,8 +54,8 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                 ${colSpanClass} ${colStartClass}
                 h-28 flex flex-col items-center justify-center gap-2 rounded-xl p-1 text-xs font-medium text-center text-gray-900
                 ${isSelected
-                                    ? "bg-[#D6EEFF] ring-2 ring-[#7BBFEE]"
-                                    : "bg-[#F4F5F6] hover:bg-[#E5EBF1]"
+                                    ? "bg-[#E2E5F0] ring-2 ring-[#C4C9DC]"
+                                    : "bg-[#F0F2F9] ring-1 ring-[#D9D9D9] hover:bg-[#E5EBF1]"
                                 }
               `}
                         >
