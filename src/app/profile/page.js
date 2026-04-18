@@ -279,7 +279,7 @@ function ProfilePage() {
                                 <p className="text-[#B5BEC7]">No approved reviews</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1">
+                            <div className="grid grid-cols-1 gap-4">
                                 {approvedReviews.map(review => (
                                     <ReviewCard
                                         key={review.id}
@@ -312,7 +312,7 @@ function ProfilePage() {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 gap-12">
+                            <div className="grid grid-cols-1 gap-4">
                                 {pendingReviews.map(review => (
                                     <ReviewCard
                                         key={review.id}
@@ -348,7 +348,7 @@ function ProfilePage() {
                                 <p className="text-[#B5BEC7]">No rejected reviews</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 gap-12">
+                            <div className="grid grid-cols-1 gap-4">
                                 {rejectedReviews.map(review => (
                                     <ReviewCard
                                         key={review.id}
@@ -383,7 +383,7 @@ function ProfilePage() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 gap-12">
+                                    <div className="grid grid-cols-1 gap-4">
                                         {likedClubs.map((club) => (
                                             <ClubCard
                                                 key={`${club.OrganizationID}-${club.OrganizationName}`}
@@ -419,7 +419,7 @@ function ProfilePage() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 gap-12">
+                                    <div className="grid grid-cols-1 gap-4">
                                         {savedClubs.map((club) => (
                                             <ClubCard
                                                 key={`${club.OrganizationID}-${club.OrganizationName}`}
