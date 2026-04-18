@@ -186,7 +186,10 @@ function AllClubsPage() {
   return (
     <>
       <div className="flex flex-col space-y-6 p-6 md:p-20 lg:px-30 md:py-20">
-        <div className=" mb-5 lg:mb-10 flex items-start justify-between">
+
+        <ClubSlider></ClubSlider>
+
+        <div className=" mb-5 lg:mb-10 mt-5 lg:mt-10 flex items-start justify-between">
           <Filter
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
@@ -268,8 +271,7 @@ function AllClubsPage() {
             </div>
           )}
         </div>
-        <ClubSlider></ClubSlider>
-        <h1 className="mt-5 lg:mt-10 mb-4 text-[16px] font-normal">{title}</h1>
+        <h1 className="mb-4 text-[16px] font-normal">{title}</h1>
 
         <div className="grid grid-cols-1 gap-12">
           {clubs.map((club) => (

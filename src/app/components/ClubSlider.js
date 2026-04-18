@@ -93,10 +93,6 @@ function PrevArrow(props) {
 function tempClubCard(d) {
     return (
         <div key={d.OrganizationName} className="bg-white h-[450px] text-black rounded-xl">
-            <div className='h-56 bg-indigo-500 flex justify-center items-center rounded-t-xl'>
-                <img src={d.img} alt="" className="h-44 w-44 rounded-full" />
-            </div>
-
             <div className="flex flex-col items-center justify-center gap-4 p-4">
                 <p className="text-xl font-semibold">{d.OrganizationName}</p>
                 <p className="text-center">{d.OrganizationDescription}</p>
@@ -184,7 +180,7 @@ function ClubSlider() {
     }
 
     return (
-        <div className='w-3/4 m-auto'>
+        <div className="border-2 border-red-500 rounded-xl w-full">
             <h2 className="text-xl font-bold text-black md:text-2xl flex-1 min-w-0 break-words">
                 Recommended Clubs
             </h2>
