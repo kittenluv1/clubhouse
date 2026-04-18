@@ -3,12 +3,7 @@ import Button from "../components/button";
 
 function SignInPage() {
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">      <img
-      src="/signinbg.svg"
-      className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-      aria-hidden="true"
-    />
-
+    <div className="relative min-h-screen w-full overflow-hidden">      
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between min-h-[calc(100vh-64px)] px-6 md:px-30 gap-8 md:gap-0 py-12 md:py-0">
         {/* left */}
         <div className="flex flex-col justify-start flex-1 max-w-sm md:pr-10 text-center md:text-left md:self-start md:pt-20">
