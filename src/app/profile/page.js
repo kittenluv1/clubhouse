@@ -468,10 +468,24 @@ function ProfilePage() {
                 message="Are you sure you want to delete this review?"
             />
             {/* User Information Section */}
-            <div
-                className="relative mb-22 rounded-lg bg-white bg-cover bg-center bg-no-repeat px-12 py-15 lg:px-26 lg:py-25 border-b border-[#E5EBF1]"
-                style={{ backgroundImage: "url('/profile_background.png')" }}
-            >
+            <div className="relative mb-22 rounded-lg bg-white px-12 py-15 lg:px-26 lg:py-25 border-b border-[#E5EBF1]">
+                {/* lime blob — bottom left */}
+                <div className="absolute bottom-0 h-[50%] left-[-10%] w-[35%] blur-[70px] opacity-50 rounded-full"
+                    style={{ background: "#C8F06A" }} />
+                {/* pink blob — top center */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[50%] w-[50%] blur-[70px] opacity-80"
+                    style={{ background: "radial-gradient(ellipse at 50% 0%, #FFCBCA, #FEEBC8)" }} />
+                {/* blue blob — bottom right */}
+                <div className="absolute bottom-0 right-0 h-[50%] w-[30%] blur-[70px] opacity-70"
+                    style={{ background: "radial-gradient(ellipse at 100% 100%, #b0d8ff, #b0d8ff)" }} />
+                {/* lime dot grid — bottom left */}
+                <div className="absolute bottom-0 left-0 h-full w-[40%]"
+                    style={{
+                        backgroundImage: "radial-gradient(circle, #A8E040 1.5px, transparent 1.5px)",
+                        backgroundSize: "16px 16px",
+                        WebkitMaskImage: "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
+                        maskImage: "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
+                    }} />
                 <div className="absolute left-1/2 -translate-x-1/2 -bottom-17 lg:-bottom-22 lg:left-52 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
                     <img
                         src="/bear-profile.svg"
