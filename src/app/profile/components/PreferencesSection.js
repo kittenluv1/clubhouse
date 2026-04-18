@@ -64,7 +64,14 @@ export default function PreferencesSection({
     );
   };
 
-  const canSave = majors.length >= 1 && broadCategories.length >= 2;
+  const canSave = majors.length >= 1 && broadCategories.length >= 2 && subcategories.length >= 2;
+  const validationMessage = !canSave
+    ? majors.length === 0
+      ? "Please select at least one major."
+      : broadCategories.length < 2
+      ? "Please select at least 2 interest categories."
+      : "Please select at least 2 interest subcategories."
+    : null;
 
   const handleSave = async () => {
     if (!canSave) return;
@@ -148,7 +155,7 @@ export default function PreferencesSection({
           <h2 className="mb-1 text-lg font-semibold text-gray-800">
             Interest Categories
           </h2>
-          <p className="mb-4 text-sm text-gray-500">Select at least 2.</p>
+          <p className="mb-4 text-sm text-gray-500">To help us get better club recommendations, tell us what you’re interested in. Please select at least 2 categories to continue.</p>
           <div className="grid grid-cols-8 gap-3">
             {BROAD_CATEGORIES.map((category, i) => {
               const isSelected = broadCategories.includes(category);
@@ -190,7 +197,7 @@ export default function PreferencesSection({
             Interest Subcategories
           </h2>
           <p className="mb-4 text-sm text-gray-500">
-            Optional — dive deeper into your interests.
+            Please select at least 2 categories to continue.
           </p>
           {broadCategories.length === 0 ? (
             <p className="text-sm text-gray-400">
@@ -229,12 +236,8 @@ export default function PreferencesSection({
 
         {/* Save */}
         <div className="flex flex-col items-center gap-2 pb-8">
-          {!canSave && (
-            <p className="text-sm text-[#747474]">
-              {majors.length === 0
-                ? "Please select at least one major."
-                : "Please select at least 2 interest categories."}
-            </p>
+          {validationMessage && (
+            <p className="text-sm text-[#747474]">{validationMessage}</p>
           )}
           {saveStatus === "success" && (
             <p className="text-sm text-green-600">Preferences saved!</p>
