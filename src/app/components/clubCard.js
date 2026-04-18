@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
 import Button from "./button";
+import { handleCategoryClick, renderRatingStars } from "../lib/utils/clubCardHelpers";
 
 export default function ClubCard({
   club,
@@ -101,45 +102,6 @@ export default function ClubCard({
     }
   };
 
-  const handleCategoryClick = (e, categoryName) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const encoded = encodeURIComponent(categoryName);
-    router.push(`/clubs?categories=${encoded}`);
-  };
-
-  const renderRatingStars = (rating) => {
-    const ratingStars = [];
-    const intRating = Math.round(rating || 0);
-    const ratingDecimal = (Math.round(club.average_satisfaction * 10) / 10) - Math.floor(rating);
-    for (let x = 0; x < 5; x++) {
-      if (x < intRating) {
-        if ((rating - ratingDecimal) == x && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)) {
-          ratingStars.push(<img
-            key={x}
-            src={"reviewStarHalf.svg"}
-            className="mr-1"
-          />);
-        } else {
-          ratingStars.push(<img
-            key={x}
-            src={"reviewStarFilled.svg"}
-            className="mr-1"
-          />);
-        }
-
-      } else {
-        ratingStars.push(<img
-          key={x}
-          src={"reviewStarUnfilled.svg"}
-          className="mr-1"
-        />);
-      }
-
-    }
-    return ratingStars;
-  }
-
   return (
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
@@ -212,7 +174,7 @@ export default function ClubCard({
       <div className="flex flex-wrap gap-2">
         {club.Category1Name &&
           <Button
-            onClick={(e) => handleCategoryClick(e, club.Category1Name)}
+            onClick={(e) => handleCategoryClick(router, e, club.Category1Name)}
             type="tag"
             isSelected={true}
             size="small"
@@ -221,7 +183,7 @@ export default function ClubCard({
           </Button>}
         {club.Category2Name &&
           <Button
-            onClick={(e) => handleCategoryClick(e, club.Category2Name)}
+            onClick={(e) => handleCategoryClick(router, e, club.Category2Name)}
             type="tag"
             isSelected={true}
             size="small"

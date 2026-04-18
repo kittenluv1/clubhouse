@@ -4,7 +4,7 @@ import Script from "next/script";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
 import { useSearchParams } from "next/navigation";
-import { isValidReturnUrl } from "../utils/redirect";
+import { isValidReturnUrl } from "../lib/utils/redirect";
 
 export default function GoogleSignIn() {
   // userEmail is either:
