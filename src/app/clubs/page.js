@@ -95,6 +95,17 @@ function AllClubsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currPage]);
 
+  useEffect(() => {
+    if (loading) return;
+
+    if (window.location.hash === "#discover") {
+      const target = document.getElementById("discover");
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [loading, clubs.length, pageTotal, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
+
   // Reset user-specific state on logout
   useEffect(() => {
     if (!user) {
@@ -190,7 +201,7 @@ function AllClubsPage() {
         <h1 className="font-bold text-4xl black mb-4">Club Recommendations</h1>
         <ClubSlider></ClubSlider>
 
-        <h1 className="font-bold text-4xl black mb-4 mt-10">Discover Clubs</h1>
+        <h1 className="scroll-mt-20 md:scroll-mt-24 font-bold text-4xl black mb-4 mt-10" id="discover">Discover Clubs</h1>
         <div className="mb-4 flex items-start justify-between">
           <Filter
             initialSelectedTags={initialSelectedTags}

@@ -3,7 +3,7 @@ export const handleCategoryClick = (router, e, categoryName) => {
 	e.preventDefault();
 	e.stopPropagation();
 	const encoded = encodeURIComponent(categoryName);
-	router.push(`/clubs?categories=${encoded}`);
+	router.push(`/clubs?categories=${encoded}#discover`);
 };
 
 export const renderRatingStars = (rating) => {
