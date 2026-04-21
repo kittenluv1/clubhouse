@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
+import posthog from "posthog-js";
 import ClubCard from "../components/clubCard";
 import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
@@ -154,6 +155,7 @@ function ProfilePage() {
         const response = await fetch(`/api/rejectedReviews/${reviewToDelete}`, { method: 'DELETE' });
         if (response.ok) {
             // console.log('Deleted review: ', reviewToDelete);
+            posthog.capture("review_deleted", { review_id: reviewToDelete });
             // Remove from local state
             setRejectedReviews(prev => prev.filter(r => r.id !== reviewToDelete));
         } else {

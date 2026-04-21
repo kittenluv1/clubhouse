@@ -2,6 +2,7 @@
 
 
 import React, { useState, useEffect } from "react";
+import posthog from "posthog-js";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
 import CustomSlider from "../components/custom-slider";
@@ -432,6 +433,12 @@ export default function ReviewPage() {
 
       if (error) throw new Error(error.message);
 
+      posthog.capture("review_submitted", {
+        club_id: clubId,
+        club_name: selectedClub,
+        overall_satisfaction: overallSatisfaction,
+        is_current_member: isMember,
+      });
 
       await fetch(
         `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-review-email`,

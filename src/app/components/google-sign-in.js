@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
 import { useSearchParams } from "next/navigation";
 import { isValidReturnUrl } from "../utils/redirect";
+import posthog from "posthog-js";
 
 export default function GoogleSignIn() {
   // userEmail is either:
@@ -57,6 +58,8 @@ export default function GoogleSignIn() {
 
       const email = data.user.email;
       setUserEmail(email);
+      posthog.identify(data.user.id, { email });
+      posthog.capture("user_signed_in", { provider: "google", email });
       setLoading(false);
     };
 

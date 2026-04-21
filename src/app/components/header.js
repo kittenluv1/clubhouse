@@ -5,6 +5,7 @@ import SearchBar from "./search-bar";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "../lib/db";
 import Button from "./button";
+import posthog from "posthog-js";
 
 function Header() {
   const pathname = usePathname();
@@ -58,6 +59,7 @@ function Header() {
     if (error) {
       console.error("Error signing out:", error.message);
     } else {
+      posthog.reset();
       setUserEmail(null);
     }
   };

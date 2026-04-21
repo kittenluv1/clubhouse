@@ -4,6 +4,7 @@ import React from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
+import posthog from "posthog-js";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
@@ -357,6 +358,11 @@ export default function ClubDetailsPage() {
       data: { session },
     } = await supabase.auth.getSession();
 
+    posthog.capture("write_review_clicked", {
+      club_id: club.OrganizationID,
+      club_name: club.OrganizationName,
+    });
+
     if (session) {
       window.location.href = href;
     } else {
@@ -407,6 +413,7 @@ export default function ClubDetailsPage() {
       }
     } catch (error) {
       console.error("Error toggling like:", error);
+      posthog.captureException(error);
     } finally {
       setIsProcessing(false);
     }
