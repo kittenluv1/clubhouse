@@ -15,7 +15,7 @@ export default function OnboardingNav({ onNext, onBack, isFirstStep, canAdvance 
         </Button>
       )}
       <Button type="gradient" size="small" onClick={onNext} disabled={!canAdvance}>
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1 text-white">
           {nextLabel}
           <IoChevronForward size={15} />
         </span>

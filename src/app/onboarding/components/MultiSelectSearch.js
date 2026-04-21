@@ -60,7 +60,7 @@ export default function MultiSelectSearch({
       <label className="text-sm font-semibold text-[#1C350F]">
         {label}
         {/* previously text-[#FFA1CD] */}
-        {required && <span className="text-black] ml-0.5">*</span>}
+        {required && <span className="text-black ml-0.5">*</span>}
       </label>
 
       <div className="relative" ref={containerRef}>
