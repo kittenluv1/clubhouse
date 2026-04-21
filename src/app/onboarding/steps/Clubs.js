@@ -46,7 +46,7 @@ export default function Clubs({ formData, onUpdate, onValidChange, clubOptions =
       />
 
       {selectedClubs.length === 0 && (
-        <p className="-mt-4 text-xs text-gray-400">
+        <p className="-mt-4 text-xs text-[#1C350F]">
           Not in any clubs yet? You can skip this step.
         </p>
       )}

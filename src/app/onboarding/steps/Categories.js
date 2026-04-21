@@ -36,7 +36,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                     </p>
                 </div>
             </div>
-            <div className="mt-8 grid grid-cols-8 gap-3">
+            <div className="mt-8 grid grid-cols-8 gap-2">
                 {INTERESTS.map((interest, i) => {
                     const isSelected = selected.includes(interest);
 
@@ -52,7 +52,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                             onClick={() => toggle(interest)}
                             className={`
                 ${colSpanClass} ${colStartClass}
-                h-28 flex flex-col items-center justify-center gap-2 rounded-xl p-1 text-xs font-medium text-center text-gray-900 font-bold
+                h-33 w-33 flex flex-col items-center justify-center gap-2 rounded-xl p-1 text-xs font-medium text-center text-gray-900 font-bold
                 ${isSelected
                                     ? "bg-[#E2E5F0] ring-2 ring-[#C4C9DC]"
                                     : "bg-[#F0F2F9] ring-1 ring-[#D9D9D9] hover:bg-[#E5EBF1]"
