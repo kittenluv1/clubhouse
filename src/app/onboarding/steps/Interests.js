@@ -3,15 +3,15 @@
 import Button from "../../components/button"
 import { useEffect, useState } from "react";
 
-export default function Interests({formData, onUpdate, onValidChange}) {
+export default function Interests({ formData, onUpdate, onValidChange }) {
 
-    const exampleCategories = ["Arts", "Dance", "Film", "Theater", "Poetry", "Somethingg"];
+    const exampleCategories = ["Arts", "Dance", "Film", "Theater", "Poetry", "Something"];
 
     const [clicked, setClicked] = useState(0);
 
     const isClicked = false;
 
-    useEffect(()=> {
+    useEffect(() => {
         // onValidChange(clicked>=2);
 
     }, [clicked])
@@ -36,25 +36,25 @@ export default function Interests({formData, onUpdate, onValidChange}) {
                             size="small"
                             style="drop-shadow-xs"
                             isSelected={isClicked}
-                            onClick={()=> {}}
+                            onClick={() => { }}
                         >
                             {interest}
                         </Button>
                     ))}
                     <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        somethingg
+                    </Button>
+                    <Button
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        something
+                    </Button>
 
                     {exampleCategories.map((interest) => (
                         <Button
@@ -67,19 +67,19 @@ export default function Interests({formData, onUpdate, onValidChange}) {
                         </Button>
                     ))}
                     <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        somethingg
+                    </Button>
+                    <Button
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        something
+                    </Button>
 
                 </div>
 
@@ -92,25 +92,25 @@ export default function Interests({formData, onUpdate, onValidChange}) {
                             size="small"
                             style=""
                             onClick={select(interest)}
-                            // className="drop-shadow-xs py-2 px-4 text-sm"
+                        // className="drop-shadow-xs py-2 px-4 text-sm"
                         >
                             {interest}
                         </Button>
                     ))}
                     <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        somethingg
+                    </Button>
+                    <Button
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        something
+                    </Button>
                     {exampleCategories.map((interest) => (
                         <Button
                             key={interest}
@@ -122,19 +122,19 @@ export default function Interests({formData, onUpdate, onValidChange}) {
                         </Button>
                     ))}
                     <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        somethingg
+                    </Button>
+                    <Button
+                        type="tag"
+                        size="small"
+                        style="drop-shadow-xs"
+                    >
+                        something
+                    </Button>
 
                 </div>
             </div>

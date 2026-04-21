@@ -30,7 +30,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
         <>
             <div className="flex flex-col gap-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Choose some of your interests!</h1>
+                    <h1 className="text-2xl font-bold text-[#1C350F]">Choose some of your interests!</h1>
                     <p className="mt-1 text-sm text-gray-500">
                         To help us provide you better club recommendations, choose at least two club categories you are interested in.
                     </p>
@@ -52,7 +52,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                             onClick={() => toggle(interest)}
                             className={`
                 ${colSpanClass} ${colStartClass}
-                h-28 flex flex-col items-center justify-center gap-2 rounded-xl p-1 text-xs font-medium text-center text-gray-900
+                h-28 flex flex-col items-center justify-center gap-2 rounded-xl p-1 text-xs font-medium text-center text-gray-900 font-bold
                 ${isSelected
                                     ? "bg-[#E2E5F0] ring-2 ring-[#C4C9DC]"
                                     : "bg-[#F0F2F9] ring-1 ring-[#D9D9D9] hover:bg-[#E5EBF1]"
