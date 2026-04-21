@@ -1,4 +1,4 @@
-import { createAuthenticatedClient, supabaseServer } from "@/app/lib/server-db";
+import { createAuthenticatedClient } from "@/app/lib/server-db";
 
 // GET /api/onboarding
 // Returns whether the user has already completed onboarding.
@@ -12,7 +12,7 @@ export async function GET() {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { data: profile, error } = await supabaseServer
+    const { data: profile, error } = await supabase
       .from("profiles")
       .select("onboarding_completed")
       .eq("id", user.id)
@@ -43,7 +43,7 @@ export async function POST(req) {
     const { majors = [], minors = [], broadCategories = [], subcategories = [], currentClubs = [] } = await req.json();
 
     // Save academic info and mark onboarding complete
-    const { error: profileError } = await supabaseServer
+    const { error: profileError } = await supabase
       .from("profiles")
       .update({
         onboarding_completed: true,
@@ -63,12 +63,12 @@ export async function POST(req) {
     const allInterests = [...new Set([...broadCategories, ...subcategories])];
 
     if (allInterests.length > 0) {
-      await supabaseServer
+      await supabase
         .from("user_interests")
         .delete()
         .eq("user_id", user.id);
 
-      const { error: interestsError } = await supabaseServer
+      const { error: interestsError } = await supabase
         .from("user_interests")
         .insert(allInterests.map((category) => ({ user_id: user.id, category })));
 
@@ -97,7 +97,7 @@ export async function PATCH(req) {
 
     const { majors = [], minors = [], broadCategories = [], subcategories = [], currentClubs = [] } = await req.json();
 
-    const { error: profileError } = await supabaseServer
+    const { error: profileError } = await supabase
       .from("profiles")
       .update({
         majors,
@@ -111,7 +111,7 @@ export async function PATCH(req) {
     }
 
     // Always delete existing interests first, then re-insert if any selected.
-    const { error: deleteError } = await supabaseServer
+    const { error: deleteError } = await supabase
       .from("user_interests")
       .delete()
       .eq("user_id", user.id);
@@ -126,7 +126,7 @@ export async function PATCH(req) {
     const allInterests = [...new Set([...broadCategories, ...subcategories])];
 
     if (allInterests.length > 0) {
-      const { error: interestsError } = await supabaseServer
+      const { error: interestsError } = await supabase
         .from("user_interests")
         .insert(allInterests.map((category) => ({ user_id: user.id, category })));
 
