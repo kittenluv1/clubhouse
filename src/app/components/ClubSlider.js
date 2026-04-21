@@ -168,8 +168,21 @@ function ClubSlider() {
 
     if (!user) {
         return (
-            <div className="w-full">
-                <img src="/recommendation_placeholder.svg" alt="Recommendations Placeholder" className="w-full h-auto rounded-lg" />
+            <div className="relative w-full min-h-56 overflow-hidden rounded-2xl bg-[url('/recommendations-background.svg')] bg-cover bg-center px-6 pt-8 pb-36 md:px-10 md:py-10 md:pr-80 lg:pr-96">
+                <div className="relative z-10 flex max-w-3xl flex-col gap-4">
+                    <div>
+                        <p className="mb-2 text-2xl font-semibold md:text-3xl">Get Personalized Club Recommendations</p>
+                        <p className="mb-4 text-sm md:text-base">Discover clubs tailored to your interests, goals, and vibe. Find your community faster with recommendations made just for you.</p>
+                        <Button onClick={() => router.push("/sign-in")} type="CTA">
+                            Try It Now
+                        </Button>
+                    </div>
+                </div>
+                <img
+                    src="/recommendations-decal.svg"
+                    alt="Recommendations decal"
+                    className="pointer-events-none absolute bottom-0 w-[170px] right-0 left-auto md:w-[280px] lg:w-[340px]"
+                />
             </div>
         );
     }
