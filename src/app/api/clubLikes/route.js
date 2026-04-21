@@ -33,7 +33,7 @@ export async function POST(req) {
             return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { "Content-Type": "application/json" } });
         }
 
-        getPostHogClient().capture({ distinctId: userId, event: "club_liked", properties: { club_id } });
+        getPostHogClient()?.capture({ distinctId: userId, event: "club_liked", properties: { club_id } });
         return new Response(JSON.stringify({ message: 'Like added', like: data?.[0] }), { status: 201, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         console.error('Unexpected error in POST /api/clubLikes:', err);
@@ -69,7 +69,7 @@ export async function DELETE(req) {
             return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
         }
 
-        getPostHogClient().capture({ distinctId: userId, event: "club_unliked", properties: { club_id } });
+        getPostHogClient()?.capture({ distinctId: userId, event: "club_unliked", properties: { club_id } });
         return new Response(JSON.stringify({ message: 'Like removed' }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         console.error('Unexpected error in DELETE /api/clubLikes:', err);
