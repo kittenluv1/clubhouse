@@ -2,11 +2,10 @@
 
 import Button from "./button";
 import Script from "next/script";
-import { useState, useEffect, useRef} from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
 import { useSearchParams } from "next/navigation";
 import { isValidReturnUrl } from "../utils/redirect";
-
 
 export default function GoogleSignIn() {
   // userEmail is either:
@@ -16,9 +15,6 @@ export default function GoogleSignIn() {
   const searchParams = useSearchParams();
   const club = searchParams.get('club');
   const clubId = searchParams.get('clubId');
-  const [hovered, setHovered] = useState(false);
-  const hoverTimeout = useRef(null);
-
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
@@ -104,38 +100,6 @@ export default function GoogleSignIn() {
     };
   }, []);
 
-  const SignInButton = () => (
-    <div
-      className="relative inline-block cursor-pointer"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* default gradient */}
-      <Button type="CTA" size="large" style="pointer-events-none">
-        <span className="flex items-center gap-2">
-          <img src="/google.svg" alt="" className="w-5 h-5" />
-          Sign in with Google
-        </span>
-      </Button>
-
-      {/* hover gradient — fades in on top */}
-      <div
-        className="absolute inset-0 rounded-full bg-gradient-to-r from-[#B21D58] to-[#D86761] flex items-center justify-center pointer-events-none"
-        style={{ opacity: hovered ? 1 : 0, transition: "opacity 3000ms ease-in-out" }}>
-        <span className="flex items-center gap-2 text-white font-medium py-2.5 px-7">
-          <img src="/google.svg" alt="" className="w-5 h-5" />
-          Sign in with Google
-        </span>
-      </div>
-
-      <div
-        id="google-button"
-        className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
-        style={{ opacity: 0.001 }}
-      />
-    </div>
-  );
-
   return (
     <>
       <Script
@@ -154,12 +118,36 @@ export default function GoogleSignIn() {
         ) : userEmail === "INVALID" ? (
           <div className="flex flex-col items-center justify-center gap-3">
             <p>Please sign in with a valid UCLA email.</p>
-            <SignInButton />
+            <div className="relative inline-block">
+              <Button type="CTA" size="large" style="pointer-events-none">
+                <span className="flex items-center gap-2">
+                  <img src="/google.svg" alt="" className="w-5 h-5" />
+                  Sign in with Google
+                </span>
+              </Button>
+              <div
+                id="google-button"
+                className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
+                style={{ opacity: 0.001 }}
+              />
+            </div>
           </div>
         ) : userEmail ? (
           <p>You are signed in as <b>{userEmail}</b></p>
         ) : (
-          <SignInButton />
+          <div className="relative inline-block">
+            <Button type="CTA" size="large" style="pointer-events-none">
+              <span className="flex items-center gap-2">
+                <img src="/google.svg" alt="" className="w-5 h-5" />
+                Sign in with Google
+              </span>
+            </Button>
+            <div
+              id="google-button"
+              className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
+              style={{ opacity: 0.001 }}
+            />
+          </div>
         )}
       </div>
     </>
