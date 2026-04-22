@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
-import { AnimatePresence, motion } from "framer-motion";
 import Welcome from "./steps/Welcome";
 import Majors from "./steps/Majors";
 import Clubs from "./steps/Clubs";
@@ -63,36 +62,27 @@ export default function OnboardingPage() {
 
     return (
         <div className="flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-8">
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={screen}
-                    initial={{ opacity: 0, x: 40 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -40 }}
-                    transition={{ duration: 0.2 }}
-                    className="w-full max-w-[1116px]"
-                >
-                    <OnboardingCard progressStep={progressStep} totalSteps={TOTAL_STEPS}>
-                        <StepComponent
-                            formData={formData}
-                            onUpdate={(data) => setFormData((prev) => ({ ...prev, ...data }))}
-                            onValidChange={setCanAdvance}
-                            clubOptions={clubOptions}
+            <div className="w-full max-w-[1116px]">
+                <OnboardingCard progressStep={progressStep} totalSteps={TOTAL_STEPS}>
+                    <StepComponent
+                        formData={formData}
+                        onUpdate={(data) => setFormData((prev) => ({ ...prev, ...data }))}
+                        onValidChange={setCanAdvance}
+                        clubOptions={clubOptions}
+                    />
+                    {/* Confirmation step (last) uses its own CTAs instead of standard nav */}
+                    {!isLastScreen && (
+                        <OnboardingNav
+                            onNext={() => setScreen((s) => s + 1)}
+                            onBack={() => { setScreen((s) => s - 1); setCanAdvance(true); }}
+                            isFirstStep={isWelcomeScreen}
+                            canAdvance={canAdvance}
+                            nextButtonStyle={isWelcomeScreen ? "h-[37px] min-w-[87px] rounded-[38px] px-5 py-[10px]" : ""}
+                            nextContentClassName={isWelcomeScreen ? "text-[16px] font-bold leading-none text-white" : ""}
                         />
-                        {/* Confirmation step (last) uses its own CTAs instead of standard nav */}
-                        {!isLastScreen && (
-                            <OnboardingNav
-                                onNext={() => setScreen((s) => s + 1)}
-                                onBack={() => { setScreen((s) => s - 1); setCanAdvance(true); }}
-                                isFirstStep={isWelcomeScreen}
-                                canAdvance={canAdvance}
-                                nextButtonStyle={isWelcomeScreen ? "h-[37px] min-w-[87px] rounded-[38px] px-5 py-[10px]" : ""}
-                                nextContentClassName={isWelcomeScreen ? "text-[16px] font-bold leading-none text-white" : ""}
-                            />
-                        )}
-                    </OnboardingCard>
-                </motion.div>
-            </AnimatePresence>
+                    )}
+                </OnboardingCard>
+            </div>
         </div>
     );
 }
