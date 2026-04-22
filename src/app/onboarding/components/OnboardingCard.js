@@ -1,15 +1,15 @@
 "use client";
 
-import { progress } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { IoClose } from "react-icons/io5";
 
-export default function OnboardingCard({ step, totalSteps, children }) {
+export default function OnboardingCard({ progressStep, totalSteps, children }) {
   const router = useRouter();
-  const progressPct = ((step + 1) / totalSteps) * 100;
+  const clampedStep = Math.max(progressStep, -1);
+  const progressPct = clampedStep < 0 ? 0 : ((clampedStep + 1) / totalSteps) * 100;
 
   return (
-    <div className="w-full rounded-2xl bg-white shadow-sm overflow-hidden">
+    <div className="w-full overflow-hidden rounded-[30px] bg-white shadow-[0px_-1px_8.6px_0px_#0000000D]">
       {/* Progress bar */}
       <div className="h-3 w-full bg-[#E5EBF1]">
         <div
@@ -19,7 +19,7 @@ export default function OnboardingCard({ step, totalSteps, children }) {
       </div>
 
       {/* Content */}
-      <div className="relative flex min-h-[520px] flex-col px-12 py-10">
+      <div className="relative flex min-h-[585px] flex-col px-12 py-10">
         <button
           onClick={() => router.push("/")}
           className="absolute top-6 right-6 flex h-9 w-9 items-center justify-center rounded-full border border-[#6E808D] text-[black] transition-colors duration-200 hover:bg-[#E5EBF1]"
