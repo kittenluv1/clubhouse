@@ -1,0 +1,58 @@
+{
+  "Academic & Pre-Professional": [
+    "Pre-Law",
+    "Pre-Med / Pre-Health",
+    "Business & Finance",
+    "Engineering & Computer Science",
+    "Research & Science",
+    "Education & Tutoring",
+    "Consulting"
+  ],
+  "Cultural & Identity-Based": [
+    "Asian & Pacific Islander",
+    "Black & African American",
+    "Latin & Hispanic",
+    "Middle Eastern & North African",
+    "South Asian",
+    "LGBTQ+",
+    "Women & Gender"
+  ],
+  "Community & Advocacy": [
+    "Environmental & Sustainability",
+    "Social Justice",
+    "Volunteering & Service",
+    "Political & Civic Engagement",
+    "Mental Health Awareness",
+    "Housing & Food Security"
+  ],
+  "Arts & Media": [
+    "Visual Arts & Design",
+    "Music & Performance",
+    "Film & Photography",
+    "Journalism & Writing",
+    "Dance",
+    "Theater & Acting"
+  ],
+  "Health & Wellness": [
+    "Fitness & Sports",
+    "Martial Arts",
+    "Outdoors & Adventure",
+    "Mental Health",
+    "Nutrition & Cooking"
+  ],
+  "Spiritual & Religious": [
+    "Christian",
+    "Jewish",
+    "Muslim",
+    "Hindu & Buddhist",
+    "Interfaith & Secular"
+  ],
+  "Campus Life & Social": [
+    "Greek Life",
+    "Gaming & Esports",
+    "Hobby & Interest Groups",
+    "Leadership & Student Government",
+    "Networking & Professional",
+    "Cultural Events"
+  ]
+}

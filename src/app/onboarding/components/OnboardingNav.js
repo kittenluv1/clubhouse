@@ -3,7 +3,15 @@
 import Button from "@/app/components/button";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
-export default function OnboardingNav({ onNext, onBack, isFirstStep, canAdvance = true, nextLabel = "Next" }) {
+export default function OnboardingNav({
+  onNext,
+  onBack,
+  isFirstStep,
+  canAdvance = true,
+  nextLabel = "Next",
+  nextButtonStyle = "",
+  nextContentClassName = "",
+}) {
   return (
     <div className="mt-auto flex justify-end gap-3 pt-8">
       {!isFirstStep && (
@@ -14,8 +22,14 @@ export default function OnboardingNav({ onNext, onBack, isFirstStep, canAdvance 
           </span>
         </Button>
       )}
-      <Button type="gradient" size="small" onClick={onNext} disabled={!canAdvance}>
-        <span className="flex items-center gap-1">
+      <Button
+        type="gradient"
+        size="small"
+        style={nextButtonStyle}
+        onClick={onNext}
+        disabled={!canAdvance}
+      >
+        <span className={`flex items-center gap-[5px] ${nextContentClassName}`}>
           {nextLabel}
           <IoChevronForward size={15} />
         </span>
