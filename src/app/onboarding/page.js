@@ -7,12 +7,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import Majors from "./steps/Majors";
 import Clubs from "./steps/Clubs";
 import Interests from "./steps/Interests";
-import OnboardingFinish from "./steps/OnboardingFinish";
+import OnboardingConfirmation from "./steps/OnboardingConfirmation";
 import Categories from "./steps/Categories";
 import OnboardingCard from "./components/OnboardingCard";
 import OnboardingNav from "./components/OnboardingNav";
 
-const STEPS = [Majors, Clubs, Categories, Interests, OnboardingFinish];
+const STEPS = [Majors, Clubs, Categories, Interests, OnboardingConfirmation];
 const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 
 
-export default function OnboardingFinish (formData, onUpdate, onValidChange) {
+export default function OnboardingConfirmation (formData, onUpdate, onValidChange) {
 
     const router = useRouter();
     return (
