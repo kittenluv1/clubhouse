@@ -58,8 +58,26 @@ export default function OnboardingPage() {
     const StepComponent = SCREENS[screen];
     const isWelcomeScreen = screen === 0;
     const isLastScreen = screen === SCREENS.length - 1;
-    // progressStep: 0-indexed among the non-welcome steps (screen 1 → step 0, screen 2 → step 1, …)
+    const isFinishStep = screen === SCREENS.length - 2;
+    // progressStep: 0-indexed among the non-welcome steps (screen 1 → step 0, screen 2 → step 1)
     const progressStep = screen - 1;
+
+    const handleFinish = async () => {
+        const res = await fetch("/api/onboarding", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                majors: formData.majors ?? [],
+                minors: formData.minors ?? [],
+                broadCategories: formData.interests ?? [],
+                subcategories: [],
+                currentClubs: formData.clubs ?? [],
+            }),
+        });
+        if (res.ok) {
+            setScreen((s) => s + 1);
+        }
+    };
 
     return (
         <div className="flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-8">
@@ -74,10 +92,11 @@ export default function OnboardingPage() {
                     {/* Confirmation step (last) uses its own CTAs instead of standard nav */}
                     {!isLastScreen && (
                         <OnboardingNav
-                            onNext={() => setScreen((s) => s + 1)}
+                            onNext={isFinishStep ? handleFinish : () => setScreen((s) => s + 1)}
                             onBack={() => { setScreen((s) => s - 1); setCanAdvance(true); }}
                             isFirstStep={isWelcomeScreen}
                             canAdvance={canAdvance}
+                            nextLabel={isFinishStep ? "Finish" : "Next"}
                         />
                     )}
                 </OnboardingCard>
