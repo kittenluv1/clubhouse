@@ -56,14 +56,15 @@ export default function OnboardingPage() {
     if (!user) return null;
 
     const StepComponent = SCREENS[screen];
-    const progressStep = screen - 1;
     const isWelcomeScreen = screen === 0;
     const isLastScreen = screen === SCREENS.length - 1;
+    // progressStep: 0-indexed among the non-welcome steps (screen 1 → step 0, screen 2 → step 1, …)
+    const progressStep = screen - 1;
 
     return (
         <div className="flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-8">
             <div className="w-full max-w-[1116px]">
-                <OnboardingCard progressStep={progressStep} totalSteps={TOTAL_STEPS}>
+                <OnboardingCard progressStep={progressStep} totalSteps={TOTAL_STEPS} showProgress={!isWelcomeScreen}>
                     <StepComponent
                         formData={formData}
                         onUpdate={(data) => setFormData((prev) => ({ ...prev, ...data }))}
@@ -77,8 +78,6 @@ export default function OnboardingPage() {
                             onBack={() => { setScreen((s) => s - 1); setCanAdvance(true); }}
                             isFirstStep={isWelcomeScreen}
                             canAdvance={canAdvance}
-                            nextButtonStyle={isWelcomeScreen ? "h-[37px] min-w-[87px] rounded-[38px] px-5 py-[10px]" : ""}
-                            nextContentClassName={isWelcomeScreen ? "text-[16px] font-bold leading-none text-white" : ""}
                         />
                     )}
                 </OnboardingCard>
