@@ -3,140 +3,103 @@
 import Button from "../../components/button"
 import { useEffect, useState } from "react";
 
-export default function Interests({formData, onUpdate, onValidChange}) {
 
-    const exampleCategories = ["Arts", "Dance", "Film", "Theater", "Poetry", "Somethingg"];
+ const grouped_options = {
+        "Academic & Pre-Professional": [
+            "Academic",
+            "Business",
+            "Career Planning",
+            "Dental",
+            "Educational",
+            "Engineering",
+            "Honor Societies",
+            "Journals",
+            "Law",
+            "Leadership",
+            "Medical",
+            "Pre-Professional",
+            "Technology",
+        ],
+        "Cultural & Identity-Based": [
+            "Cultural",
+            "African American",
+            "Asian",
+            "Asian Pacific Islander",
+            "Latino/Latina",
+            "Ethnic",
+            "International Students",
+            "Out-of-state Students",
+        ],
+        "Community & Advocacy": [
+            "Community Service",
+            "Social Activism",
+            "Service",
+            "LGBTQI",
+            "GSA Affiliated",
+            "Transfer Students",
+            "Faculty/Staff",
+        ],
+        "Arts & Media": ["Arts", "Dance", "Film", "Music", "Media", "Theater"],
+        "Health & Wellness": [
+            "Club Sports",
+            "Fitness",
+            "Health and Wellness",
+            "Self Improvement",
+            "Sports",
+            "Martial Arts",
+        ],
+        "Spiritual & Religious": ["Religious", "Spiritual"],
+        "Campus Life & Social": [
+            "Greek Life",
+            "Student Government",
+            "Social",
+            "Spirit/Booster",
+            "Recreation",
+        ],
+    };
 
-    const [clicked, setClicked] = useState(0);
+export default function Avocations({ formData, onUpdate, onValidChange }) {
+   
+    const [selected, setSelected] = useState([]);
 
-    const isClicked = false;
+    const interestsData = formData.interests;
 
-    useEffect(()=> {
-        // onValidChange(clicked>=2);
+    const filtered = Object.fromEntries(Object.entries(grouped_options).filter(([allowed]) => interestsData.includes(allowed)));
 
-    }, [clicked])
+    useEffect(() => {
+        onValidChange(selected.length >= 2);
+    }, [selected])
+
     const select = (interest) => {
+        setSelected((prev) =>
+            prev.includes(interest) ? prev.filter((t) => t !== interest) : [...prev, interest],);
+    };
 
-    }
     return (
         <>
-            <div className="ml-15">
-
-
+            <div className="ml-11">
                 <h1 className="text-2xl font-bold text-[#1C350F]">Choose Your Interest</h1>
-                <p className="text-[0.8rem] mt-1 text-black">
+                <p className="text-[0.8rem] mt-1 text-[#6E808D] mb-10">
                     We'll be using this information to personalize club recommendations for you.
                     Please select at least 2 categories to continue.</p>
-                <h1 className="text-2xl mt-15 font-bold text-[#1C350F]">Main Category 1</h1>
-                <div className="flex flex-wrap gap-2 mt-3">
-                    {exampleCategories.map((interest) => (
-                        <Button
-                            key={interest}
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                            isSelected={isClicked}
-                            onClick={()=> {}}
-                        >
-                            {interest}
-                        </Button>
-                    ))}
-                    <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
-
-                    {exampleCategories.map((interest) => (
-                        <Button
-                            key={interest}
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            {interest}
-                        </Button>
-                    ))}
-                    <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
-
-                </div>
-
-                <h1 className="text-2xl mt-5 font-bold text-[#1C350F]">Main Category 1</h1>
-                <div className="flex flex-wrap gap-2 mt-3 ">
-                    {exampleCategories.map((interest) => (
-                        <Button
-                            key={interest}
-                            type="tag"
-                            size="small"
-                            style=""
-                            onClick={select(interest)}
-                            // className="drop-shadow-xs py-2 px-4 text-sm"
-                        >
-                            {interest}
-                        </Button>
-                    ))}
-                    <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
-                    {exampleCategories.map((interest) => (
-                        <Button
-                            key={interest}
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            {interest}
-                        </Button>
-                    ))}
-                    <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            somethingg
-                        </Button>
-                        <Button
-                            type="tag"
-                            size="small"
-                            style="drop-shadow-xs"
-                        >
-                            something
-                        </Button>
-
-                </div>
+                {Object.entries(filtered).map(([group, tags]) => (
+                    <div key={group} className="mb-4">
+                        <h4 className="mb-2 font-semibold text-2xl">{group}</h4>
+                        <div className="flex flex-wrap gap-2 mb-5">
+                            {tags.map((tag) => ( 
+                                <Button
+                                    type="tag"
+                                    size="small"
+                                    key={tag}
+                                    isSelected={selected.includes(tag)}
+                                    onClick={() => select(tag)}
+                                >
+                                    {tag}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
             </div>
         </>
     )
