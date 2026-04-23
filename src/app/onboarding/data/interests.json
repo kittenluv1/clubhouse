@@ -1,58 +1,53 @@
 {
   "Academic & Pre-Professional": [
-    "Pre-Law",
-    "Pre-Med / Pre-Health",
-    "Business & Finance",
-    "Engineering & Computer Science",
-    "Research & Science",
-    "Education & Tutoring",
-    "Consulting"
+    "Academic",
+    "Business",
+    "Career Planning",
+    "Dental",
+    "Educational",
+    "Engineering",
+    "Honor Societies",
+    "Journals",
+    "Law",
+    "Leadership",
+    "Medical",
+    "Pre-Professional",
+    "Technology"
   ],
   "Cultural & Identity-Based": [
-    "Asian & Pacific Islander",
-    "Black & African American",
-    "Latin & Hispanic",
-    "Middle Eastern & North African",
-    "South Asian",
-    "LGBTQ+",
-    "Women & Gender"
+    "Cultural",
+    "African American",
+    "Asian",
+    "Asian Pacific Islander",
+    "Latino/Latina",
+    "Ethnic",
+    "International Students",
+    "Out-of-state Students"
   ],
   "Community & Advocacy": [
-    "Environmental & Sustainability",
-    "Social Justice",
-    "Volunteering & Service",
-    "Political & Civic Engagement",
-    "Mental Health Awareness",
-    "Housing & Food Security"
+    "Community Service",
+    "Social Activism",
+    "Service",
+    "LGBTQI",
+    "GSA Affiliated",
+    "Transfer Students",
+    "Faculty/Staff"
   ],
-  "Arts & Media": [
-    "Visual Arts & Design",
-    "Music & Performance",
-    "Film & Photography",
-    "Journalism & Writing",
-    "Dance",
-    "Theater & Acting"
-  ],
+  "Arts & Media": ["Arts", "Dance", "Film", "Music", "Media", "Theater"],
   "Health & Wellness": [
-    "Fitness & Sports",
-    "Martial Arts",
-    "Outdoors & Adventure",
-    "Mental Health",
-    "Nutrition & Cooking"
+    "Club Sports",
+    "Fitness",
+    "Health and Wellness",
+    "Self Improvement",
+    "Sports",
+    "Martial Arts"
   ],
-  "Spiritual & Religious": [
-    "Christian",
-    "Jewish",
-    "Muslim",
-    "Hindu & Buddhist",
-    "Interfaith & Secular"
-  ],
+  "Spiritual & Religious": ["Religious", "Spiritual"],
   "Campus Life & Social": [
     "Greek Life",
-    "Gaming & Esports",
-    "Hobby & Interest Groups",
-    "Leadership & Student Government",
-    "Networking & Professional",
-    "Cultural Events"
+    "Student Government",
+    "Social",
+    "Spirit/Booster",
+    "Recreation"
   ]
 }
