@@ -118,8 +118,8 @@ export default function GoogleSignIn() {
         ) : userEmail === "INVALID" ? (
           <div className="flex flex-col items-center justify-center gap-3">
             <p>Please sign in with a valid UCLA email.</p>
-            <div className="relative inline-block">
-              <Button type="CTA" size="large" style="pointer-events-none">
+            <div className="relative inline-block group">
+              <Button type="CTA" size="large" style="pointer-events-none group-hover:from-[#B21D58] group-hover:to-[#D86761]">
                 <span className="flex items-center gap-2">
                   <img src="/google.svg" alt="" className="w-5 h-5" />
                   Sign in with Google
@@ -135,19 +135,19 @@ export default function GoogleSignIn() {
         ) : userEmail ? (
           <p>You are signed in as <b>{userEmail}</b></p>
         ) : (
-          <div className="relative inline-block">
-            <Button type="CTA" size="large" style="pointer-events-none">
-              <span className="flex items-center gap-2">
-                <img src="/google.svg" alt="" className="w-5 h-5" />
-                Sign in with Google
-              </span>
-            </Button>
-            <div
-              id="google-button"
-              className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
-              style={{ opacity: 0.001 }}
-            />
-          </div>
+          <div className="relative inline-block group">
+  <Button type="CTA" size="large" style="pointer-events-none group-hover:from-[#B21D58] group-hover:to-[#D86761]">
+    <span className="flex items-center gap-2">
+      <img src="/google.svg" alt="" className="w-5 h-5" />
+      Sign in with Google
+    </span>
+  </Button>
+  <div
+    id="google-button"
+    className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
+    style={{ opacity: 0.001 }}
+  />
+</div>
         )}
       </div>
     </>

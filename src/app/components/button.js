@@ -21,7 +21,9 @@ export default function Button({
           ? 'bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]'
           : 'border-[#6E808D] border-1 bg-white text-black hover:bg-[#E5EBF1]')}
         ${type === 'border' && 'border-1 border-[#6E808D] hover:bg-[#E5EBF1] text-[#6E808D]'}
-        ${type === 'pink' && 'border-none bg-gradient-to-r from-[#B21D58] to-[#D86761] text-white transition-all duration-300'}        ${type === 'gradient-border' && '!transition-none [background:linear-gradient(white,white)_padding-box,linear-gradient(275deg,#FFB464_-21.2%,#FFA1CD_95.86%)_border-box] border border-transparent hover:[background:#FBB2D4] active:[background:#FBB2D4]'}
+        ${type === 'pink' && 'hover:bg-[#FBB2D4] border-none bg-[#FFCEE5]'}
+        ${type === 'gradient' && '!transition-none bg-[linear-gradient(275deg,#FFB464_-21.2%,#FFA1CD_95.86%)] text-black border-none hover:bg-none hover:bg-[#FBB2D4] active:bg-none active:bg-[#FBB2D4]'}
+        ${type === 'gradient-border' && '!transition-none [background:linear-gradient(white,white)_padding-box,linear-gradient(275deg,#FFB464_-21.2%,#FFA1CD_95.86%)_border-box] border border-transparent hover:[background:#FBB2D4] active:[background:#FBB2D4]'}
         ${type === 'delete' && 'font-medium border-none hover:bg-[#FF9090] hover:text-[#D54143] bg-[#FFC0C0] text-[#EB4A4D]'}
         ${type === 'gray' && 'hover:bg-[#B5BFC6] border-none bg-[#E5EBF1]'}
         ${style}
