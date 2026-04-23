@@ -7,105 +7,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Button from "../components/button";
 import { useAuth } from "../context/AuthContext";
+import { handleCategoryClick, renderRatingStars } from "../lib/utils/clubCardHelpers";
+import Link from "next/link";
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
-/*
-position: absolute;
-width: 28.97px;
-height: 28.97px;
-left: 120.02px;
-top: 428.34px;
-
-transform: rotate(-90deg);/
-
-box-sizing: border-box;
-
-position: absolute;
-width: 31.51px;
-height: 31.51px;
-left: 119px;
-top: 425.8px;
-
-background: #EEF7FE;
-border: 1px solid #A4CDED;
-transform: matrix(-1, 0, 0, 1, 0, 0);
-*/
-
-
-
-function NextArrow(props) {
-    const { className, style, onClick } = props;
-    console.log(className);
-    return (
-        <button
-            onClick={onClick}
-            // className={`${className}`}
-            className={'bg-gray-500  text-white border-2  text-lg px-1 py-1 rounded-xl' + `${className}`}
-
-            style={{ ...style, display: "block", background: "#EEF7FE" }
-            }
-        //style={{ border: '1px solid #A4CDED;', background: "#EEF7FE;", borderRadius: "50%" }}
-        >
-            <svg
-                className={`h-4 w-4 transition-transform rotate-270`}
-                fill="none"
-                stroke="currentColor"
-
-                viewBox="0 0 24 24"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                />
-            </svg>
-        </button >
-    );
-}
-
-function PrevArrow(props) {
-    const { className, style, onClick } = props;
-    return (
-        <button
-            onClick={onClick}
-            className={`${className}`}
-            style={{ ...style, display: "block", background: "#cb2b7e" }}
-        //className='bg-btn btn-defaultgray-500  text-white border-2 border-black text-lg px-1 py-1 rounded-xl'
-        >
-            {/* <svg
-                className={`h-4 w-4 transition-transform rotate-90`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                />
-            </svg> */}
-        </ button>
-    );
-}
-
-function tempClubCard(d) {
-    return (
-        <div key={d.OrganizationName} className="bg-white h-[450px] text-black rounded-xl">
-            <div className='h-56 bg-indigo-500 flex justify-center items-center rounded-t-xl'>
-                <img src={d.img} alt="" className="h-44 w-44 rounded-full" />
-            </div>
-
-            <div className="flex flex-col items-center justify-center gap-4 p-4">
-                <p className="text-xl font-semibold">{d.OrganizationName}</p>
-                <p className="text-center">{d.OrganizationDescription}</p>
-                <button className='bg-indigo-500 text-white text-lg px-6 py-1 rounded-xl'>{d.Category1Name}</button>
-                {d.Category2Name && <button className='bg-indigo-500 text-white text-lg px-6 py-1 rounded-xl'>{d.Category2Name}</button>}
-            </div>
-        </div>
-    );
-}
 
 function ClubSlider() {
     const slider = React.useRef(null);
@@ -113,6 +18,7 @@ function ClubSlider() {
     const { user, loading } = useAuth();
     const [data, setData] = React.useState([]);
     const [fetchError, setFetchError] = React.useState(null);
+    const [isFetchingRecommendations, setIsFetchingRecommendations] = React.useState(true);
 
     const settings = {
         infinite: true,
@@ -120,16 +26,106 @@ function ClubSlider() {
         slidesToShow: 3,
         arrows: true,
         slidesToScroll: 3,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                },
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                },
+            },
+        ],
     };
 
+    const getDescriptionClampClass = (clubName, description) => {
+        const titleLength = (clubName || "").trim().length;
+        const hasLongTitle = titleLength > 34;
+        const descriptionLength = (description || "").trim().length;
+
+        if (!descriptionLength) {
+            return "line-clamp-1";
+        }
+
+        if (hasLongTitle) {
+            return "line-clamp-2";
+        }
+
+        return "line-clamp-3";
+    };
+
+    const renderSkeletonCards = () => (
+        <div className="w-full min-h-56">
+            <div className="flex items-center gap-3">
+                <div className="flex shrink-0 items-center self-stretch">
+                    <Button type="gray" size="small" disabled aria-hidden="true">
+                        &lt;
+                    </Button>
+                </div>
+
+                <div className="min-w-0 flex-1 overflow-hidden py-1">
+                    <div className="flex gap-4 overflow-hidden">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <div key={index} className="min-w-0 flex-1 px-2">
+                                <div className="flex h-full min-h-56 flex-col rounded-3xl border border-[#D9E8F5] bg-[#EEF4FA] px-5 py-5 text-black">
+                                    <div className="animate-pulse flex h-full flex-col">
+                                        <div className="flex flex-col items-start gap-2 lg:flex-row lg:justify-between lg:gap-3">
+                                            <div className="h-6 w-3/4 rounded-full bg-gray-300" />
+                                            <div className="flex items-center gap-1 lg:flex-shrink-0 lg:pt-0.5">
+                                                {Array.from({ length: 5 }).map((__, starIndex) => (
+                                                    <div key={starIndex} className="h-4 w-4 rounded-sm bg-gray-300" />
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-3 space-y-2">
+                                            <div className="h-3 w-full rounded-full bg-gray-300" />
+                                            <div className="h-3 w-11/12 rounded-full bg-gray-300" />
+                                            <div className="h-3 w-5/6 rounded-full bg-gray-300" />
+                                        </div>
+
+                                        <div className="mt-auto flex flex-wrap gap-2 pt-4">
+                                            <div className="h-8 w-20 rounded-full bg-gray-300" />
+                                            <div className="h-8 w-24 rounded-full bg-gray-300" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex shrink-0 items-center self-stretch">
+                    <Button type="gray" size="small" disabled aria-hidden="true">
+                        &gt;
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+
     React.useEffect(() => {
+        if (loading) {
+            setIsFetchingRecommendations(true);
+            return;
+        }
+
         if (!user) {
             setData([]);
             setFetchError(null);
+            setIsFetchingRecommendations(false);
             return;
         }
 
         let cancelled = false;
+
+        setIsFetchingRecommendations(true);
 
         async function fetchRecommendations() {
             try {
@@ -148,6 +144,10 @@ function ClubSlider() {
                     setData([]);
                 }
                 console.error("Error fetching recommendations:", error);
+            } finally {
+                if (!cancelled) {
+                    setIsFetchingRecommendations(false);
+                }
             }
         }
 
@@ -156,100 +156,121 @@ function ClubSlider() {
         return () => {
             cancelled = true;
         };
-    }, [user]);
+    }, [user, loading]);
 
     if (loading) {
-        return null;
+        return renderSkeletonCards();
+    }
+
+    if (isFetchingRecommendations) {
+        return renderSkeletonCards();
     }
 
     if (!user) {
         return (
-            <div className="w-3/4 m-auto">
-                <h2 className="text-xl italic text-gray-500 md:text-2xl text-center">
-                    Please sign in to see club recommendations.
-                </h2>
+            <div className="relative w-full min-h-56 overflow-hidden rounded-2xl bg-[url('/recommendations-background.svg')] bg-cover bg-center px-6 pt-8 pb-36 md:px-10 md:py-10 md:pr-80 lg:pr-96">
+                <div className="relative z-10 flex max-w-3xl flex-col gap-4">
+                    <div>
+                        <p className="mb-2 text-2xl font-semibold md:text-3xl">Get Personalized Club Recommendations</p>
+                        <p className="mb-4 text-sm md:text-base">Discover clubs tailored to your interests, goals, and vibe. Find your community faster with recommendations made just for you.</p>
+                        <Button onClick={() => router.push("/sign-in")} type="CTA">
+                            Try It Now
+                        </Button>
+                    </div>
+                </div>
+                <img
+                    src="/recommendations-decal.svg"
+                    alt="Recommendations decal"
+                    className="pointer-events-none absolute bottom-0 w-[170px] right-0 left-auto md:w-[280px] lg:w-[340px]"
+                />
             </div>
         );
     }
 
     if (fetchError) {
         return (
-            <div className="w-3/4 m-auto">
-                <h2 className="text-xl font-bold text-black md:text-2xl flex-1 min-w-0 break-words">
-                    Recommended Clubs
-                </h2>
-                <p className="mt-3 text-sm text-[#6E808D]">{fetchError}</p>
+            <div className="w-full">
+                <p className="mt-3 text-sm text-[#6E808D]">Fetch Error: {fetchError}</p>
             </div>
         );
     }
 
     return (
-        <div className='w-3/4 m-auto'>
-            <h2 className="text-xl font-bold text-black md:text-2xl flex-1 min-w-0 break-words">
-                Recommended Clubs
-            </h2>
-            <div className="row" >
-                <div className="column left"><Button onClick={() => slider?.current?.slickPrev()} type="gray"
-                    size="small">&lt;</Button></div>
-                <div className="column middle slider-container mt-10 mb-10">
+        <div className="w-full min-h-56">
+            <div className="flex items-center gap-3">
+                <div className="flex shrink-0 items-center self-stretch">
+                    <Button
+                        onClick={() => slider?.current?.slickPrev()}
+                        type="gray"
+                        size="small"
+                    >
+                        &lt;
+                    </Button>
+                </div>
+                <div className="min-w-0 flex-1 overflow-hidden py-1">
                     <Slider ref={slider} {...settings}>
-                        {data.map((d) => (
-                            tempClubCard(d)
-                        ))}
+                        {data.map((d) => {
+                            const title = d.OrganizationName || "";
+                            const description = d.OrganizationDescription || "";
+                            const descriptionClampClass = getDescriptionClampClass(title, description);
+
+                            return (
+                                <div
+                                    key={d.OrganizationID || title} className="h-full px-2">
+                                    <Link href={`/clubs/${encodeURIComponent(title)}`} className="flex h-full min-h-56 flex-col rounded-3xl border border-[#92C7F1] bg-[#E6F4FF] px-5 py-5 text-black">
+                                        <div className="flex flex-col items-start gap-2 lg:flex-row lg:justify-between lg:gap-3">
+                                            <h3 className="line-clamp-2 flex-1 min-w-0 text-lg font-bold leading-tight text-black">
+                                                {title}
+                                            </h3>
+                                            <div className="flex items-center lg:flex-shrink-0 lg:pt-0.5">
+                                                {renderRatingStars(d.average_satisfaction)}
+                                            </div>
+                                        </div>
+
+                                        <p className={`mt-3 ${descriptionClampClass} text-sm text-black`}>
+                                            {description}
+                                        </p>
+
+                                        <div className="mt-auto flex flex-wrap gap-2 pt-4">
+                                            {d.Category1Name && (
+                                                <Button
+                                                    onClick={(e) => handleCategoryClick(router, e, d.Category1Name)}
+                                                    type="tag"
+                                                    isSelected={true}
+                                                    size="small"
+                                                >
+                                                    {d.Category1Name}
+                                                </Button>
+                                            )}
+                                            {d.Category2Name && (
+                                                <Button
+                                                    onClick={(e) => handleCategoryClick(router, e, d.Category2Name)}
+                                                    type="tag"
+                                                    isSelected={true}
+                                                    size="small"
+                                                >
+                                                    {d.Category2Name}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </Link>
+                                </div>
+                            );
+                        })}
                     </Slider>
                 </div>
-                <div className="column right"><Button onClick={() => slider?.current?.slickNext()} type="gray"
-                    size="small">&gt;</Button>
+                <div className="flex shrink-0 items-center self-stretch">
+                    <Button
+                        onClick={() => slider?.current?.slickNext()}
+                        type="gray"
+                        size="small"
+                    >
+                        &gt;
+                    </Button>
                 </div>
             </div>
-
-        </div >
+        </div>
     );
 }
-
-//     const data = [
-//         {
-//             OrganizationName: `Creative Labs 1`,
-//             img: `../favicon.ico`,
-//             rating: 5,
-//             OrganizationDescription: "We are a community of UCLA creatives working on cool projects to discover even cooler passions.",
-//             Category1Name: "Category 1",
-//         },
-//         {
-//             OrganizationName: `Creative Labs 2`,
-//             img: `../favicon.ico`,
-//             rating: 5,
-//             OrganizationDescription: "We are a community of UCLA creatives working on cool projects to discover even cooler passions.",
-//             Category1Name: "Category 1",
-//         },
-//         {
-//             OrganizationName: `Creative Labs 3`,
-//             img: `../favicon.ico`,
-//             rating: 5,
-//             OrganizationDescription: "We are a community of UCLA creatives working on cool projects to discover even cooler passions.",
-//             Category1Name: "Category 1",
-//         },
-//         {
-//             OrganizationName: `Creative Labs 4`,
-//             img: `../favicon.ico`,
-//             rating: 5,
-//             OrganizationDescription: "We are a community of UCLA creatives working on cool projects to discover even cooler passions.",
-//             Category1Name: "Category 1",
-//         },
-//         {
-//             OrganizationName: `Creative Labs 5`,
-//             img: `../favicon.ico`,
-//             rating: 5,
-//             OrganizationDescription: "We are a community of UCLA creatives working on cool projects to discover even cooler passions.",
-//             Category1Name: "Category 1"
-//         },
-//         {
-//             OrganizationName: `Creative Labs 6`,
-//             img: `../favicon.ico`,
-//             rating: 5,
-//             OrganizationDescription: "We are a community of UCLA creatives working on cool projects to discover even cooler passions.",
-//             Category1Name: "Category 1"
-//         },
-//     ];
 
 export default ClubSlider;
