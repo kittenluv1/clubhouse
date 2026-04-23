@@ -31,9 +31,6 @@ export default function Clubs({ formData, onUpdate, onValidChange, clubOptions =
         <p className="mt-1 text-sm text-gray-500">
           We&apos;ll be using this information to personalize club recommendations for you.
         </p>
-        <p className="mt-1 text-xs text-[#6E808D]">
-          Not now? You can always fill this out later from your profile page.
-        </p>
       </div>
 
       <MultiSelectSearch
