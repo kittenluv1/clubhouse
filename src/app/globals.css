@@ -51,3 +51,29 @@ body {
     display: none;
   }
 }
+
+.slick-slide > div {
+  margin: 0 10px;
+}
+
+.column {
+  float: left;
+}
+
+.left, .right {
+  width: 5%;
+  transform: translateY(600%);
+}
+
+.middle {
+  width: 80%;
+  margin-right: 5px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: flex;
+  clear: both;
+}
+

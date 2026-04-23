@@ -6,6 +6,7 @@ import SearchableDropdown from "../../../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../../../components/dropdowns";
 import CustomSlider from "../../../components/custom-slider";
 import { supabase } from "../../../lib/db";
+import { useRequireAuth } from "../../../context/AuthContext";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
@@ -46,6 +47,7 @@ export default function EditReviewPage() {
 	const id = params.id;
 
 	const router = useRouter();
+	const { user } = useRequireAuth();
 
 	const [selectedClub, setSelectedClub] = useState("");
 	const [clubId, setClubId] = useState(null);
@@ -63,10 +65,8 @@ export default function EditReviewPage() {
 	const [reviewText, setReviewText] = useState("");
 	const [isMember, setIsMember] = useState(false);
 
-	const [currentUser, setCurrentUser] = useState(null);
 	const [reviewAuthorId, setReviewAuthorId] = useState(null);
 	const [isUnauthorized, setIsUnauthorized] = useState(false);
-	const [isUserLoading, setIsUserLoading] = useState(true);
 	const [isReviewLoading, setIsReviewLoading] = useState(true);
 
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,46 +74,6 @@ export default function EditReviewPage() {
 	const [dateError, setDateError] = useState(null);
 	const [success, setSuccess] = useState(false);
 	const [userAlias, setUserAlias] = useState("");
-
-	useEffect(() => {
-		const getUser = async () => {
-			const {
-				data: { user },
-				error,
-			} = await supabase.auth.getUser();
-
-			if (user) {
-				setCurrentUser(user);
-				setIsUserLoading(false);
-			} else {
-				console.error("Error getting user:", error);
-				const returnUrl = encodeURIComponent(`/review/edit/${id}`);
-				window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-				setIsUserLoading(false);
-			}
-		};
-
-		getUser();
-
-		const { data: authListener } = supabase.auth.onAuthStateChange(
-			(_event, session) => {
-				if (session?.user) {
-					setCurrentUser(session.user);
-					setIsUserLoading(false);
-				} else {
-					setCurrentUser(null);
-					const returnUrl = encodeURIComponent(`/review/edit/${id}`);
-					window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-					setIsUserLoading(false);
-				}
-			},
-		);
-
-		// cleanup
-		return () => {
-			authListener.subscription.unsubscribe();
-		};
-	}, []);
 
 	// Get rejected review and set form fields
 	useEffect(() => {
@@ -185,14 +145,14 @@ export default function EditReviewPage() {
 	}, [startQuarter, startYear, endQuarter, endYear]);
 
 	useEffect(() => {
-		if (isUserLoading || isReviewLoading) return;
+		if (isReviewLoading) return;
 
-		if (currentUser.id == reviewAuthorId) {
+		if (user?.id == reviewAuthorId) {
 			setIsUnauthorized(false);
 		} else {
 			setIsUnauthorized(true);
 		}
-	}, [currentUser, reviewAuthorId, isUserLoading, isReviewLoading]);
+	}, [user, reviewAuthorId, isReviewLoading]);
 
 	const handleMembershipCheckbox = (e) => {
 		const checked = e.target.checked;
@@ -277,8 +237,8 @@ export default function EditReviewPage() {
 
 			const reviewData = {
 				club_id: clubId,
-				user_id: currentUser?.id,
-				user_email: currentUser?.email,
+				user_id: user?.id,
+				user_email: user?.email,
 				membership_start_quarter: startQuarter,
 				membership_start_year: parseInt(startYear),
 				membership_end_quarter: endQuarter,
@@ -374,7 +334,7 @@ export default function EditReviewPage() {
 		);
 	};
 
-	if (isUserLoading || isReviewLoading) return LoadingScreen();
+	if (isReviewLoading) return LoadingScreen();
 
 	if (isUnauthorized)
 		return <ErrorScreen error="You are not authorized to edit this review." />;

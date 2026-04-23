@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/db";
+import { useRequireAuth } from "../context/AuthContext";
 import PendingCard from "../components/pendingCard";
 import SortModal from "../components/sortModal";
 import Button from "../components/button";
@@ -14,11 +15,11 @@ const PRESET_REASONS = [
 ];
 
 const Page = () => {
+  const { isAdmin } = useRequireAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState("newest");
   const [numPending, setNumPending] = useState(0);
-  const [authChecked, setAuthChecked] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -32,31 +33,6 @@ const Page = () => {
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
-  }, []);
-
-  useEffect(() => {
-    const checkSession = async (session) => {
-      const email = session?.user?.email;
-      if (email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-        window.location.href = "./sign-in";
-      } else {
-        setAuthChecked(true);
-      }
-    };
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      checkSession(session);
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        checkSession(session);
-      },
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
   }, []);
 
   const fetchPendingReviews = async () => {
@@ -88,10 +64,10 @@ const Page = () => {
   };
 
   useEffect(() => {
-    if (authChecked) {
+    if (isAdmin) {
       fetchPendingReviews();
     }
-  }, [sortType, authChecked]);
+  }, [sortType, isAdmin]);
 
   const handleSortChange = (e) => {
     setSortType(e.target.value);
@@ -257,7 +233,7 @@ const Page = () => {
     }
   };
 
-  if (!authChecked) return null;
+  if (!isAdmin) return null;
 
   if (loading) {
     return <div className="space-y-6 p-6 md:p-[80px]">Loading reviews...</div>;
