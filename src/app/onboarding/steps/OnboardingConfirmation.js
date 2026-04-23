@@ -8,12 +8,12 @@ export default function OnboardingConfirmation (formData, onUpdate, onValidChang
     const router = useRouter();
     return (
         <>
-        <h1 className="text-[1.16rem] font-bold text-[black] ml-10">
+        <h1 className="text-2xl font-semibold text-[black] ml-10">
             All done! Select where to explore next:</h1>
-        <p className="text-xs mt-1 text-black ml-10">
+        <p className="text-sm mt-1 text-black ml-10">
             Your club recommendations have now been 
             personalized based on our background and interests.</p>
-            <div className="flex justify-center h-40 mt-25">
+            <div className="flex justify-center h-40 mt-20">
                 <button className="mr-10 border  border-[#B5BFC6] rounded-xl w-32 bg-[#F0F2F9]"onClick={()=>{router.push("/")}}>
                 <div className="flex align-middle p-3 flex-wrap flex-col ">
                 <img className="self-center mb-2 w-12" src="blueRecsIcon.svg"/>
