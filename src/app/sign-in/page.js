@@ -15,12 +15,6 @@ function SignInPage() {
 
   return (
     <div style={{ position: "relative", width: "100vw", minHeight: "100vh", overflow: "hidden" }}>
-      <img
-        src="/signinbg.svg"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-        aria-hidden="true"
-      />
-
       {isMobile ? (
         // mobile :3
         <div style={{
