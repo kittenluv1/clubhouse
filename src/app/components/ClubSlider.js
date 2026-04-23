@@ -19,6 +19,7 @@ function ClubSlider() {
     const [data, setData] = React.useState([]);
     const [fetchError, setFetchError] = React.useState(null);
     const [isFetchingRecommendations, setIsFetchingRecommendations] = React.useState(true);
+    const [onboardingCompleted, setOnboardingCompleted] = React.useState(null);
 
     const settings = {
         infinite: true,
@@ -130,6 +131,14 @@ function ClubSlider() {
         async function fetchRecommendations() {
             try {
                 setFetchError(null);
+                const onboardingRes = await fetch("/api/onboarding");
+                const { onboarding_completed } = await onboardingRes.json().catch(() => ({}));
+                if (!cancelled) setOnboardingCompleted(!!onboarding_completed);
+                if (!cancelled && !onboarding_completed) {
+                    setIsFetchingRecommendations(false);
+                    return;
+                }
+
                 const res = await fetch("/api/recommendations");
                 if (!res.ok) {
                     throw new Error(`Failed to fetch recommendations: HTTP ${res.status}`);
@@ -166,14 +175,14 @@ function ClubSlider() {
         return renderSkeletonCards();
     }
 
-    if (!user) {
+    if (!user || onboardingCompleted === false) {
         return (
             <div className="relative w-full min-h-56 overflow-hidden rounded-2xl bg-[url('/recommendations-background.svg')] bg-cover bg-center px-6 pt-8 pb-36 md:px-10 md:py-10 md:pr-80 lg:pr-96">
                 <div className="relative z-10 flex max-w-3xl flex-col gap-4">
                     <div>
                         <p className="mb-2 text-2xl font-semibold md:text-3xl">Get Personalized Club Recommendations</p>
                         <p className="mb-4 text-sm md:text-base">Discover clubs tailored to your interests, goals, and vibe. Find your community faster with recommendations made just for you.</p>
-                        <Button onClick={() => router.push("/sign-in")} type="CTA">
+                        <Button onClick={() => router.push("/onboarding")} type="CTA">
                             Try It Now
                         </Button>
                     </div>

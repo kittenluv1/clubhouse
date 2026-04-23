@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
+import { useRequireAuth } from "../context/AuthContext";
 import Welcome from "./steps/Welcome";
 import Majors from "./steps/Majors";
 import Clubs from "./steps/Clubs";
@@ -17,29 +18,21 @@ const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {
     const router = useRouter();
-    const [user, setUser] = useState(null);
+    const { user, loading } = useRequireAuth();
     const [screen, setScreen] = useState(0);
     const [formData, setFormData] = useState({});
     const [canAdvance, setCanAdvance] = useState(true);
     const [clubOptions, setClubOptions] = useState([]);
 
     useEffect(() => {
-        const checkAccess = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push("/sign-in");
-                return;
-            }
+        if (!user) return;
 
+        const checkAccess = async () => {
             const res = await fetch("/api/onboarding");
             const { onboarding_completed } = await res.json().catch(() => ({}));
-            console.log(onboarding_completed);
             if (onboarding_completed) {
                 router.push("/");
-                return;
             }
-
-            setUser(user);
         };
         checkAccess();
 
@@ -52,8 +45,9 @@ export default function OnboardingPage() {
             }
         };
         fetchClubNames();
-    }, [router]);
-    if (!user) return null;
+    }, [user, router]);
+
+    if (loading || !user) return null;
 
     const StepComponent = SCREENS[screen];
     const isWelcomeScreen = screen === 0;
