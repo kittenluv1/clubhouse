@@ -124,7 +124,7 @@ export default function ReviewCard({
   const canDelete = status === "rejected" && onDelete;
 
   const cardContent = (
-    <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 my-4 transition-all duration-300 ease-out mt-15 md:space-y-5 md:px-10 md:py-10`}>
+    <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
       {/* Header section */}
       <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-start">
         {/* Left side */}

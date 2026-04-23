@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "./button";
 import Script from "next/script";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/db";
@@ -108,26 +109,45 @@ export default function GoogleSignIn() {
           if (window.google) {
             renderGoogleButton();
             setLoading(false);
-            // Google One Tap
-            // window.google.accounts.id.prompt();
           }
         }}
       />
-      {/* BUG: BUTTON RENDERS A BIT SLOW */}
       <div>
         {loading ? (
           <p>LOADING...</p>
         ) : userEmail === "INVALID" ? (
           <div className="flex flex-col items-center justify-center gap-3">
             <p>Please sign in with a valid UCLA email.</p>
-            <div id="google-button" className="hide-google-loading" />
+            <div className="relative inline-block group">
+              <Button type="CTA" size="large" style="pointer-events-none group-hover:from-[#B21D58] group-hover:to-[#D86761]">
+                <span className="flex items-center gap-2">
+                  <img src="/google.svg" alt="" className="w-5 h-5" />
+                  Sign in with Google
+                </span>
+              </Button>
+              <div
+                id="google-button"
+                className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
+                style={{ opacity: 0.001 }}
+              />
+            </div>
           </div>
         ) : userEmail ? (
-          <p>
-            You are signed in as <b>{userEmail}</b>
-          </p>
+          <p>You are signed in as <b>{userEmail}</b></p>
         ) : (
-          <div id="google-button" className="hide-google-loading" />
+          <div className="relative inline-block group">
+  <Button type="CTA" size="large" style="pointer-events-none group-hover:from-[#B21D58] group-hover:to-[#D86761]">
+    <span className="flex items-center gap-2">
+      <img src="/google.svg" alt="" className="w-5 h-5" />
+      Sign in with Google
+    </span>
+  </Button>
+  <div
+    id="google-button"
+    className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
+    style={{ opacity: 0.001 }}
+  />
+</div>
         )}
       </div>
     </>
