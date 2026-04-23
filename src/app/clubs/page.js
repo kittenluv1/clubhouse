@@ -9,6 +9,8 @@ import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
 import Button from "../components/button";
 import { supabase } from "../lib/db";
+import ClubSlider from "../components/ClubSlider";
+import { useAuth } from "../context/AuthContext";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -30,6 +32,7 @@ function AllClubsPage() {
   const [showSortModal, setShowSortModal] = useState(false);
 
   const router = useRouter();
+  const { user } = useAuth();
 
   const initialSelectedTags = multiCategoriesParam
     ? multiCategoriesParam.split(",")
@@ -92,30 +95,31 @@ function AllClubsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currPage]);
 
-  // Listen for auth state changes to reset user-specific state on logout
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_OUT') {
-          // Reset all user-specific state when logged out
-          setUserLikedClubs([]);
-          setUserSavedClubs([]);
-          // Reset likes map to remove user-liked status
-          setLikesMap(prev => {
-            const updated = {};
-            for (const clubId in prev) {
-              updated[clubId] = { ...prev[clubId], userLiked: false };
-            }
-            return updated;
-          });
-        }
-      }
-    );
+    if (loading) return;
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
+    if (window.location.hash === "#discover") {
+      const target = document.getElementById("discover");
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [loading, clubs.length, pageTotal, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
+
+  // Reset user-specific state on logout
+  useEffect(() => {
+    if (!user) {
+      setUserLikedClubs([]);
+      setUserSavedClubs([]);
+      setLikesMap(prev => {
+        const updated = {};
+        for (const clubId in prev) {
+          updated[clubId] = { ...prev[clubId], userLiked: false };
+        }
+        return updated;
+      });
+    }
+  }, [user]);
 
   const handlePreviousPage = () => currPage > 1 && setCurrPage((p) => p - 1);
   const handleNextPage = () =>
@@ -192,8 +196,13 @@ function AllClubsPage() {
 
   return (
     <>
-      <div className="flex flex-col space-y-6 p-6 md:p-20 lg:px-30 md:py-20">
-        <div className=" mb-10 lg:mb-20 flex items-start justify-between">
+      <div className="flex flex-col p-6 md:p-20 lg:px-30 md:py-20">
+
+        <h1 className="font-bold text-4xl black mb-4">Club Recommendations</h1>
+        <ClubSlider></ClubSlider>
+
+        <h1 className="scroll-mt-20 md:scroll-mt-24 font-bold text-4xl black mb-4 mt-10" id="discover">Discover Clubs</h1>
+        <div className="mb-4 flex items-start justify-between">
           <Filter
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
@@ -275,8 +284,7 @@ function AllClubsPage() {
             </div>
           )}
         </div>
-
-        <h1 className="mb-4 text-[16px] font-normal">{title}</h1>
+        <p className="mb-4 text-lg font-normal">{title}</p>
 
         <div className="grid grid-cols-1 gap-12">
           {clubs.map((club) => (
