@@ -11,6 +11,7 @@ import Button from "../components/button";
 import { supabase } from "../lib/db";
 import ClubSlider from "../components/ClubSlider";
 import { useAuth } from "../context/AuthContext";
+import posthog from "posthog-js";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -47,6 +48,16 @@ function AllClubsPage() {
 
   useEffect(() => {
     setShowSortModal(false);
+  }, [nameParam, singleCategoryParam, multiCategoriesParam]);
+
+  useEffect(() => {
+    if (nameParam) {
+      posthog.capture("club_searched", { query: nameParam });
+    } else if (multiCategoriesParam) {
+      posthog.capture("club_filter_applied", { categories: multiCategoriesParam.split(",") });
+    } else if (singleCategoryParam) {
+      posthog.capture("club_filter_applied", { categories: [singleCategoryParam] });
+    }
   }, [nameParam, singleCategoryParam, multiCategoriesParam]);
 
   useEffect(() => {

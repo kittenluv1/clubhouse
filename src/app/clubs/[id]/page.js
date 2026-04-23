@@ -4,6 +4,8 @@ import React from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+import { supabase } from "@/app/lib/db";
+import posthog from "posthog-js";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
@@ -336,8 +338,13 @@ export default function ClubDetailsPage() {
 
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
+
   const attemptReview = (href) => {
     if (user) {
+        posthog.capture("write_review_clicked", {
+        club_id: club.OrganizationID,
+        club_name: club.OrganizationName,
+      });
       window.location.href = href;
     } else {
       const returnUrl = encodeURIComponent(href);
@@ -384,6 +391,7 @@ export default function ClubDetailsPage() {
       }
     } catch (error) {
       console.error("Error toggling like:", error);
+      posthog.captureException(error);
     } finally {
       setIsProcessing(false);
     }

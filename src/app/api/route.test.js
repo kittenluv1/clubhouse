@@ -86,8 +86,10 @@ describe('clubs API route: test fake fetch and update Supabase', () => {
 	test('return 500 if fetch fails', async () => {
 		jest.spyOn(console, 'error').mockImplementation(() => {});
 		fetch.mockResolvedValueOnce({ ok: false, status: 500 });
+		const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 		const { GET } = await import('./route');
 		const response = await GET(new NextRequest('http://localhost/api', { method: 'PATCH' }));
+		consoleSpy.mockRestore();
 		expect(response.status).toBe(500);
 	});
 
