@@ -7,7 +7,7 @@ import Welcome from "./steps/Welcome";
 import Majors from "./steps/Majors";
 import Clubs from "./steps/Clubs";
 import Interests from "./steps/Interests";
-import OnboardingConfirmation from "./steps/OnboardingConfirmation";
+import OnboardingFinish from "./steps/OnboardingFinish";
 import Categories from "./steps/Categories";
 import OnboardingCard from "./components/OnboardingCard";
 import OnboardingNav from "./components/OnboardingNav";
