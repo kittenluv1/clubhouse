@@ -85,6 +85,16 @@ export async function GET(req) {
       console.error('Error fetching saved clubs:', savedClubsError);
     }
 
+    // Fetch user interests
+    const { data: userInterestsData, error: interestsError } = await supabase
+      .from('user_interests')
+      .select('category')
+      .eq('user_id', userId);
+
+    if (interestsError) {
+      console.error('Error fetching user interests:', interestsError);
+    }
+
     // Transform liked clubs data to match the format in the original code
     const likedClubs = likedClubsData ? likedClubsData.map(item => item.clubs) : [];
     const savedClubs = savedClubsData ? savedClubsData.map(item => item.clubs) : [];
@@ -143,6 +153,7 @@ export async function GET(req) {
         likedClubs: likedClubsWithCounts,
         savedClubs: savedClubsWithCounts,
         unreadRejectedCount,
+        userInterests: (userInterestsData || []).map((row) => row.category),
       }),
       { status: 200 }
     );

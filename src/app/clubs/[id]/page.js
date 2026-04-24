@@ -4,6 +4,8 @@ import React from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+import { supabase } from "@/app/lib/db";
+import posthog from "posthog-js";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
@@ -14,11 +16,11 @@ import SortModal from "@/app/components/sortModal";
 import ReviewCard from "@/app/components/reviewCard";
 
 function IconImg({ media }) {
-  return (                                                                                                                                                       
-      <div className="inline-flex items-center justify-center w-8 h-8 border border-[#EC9304] rounded-full hover:opacity-80">                                   
-        <img src={`/icons/${media}.svg`} alt={media} className="w-full h-full" />                                                                                  
-      </div>                                                                                                                                                       
-    );   
+  return (
+    <div className="inline-flex items-center justify-center w-8 h-8 border border-[#EC9304] rounded-full hover:opacity-80">
+      <img src={`/icons/${media}.svg`} alt={media} className="w-full h-full" />
+    </div>
+  );
 }
 
 const getIconByName = (name) => {
@@ -336,8 +338,13 @@ export default function ClubDetailsPage() {
 
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
+
   const attemptReview = (href) => {
     if (user) {
+        posthog.capture("write_review_clicked", {
+        club_id: club.OrganizationID,
+        club_name: club.OrganizationName,
+      });
       window.location.href = href;
     } else {
       const returnUrl = encodeURIComponent(href);
@@ -384,6 +391,7 @@ export default function ClubDetailsPage() {
       }
     } catch (error) {
       console.error("Error toggling like:", error);
+      posthog.captureException(error);
     } finally {
       setIsProcessing(false);
     }
@@ -610,13 +618,13 @@ export default function ClubDetailsPage() {
                   size="small"
                   onClick={() => setShowSortModal(true)}
                 >
-                   <div className="flex gap-1">
-                <span className="font-font-semi text-[#6E808D]">Sort By:</span>
-                <span className="font-bold text-[#6E808D]">
-                  {sortType === "mostLiked" && "Most liked"}
-                  {sortType === "mostRecent" && "Most recent"}
-                </span>
-                </div>
+                  <div className="flex gap-1">
+                    <span className="font-font-semi text-[#6E808D]">Sort By:</span>
+                    <span className="font-bold text-[#6E808D]">
+                      {sortType === "mostLiked" && "Most liked"}
+                      {sortType === "mostRecent" && "Most recent"}
+                    </span>
+                  </div>
                 </Button>
                 <SortModal
                   open={showSortModal}

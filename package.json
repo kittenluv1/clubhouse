@@ -19,6 +19,8 @@
     "@vercel/analytics": "^1.5.0",
     "framer-motion": "^12.12.2",
     "next": "^16.1.6",
+    "posthog-js": "^1.365.4",
+    "posthog-node": "^5.29.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",

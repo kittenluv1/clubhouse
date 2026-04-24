@@ -5,6 +5,7 @@ import SearchBar from "./search-bar";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import Button from "./button";
+import posthog from "posthog-js";
 
 function Header() {
   const pathname = usePathname();
