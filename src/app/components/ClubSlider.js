@@ -118,7 +118,7 @@ function ClubSlider() {
         };
     }, [user, loading]);
 
-    if (!isLoadingCards && !user || onboardingCompleted === false) {
+    if (!isLoadingCards && !user || !onboardingCompleted) {
         return (
             <div className="relative w-full min-h-56 overflow-hidden rounded-2xl bg-[url('/recommendations-background.svg')] bg-cover bg-center px-6 pt-8 pb-36 md:px-10 md:py-10 md:pr-80 lg:pr-96">
                 <div className="relative z-10 flex max-w-3xl flex-col gap-4">
