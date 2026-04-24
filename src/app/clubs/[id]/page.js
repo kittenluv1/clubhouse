@@ -3,7 +3,9 @@
 import React from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 import { supabase } from "@/app/lib/db";
+import posthog from "posthog-js";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
@@ -173,6 +175,7 @@ function DescriptionWithClamp({ description }) {
 export default function ClubDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useAuth();
 
   const [club, setClub] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -250,29 +253,19 @@ export default function ClubDetailsPage() {
     return baseReviews;
   }, [reviews, sortType]);
 
-  // Listen for auth state changes to reset user-specific state on logout
+  // Reset user-specific state on logout
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_OUT') {
-          // Reset all user-specific state when logged out
-          setUserLikedClub(false);
-          setUserSavedClub(false);
-          setUserLikedReviews([]);
-          setCurrentUserId(null);
-          // Update reviews to show user hasn't liked them
-          setReviews(prev => prev.map(review => ({
-            ...review,
-            user_has_liked: false
-          })));
-        }
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
+    if (!user) {
+      setUserLikedClub(false);
+      setUserSavedClub(false);
+      setUserLikedReviews([]);
+      setCurrentUserId(null);
+      setReviews(prev => prev.map(review => ({
+        ...review,
+        user_has_liked: false
+      })));
+    }
+  }, [user]);
 
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
@@ -292,11 +285,7 @@ export default function ClubDetailsPage() {
 
   // Handler functions for review actions
   const handleLike = async (reviewId, isLiked) => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
+    if (!user) {
       const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
       const returnUrl = encodeURIComponent(currentPath);
       window.location.href = `/sign-in?returnUrl=${returnUrl}`;
@@ -349,15 +338,13 @@ export default function ClubDetailsPage() {
 
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
-  const attemptReview = async (href) => {
-    // check if user is logged in
-    // if not, redirect to sign in page
-    // else, redirect to review page with params
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
 
-    if (session) {
+  const attemptReview = (href) => {
+    if (user) {
+        posthog.capture("write_review_clicked", {
+        club_id: club.OrganizationID,
+        club_name: club.OrganizationName,
+      });
       window.location.href = href;
     } else {
       const returnUrl = encodeURIComponent(href);
@@ -367,11 +354,8 @@ export default function ClubDetailsPage() {
 
   const handleLikeToggle = async () => {
     if (isProcessing) return; // Ignore clicks while processing
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
 
-    if (!session) {
+    if (!user) {
       const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
       const returnUrl = encodeURIComponent(currentPath);
       window.location.href = `/sign-in?returnUrl=${returnUrl}`;
@@ -407,17 +391,14 @@ export default function ClubDetailsPage() {
       }
     } catch (error) {
       console.error("Error toggling like:", error);
+      posthog.captureException(error);
     } finally {
       setIsProcessing(false);
     }
   };
 
   const handleSaveToggle = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
+    if (!user) {
       const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
       const returnUrl = encodeURIComponent(currentPath);
       window.location.href = `/sign-in?returnUrl=${returnUrl}`;

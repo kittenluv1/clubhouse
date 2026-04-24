@@ -3,62 +3,28 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "./search-bar";
 import { useRouter, usePathname } from "next/navigation";
-import { supabase } from "../lib/db";
+import { useAuth } from "../context/AuthContext";
 import Button from "./button";
+import posthog from "posthog-js";
 
 function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userEmail, setUserEmail] = useState(null);
+  const { user, isAdmin, signOut } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = React.useRef(null);
 
   useEffect(() => {
     setIsMounted(true);
-
-    const checkAdmin = async () => {
-      const { data } = await supabase.auth.getSession();
-      const s = data?.session ?? null;
-      setUserEmail(s?.user?.email ?? null);
-      setIsAdmin(!!s?.user?.email && s?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
-    };
-
-    checkAdmin();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        const current = session ?? null;
-        setUserEmail(current?.user?.email ?? null);
-        setIsAdmin(!!current?.user?.email && current?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL);
-      },
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
   }, []);
 
-  const attemptReview = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (session) {
+  const attemptReview = () => {
+    if (user) {
       window.location.href = "/review";
     } else {
       const returnUrl = encodeURIComponent("/review");
       window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-    }
-  };
-
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error.message);
-    } else {
-      setUserEmail(null);
     }
   };
 
@@ -130,8 +96,8 @@ function Header() {
             )
           }
 
-          {// Profile button 
-            userEmail && (
+          {// Profile button
+            user?.email && (
               <div ref={profileRef}>
 
                 {/* profile button */}
@@ -160,7 +126,7 @@ function Header() {
                       <img src="/profile.svg" className="w-10 h-10 mx-2 shrink-0" alt="Profile" />
                       <div className="flex flex-col items-start mr-2 min-w-0">
                         <p className="m-0 leading-tight">View Profile</p>
-                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight truncate max-w-[120px] md:max-w-none">{userEmail}</p>
+                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight truncate max-w-[120px] md:max-w-none">{user?.email}</p>
                       </div>
                     </button>
 
@@ -199,7 +165,7 @@ function Header() {
                     <hr className="w-full bg-gray-300" />
                     <button
                       className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-b-lg"
-                      onClick={handleSignOut}
+                      onClick={signOut}
                     >
                       <img src="/sign-out.svg" className="w-4 h-4 mx-5 shrink-0" alt="Sign Out" />
                       <div className="flex flex-col items-start">
@@ -211,7 +177,7 @@ function Header() {
               </div>
             )}
 
-          {!userEmail && (
+          {!user?.email && (
             <Button
               type="CTA"
               onClick={() => {

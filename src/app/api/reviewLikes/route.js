@@ -1,4 +1,5 @@
 import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { getPostHogClient } from "@/app/lib/posthog-server";
 
 // POST: create a like (body: { review_id })
 export async function POST(req) {
@@ -32,6 +33,7 @@ export async function POST(req) {
             return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { "Content-Type": "application/json" } });
         }
 
+        getPostHogClient()?.capture({ distinctId: userId, event: "review_liked", properties: { review_id } });
         return new Response(JSON.stringify({ message: 'Like added', like: data?.[0] }), { status: 201, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         console.error('Unexpected error in POST /api/reviewLikes:', err);
@@ -67,6 +69,7 @@ export async function DELETE(req) {
             return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
         }
 
+        getPostHogClient()?.capture({ distinctId: userId, event: "review_unliked", properties: { review_id } });
         return new Response(JSON.stringify({ message: 'Like removed' }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         console.error('Unexpected error in DELETE /api/reviewLikes:', err);

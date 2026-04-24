@@ -4,13 +4,24 @@ import { useEffect, useState } from "react";
 
 const INTERESTS = [
     "Academic & Pre-Professional",
-    "Cultural & Identity-Based",
-    "Community & Advocacy",
     "Arts & Media",
+    "Community & Advocacy",
     "Health & Wellness",
     "Spiritual & Religious",
+    "Cultural & Identity-Based",
     "Campus Life & Social",
 ];
+
+const ICONS = {
+    "Academic & Pre-Professional": "/academic-and-pre-professional.svg",
+    "Arts & Media": "/arts-and-media.svg",
+    "Community & Advocacy": "/community-and-advocacy.svg",
+    "Health & Wellness": "/health-and-wellness.svg",
+    "Spiritual & Religious": "/spiritual-and-religious.svg",
+    "Cultural & Identity-Based": "/cultural-and-identity-based.svg",
+    "Campus Life & Social": "/campus-and-social.svg",
+};
+
 export default function Interests({ formData, onUpdate, onValidChange }) {
     const [selected, setSelected] = useState(formData.interests ?? []);
 
@@ -36,7 +47,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                     </p>
                 </div>
             </div>
-            <div className="mt-8 grid grid-cols-8 gap-2">
+            <div className="mt-8 grid grid-cols-8 gap-x-0.25 gap-y-10">
                 {INTERESTS.map((interest, i) => {
                     const isSelected = selected.includes(interest);
 
@@ -51,15 +62,18 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                             key={interest}
                             onClick={() => toggle(interest)}
                             className={`
-                ${colSpanClass} ${colStartClass}
-                h-33 w-33 flex flex-col items-center justify-center gap-2 rounded-xl p-1 text-xs font-medium text-center text-gray-900 font-bold
-                ${isSelected
-                                    ? "bg-[#E2E5F0] ring-2 ring-[#C4C9DC]"
-                                    : "bg-[#F0F2F9] ring-1 ring-[#D9D9D9] hover:bg-[#E5EBF1]"
-                                }
-              `}
+  ${colSpanClass} ${colStartClass}
+  w-[140px] h-[140px] mx-auto
+  flex flex-col items-center justify-center
+  gap-3 rounded-xl px-3 py-4
+  text-sm leading-snug text-center text-gray-900
+  ${isSelected
+    ? "bg-[#E2E5F0] ring-2 ring-[#C4C9DC]"
+    : "bg-[#F0F2F9] ring-1 ring-[#D9D9D9] hover:bg-[#E5EBF1]"
+  }
+`}
                         >
-                            <div className="w-8 h-8 rounded-full bg-gray-300 shrink-0" />
+                            <img src={ICONS[interest]} alt={interest} className="w-12 h-12 shrink-0" />
                             {interest}
                         </button>
                     );
