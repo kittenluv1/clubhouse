@@ -14,7 +14,7 @@ function SignInPage() {
   }, []);
 
   return (
-    <div style={{ position: "relative", width: "100vw", minHeight: "100vh", overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100vw", minHeight: "calc(100vh - 84px)", overflow: "hidden" }}>
       {isMobile ? (
         // mobile :3
         <div style={{
@@ -23,7 +23,8 @@ function SignInPage() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minHeight: "100vh",
+          justifyContent: "center",
+          minHeight: "calc(100vh - 84px)",
           padding: "10vw 6vw 10vw",
           boxSizing: "border-box",
         }}>
@@ -82,8 +83,9 @@ function SignInPage() {
           zIndex: 10,
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
+          alignItems: "center",
           width: "100vw",
-          minHeight: "100vh",
+          minHeight: "calc(100vh - 84px)",
           padding: "0 4vw",
           boxSizing: "border-box",
         }}>
@@ -92,8 +94,7 @@ function SignInPage() {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
-            justifyContent: "flex-start",
-            paddingTop: "4vw",
+            justifyContent: "center",
             paddingLeft: "8vw",
           }}>
             <h1 style={{ fontSize: "4vw", fontWeight: "bold", color: "black", margin: 0 }}>
@@ -115,9 +116,8 @@ function SignInPage() {
           {/* right */}
           <div style={{
             display: "flex",
-            alignItems: "flex-start",
+            alignItems: "center",
             justifyContent: "center",
-            paddingTop: "4vw",
           }}>
             <div style={{
               background: "white",
