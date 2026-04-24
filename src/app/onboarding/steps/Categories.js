@@ -41,7 +41,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
         <>
             <div className="flex flex-col gap-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Choose some of your interests!</h1>
+                    <h1 className="text-2xl font-bold text-[#1C350F]">Choose some of your interests!</h1>
                     <p className="mt-1 text-sm text-gray-500">
                         To help us provide you better club recommendations, choose at least two club categories you are interested in.
                     </p>

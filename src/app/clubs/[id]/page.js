@@ -16,11 +16,11 @@ import SortModal from "@/app/components/sortModal";
 import ReviewCard from "@/app/components/reviewCard";
 
 function IconImg({ media }) {
-  return (                                                                                                                                                       
-      <div className="inline-flex items-center justify-center w-8 h-8 border border-[#EC9304] rounded-full hover:opacity-80">                                   
-        <img src={`/icons/${media}.svg`} alt={media} className="w-full h-full" />                                                                                  
-      </div>                                                                                                                                                       
-    );   
+  return (
+    <div className="inline-flex items-center justify-center w-8 h-8 border border-[#EC9304] rounded-full hover:opacity-80">
+      <img src={`/icons/${media}.svg`} alt={media} className="w-full h-full" />
+    </div>
+  );
 }
 
 const getIconByName = (name) => {
@@ -618,13 +618,13 @@ export default function ClubDetailsPage() {
                   size="small"
                   onClick={() => setShowSortModal(true)}
                 >
-                   <div className="flex gap-1">
-                <span className="font-font-semi text-[#6E808D]">Sort By:</span>
-                <span className="font-bold text-[#6E808D]">
-                  {sortType === "mostLiked" && "Most liked"}
-                  {sortType === "mostRecent" && "Most recent"}
-                </span>
-                </div>
+                  <div className="flex gap-1">
+                    <span className="font-font-semi text-[#6E808D]">Sort By:</span>
+                    <span className="font-bold text-[#6E808D]">
+                      {sortType === "mostLiked" && "Most liked"}
+                      {sortType === "mostRecent" && "Most recent"}
+                    </span>
+                  </div>
                 </Button>
                 <SortModal
                   open={showSortModal}

@@ -33,10 +33,10 @@ export default function MultiSelectSearch({
     : query.trim() === ""
       ? []
       : sortByMatchIndex(
-          options
-            .filter((o) => !selected.includes(o))
-            .filter((o) => o.toLowerCase().includes(lowerQuery))
-        ).slice(0, 8);
+        options
+          .filter((o) => !selected.includes(o))
+          .filter((o) => o.toLowerCase().includes(lowerQuery))
+      ).slice(0, 8);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -57,9 +57,10 @@ export default function MultiSelectSearch({
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-semibold text-gray-800">
+      <label className="text-sm font-semibold text-[#1C350F]">
         {label}
-        {required && <span className="text-[#FFA1CD] ml-0.5">*</span>}
+        {/* previously text-[#FFA1CD] */}
+        {required && <span className="text-black ml-0.5">*</span>}
       </label>
 
       <div className="relative" ref={containerRef}>

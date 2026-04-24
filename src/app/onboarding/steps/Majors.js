@@ -12,7 +12,7 @@ export default function Majors({ formData, onUpdate, onValidChange }) {
   // Set initial validity on mount (handles back-navigation with pre-filled data)
   useEffect(() => {
     onValidChange(majors.length > 0);
-  }, []); 
+  }, []);
 
   const addMajor = (major) => {
     const updated = [...majors, major];
@@ -43,7 +43,7 @@ export default function Majors({ formData, onUpdate, onValidChange }) {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Tell us about yourself!</h1>
+        <h1 className="text-2xl font-bold text-[#1C350F]">Tell us about yourself!</h1>
         <p className="mt-1 text-sm text-gray-500">
           We&apos;ll be using this information to personalize club recommendations for you.
         </p>
