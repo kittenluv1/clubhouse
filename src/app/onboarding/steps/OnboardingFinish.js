@@ -14,7 +14,7 @@ export default function OnboardingFinish() {
                 Your club recommendations have now been personalized based on our background and interests.
             </p>
             <div className="flex justify-center h-40 mt-25">
-                <button className="mr-10 border border-[#B5BFC6] rounded-xl w-32 bg-[#F0F2F9]" onClick={() => { router.push("/") }}>
+                <button className="mr-10 border border-[#B5BFC6] rounded-xl w-32 bg-[#F0F2F9]" onClick={() => { router.push("/clubs") }}>
                     <div className="flex align-middle p-3 flex-wrap flex-col">
                         <img className="self-center mb-2 w-12" src="blueRecsIcon.svg" />
                         <p className="text-[0.7rem]">Browse Club Recommendations</p>
