@@ -8,6 +8,7 @@ let authChangeCallback; // captured from onAuthStateChange
 const mockUnsubscribe = jest.fn();
 const mockGetSession = jest.fn();
 const mockSignOut = jest.fn();
+const mockProfileSingle = jest.fn();
 
 jest.mock("../lib/db", () => ({
   supabase: {
@@ -19,6 +20,13 @@ jest.mock("../lib/db", () => ({
       },
       signOut: (...args) => mockSignOut(...args),
     },
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: (...args) => mockProfileSingle(...args),
+        }),
+      }),
+    }),
   },
 }));
 
@@ -70,6 +78,10 @@ beforeEach(() => {
   // Default: no session
   mockGetSession.mockResolvedValue({ data: { session: null } });
   mockSignOut.mockResolvedValue({ error: null });
+  mockProfileSingle.mockResolvedValue({
+    data: { avatar_id: 1, onboarding_completed: true },
+    error: null,
+  });
 });
 
 describe("AuthContext", () => {

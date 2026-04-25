@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRequireAuth } from "../context/AuthContext";
 import { supabase } from "../lib/db";
+import { getAvatarUrl } from "../lib/avatars";
 import posthog from "posthog-js";
 import ClubCard from "../components/clubCard";
 import Link from "next/link";
@@ -51,7 +52,7 @@ function ProfilePage() {
                     if (data.profile) {
                         setUserProfile({
                             full_name: data.profile.display_name,
-                            avatar_url: null,
+                            avatar_id: data.profile.avatar_id,
                         });
                     }
 
@@ -444,9 +445,9 @@ function ProfilePage() {
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 -bottom-17 lg:-bottom-22 lg:left-52 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
                     <img
-                        src="/bear-profile.svg"
+                        src={userProfile ? getAvatarUrl(userProfile.avatar_id) : "/bear-profile.svg"}
                         alt="Profile"
-                        className="h-25 lg:h-32"
+                        className="h-full w-full rounded-full object-cover p-2"
                     />
                 </div>
             </div>
