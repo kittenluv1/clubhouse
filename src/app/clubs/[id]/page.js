@@ -209,6 +209,10 @@ export default function ClubDetailsPage() {
         if (data.orgList && data.orgList.length > 0) {
           const clubData = data.orgList[0];
           setClub(clubData);
+          posthog.capture("club_viewed", {
+            club_id: clubData.OrganizationID,
+            club_name: clubData.OrganizationName,
+          });
 
           // Map reviews with like data
           const reviewsWithLikes = (data.reviews || []).map(review => ({

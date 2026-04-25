@@ -9,6 +9,7 @@ import Button from "../components/button";
 import { useAuth } from "../context/AuthContext";
 import { handleCategoryClick, renderRatingStars } from "../lib/utils/clubCardHelpers";
 import Link from "next/link";
+import posthog from "posthog-js";
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
@@ -162,7 +163,7 @@ function ClubSlider() {
                 </div>
                 <div className="min-w-0 flex-1">
                     <Slider ref={slider} {...settings} className="py-2 overflow-visible">
-                        {(isLoadingCards ? Array.from({ length: 3 }, (_, index) => ({ __skeleton: true, id: index })) : data).map((d) => {
+                        {(isLoadingCards ? Array.from({ length: 3 }, (_, index) => ({ __skeleton: true, id: index })) : data).map((d, index) => {
                             if (d.__skeleton) {
                                 return (
                                     <div key={`skeleton-${d.id}`} className="h-full px-2 py-4">
@@ -200,7 +201,17 @@ function ClubSlider() {
                             return (
                                 <div
                                     key={d.OrganizationID || title} className="h-full px-2 py-4">
-                                    <Link href={`/clubs/${encodeURIComponent(title)}`} className="flex h-full min-h-56 flex-col rounded-3xl border border-[#92C7F1] bg-[#E6F4FF] px-5 py-5 text-black hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]">
+                                    <Link
+                                        href={`/clubs/${encodeURIComponent(title)}`}
+                                        onClick={() => {
+                                            posthog.capture("recommendation_clicked", {
+                                                club_id: d.OrganizationID,
+                                                club_name: title,
+                                                position: index + 1,
+                                            });
+                                        }}
+                                        className="flex h-full min-h-56 flex-col rounded-3xl border border-[#92C7F1] bg-[#E6F4FF] px-5 py-5 text-black transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]"
+                                    >
                                         <div className="flex flex-col items-start gap-2 lg:flex-row lg:justify-between lg:gap-3">
                                             <h3 className="line-clamp-2 flex-1 min-w-0 text-lg font-bold leading-tight text-black">
                                                 {title}
