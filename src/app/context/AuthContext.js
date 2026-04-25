@@ -9,6 +9,7 @@ const AuthContext = createContext(undefined);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const isAdmin =
@@ -38,13 +39,43 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch profile row when user changes. Depends on user?.id (primitive)
+  // so token refreshes don't re-trigger this.
+  useEffect(() => {
+    if (!user?.id) {
+      setProfile(null);
+      return;
+    }
+
+    let cancelled = false;
+    supabase
+      .from("profiles")
+      .select("avatar_id, onboarding_completed")
+      .eq("id", user.id)
+      .single()
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          console.error("Profile fetch error:", error.message);
+          return;
+        }
+        setProfile(data);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) console.error("Sign out error:", error.message);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, loading, signOut }}>
+    <AuthContext.Provider
+      value={{ user, session, profile, isAdmin, loading, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

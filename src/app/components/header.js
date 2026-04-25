@@ -4,13 +4,14 @@ import React, { useEffect, useState } from "react";
 import SearchBar from "./search-bar";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import { getAvatarUrl } from "../lib/avatars";
 import Button from "./button";
 import posthog from "posthog-js";
 
 function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, profile, isAdmin, signOut } = useAuth();
   const [isMounted, setIsMounted] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = React.useRef(null);
@@ -110,7 +111,7 @@ function Header() {
                   className="relative flex items-center"
                   aria-label="Sign out"
                 >
-                  <img src="/profile.svg" className="h-12" alt="Profile" />
+                  <img src={profile ? getAvatarUrl(profile.avatar_id) : "/profile.svg"} className="h-12 rounded-full transition hover:ring-2 hover:ring-gray-200" alt="Profile" />
                 </button>
 
                 {/* profile menu */}
@@ -123,7 +124,7 @@ function Header() {
                         router.push("/profile");
                       }}
                     >
-                      <img src="/profile.svg" className="w-10 h-10 mx-2 shrink-0" alt="Profile" />
+                      <img src={profile ? getAvatarUrl(profile.avatar_id) : "/profile.svg"} className="w-10 h-10 mx-2 shrink-0 rounded-full" alt="Profile" />
                       <div className="flex flex-col items-start mr-2 min-w-0">
                         <p className="m-0 leading-tight">View Profile</p>
                         <p className="text-[#A6B0B8] text-sm m-0 leading-tight truncate max-w-[120px] md:max-w-none">{user?.email}</p>
