@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Link from "next/link";
 import Button from "./button";
 import { supabase } from "@/app/lib/db";
+import { getAvatarUrl } from "@/app/lib/avatars";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -134,9 +135,9 @@ export default function ReviewCard({
             <div className="flex items-center gap-1 md:gap-3 min-w-0 flex-1 md:flex-initial">
               {status === "displayed" && (
                 <img
-                  src="/profile.svg"
+                  src={review.profiles ? getAvatarUrl(review.profiles.avatar_id) : "/profile.svg"}
                   alt="Profile"
-                  className="w-10 h-15 md:w-15 md:h-15 flex-shrink-0"
+                  className="w-12 h-12 md:w-18 md:h-18 rounded-full object-cover flex-shrink-0 pb-2"
                 />
               )}
               <div className="flex flex-col gap-1 md:gap-2 min-w-0">

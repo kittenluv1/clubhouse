@@ -54,7 +54,7 @@ export async function GET(request, context) {
       // Fetch reviews
       const { data: reviewsData, error: reviewsError } = await supabase
         .from("reviews")
-        .select("*")
+        .select("*, profiles:user_id ( avatar_id )")
         .eq("club_id", clubData.OrganizationID)
         .order("created_at", { ascending: false });
 
