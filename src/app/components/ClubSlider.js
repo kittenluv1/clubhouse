@@ -20,12 +20,13 @@ function ClubSlider() {
     const [fetchError, setFetchError] = React.useState(null);
     const [isFetchingRecommendations, setIsFetchingRecommendations] = React.useState(true);
     const [onboardingCompleted, setOnboardingCompleted] = React.useState(null);
+    const isLoadingCards = loading || isFetchingRecommendations;
 
     const settings = {
         infinite: true,
         speed: 500,
         slidesToShow: 3,
-        arrows: true,
+        arrows: false,
         slidesToScroll: 3,
         responsive: [
             {
@@ -60,56 +61,6 @@ function ClubSlider() {
 
         return "line-clamp-3";
     };
-
-    const renderSkeletonCards = () => (
-        <div className="w-full min-h-56">
-            <div className="flex items-center gap-3">
-                <div className="flex shrink-0 items-center self-stretch">
-                    <Button type="gray" size="small" disabled aria-hidden="true">
-                        &lt;
-                    </Button>
-                </div>
-
-                <div className="min-w-0 flex-1 overflow-hidden py-1">
-                    <div className="flex gap-4 overflow-hidden">
-                        {Array.from({ length: 3 }).map((_, index) => (
-                            <div key={index} className="min-w-0 flex-1 px-2">
-                                <div className="flex h-full min-h-56 flex-col rounded-3xl border border-[#D9E8F5] bg-[#EEF4FA] px-5 py-5 text-black">
-                                    <div className="animate-pulse flex h-full flex-col">
-                                        <div className="flex flex-col items-start gap-2 lg:flex-row lg:justify-between lg:gap-3">
-                                            <div className="h-6 w-3/4 rounded-full bg-gray-300" />
-                                            <div className="flex items-center gap-1 lg:flex-shrink-0 lg:pt-0.5">
-                                                {Array.from({ length: 5 }).map((__, starIndex) => (
-                                                    <div key={starIndex} className="h-4 w-4 rounded-sm bg-gray-300" />
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-3 space-y-2">
-                                            <div className="h-3 w-full rounded-full bg-gray-300" />
-                                            <div className="h-3 w-11/12 rounded-full bg-gray-300" />
-                                            <div className="h-3 w-5/6 rounded-full bg-gray-300" />
-                                        </div>
-
-                                        <div className="mt-auto flex flex-wrap gap-2 pt-4">
-                                            <div className="h-8 w-20 rounded-full bg-gray-300" />
-                                            <div className="h-8 w-24 rounded-full bg-gray-300" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="flex shrink-0 items-center self-stretch">
-                    <Button type="gray" size="small" disabled aria-hidden="true">
-                        &gt;
-                    </Button>
-                </div>
-            </div>
-        </div>
-    );
 
     React.useEffect(() => {
         if (loading) {
@@ -167,15 +118,7 @@ function ClubSlider() {
         };
     }, [user, loading]);
 
-    if (loading) {
-        return renderSkeletonCards();
-    }
-
-    if (isFetchingRecommendations) {
-        return renderSkeletonCards();
-    }
-
-    if (!user || onboardingCompleted === false) {
+    if (!isLoadingCards && !user || !onboardingCompleted) {
         return (
             <div className="relative w-full min-h-56 overflow-hidden rounded-2xl bg-[url('/recommendations-background.svg')] bg-cover bg-center px-6 pt-8 pb-36 md:px-10 md:py-10 md:pr-80 lg:pr-96">
                 <div className="relative z-10 flex max-w-3xl flex-col gap-4">
@@ -196,7 +139,7 @@ function ClubSlider() {
         );
     }
 
-    if (fetchError) {
+    if (!isLoadingCards && fetchError) {
         return (
             <div className="w-full">
                 <p className="mt-3 text-sm text-[#6E808D]">Fetch Error: {fetchError}</p>
@@ -212,21 +155,52 @@ function ClubSlider() {
                         onClick={() => slider?.current?.slickPrev()}
                         type="gray"
                         size="small"
+                        disabled={isLoadingCards}
                     >
                         &lt;
                     </Button>
                 </div>
-                <div className="min-w-0 flex-1 overflow-hidden py-1">
-                    <Slider ref={slider} {...settings}>
-                        {data.map((d) => {
+                <div className="min-w-0 flex-1">
+                    <Slider ref={slider} {...settings} className="py-2 overflow-visible">
+                        {(isLoadingCards ? Array.from({ length: 3 }, (_, index) => ({ __skeleton: true, id: index })) : data).map((d) => {
+                            if (d.__skeleton) {
+                                return (
+                                    <div key={`skeleton-${d.id}`} className="h-full px-2 py-4">
+                                        <div className="flex h-full min-h-56 flex-col rounded-3xl border border-[#D9E8F5] bg-[#EEF4FA] px-5 py-5 text-black">
+                                            <div className="animate-pulse flex h-full flex-col">
+                                                <div className="flex flex-col items-start gap-2 lg:flex-row lg:justify-between lg:gap-3">
+                                                    <div className="h-6 w-3/4 rounded-full bg-gray-300" />
+                                                    <div className="flex items-center gap-1 lg:flex-shrink-0 lg:pt-0.5">
+                                                        {Array.from({ length: 5 }).map((__, starIndex) => (
+                                                            <div key={starIndex} className="h-4 w-4 rounded-sm bg-gray-300" />
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-3 space-y-2">
+                                                    <div className="h-3 w-full rounded-full bg-gray-300" />
+                                                    <div className="h-3 w-11/12 rounded-full bg-gray-300" />
+                                                    <div className="h-3 w-5/6 rounded-full bg-gray-300" />
+                                                </div>
+
+                                                <div className="mt-auto flex flex-wrap gap-2 pt-4">
+                                                    <div className="h-8 w-20 rounded-full bg-gray-300" />
+                                                    <div className="h-8 w-24 rounded-full bg-gray-300" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }
+
                             const title = d.OrganizationName || "";
                             const description = d.OrganizationDescription || "";
                             const descriptionClampClass = getDescriptionClampClass(title, description);
 
                             return (
                                 <div
-                                    key={d.OrganizationID || title} className="h-full px-2">
-                                    <Link href={`/clubs/${encodeURIComponent(title)}`} className="flex h-full min-h-56 flex-col rounded-3xl border border-[#92C7F1] bg-[#E6F4FF] px-5 py-5 text-black">
+                                    key={d.OrganizationID || title} className="h-full px-2 py-4">
+                                    <Link href={`/clubs/${encodeURIComponent(title)}`} className="flex h-full min-h-56 flex-col rounded-3xl border border-[#92C7F1] bg-[#E6F4FF] px-5 py-5 text-black hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380]">
                                         <div className="flex flex-col items-start gap-2 lg:flex-row lg:justify-between lg:gap-3">
                                             <h3 className="line-clamp-2 flex-1 min-w-0 text-lg font-bold leading-tight text-black">
                                                 {title}
@@ -273,6 +247,7 @@ function ClubSlider() {
                         onClick={() => slider?.current?.slickNext()}
                         type="gray"
                         size="small"
+                        disabled={isLoadingCards}
                     >
                         &gt;
                     </Button>
