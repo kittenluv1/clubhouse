@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useRequireAuth } from "../context/AuthContext";
 import { supabase } from "../lib/db";
+import { getAvatarUrl } from "../lib/avatars";
+import posthog from "posthog-js";
 import ClubCard from "../components/clubCard";
 import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
 import LoadingScreen from "../components/LoadingScreen";
 import ConfirmationModal from "../components/confirmationModal";
 import Button from "../components/button";
+import PreferencesSection from "./components/PreferencesSection";
 
 function ProfilePage() {
     const router = useRouter();
+    const { user } = useRequireAuth();
     const [activeSection, setActiveSection] = useState("approved");
     const [reviewsExpanded, setReviewsExpanded] = useState(true);
     const [clubsExpanded, setClubsExpanded] = useState(false);
-    const [currentUser, setCurrentUser] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [approvedReviews, setApprovedReviews] = useState([]);
     const [pendingReviews, setPendingReviews] = useState([]);
@@ -26,44 +30,11 @@ function ProfilePage() {
     const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
     const [reviewToDelete, setReviewToDelete] = useState(null);
     const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
-
-    // Authentication check
-    useEffect(() => {
-        const getUser = async () => {
-            const {
-                data: { user },
-                error,
-            } = await supabase.auth.getUser();
-
-            if (user) {
-                setCurrentUser(user);
-            } else {
-                console.error("Error getting user:", error);
-                window.location.href = "/sign-in";
-            }
-        };
-
-        getUser();
-
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                if (session?.user) {
-                    setCurrentUser(session.user);
-                } else {
-                    setCurrentUser(null);
-                    window.location.href = "/sign-in";
-                }
-            },
-        );
-
-        return () => {
-            authListener.subscription.unsubscribe();
-        };
-    }, []);
+    const [profilePreferences, setProfilePreferences] = useState(null);
 
     // Fetch all profile data from API
     useEffect(() => {
-        if (!currentUser) return;
+        if (!user) return;
 
         const fetchProfileData = async () => {
             try {
@@ -81,7 +52,7 @@ function ProfilePage() {
                     if (data.profile) {
                         setUserProfile({
                             full_name: data.profile.display_name,
-                            avatar_url: null,
+                            avatar_id: data.profile.avatar_id,
                         });
                     }
 
@@ -90,6 +61,12 @@ function ProfilePage() {
                     setPendingReviews(data.pendingReviews || []);
                     setRejectedReviews(data.rejectedReviews || []);
                     setUnreadRejectedCount(data.unreadRejectedCount || 0);
+                    setProfilePreferences({
+                        majors: data.profile?.majors || [],
+                        minors: data.profile?.minors || [],
+                        currentClubs: data.profile?.current_clubs || [],
+                        userInterests: data.userInterests || [],
+                    });
 
                     // Set clubs
                     setLikedClubs(data.likedClubs || []);
@@ -105,11 +82,7 @@ function ProfilePage() {
         };
 
         fetchProfileData();
-    }, [currentUser]);
-
-    if (!currentUser) {
-        return null;
-    }
+    }, [user]);
 
     if (loading) {
         return <LoadingScreen />;
@@ -117,17 +90,8 @@ function ProfilePage() {
 
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
-    const attemptReview = async () => {
-        const {
-            data: { session },
-        } = await supabase.auth.getSession();
-
-        if (session) {
-            window.location.href = "/review";
-        } else {
-            const returnUrl = encodeURIComponent("/review");
-            window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-        }
+    const attemptReview = () => {
+        window.location.href = "/review";
     };
 
     // Handler functions for review actions
@@ -154,6 +118,7 @@ function ProfilePage() {
         const response = await fetch(`/api/rejectedReviews/${reviewToDelete}`, { method: 'DELETE' });
         if (response.ok) {
             // console.log('Deleted review: ', reviewToDelete);
+            posthog.capture("review_deleted", { review_id: reviewToDelete });
             // Remove from local state
             setRejectedReviews(prev => prev.filter(r => r.id !== reviewToDelete));
         } else {
@@ -269,7 +234,7 @@ function ProfilePage() {
                                 <p className="text-[#B5BEC7]">No approved reviews</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1">
+                            <div className="grid grid-cols-1 gap-4">
                                 {approvedReviews.map(review => (
                                     <ReviewCard
                                         key={review.id}
@@ -302,7 +267,7 @@ function ProfilePage() {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 gap-12">
+                            <div className="grid grid-cols-1 gap-4">
                                 {pendingReviews.map(review => (
                                     <ReviewCard
                                         key={review.id}
@@ -338,7 +303,7 @@ function ProfilePage() {
                                 <p className="text-[#B5BEC7]">No rejected reviews</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 gap-12">
+                            <div className="grid grid-cols-1 gap-4">
                                 {rejectedReviews.map(review => (
                                     <ReviewCard
                                         key={review.id}
@@ -373,7 +338,7 @@ function ProfilePage() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 gap-12">
+                                    <div className="grid grid-cols-1 gap-4">
                                         {likedClubs.map((club) => (
                                             <ClubCard
                                                 key={`${club.OrganizationID}-${club.OrganizationName}`}
@@ -409,7 +374,7 @@ function ProfilePage() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-1 gap-12">
+                                    <div className="grid grid-cols-1 gap-4">
                                         {savedClubs.map((club) => (
                                             <ClubCard
                                                 key={`${club.OrganizationID}-${club.OrganizationName}`}
@@ -426,6 +391,18 @@ function ProfilePage() {
                             )
                         }
                     </div>
+                );
+
+            case "preferences":
+                return profilePreferences ? (
+                    <PreferencesSection
+                        majors={profilePreferences.majors}
+                        minors={profilePreferences.minors}
+                        currentClubs={profilePreferences.currentClubs}
+                        userInterests={profilePreferences.userInterests}
+                    />
+                ) : (
+                    <LoadingScreen />
                 );
 
             default:
@@ -446,15 +423,31 @@ function ProfilePage() {
                 message="Are you sure you want to delete this review?"
             />
             {/* User Information Section */}
-            <div
-                className="relative mb-22 rounded-lg bg-white bg-cover bg-center bg-no-repeat px-12 py-15 lg:px-26 lg:py-25 border-b border-[#E5EBF1]"
-                style={{ backgroundImage: "url('/profile_background.png')" }}
-            >
+            <div className="relative mb-22">
+                <div className="relative overflow-hidden rounded-lg bg-white px-12 py-15 lg:px-26 lg:py-25 border-b border-[#E5EBF1]">
+                    {/* lime blob — bottom left */}
+                    <div className="absolute bottom-0 h-[50%] left-[-10%] w-[35%] blur-[70px] opacity-50 rounded-full"
+                        style={{ background: "#C8F06A" }} />
+                    {/* pink blob — top center */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[50%] w-[50%] blur-[70px] opacity-80"
+                        style={{ background: "radial-gradient(ellipse at 50% 0%, #FFCBCA, #FEEBC8)" }} />
+                    {/* blue blob — bottom right */}
+                    <div className="absolute bottom-0 right-0 h-[50%] w-[30%] blur-[70px] opacity-70"
+                        style={{ background: "radial-gradient(ellipse at 100% 100%, #b0d8ff, #b0d8ff)" }} />
+                    {/* lime dot grid — bottom left */}
+                    <div className="absolute bottom-0 left-0 h-full w-[40%]"
+                        style={{
+                            backgroundImage: "radial-gradient(circle, #A8E040 1.5px, transparent 1.5px)",
+                            backgroundSize: "16px 16px",
+                            WebkitMaskImage: "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
+                            maskImage: "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
+                        }} />
+                </div>
                 <div className="absolute left-1/2 -translate-x-1/2 -bottom-17 lg:-bottom-22 lg:left-52 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
                     <img
-                        src="/bear-profile.svg"
+                        src={userProfile ? getAvatarUrl(userProfile.avatar_id) : "/bear-profile.svg"}
                         alt="Profile"
-                        className="h-25 lg:h-32"
+                        className="h-full w-full rounded-full object-cover p-2"
                     />
                 </div>
             </div>
@@ -584,6 +577,23 @@ function ProfilePage() {
                                     ))}
                                 </div>
                             )}
+                        </div>
+
+                        {/* Preferences Section */}
+                        <div className="mt-4">
+                            <button
+                                onClick={() => setActiveSection("preferences")}
+                                className={`mb-2 flex w-full items-center justify-between text-left font-semibold rounded-full px-2 py-1 ${activeSection === "preferences" ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"}`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="/edit-2.svg"
+                                        alt="preferences icon"
+                                        className="max-w-[20px]"
+                                    />
+                                    <span className="text-2xl">Preferences</span>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>

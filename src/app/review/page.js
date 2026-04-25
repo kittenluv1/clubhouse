@@ -2,10 +2,12 @@
 
 
 import React, { useState, useEffect } from "react";
+import posthog from "posthog-js";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
 import CustomSlider from "../components/custom-slider";
 import { supabase } from "../lib/db";
+import { useRequireAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
@@ -209,6 +211,7 @@ const getCurrentQuarter = () => {
 export default function ReviewPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user } = useRequireAuth();
 
 
   const [selectedClub, setSelectedClub] = useState("");
@@ -226,52 +229,12 @@ export default function ReviewPage() {
   const [overallSatisfaction, setOverallSatisfaction] = useState(null);
   const [reviewText, setReviewText] = useState("");
   const [isMember, setIsMember] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
 
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
   const [success, setSuccess] = useState(false);
-
-
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-
-
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        console.error("Error getting user:", error);
-        window.location.href = "/sign-in";
-      }
-    };
-
-
-    getUser();
-
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user) {
-          setCurrentUser(session.user);
-        } else {
-          setCurrentUser(null);
-          window.location.href = "/sign-in";
-        }
-      },
-    );
-
-
-    // cleanup
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
 
 
   // Getting club name and ID from URL parameters
@@ -406,8 +369,8 @@ export default function ReviewPage() {
 
       const reviewData = {
         club_id: clubId,
-        user_id: currentUser?.id,
-        user_email: currentUser?.email,
+        user_id: user?.id,
+        user_email: user?.email,
         membership_start_quarter: startQuarter,
         membership_start_year: parseInt(startYear),
         membership_end_quarter: endQuarter,
@@ -432,6 +395,12 @@ export default function ReviewPage() {
 
       if (error) throw new Error(error.message);
 
+      posthog.capture("review_submitted", {
+        club_id: clubId,
+        club_name: selectedClub,
+        overall_satisfaction: overallSatisfaction,
+        is_current_member: isMember,
+      });
 
       await fetch(
         `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-review-email`,
