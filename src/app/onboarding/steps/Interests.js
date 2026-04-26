@@ -77,14 +77,14 @@ export default function Avocations({ formData, onUpdate, onValidChange }) {
 
     return (
         <>
-            <div className="ml-11">
+            <div className="ml-15">
                 <h1 className="text-2xl font-bold text-[#1C350F]">Choose Your Interest</h1>
-                <p className="text-[0.8rem] mt-1 text-[#6E808D] mb-10">
+                <p className="text-[0.8rem] mt-2 text-[#6E808D] mb-10">
                     We'll be using this information to personalize club recommendations for you.
                     Please select at least 2 categories to continue.</p>
                 {Object.entries(filtered).map(([group, tags]) => (
                     <div key={group} className="mb-4">
-                        <h4 className="mb-2 font-semibold text-2xl">{group}</h4>
+                        <h4 className="mb-2.5 font-semibold text-2xl">{group}</h4>
                         <div className="flex flex-wrap gap-2 mb-5">
                             {tags.map((tag) => ( 
                                 <Button
