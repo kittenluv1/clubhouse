@@ -137,7 +137,7 @@ describe("POST /api/onboarding", () => {
         });
     });
 
-    test("saves interests to user_interests table", async () => {
+    test("saves only subcategories to user_interests table (broad categories are not persisted)", async () => {
         const client = makeClient();
         createAuthenticatedClient.mockResolvedValue(client);
 
@@ -148,27 +148,24 @@ describe("POST /api/onboarding", () => {
 
         expect(res.status).toBe(200);
         const insertCall = client._mocks.interestsInsert.mock.calls[0]?.[0];
-        expect(insertCall).toEqual(
-            expect.arrayContaining([
-                { user_id: MOCK_USER.id, category: "Arts & Media" },
-                { user_id: MOCK_USER.id, category: "Health & Wellness" },
-                { user_id: MOCK_USER.id, category: "Dance" },
-            ])
-        );
+        expect(insertCall).toEqual([{ user_id: MOCK_USER.id, category: "Dance" }]);
+        const categories = insertCall.map((r) => r.category);
+        expect(categories).not.toContain("Arts & Media");
+        expect(categories).not.toContain("Health & Wellness");
     });
 
-    test("deduplicates interests that appear in both broadCategories and subcategories", async () => {
+    test("deduplicates subcategories that appear more than once", async () => {
         const client = makeClient();
         createAuthenticatedClient.mockResolvedValue(client);
 
         await POST(makeRequest("POST", {
             broadCategories: ["Arts & Media"],
-            subcategories: ["Arts & Media", "Dance"],
+            subcategories: ["Dance", "Dance"],
         }));
 
         const insertCall = client._mocks.interestsInsert.mock.calls[0]?.[0];
         const categories = insertCall.map((r) => r.category);
-        expect(categories.filter((c) => c === "Arts & Media")).toHaveLength(1);
+        expect(categories.filter((c) => c === "Dance")).toHaveLength(1);
     });
 
     test("skips interest insert when no interests provided", async () => {
@@ -195,7 +192,7 @@ describe("POST /api/onboarding", () => {
             makeClient({ interestsError: new Error("insert failed") })
         );
         const res = await POST(makeRequest("POST", {
-            broadCategories: ["Arts & Media"],
+            subcategories: ["Dance"],
         }));
         expect(res.status).toBe(500);
     });
