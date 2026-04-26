@@ -71,8 +71,13 @@ export default function Avocations({ formData, onUpdate, onValidChange }) {
     }, [selected])
 
     const select = (interest) => {
-        setSelected((prev) =>
-            prev.includes(interest) ? prev.filter((t) => t !== interest) : [...prev, interest],);
+        setSelected((prev) => {
+            const updated = prev.includes(interest)
+                ? prev.filter((t) => t !== interest)
+                : [...prev, interest];
+            onUpdate({ subcategories: updated });
+            return updated;
+        });
     };
 
     return (
