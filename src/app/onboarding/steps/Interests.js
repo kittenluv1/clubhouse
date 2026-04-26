@@ -71,25 +71,23 @@ export default function Avocations({ formData, onUpdate, onValidChange }) {
     }, [selected])
 
     const select = (interest) => {
-        setSelected((prev) => {
-            const updated = prev.includes(interest)
-                ? prev.filter((t) => t !== interest)
-                : [...prev, interest];
-            onUpdate({ subcategories: updated });
-            return updated;
-        });
+        const updated = selected.includes(interest)
+            ? selected.filter((t) => t !== interest)
+            : [...selected, interest];
+        setSelected(updated);
+        onUpdate({ subcategories: updated });
     };
 
     return (
         <>
-            <div className="ml-11">
+            <div className="ml-0 sm:ml-11">
                 <h1 className="text-2xl font-bold text-[#1C350F]">Choose Your Interest</h1>
                 <p className="text-[0.8rem] mt-1 text-[#6E808D] mb-10">
                     We'll be using this information to personalize club recommendations for you.
                     Please select at least 2 categories to continue.</p>
                 {Object.entries(filtered).map(([group, tags]) => (
                     <div key={group} className="mb-4">
-                        <h4 className="mb-2 font-semibold text-2xl">{group}</h4>
+                        <h4 className="mb-2 font-semibold text-lg sm:text-2xl">{group}</h4>
                         <div className="flex flex-wrap gap-2 mb-5">
                             {tags.map((tag) => ( 
                                 <Button

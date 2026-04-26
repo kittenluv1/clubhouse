@@ -28,8 +28,16 @@ export default function PreferencesSection({
   currentClubs: initialClubs = [],
   userInterests = [],
 }) {
-  const { broadCategories: initialBroad, subcategories: initialSub } =
+  const { broadCategories: storedBroad, subcategories: initialSub } =
     splitUserInterests(userInterests);
+
+  // Broad categories are no longer stored in user_interests (only subcategories are).
+  // Derive them from the subcategories via reverse lookup so the UI stays correct.
+  const initialBroad = storedBroad.length > 0
+    ? storedBroad
+    : BROAD_CATEGORIES.filter((broad) =>
+        (INTERESTS[broad] ?? []).some((sub) => initialSub.includes(sub))
+      );
 
   const [majors, setMajors] = useState(initialMajors);
   const [minors, setMinors] = useState(initialMinors);
@@ -40,6 +48,10 @@ export default function PreferencesSection({
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // "success" | "error" | null
   const saveTimerRef = useRef(null);
+
+  // True on mount if the DB had fewer than 2 broad categories (e.g. reverse-lookup
+  // couldn't recover all selections because some had no subcategories saved).
+  const [needsAttention] = useState(initialBroad.length < 2);
 
   const [savedState, setSavedState] = useState({
     majors: initialMajors,
@@ -142,10 +154,10 @@ export default function PreferencesSection({
   };
 
   return (
-    <div className="mx-8">
+    <div className="mx-2 sm:mx-8">
       <div className="mb-8 text-center">
-        <p className="mb-4 text-4xl font-bold text-[#000000]">Preferences</p>
-        <p className="text-[20px] text-[#747474]">
+        <p className="mb-4 text-2xl sm:text-4xl font-bold text-[#000000]">Preferences</p>
+        <p className="text-base sm:text-[20px] text-[#747474]">
           Update your academic info and interests.
         </p>
       </div>
@@ -154,7 +166,7 @@ export default function PreferencesSection({
         {/* Academic */}
         <section>
           <h2 className="mb-4 text-lg font-semibold text-gray-800">Academic</h2>
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8">
             <MultiSelectSearch
               label="Major(s)"
               placeholder="Search majors..."
@@ -194,32 +206,29 @@ export default function PreferencesSection({
             Interest Categories
           </h2>
           <p className="mb-4 text-sm text-gray-500">To help us get better club recommendations, tell us what you’re interested in. Please select at least 2 categories to continue.</p>
-          <div className="flex flex-col items-center gap-4">
-            {[BROAD_CATEGORIES.slice(0, 4), BROAD_CATEGORIES.slice(4)].map((row, ri) => (
-              <div key={ri} className="flex gap-10">
-                {row.map((category) => {
-                  const isSelected = broadCategories.includes(category);
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => toggleCategory(category)}
-                      className={`
-                        w-[140px] h-[140px] flex flex-col items-center justify-center gap-2 rounded-xl p-1
-                        text-center text-xs font-medium text-gray-900
-                        ${
-                          isSelected
-                            ? "bg-[#D6EEFF] ring-2 ring-[#7BBFEE]"
-                            : "bg-[#F4F5F6] hover:bg-[#E5EBF1]"
-                        }
-                      `}
-                    >
-                      <img src={ICONS[category]} alt={category} className="w-12 h-12 shrink-0" />
-                      {category}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 max-w-[650px] mx-auto">
+            {BROAD_CATEGORIES.map((category) => {
+              const isSelected = broadCategories.includes(category);
+              return (
+                <button
+                  key={category}
+                  onClick={() => toggleCategory(category)}
+                  className={`
+                    w-[90px] h-[90px] sm:w-[120px] sm:h-[120px] md:w-[140px] md:h-[140px]
+                    flex flex-col items-center justify-center gap-2 rounded-xl p-1
+                    text-center text-[10px] sm:text-xs font-medium text-gray-900
+                    ${
+                      isSelected
+                        ? "bg-[#D6EEFF] ring-2 ring-[#7BBFEE]"
+                        : "bg-[#F4F5F6] hover:bg-[#E5EBF1]"
+                    }
+                  `}
+                >
+                  <img src={ICONS[category]} alt={category} className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 shrink-0" />
+                  {category}
+                </button>
+              );
+            })}
           </div>
         </section>
 
@@ -269,16 +278,21 @@ export default function PreferencesSection({
       </div>
 
       <AnimatePresence>
-        {(hasUnsavedChanges || saveStatus) && (
+        {(hasUnsavedChanges || saveStatus || (needsAttention && broadCategories.length < 2)) && (
           <motion.div
             initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t border-gray-200 bg-white px-8 py-4 shadow-lg"
+            className="fixed bottom-0 left-0 right-0 z-50 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-gray-200 bg-white px-4 sm:px-8 py-4 shadow-lg"
           >
             {saveStatus === "success" ? (
               <p className="text-sm font-medium text-green-600">Preferences saved!</p>
+            ) : needsAttention && broadCategories.length < 2 && !hasUnsavedChanges ? (
+              <div>
+                <p className="text-sm font-medium text-amber-600">Your preferences need attention</p>
+                <p className="text-xs text-[#747474] mt-0.5">Please select at least 2 interest categories.</p>
+              </div>
             ) : (
               <div>
                 <p className="text-sm font-medium text-gray-700">You have unsaved changes</p>
@@ -292,10 +306,12 @@ export default function PreferencesSection({
             )}
             {saveStatus !== "success" && (
               <div className="flex gap-3">
-                <Button type="gray" onClick={handleDiscard} disabled={saving}>
-                  Discard changes
-                </Button>
-                <Button type="CTA" onClick={handleSave} disabled={!canSave || saving}>
+                {hasUnsavedChanges && (
+                  <Button type="gray" onClick={handleDiscard} disabled={saving} style="flex-1 sm:flex-none">
+                    Discard changes
+                  </Button>
+                )}
+                <Button type="CTA" onClick={handleSave} disabled={!canSave || saving} style="flex-1 sm:flex-none">
                   {saving ? "Saving…" : "Save Changes"}
                 </Button>
               </div>
