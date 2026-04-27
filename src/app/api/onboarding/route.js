@@ -60,7 +60,7 @@ export async function POST(req) {
     // Replace user's interest rows with the new selections.
     // Combines broad categories and subcategories — both are interest signals
     // for the recommendation algorithm.
-    const allInterests = [...new Set([...broadCategories, ...subcategories])];
+    const allInterests = [...new Set(subcategories)];
 
     if (allInterests.length > 0) {
       await supabase
@@ -123,7 +123,7 @@ export async function PATCH(req) {
     // Note: delete and insert are not atomic. If the insert fails after the delete
     // has committed, the user's interests will be empty until they save again.
     // A Supabase RPC (database function) would be needed for true atomicity.
-    const allInterests = [...new Set([...broadCategories, ...subcategories])];
+    const allInterests = [...new Set(subcategories)];
 
     if (allInterests.length > 0) {
       const { error: interestsError } = await supabase

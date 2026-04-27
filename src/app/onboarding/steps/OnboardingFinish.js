@@ -7,20 +7,20 @@ export default function OnboardingFinish() {
 
     return (
         <>
-            <h1 className="text-[1.16rem] font-bold text-[black] mx-15">
+            <h1 className="text-[1.16rem] font-bold text-[black] mx-0 sm:mx-15">
                 All done! Select where to explore next:
             </h1>
-            <p className="text-xs mt-1 text-black mx-15">
+            <p className="text-xs mt-1 text-black mx-0 sm:mx-15">
                 Your club recommendations have now been personalized based on our background and interests.
             </p>
-            <div className="flex justify-center h-40 mt-25">
-                <button className="mr-10 border border-[#B5BFC6] rounded-xl w-32 bg-[#F0F2F9]" onClick={() => { router.push("/clubs") }}>
+            <div className="flex flex-wrap justify-center gap-4 mt-10 sm:mt-25">
+                <button className="border border-[#B5BFC6] rounded-xl w-32 bg-[#F0F2F9]" onClick={() => { router.push("/clubs") }}>
                     <div className="flex align-middle p-3 flex-wrap flex-col">
                         <img className="self-center mb-2 w-12" src="blueRecsIcon.svg" />
                         <p className="text-[0.7rem]">Browse Club Recommendations</p>
                     </div>
                 </button>
-                <button className="mr-10 rounded-xl w-32 border border-[#B5BFC6] bg-[#F0F2F9]" onClick={() => { router.push("/profile") }}>
+                <button className="rounded-xl w-32 border border-[#B5BFC6] bg-[#F0F2F9]" onClick={() => { router.push("/profile") }}>
                     <div className="flex p-3 flex-wrap flex-col">
                         <img className="self-center mb-2 w-12" src="pinkProfileIcon.svg" />
                         <p className="text-[0.7rem]">View My Profile Page</p>

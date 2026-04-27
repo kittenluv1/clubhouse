@@ -64,7 +64,7 @@ export default function OnboardingPage() {
                 majors: formData.majors ?? [],
                 minors: formData.minors ?? [],
                 broadCategories: formData.interests ?? [],
-                subcategories: [],
+                subcategories: formData.subcategories ?? [],
                 currentClubs: formData.clubs ?? [],
             }),
         });

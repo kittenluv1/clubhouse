@@ -13,7 +13,7 @@ export default function OnboardingCard({ progressStep, totalSteps, showProgress 
 
   const onExitConfirm = () => {
     setConfirmationModalOpen(false);
-    router.push("/");
+    router.push("/clubs");
   }
 
   return (

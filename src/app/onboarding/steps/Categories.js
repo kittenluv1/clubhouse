@@ -47,15 +47,15 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                     </p>
                 </div>
             </div>
-            <div className="mt-8 grid grid-cols-9 gap-x-0.25 gap-y-10 mx-20">
+            <div className="mt-8 flex flex-wrap justify-center gap-3 sm:grid sm:grid-cols-8 sm:gap-x-0.25 sm:gap-y-10 mx-0 sm:mx-20">
                 {INTERESTS.map((interest, i) => {
                     const isSelected = selected.includes(interest);
 
-                    const colSpanClass = "col-span-2";
+                    const colSpanClass = "sm:col-span-2";
                     const colStartClass =
-                        i === 4 ? "col-start-2" :
-                            i === 5 ? "col-start-4" :
-                                i === 6 ? "col-start-6" : "";
+                        i === 4 ? "sm:col-start-2" :
+                            i === 5 ? "sm:col-start-4" :
+                                i === 6 ? "sm:col-start-6" : "";
 
                     return (
                         <button
@@ -63,17 +63,17 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                             onClick={() => toggle(interest)}
                             className={`
   ${colSpanClass} ${colStartClass}
-  w-[140px] h-[140px] mx-auto
+  w-[90px] h-[90px] sm:w-[140px] sm:h-[140px] sm:mx-auto
   flex flex-col items-center justify-center
-  gap-3 rounded-xl px-3 py-4
-  text-sm leading-snug text-center text-gray-900
+  gap-2 sm:gap-3 rounded-xl px-2 py-2 sm:px-3 sm:py-4
+  text-[10px] sm:text-sm leading-snug text-center text-gray-900
   ${isSelected
     ? "bg-[#E2E5F0] ring-2 ring-[#C4C9DC]"
     : "bg-[#F0F2F9] ring-1 ring-[#D9D9D9] hover:bg-[#E5EBF1]"
   }
 `}
                         >
-                            <img src={ICONS[interest]} alt={interest} className="w-12 h-12 shrink-0" />
+                            <img src={ICONS[interest]} alt={interest} className="w-8 h-8 sm:w-12 sm:h-12 shrink-0" />
                             {interest}
                         </button>
                     );
