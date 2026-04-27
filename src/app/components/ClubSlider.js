@@ -21,30 +21,54 @@ function ClubSlider() {
     const [fetchError, setFetchError] = React.useState(null);
     const [isFetchingRecommendations, setIsFetchingRecommendations] = React.useState(true);
     const [onboardingCompleted, setOnboardingCompleted] = React.useState(null);
+    const [slidesConfig, setSlidesConfig] = React.useState({
+        slidesToShow: 3,
+        slidesToScroll: 3,
+    });
     const isLoadingCards = loading || isFetchingRecommendations;
+
+    const getSlidesConfigForWidth = React.useCallback((width) => {
+        if (width < 768) {
+            return { slidesToShow: 1, slidesToScroll: 1 };
+        }
+
+        if (width < 1024) {
+            return { slidesToShow: 2, slidesToScroll: 2 };
+        }
+
+        return { slidesToShow: 3, slidesToScroll: 3 };
+    }, []);
+
+    React.useEffect(() => {
+        const updateSlidesConfig = () => {
+            const nextConfig = getSlidesConfigForWidth(window.innerWidth);
+            setSlidesConfig((prevConfig) => {
+                if (
+                    prevConfig.slidesToShow === nextConfig.slidesToShow &&
+                    prevConfig.slidesToScroll === nextConfig.slidesToScroll
+                ) {
+                    return prevConfig;
+                }
+
+                return nextConfig;
+            });
+        };
+
+        // Ensure the correct breakpoint is applied on first load.
+        updateSlidesConfig();
+        window.addEventListener("resize", updateSlidesConfig);
+
+        return () => {
+            window.removeEventListener("resize", updateSlidesConfig);
+        };
+    }, [getSlidesConfigForWidth]);
 
     const settings = {
         infinite: true,
         speed: 500,
-        slidesToShow: 3,
+        slidesToShow: slidesConfig.slidesToShow,
         arrows: false,
-        slidesToScroll: 3,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
-                },
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                },
-            },
-        ],
+        slidesToScroll: slidesConfig.slidesToScroll,
     };
 
     const getDescriptionClampClass = (clubName, description) => {
