@@ -41,10 +41,10 @@ export default function Majors({ formData, onUpdate, onValidChange }) {
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-30 mx-15">
       <div>
         <h1 className="text-2xl font-bold text-[#1C350F]">Tell us about yourself!</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-500">
           We&apos;ll be using this information to personalize club recommendations for you.
         </p>
       </div>

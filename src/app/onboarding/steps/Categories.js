@@ -39,7 +39,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
 
     return (
         <>
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8 mx-15">
                 <div>
                     <h1 className="text-2xl font-bold text-[#1C350F]">Choose some of your interests!</h1>
                     <p className="mt-1 text-sm text-gray-500">
@@ -47,7 +47,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                     </p>
                 </div>
             </div>
-            <div className="mt-8 flex flex-wrap justify-center gap-3 sm:grid sm:grid-cols-8 sm:gap-x-0.25 sm:gap-y-10">
+            <div className="mt-8 flex flex-wrap justify-center gap-3 sm:grid sm:grid-cols-8 sm:gap-x-0.25 sm:gap-y-10 mx-0 sm:mx-20">
                 {INTERESTS.map((interest, i) => {
                     const isSelected = selected.includes(interest);
 

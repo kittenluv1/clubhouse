@@ -25,7 +25,7 @@ export default function Clubs({ formData, onUpdate, onValidChange, clubOptions =
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 mx-15">
       <div>
         <h1 className="text-2xl font-bold text-[#1C350F]">Which clubs are you in?</h1>
         <p className="mt-1 text-sm text-gray-500">
