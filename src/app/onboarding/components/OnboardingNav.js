@@ -15,7 +15,7 @@ export default function OnboardingNav({
   return (
     <div className="mt-auto flex justify-end gap-3 pt-8">
       {!isFirstStep && (
-        <Button type="gradient-border" size="small" onClick={onBack}>
+        <Button type="border-light" size="small" onClick={onBack}>
           <span className="flex items-center gap-1">
             <IoChevronBack size={15} />
             Prev
@@ -23,7 +23,7 @@ export default function OnboardingNav({
         </Button>
       )}
       <Button
-        type="gradient"
+        type="CTA"
         size="small"
         style={nextButtonStyle}
         onClick={onNext}
