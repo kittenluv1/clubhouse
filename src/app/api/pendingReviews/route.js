@@ -6,10 +6,10 @@ export async function GET(req) {
 
   try {
     const authHeader = req.headers.get('authorization');
-    
+
     if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }), 
+        JSON.stringify({ error: "Unauthorized" }),
         { status: 401 }
       );
     }
@@ -58,7 +58,7 @@ export async function GET(req) {
 
 export async function POST(req) {
   const authHeader = req.headers.get('authorization');
-  
+
   if (!authHeader) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }

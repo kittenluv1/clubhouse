@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
 import Button from "./components/button";
+import ClubSlider from "./components/ClubSlider";
 
 function useIsMobile(breakpoint = 1024) {
   const [isMobile, setIsMobile] = useState(false);
@@ -29,7 +30,7 @@ function Home() {
     "Academic",
     "Business",
     "Career Planning",
-    "Club Sports",    
+    "Club Sports",
     "Dental",
     "Educational",
     "Engineering",
@@ -85,43 +86,48 @@ function Home() {
   }, [isMobile]);
 
   return (
-    <div className="relative flex w-full flex-col items-center justify-center">
-      <div className="max-w-2xl lg:p-15">
-        <img
-          src="/clubhouse-logo-desktop.svg"
-          alt="ClubHouse Logo"
-          className="hidden w-sm object-cover lg:block"
-        />
-        <img
-          src="/clubhouse-logo-mobile.svg"
-          alt="ClubHouse Logo"
-          className="w-4xs object-cover lg:hidden"
-        />
-      </div>
-      <div className="flex w-6/8 max-w-4xl flex-col items-center space-y-2">
-        <SearchBar ref={searchRef} style="bg-white" />
-        <div className="flex flex-wrap justify-center gap-3 py-5 px-10 md:py-10">
-          {randomCategories.map((category, index) => (
-            <Button
-              style="drop-shadow-xs"
-              key={category}
-              onClick={() => {
-                const encoded = encodeURIComponent(category);
-                router.push(`/clubs?categories=${encoded}`);
-              }}
-            >
-              {category}
-            </Button>
-          ))}
+    <div className="relative w-full">
+      <div className="mx-auto flex w-full max-w-7xl flex-col items-center px-6 py-10 md:px-10 lg:px-16">
+        <div className="max-w-2xl lg:p-8">
+          <img
+            src="/clubhouse-logo-desktop.svg"
+            alt="ClubHouse Logo"
+            className="hidden w-sm object-cover lg:block"
+          />
+          <img
+            src="/clubhouse-logo-mobile.svg"
+            alt="ClubHouse Logo"
+            className="w-4xs object-cover lg:hidden"
+          />
         </div>
-      </div>
-      <div className="w-full flex justify-center lg:justify-end lg:mr-100">
-        <Button
-          type="CTA"
-          onClick={() => router.push("/clubs?showCategories")}
-        >
-          More Categories &gt;
-        </Button>
+        <div className="flex w-full max-w-4xl flex-col items-center space-y-2">
+          <SearchBar ref={searchRef} style="bg-white" />
+          <div className="flex flex-wrap justify-center gap-3 px-4 py-5 md:px-10 md:py-10">
+            {randomCategories.map((category, index) => (
+              <Button
+                style="drop-shadow-xs"
+                key={category}
+                onClick={() => {
+                  const encoded = encodeURIComponent(category);
+                  router.push(`/clubs?categories=${encoded}`);
+                }}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <div className="flex w-full max-w-4xl justify-end">
+          <Button
+            type="CTA"
+            onClick={() => router.push("/clubs?showCategories#discover")}
+          >
+            More Categories &gt;
+          </Button>
+        </div>
+        <div className="mt-30 mb-16 w-full max-w-6xl">
+          <ClubSlider />
+        </div>
       </div>
     </div>
   );

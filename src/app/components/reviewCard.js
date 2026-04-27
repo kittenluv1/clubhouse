@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Link from "next/link";
 import Button from "./button";
 import { supabase } from "@/app/lib/db";
+import { getAvatarUrl } from "@/app/lib/avatars";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -22,26 +23,26 @@ const formatMembership = (review) => {
 const renderStars = (rating, sizeClasses = "") => {
   const stars = [];
   const numStars = Math.round(rating || 0);
-  const ratingDecimal = rating - Math.floor(rating); 
+  const ratingDecimal = rating - Math.floor(rating);
   for (let i = 0; i < 5; i++) {
     if (i < numStars) {
-      if((rating - ratingDecimal) == i && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)){
-      stars.push(<img 
-        key={i} 
-        src="/reviewStarHalf.svg" 
-        className={` ${sizeClasses}`} />);
-      }else {
-      stars.push(<img 
-        key={i} 
-        src="/reviewStarFilled.svg" 
-        className={` ${sizeClasses}`} />);
+      if ((rating - ratingDecimal) == i && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)) {
+        stars.push(<img
+          key={i}
+          src="/reviewStarHalf.svg"
+          className={` ${sizeClasses}`} />);
+      } else {
+        stars.push(<img
+          key={i}
+          src="/reviewStarFilled.svg"
+          className={` ${sizeClasses}`} />);
       }
       // stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
     } else {
       // stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
-      stars.push(<img 
-        src="/reviewStarUnfilled.svg" 
-        key={i} 
+      stars.push(<img
+        src="/reviewStarUnfilled.svg"
+        key={i}
         className={`text-gray-300`} />);
     }
   }
@@ -124,7 +125,7 @@ export default function ReviewCard({
   const canDelete = status === "rejected" && onDelete;
 
   const cardContent = (
-    <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 my-4 transition-all duration-300 ease-out mt-15 md:space-y-5 md:px-10 md:py-10`}>
+    <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
       {/* Header section */}
       <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-start">
         {/* Left side */}
@@ -134,9 +135,9 @@ export default function ReviewCard({
             <div className="flex items-center gap-1 md:gap-3 min-w-0 flex-1 md:flex-initial">
               {status === "displayed" && (
                 <img
-                  src="/profile.svg"
+                  src={review.profiles ? getAvatarUrl(review.profiles.avatar_id) : "/profile.svg"}
                   alt="Profile"
-                  className="w-10 h-15 md:w-15 md:h-15 flex-shrink-0"
+                  className="w-12 h-12 md:w-18 md:h-18 rounded-full object-cover flex-shrink-0 pb-2"
                 />
               )}
               <div className="flex flex-col gap-1 md:gap-2 min-w-0">
