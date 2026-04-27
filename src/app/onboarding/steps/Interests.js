@@ -77,7 +77,7 @@ export default function Avocations({ formData, onUpdate, onValidChange }) {
 
     return (
         <>
-            <div className="ml-15">
+            <div className="mx-15">
                 <h1 className="text-2xl font-bold text-[#1C350F]">Choose Your Interest</h1>
                 <p className="text-[0.8rem] mt-2 text-[#6E808D] mb-10">
                     We'll be using this information to personalize club recommendations for you.

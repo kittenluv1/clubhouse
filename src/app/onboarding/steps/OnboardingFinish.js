@@ -7,10 +7,10 @@ export default function OnboardingFinish() {
 
     return (
         <>
-            <h1 className="text-[1.16rem] font-bold text-[black] ml-15">
+            <h1 className="text-[1.16rem] font-bold text-[black] mx-15">
                 All done! Select where to explore next:
             </h1>
-            <p className="text-xs mt-1 text-black ml-15">
+            <p className="text-xs mt-1 text-black mx-15">
                 Your club recommendations have now been personalized based on our background and interests.
             </p>
             <div className="flex justify-center h-40 mt-25">
