@@ -121,7 +121,7 @@ export default function ReviewCard({
 
   // Determine what actions are available based on status
   const canLike = status === "displayed" && onLike;
-  const canEdit = status === "rejected" && onEdit;
+  const canEdit = (status === "rejected" || status === "approved") && onEdit;
   const canDelete = status === "rejected" && onDelete;
 
   const cardContent = (
