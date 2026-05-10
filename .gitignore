@@ -36,7 +36,6 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
-!.env.docker.example
 
 # vercel
 .vercel
@@ -52,5 +51,3 @@ supabase/config.toml
 # local backups
 backups/
 
-# Docker local dev
-.env.docker

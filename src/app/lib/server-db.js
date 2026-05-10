@@ -2,10 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerClient as createSSRClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-// In Docker dev, SUPABASE_INTERNAL_URL=http://kong:8000 (container-to-container).
-// In all other environments it is unset, so we fall back to NEXT_PUBLIC_SUPABASE_URL.
-const supabaseUrl =
-  process.env.SUPABASE_INTERNAL_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
