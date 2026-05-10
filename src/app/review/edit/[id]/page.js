@@ -7,7 +7,7 @@ import { QuarterYearDropdown } from "../../../components/dropdowns";
 import CustomSlider from "../../../components/custom-slider";
 import { supabase } from "../../../lib/db";
 import { useRequireAuth } from "../../../context/AuthContext";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AiFillStar } from "react-icons/ai";
 import Tooltip from "../../../components/tooltip";
@@ -45,9 +45,11 @@ const getCurrentQuarter = () => {
 export default function EditReviewPage() {
 	const params = useParams();
 	const id = params.id;
-
 	const router = useRouter();
 	const { user } = useRequireAuth();
+	const searchParams = useSearchParams();
+	const rawSource = searchParams.get("source");
+	const source = rawSource === "approved" ? "approved" : "rejected";
 
 	const [selectedClub, setSelectedClub] = useState("");
 	const [clubId, setClubId] = useState(null);
@@ -75,17 +77,18 @@ export default function EditReviewPage() {
 	const [success, setSuccess] = useState(false);
 	const [userAlias, setUserAlias] = useState("");
 
-	// Get rejected review and set form fields
+	// Get review data and set form fields
 	useEffect(() => {
 		if (!id) {
 			setIsReviewLoading(false);
 			return;
 		}
 
-		const fetchRejectedReview = async () => {
+		const fetchReview = async () => {
 
 			try {
-				const response = await fetch(`/api/rejectedReviews/${id}`, {
+				const apiBase = source === "approved" ? "approvedReviews" : "rejectedReviews";
+				const response = await fetch(`/api/${apiBase}/${id}`, {
 					method: 'GET',
 					headers: { 'Content-Type': 'application/json' },
 				});
@@ -124,9 +127,9 @@ export default function EditReviewPage() {
 
 		};
 
-		fetchRejectedReview();
+		fetchReview();
 
-	}, [id]);
+	}, [id, source]);
 
 	useEffect(() => {
 		if (startQuarter && startYear && endQuarter && endYear) {
@@ -253,7 +256,8 @@ export default function EditReviewPage() {
 				user_alias: userAlias,
 			};
 
-			const response = await fetch(`/api/rejectedReviews/${id}`, {
+			const apiBase = source === "approved" ? "approvedReviews" : "rejectedReviews";
+			const response = await fetch(`/api/${apiBase}/${id}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(reviewData),
@@ -613,6 +617,12 @@ export default function EditReviewPage() {
 							{reviewText.length} / 2500 Characters
 						</div>
 					</div>
+
+					{source === "approved" && (
+						<p className="text-sm text-amber-600 mb-4">
+							Submitting will unpublish your review until it&apos;s re-approved by our team.
+						</p>
+					)}
 
 					{error && (
 						<div className="mb-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700">
