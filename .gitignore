@@ -50,3 +50,7 @@ supabase/config.toml
 
 # local backups
 backups/
+
+# Docker local dev
+.env.docker
+supabase/docker/000-base-schema.sql
