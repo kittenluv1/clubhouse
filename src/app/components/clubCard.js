@@ -120,7 +120,7 @@ export default function ClubCard({
             aria-label={liked ? "Unlike club" : "Like club"}
           >
             <img
-              src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
+              src={`/${liked ? "interactions/likeFilled" : "interactions/likeUnfilled"}.svg`}
               alt="Heart Icon"
             />
             <span className="text-gray-700">{clubLikeCount}</span>
@@ -133,7 +133,7 @@ export default function ClubCard({
             aria-label={saved ? "Unsave club" : "Save club"}
           >
             <img
-              src={`/${saved ? "saveFilled" : "saveUnfilled"}.svg`}
+              src={`/${saved ? "interactions/saveFilled" : "interactions/saveUnfilled"}.svg`}
               alt="Save Icon"
             />
           </button>
@@ -150,7 +150,7 @@ export default function ClubCard({
             ) : (
               <>
                 <img
-                  src={"reviewStarFilled.svg"}
+                  src={"interactions/reviewStarFilled.svg"}
                   className="mr-[5px]"
                 />
                 N/A

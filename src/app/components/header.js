@@ -142,7 +142,7 @@ function Header() {
                               router.push("/admin");
                             }}
                           >
-                            <img src="/review_1.svg" className="w-4 h-4 mx-5" alt="Admin" />
+                            <img src="/review/review_1.svg" className="w-4 h-4 mx-5" alt="Admin" />
                             <div className="flex flex-col items-start">
                               <p className="m-0 leading-tight">Admin</p>
                             </div>
@@ -155,7 +155,7 @@ function Header() {
                             className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
                             onClick={attemptReview}
                           >
-                            <img src="/edit-review.svg" className="w-4 h-4 mx-5" alt="Sign Out" />
+                            <img src="/review/edit-review.svg" className="w-4 h-4 mx-5" alt="Sign Out" />
                             <div className="flex flex-col items-start">
                               <p className="m-0">Write a Review</p>
                             </div>
@@ -168,7 +168,7 @@ function Header() {
                       className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-b-lg"
                       onClick={signOut}
                     >
-                      <img src="/sign-out.svg" className="w-4 h-4 mx-5 shrink-0" alt="Sign Out" />
+                      <img src="/profile/sign-out.svg" className="w-4 h-4 mx-5 shrink-0" alt="Sign Out" />
                       <div className="flex flex-col items-start">
                         <p className="m-0 whitespace-nowrap">Sign Out</p>
                       </div>

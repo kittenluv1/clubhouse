@@ -445,7 +445,7 @@ function ProfilePage() {
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 -bottom-17 lg:-bottom-22 lg:left-52 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
                     <img
-                        src={userProfile ? getAvatarUrl(userProfile.avatar_id) : "/bear-profile.svg"}
+                        src={getAvatarUrl(userProfile.avatar_id)}
                         alt="Profile"
                         className="h-full w-full rounded-full object-cover p-2"
                     />
@@ -468,7 +468,7 @@ function ProfilePage() {
                             >
                                 <div className="flex items-center gap-2">
                                     <img
-                                        src="profile_review.svg"
+                                        src="/profile/profile_review.svg"
                                         alt="review icon"
                                         className="max-w-[20px]"
                                     />
@@ -536,7 +536,7 @@ function ProfilePage() {
                             >
                                 <div className="flex items-center gap-2">
                                     <img
-                                        src="/profile_club.svg"
+                                        src="/profile/profile_club.svg"
                                         alt="club icon"
                                         className="max-w-[20px]"
                                     />
@@ -587,7 +587,7 @@ function ProfilePage() {
                             >
                                 <div className="flex items-center gap-2">
                                     <img
-                                        src="/edit-2.svg"
+                                        src="/profile/edit-2.svg"
                                         alt="preferences icon"
                                         className="max-w-[20px]"
                                     />

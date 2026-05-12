@@ -16,7 +16,7 @@ export default function Welcome() {
 
       <div className="mt-10 flex justify-center">
         <Image
-          src="/welcomebear.svg"
+          src="/onboarding/welcomebear.svg"
           alt="Welcome bear illustration"
           width={220}
           height={220}

@@ -7,7 +7,7 @@ export default function ThankYouPage() {
     <div className="flex flex-col items-center justify-center p-20 md:p-40 text-center">
       <object
         type="image/svg+xml"
-        data="/review-submitted.svg"
+        data="/review/review-submitted.svg"
         aria-label="ClubHouse Logo"
         className="mb-8 overflow-hidden align-middle leading-none w-60"
       />
