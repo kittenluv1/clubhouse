@@ -235,7 +235,7 @@ export default function ReviewPage() {
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
   const [success, setSuccess] = useState(false);
-
+  const [readyToSubmit, setReadyToSubmit] = useState(true)
 
   // Getting club name and ID from URL parameters
   useEffect(() => {
@@ -270,6 +270,14 @@ export default function ReviewPage() {
     }
   }, [startQuarter, startYear, endQuarter, endYear]);
 
+  useEffect(()=> {
+    if(selectedClub != "" && startQuarter != "" && (endQuarter != "" || isMember ) && overallSatisfaction != null && reviewText != ""){
+      setReadyToSubmit(false);
+    } else {
+      setReadyToSubmit(true);
+    }
+
+  }, [selectedClub, startQuarter, endQuarter, isMember, overallSatisfaction, reviewText]);
 
   const handleMembershipCheckbox = (e) => {
     const checked = e.target.checked;
@@ -305,6 +313,7 @@ export default function ReviewPage() {
         );
       }
       setClubId(data.OrganizationID);
+      
     } catch (error) {
       console.error("Error fetching club ID:", error);
       setError("Club not found.");
@@ -347,7 +356,6 @@ export default function ReviewPage() {
       setDateError("End date cannot be earlier than start date");
       return;
     }
-
 
     setIsSubmitting(true);
 
@@ -804,7 +812,7 @@ const StarRating = ({ rating, setRating }) => {
           <div className="mt-10 mb-15 flex justify-end">
             <Button
               type="submit"
-              disabled={isSubmitting || dateError}
+              disabled={readyToSubmit || isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
             >
               Submit Review
