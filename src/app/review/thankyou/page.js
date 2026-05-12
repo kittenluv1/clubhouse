@@ -4,7 +4,7 @@ import Button from "@/app/components/button";
 
 export default function ThankYouPage() {
   return (
-    <div className="flex flex-col items-center justify-center p-20 md:p-10 text-center">
+    <div className="flex flex-col items-center justify-center p-20 md:p-40 text-center">
       <object
         type="image/svg+xml"
         data="/review-submitted.svg"

@@ -172,7 +172,7 @@ const verbs = [
 const anonymousName = () => {
   const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
   const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
-  return `${randomVerb}${randomNoun}`;
+  return `@${randomVerb}${randomNoun}`;
 };
 
 
@@ -448,55 +448,55 @@ export default function ReviewPage() {
   };
 
 
-{/* Star Rating */}
-const StarRating = ({ rating, setRating }) => {
-  const handleClick = (e, star) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const value = x < rect.width / 2 ? star - 0.5 : star;
-    setRating(value);
+  {/* Star Rating */ }
+  const StarRating = ({ rating, setRating }) => {
+    const handleClick = (e, star) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const value = x < rect.width / 2 ? star - 0.5 : star;
+      setRating(value);
+    };
+
+
+    const getStarFill = (star) => {
+      if (rating >= star) return "full";
+      if (rating >= star - 0.5) return "half";
+      return "empty";
+    };
+
+
+    return (
+      <div className="flex">
+        {[1, 2, 3, 4, 5].map((star) => {
+          const fill = getStarFill(star);
+
+
+          return (
+            <button
+              key={star}
+              type="button"
+              onClick={(e) => handleClick(e, star)}
+              className="mr-1 focus:outline-none relative inline-block"
+            >
+              <AiFillStar className="text-5xl text-[#E5EBF1]" />
+
+
+              {fill !== "empty" && (
+                <span
+                  className="absolute top-0 left-0 overflow-hidden"
+                  style={{
+                    width: fill === "half" ? "50%" : "100%",
+                  }}
+                >
+                  <AiFillStar className="text-5xl text-yellow-400" />
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    );
   };
-
-
-  const getStarFill = (star) => {
-    if (rating >= star) return "full";
-    if (rating >= star - 0.5) return "half";
-    return "empty";
-  };
-
-
-  return (
-    <div className="flex">
-      {[1, 2, 3, 4, 5].map((star) => {
-        const fill = getStarFill(star);
-
-
-        return (
-          <button
-            key={star}
-            type="button"
-            onClick={(e) => handleClick(e, star)}
-            className="mr-1 focus:outline-none relative inline-block"
-          >
-            <AiFillStar className="text-5xl text-[#E5EBF1]" />
-
-
-            {fill !== "empty" && (
-              <span
-                className="absolute top-0 left-0 overflow-hidden"
-                style={{
-                  width: fill === "half" ? "50%" : "100%",
-                }}
-              >
-                <AiFillStar className="text-5xl text-yellow-400" />
-              </span>
-            )}
-          </button>
-        );
-      })}
-    </div>
-  );
-};
 
 
 
