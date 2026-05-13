@@ -63,6 +63,9 @@ export default function Filter({
   initialSelectedTags = [],
   show = false,
   onInteraction = () => { },
+  shouldDelay = false,
+  filterOpenedOnce = false,
+  onFilterOpened = () => { },
 }) {
   const { selectedCategories, searchByCategories } = useSearch();
   const [showFilter, setShowFilter] = useState(show);
@@ -70,7 +73,6 @@ export default function Filter({
   const [isMobile, setIsMobile] = useState(false);
   const filterRef = useRef(null);
   const buttonRef = useRef(null);
-  const hasOpenedOnce = useRef(false);
   const router = useRouter();
 
   // Sync with context state
@@ -134,12 +136,17 @@ export default function Filter({
 
     // on the first time loading, we might have to wait for more elements to load,
     // so add a longer delay
-    const delay = hasOpenedOnce.current ? 50 : 2000;
-    const t = setTimeout(() => {
+    if (shouldDelay && !filterOpenedOnce) {
+      onFilterOpened();
+      const t = setTimeout(() => {
+        filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 2000);
+      return () => clearTimeout(t);
+    }
+    else {
       filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      hasOpenedOnce.current = true;
-    }, delay);
-    return () => clearTimeout(t);
+      onFilterOpened();
+    }
   }, [isMobile, showFilter]);
 
   const toggleTag = (tag) => {

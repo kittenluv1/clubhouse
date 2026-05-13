@@ -31,6 +31,7 @@ function AllClubsPage() {
   const [sortType, setSortType] = useState("rating");
   const [isMobile, setIsMobile] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [filterOpenedOnce, setFilterOpenedOnce] = useState(false);
 
   const router = useRouter();
   const { user } = useAuth();
@@ -218,6 +219,9 @@ function AllClubsPage() {
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
             onInteraction={() => setShowSortModal(false)}
+            shouldDelay={filterParam} // Only delay auto-scroll on initial load with filter param
+            filterOpenedOnce={filterOpenedOnce}
+            onFilterOpened={() => setFilterOpenedOnce(true)}
           />
 
           {isMobile ? (
