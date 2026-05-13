@@ -29,19 +29,19 @@ const renderStars = (rating, sizeClasses = "") => {
       if ((rating - ratingDecimal) == i && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)) {
         stars.push(<img
           key={i}
-          src="/reviewStarHalf.svg"
+          src="/interactions/reviewStarHalf.svg"
           className={` ${sizeClasses}`} />);
       } else {
         stars.push(<img
           key={i}
-          src="/reviewStarFilled.svg"
+          src="/interactions/reviewStarFilled.svg"
           className={` ${sizeClasses}`} />);
       }
       // stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
     } else {
       // stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
       stars.push(<img
-        src="/reviewStarUnfilled.svg"
+        src="/interactions/reviewStarUnfilled.svg"
         key={i}
         className={`text-gray-300`} />);
     }
@@ -167,7 +167,7 @@ export default function ReviewCard({
                 aria-label={liked ? "Unlike review" : "Like review"}
               >
                 <img
-                  src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
+                  src={`/${liked ? "interactions/likeFilled" : "interactions/likeUnfilled"}.svg`}
                   alt="Heart Icon"
                 />
                 <span className="text-gray-700 inline-block min-w-[1rem] text-left">{likeCount}</span>
@@ -206,7 +206,7 @@ export default function ReviewCard({
               aria-label={liked ? "Unlike review" : "Like review"}
             >
               <img
-                src={`/${liked ? "likeFilled" : "likeUnfilled"}.svg`}
+                src={`/${liked ? "interactions/likeFilled" : "interactions/likeUnfilled"}.svg`}
                 alt="Heart Icon"
               />
               <span className="text-md text-gray-700 inline-block min-w-[1rem] text-left">
@@ -265,7 +265,7 @@ export default function ReviewCard({
               }}
             >
               <div className="flex items-center gap-3">
-                <img src={"/edit-2.svg"}
+                <img src={"/profile/edit-2.svg"}
                   className="h-6 w-6"
                 />
                 Edit Review
@@ -283,10 +283,10 @@ export default function ReviewCard({
               style="group"
             >
               <div className="flex items-center gap-3">
-                <img src="/trash.svg"
+                <img src="/utility/trash.svg"
                   className="h-6 w-6 block group-hover:hidden"
                 />
-                <img src="/trash-hover.svg"
+                <img src="/utility/trash-hover.svg"
                   className="hidden h-6 w-6 group-hover:block"
                 />
                 Delete
