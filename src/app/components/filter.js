@@ -70,6 +70,7 @@ export default function Filter({
   const [isMobile, setIsMobile] = useState(false);
   const filterRef = useRef(null);
   const buttonRef = useRef(null);
+  const hasOpenedOnce = useRef(false);
   const router = useRouter();
 
   // Sync with context state
@@ -128,11 +129,16 @@ export default function Filter({
       return;
     }
 
+    // timeout to make sure other screen elements have rendered
+    // otherwise they might show up after and cover the filter
+
+    // on the first time loading, we might have to wait for more elements to load,
+    // so add a longer delay
+    const delay = hasOpenedOnce.current ? 50 : 2000;
     const t = setTimeout(() => {
-      if (filterRef.current) {
-        filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }, 100);
+      filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      hasOpenedOnce.current = true;
+    }, delay);
     return () => clearTimeout(t);
   }, [isMobile, showFilter]);
 
