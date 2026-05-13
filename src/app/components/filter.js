@@ -120,17 +120,20 @@ export default function Filter({
     return () => {
       document.body.style.overflow = "";
     };
+
   }, [isMobile, showFilter]);
 
   useEffect(() => {
-    if (isMobile && showFilter) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+    if (!showFilter || isMobile) {
+      return;
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+
+    const t = setTimeout(() => {
+      if (filterRef.current) {
+        filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 100);
+    return () => clearTimeout(t);
   }, [isMobile, showFilter]);
 
   const toggleTag = (tag) => {
