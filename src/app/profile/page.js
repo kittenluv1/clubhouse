@@ -100,10 +100,8 @@ function ProfilePage() {
         console.log('Like review:', reviewId, isLiked);
     };
 
-    const handleEdit = (review) => {
-        // Navigate to edit page
-        console.log('Editing review:', review);
-        router.push(`/review/edit/${review.id}`);
+    const handleEdit = (review, source) => {
+        router.push(`/review/edit/${review.id}?source=${source}`);
     };
 
     const handleDelete = async (reviewId) => {
@@ -242,7 +240,7 @@ function ProfilePage() {
                                         status="approved"
                                         clickable={true}
                                         onLike={handleLike}
-                                        onEdit={handleEdit}
+                                        onEdit={(review) => handleEdit(review, "approved")}
                                         onDelete={handleDelete}
                                     />
                                 ))}
@@ -311,7 +309,7 @@ function ProfilePage() {
                                         status="rejected"
                                         clickable={true}
                                         onLike={handleLike}
-                                        onEdit={handleEdit}
+                                        onEdit={(review) => handleEdit(review, "rejected")}
                                         onDelete={handleDelete}
                                     />
                                 ))}
