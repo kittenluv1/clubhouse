@@ -1,4 +1,4 @@
-import { createAuthenticatedClient, supabaseServer } from "@/app/lib/server-db";
+import { createAuthenticatedClient } from "@/app/lib/server-db";
 
 export async function GET(req, { params }) {
   const { id } = await params;
@@ -104,7 +104,7 @@ export async function POST(req, { params }) {
       return new Response(JSON.stringify({ error: "Error resubmitting review" }), { status: 500 });
     }
 
-    const { error: deleteError } = await supabaseServer
+    const { error: deleteError } = await supabase
       .from("reviews")
       .delete()
       .eq("id", id);
