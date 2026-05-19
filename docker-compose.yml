@@ -1,0 +1,17 @@
+services:
+  next:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    volumes:
+      - .:/app
+      - next_node_modules:/app/node_modules
+      - next_next:/app/.next
+
+volumes:
+  next_node_modules:
+  next_next:

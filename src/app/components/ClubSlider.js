@@ -145,7 +145,7 @@ function ClubSlider() {
 
     if (!isLoadingCards && (!user || !onboardingCompleted)) {
         return (
-            <div className="relative w-full min-h-56 overflow-hidden rounded-2xl bg-[url('/recommendations-background.svg')] bg-cover bg-center px-6 pt-8 pb-36 md:px-10 md:py-10 md:pr-80 lg:pr-96">
+            <div className="relative w-full min-h-56 overflow-hidden rounded-2xl bg-[url('/decorative/recommendations-background.svg')] bg-cover bg-center px-6 pt-8 pb-36 md:px-10 md:py-10 md:pr-80 lg:pr-96">
                 <div className="relative z-10 flex max-w-3xl flex-col gap-4">
                     <div>
                         <p className="mb-2 text-2xl font-semibold md:text-3xl">Get Personalized Club Recommendations</p>
@@ -156,7 +156,7 @@ function ClubSlider() {
                     </div>
                 </div>
                 <img
-                    src="/recommendations-decal.svg"
+                    src="/decorative/recommendations-decal.svg"
                     alt="Recommendations decal"
                     className="pointer-events-none absolute bottom-0 w-[170px] right-0 left-auto md:w-[280px] lg:w-[340px]"
                 />
