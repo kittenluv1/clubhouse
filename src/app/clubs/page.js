@@ -107,17 +107,6 @@ function AllClubsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currPage]);
 
-  useEffect(() => {
-    if (loading) return;
-
-    if (window.location.hash === "#discover") {
-      const target = document.getElementById("discover");
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, [loading, clubs.length, pageTotal, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
-
   // Reset user-specific state on logout
   useEffect(() => {
     if (!user) {

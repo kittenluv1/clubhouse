@@ -140,7 +140,7 @@ export default function Filter({
       onFilterOpened();
       const t = setTimeout(() => {
         filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 2000);
+      }, 500);
       return () => clearTimeout(t);
     }
     else {
