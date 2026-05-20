@@ -63,6 +63,9 @@ export default function Filter({
   initialSelectedTags = [],
   show = false,
   onInteraction = () => { },
+  shouldDelay = false,
+  filterOpenedOnce = false,
+  onFilterOpened = () => { },
 }) {
   const { selectedCategories, searchByCategories } = useSearch();
   const [showFilter, setShowFilter] = useState(show);
@@ -120,17 +123,30 @@ export default function Filter({
     return () => {
       document.body.style.overflow = "";
     };
+
   }, [isMobile, showFilter]);
 
   useEffect(() => {
-    if (isMobile && showFilter) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+    if (!showFilter || isMobile) {
+      return;
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
+
+    // timeout to make sure other screen elements have rendered
+    // otherwise they might show up after and cover the filter
+
+    // on the first time loading, we might have to wait for more elements to load,
+    // so add a longer delay
+    if (shouldDelay && !filterOpenedOnce) {
+      onFilterOpened();
+      const t = setTimeout(() => {
+        filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 500);
+      return () => clearTimeout(t);
+    }
+    else {
+      filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      onFilterOpened();
+    }
   }, [isMobile, showFilter]);
 
   const toggleTag = (tag) => {
