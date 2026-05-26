@@ -365,11 +365,11 @@ export default function ReviewPage() {
       if (!startQuarter || !startYear)
         throw new Error("Please select a start date");
       if (!endQuarter || !endYear) throw new Error("Please select an end date");
+      if (overallSatisfaction === null){
+        const stars = document.getElementById("starSatisfaction");
+        stars.scrollIntoView({block: 'center', inline: 'center'});
+        throw new Error("Please rate your overall satisfaction");}
       if (!reviewText) throw new Error("Please write a review");
-
-
-      if (overallSatisfaction === null)
-        throw new Error("Please rate your overall satisfaction");
 
 
       let userAlias = anonymousName();
@@ -475,16 +475,18 @@ const StarRating = ({ rating, setRating }) => {
 
   return (
     <div className="flex">
+          <div id="starSatisfaction" className={` border-3 scroll-mt-25
+          ${(error && readyToSubmit) ? 'border-red-600' : 'border-hidden'}`}>
       {[1, 2, 3, 4, 5].map((star) => {
         const fill = getStarFill(star);
-
-
+        
         return (
+          
           <button
             key={star}
             type="button"
             onClick={(e) => handleClick(e, star)}
-            className="mr-1 focus:outline-none relative inline-block"
+            className="mr-1 focus:outline-none relative inline-block float-left"
           >
             <AiFillStar className="text-5xl text-[#E5EBF1]" />
 
@@ -499,9 +501,12 @@ const StarRating = ({ rating, setRating }) => {
                 <AiFillStar className="text-5xl text-yellow-400" />
               </span>
             )}
+          
           </button>
         );
       })}
+      </div>
+   
     </div>
   );
 };
@@ -801,18 +806,15 @@ const StarRating = ({ rating, setRating }) => {
           </div>
 
 
-          {error && (
-            <div className="mb-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700">
-              {error}
-            </div>
-          )}
+         
 
 
           {/* Submit Button */}
           <div className="mt-10 mb-15 flex justify-end">
             <Button
               type="submit"
-              disabled={readyToSubmit || isSubmitting || dateError}
+              // disabled={readyToSubmit || isSubmitting || dateError}
+              disabled={isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
             >
               Submit Review
