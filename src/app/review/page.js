@@ -476,7 +476,7 @@ const StarRating = ({ rating, setRating }) => {
   return (
     <div className="flex">
           <div id="starSatisfaction" className={` border-3 scroll-mt-25
-          ${(error && readyToSubmit) ? 'border-red-600' : 'border-hidden'}`}>
+          ${(error && overallSatisfaction == null) ? 'border-red-600' : 'border-hidden'}`}>
       {[1, 2, 3, 4, 5].map((star) => {
         const fill = getStarFill(star);
         
@@ -813,7 +813,6 @@ const StarRating = ({ rating, setRating }) => {
           <div className="mt-10 mb-15 flex justify-end">
             <Button
               type="submit"
-              // disabled={readyToSubmit || isSubmitting || dateError}
               disabled={isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
             >
