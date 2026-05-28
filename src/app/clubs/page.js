@@ -11,7 +11,6 @@ import Button from "../components/button";
 import { supabase } from "../lib/db";
 import ClubSlider from "../components/ClubSlider";
 import { useAuth } from "../context/AuthContext";
-import posthog from "posthog-js";
 
 function AllClubsPage() {
   const searchParams = useSearchParams();
@@ -31,10 +30,11 @@ function AllClubsPage() {
   const [sortType, setSortType] = useState("rating");
   const [isMobile, setIsMobile] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
-  const [filterOpenedOnce, setFilterOpenedOnce] = useState(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
 
   const router = useRouter();
   const { user } = useAuth();
+
 
   const initialSelectedTags = multiCategoriesParam
     ? multiCategoriesParam.split(",")
@@ -49,16 +49,6 @@ function AllClubsPage() {
 
   useEffect(() => {
     setShowSortModal(false);
-  }, [nameParam, singleCategoryParam, multiCategoriesParam]);
-
-  useEffect(() => {
-    if (nameParam) {
-      posthog.capture("club_searched", { query: nameParam });
-    } else if (multiCategoriesParam) {
-      posthog.capture("club_filter_applied", { categories: multiCategoriesParam.split(",") });
-    } else if (singleCategoryParam) {
-      posthog.capture("club_filter_applied", { categories: [singleCategoryParam] });
-    }
   }, [nameParam, singleCategoryParam, multiCategoriesParam]);
 
   useEffect(() => {
@@ -107,6 +97,17 @@ function AllClubsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currPage]);
 
+  useEffect(() => {
+    if (loading) return;
+
+    if (window.location.hash === "#discover") {
+      const target = document.getElementById("discover");
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [loading, clubs.length, pageTotal, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
+
   // Reset user-specific state on logout
   useEffect(() => {
     if (!user) {
@@ -120,6 +121,19 @@ function AllClubsPage() {
         return updated;
       });
     }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      setOnboardingCompleted(false);
+      return;
+    }
+    fetch("/api/onboarding")
+      .then((res) => res.json())
+      .then(({ onboarding_completed }) => {
+        setOnboardingCompleted(!!onboarding_completed);
+      })
+      .catch(() => setOnboardingCompleted(false));
   }, [user]);
 
   const handlePreviousPage = () => currPage > 1 && setCurrPage((p) => p - 1);
@@ -199,7 +213,11 @@ function AllClubsPage() {
     <>
       <div className="flex flex-col p-6 md:p-20 lg:px-30 md:py-20">
 
-        <h1 className="font-bold text-4xl black mb-4">Club Recommendations</h1>
+        {user && onboardingCompleted && (
+          <>
+            <h1 className="font-bold text-4xl black mb-4">Club Recommendations</h1>
+          </>
+        )}
         <ClubSlider></ClubSlider>
 
         <h1 className="scroll-mt-20 md:scroll-mt-24 font-bold text-4xl black mb-4 mt-10" id="discover">Discover Clubs</h1>
@@ -208,9 +226,6 @@ function AllClubsPage() {
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
             onInteraction={() => setShowSortModal(false)}
-            shouldDelay={filterParam} // Only delay auto-scroll on initial load with filter param
-            filterOpenedOnce={filterOpenedOnce}
-            onFilterOpened={() => setFilterOpenedOnce(true)}
           />
 
           {isMobile ? (
