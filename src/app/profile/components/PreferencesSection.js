@@ -13,13 +13,13 @@ import { splitUserInterests } from "../../utils/splitUserInterests";
 const BROAD_CATEGORIES = Object.keys(INTERESTS);
 
 const ICONS = {
-  "Academic & Pre-Professional": "/academic-and-pre-professional.svg",
-  "Arts & Media": "/arts-and-media.svg",
-  "Community & Advocacy": "/community-and-advocacy.svg",
-  "Health & Wellness": "/health-and-wellness.svg",
-  "Spiritual & Religious": "/spiritual-and-religious.svg",
-  "Cultural & Identity-Based": "/cultural-and-identity-based.svg",
-  "Campus Life & Social": "/campus-and-social.svg",
+  "Academic & Pre-Professional": "/onboarding/academic-and-pre-professional.svg",
+  "Arts & Media": "/onboarding/arts-and-media.svg",
+  "Community & Advocacy": "/onboarding/community-and-advocacy.svg",
+  "Health & Wellness": "/onboarding/health-and-wellness.svg",
+  "Spiritual & Religious": "/onboarding/spiritual-and-religious.svg",
+  "Cultural & Identity-Based": "/onboarding/cultural-and-identity-based.svg",
+  "Campus Life & Social": "/onboarding/campus-and-social.svg",
 };
 
 export default function PreferencesSection({
@@ -36,8 +36,8 @@ export default function PreferencesSection({
   const initialBroad = storedBroad.length > 0
     ? storedBroad
     : BROAD_CATEGORIES.filter((broad) =>
-        (INTERESTS[broad] ?? []).some((sub) => initialSub.includes(sub))
-      );
+      (INTERESTS[broad] ?? []).some((sub) => initialSub.includes(sub))
+    );
 
   const [majors, setMajors] = useState(initialMajors);
   const [minors, setMinors] = useState(initialMinors);
@@ -118,8 +118,8 @@ export default function PreferencesSection({
     ? majors.length === 0
       ? "Please select at least one major."
       : broadCategories.length < 2
-      ? "Please select at least 2 interest categories."
-      : "Please select at least 2 interest subcategories."
+        ? "Please select at least 2 interest categories."
+        : "Please select at least 2 interest subcategories."
     : null;
 
   const handleSave = async () => {
@@ -217,10 +217,9 @@ export default function PreferencesSection({
                     w-[90px] h-[90px] sm:w-[120px] sm:h-[120px] md:w-[140px] md:h-[140px]
                     flex flex-col items-center justify-center gap-2 rounded-xl p-1
                     text-center text-[10px] sm:text-xs font-medium text-gray-900
-                    ${
-                      isSelected
-                        ? "bg-[#D6EEFF] ring-2 ring-[#7BBFEE]"
-                        : "bg-[#F4F5F6] hover:bg-[#E5EBF1]"
+                    ${isSelected
+                      ? "bg-[#D6EEFF] ring-2 ring-[#7BBFEE]"
+                      : "bg-[#F4F5F6] hover:bg-[#E5EBF1]"
                     }
                   `}
                 >
@@ -258,11 +257,10 @@ export default function PreferencesSection({
                         <button
                           key={sub}
                           onClick={() => toggleSubcategory(sub)}
-                          className={`rounded-full px-4 py-2 text-sm font-medium ${
-                            isSelected
+                          className={`rounded-full px-4 py-2 text-sm font-medium ${isSelected
                               ? "bg-[#D6EEFF] ring-2 ring-[#7BBFEE]"
                               : "bg-[#F4F5F6] hover:bg-[#E5EBF1]"
-                          }`}
+                            }`}
                         >
                           {sub}
                         </button>

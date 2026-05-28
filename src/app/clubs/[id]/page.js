@@ -37,7 +37,7 @@ const getIconByName = (name) => {
   if (key.includes("youtube")) {
     return <IconImg media="youtube" />;
   }
-  return null;
+  return <IconImg media="website" />;
 };
 
 const parseSocialLinks = (htmlString) => {
@@ -345,7 +345,7 @@ export default function ClubDetailsPage() {
 
   const attemptReview = (href) => {
     if (user) {
-        posthog.capture("write_review_clicked", {
+      posthog.capture("write_review_clicked", {
         club_id: club.OrganizationID,
         club_name: club.OrganizationName,
       });
@@ -458,7 +458,7 @@ export default function ClubDetailsPage() {
                   className="flex items-center gap-0 md:gap-1 p-1 transition-all min-w-[44px] min-h-[44px]"
                   aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
-                  <img src={userLikedClub ? "/likeFilled.svg" : "/likeUnfilled.svg"} alt="Like Icon" className="flex-shrink-0" />
+                  <img src={userLikedClub ? "/interactions/likeFilled.svg" : "/interactions/likeUnfilled.svg"} alt="Like Icon" className="flex-shrink-0" />
                   <span className="text-gray-700">{clubLikeCount}</span>
                 </button>
 
@@ -468,7 +468,7 @@ export default function ClubDetailsPage() {
                   className="flex items-center gap-0 md:gap-2 p-1 transition-all min-w-[44px] min-h-[44px]"
                   aria-label={userSavedClub ? "Unsave club" : "Save club"}
                 >
-                  <img src={userSavedClub ? "/saveFilled.svg" : "/saveUnfilled.svg"} alt="Save Icon" className="flex-shrink-0" />
+                  <img src={userSavedClub ? "/interactions/saveFilled.svg" : "/interactions/saveUnfilled.svg"} alt="Save Icon" className="flex-shrink-0" />
                 </button>
               </div>
             </div>

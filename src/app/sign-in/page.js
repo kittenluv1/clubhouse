@@ -1,149 +1,101 @@
-"use client";
-
 import GoogleSignIn from "../components/google-sign-in";
-import Button from "../components/button";
-import { useState, useEffect } from "react";
 
 function SignInPage() {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   return (
-    <div style={{ position: "relative", width: "100vw", minHeight: "calc(100vh - 84px)", overflow: "hidden" }}>
-      {isMobile ? (
-        // mobile :3
-        <div style={{
-          position: "relative",
-          zIndex: 10,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "calc(100vh - 84px)",
-          padding: "10vw 6vw 10vw",
-          boxSizing: "border-box",
-        }}>
-          {/* top text */}
-          <h1 style={{ fontSize: "9vw", fontWeight: "bold", color: "black", margin: "0 0 2vw 0", textAlign: "center" }}>
+    <div className="relative pt-10 md:pt-20 bg-transparent">
+      <div className="pointer-events-none absolute -left-20 top-16 h-64 w-64 rounded-full bg-[#CDE5FC]/50 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#F7D7E2]/40 blur-3xl" />
+
+      <div className="relative z-10 hidden min-h-[calc(100vh-84px)] grid-cols-2 items-center gap-10 px-6 md:grid lg:px-12 xl:px-20">
+        <div className="flex flex-col items-start justify-center pl-4 lg:pl-16">
+          <h1 className="text-[clamp(2.75rem,4vw,5rem)] font-bold tracking-tight text-black">
             Hello!
           </h1>
-          <h2 style={{ fontSize: "4.5vw", color: "#6E808D", fontWeight: "normal", margin: "0 0 8vw 0", textAlign: "center" }}>
+          <h2 className="text-[clamp(1.1rem,1.9vw,2rem)] font-normal text-[#6E808D]">
             Start your journey with us
           </h2>
 
-          {/* flowers */}
-          <div style={{ position: "relative", width: "80vw" }}>
-            {/* blue flower */}
+          <div className="relative mt-10 h-[18vw] min-h-56 w-[22vw] min-w-[18rem] max-w-[30rem]">
             <img
-              src="/blueflower.svg" className="transition-transform duration-500 ease-in-out hover:-rotate-90"
-              style={{ position: "absolute", left: "-8vw", top: "-6vw", width: "18vw", height: "18vw", zIndex: 2 }}
+              src="/onboarding/blueflower.svg"
+              alt="Blue flower decoration"
+              className="absolute left-[2vw] top-[2vw] h-[9vw] w-[10vw] min-h-24 min-w-28 max-h-40 max-w-44 transition-transform duration-500 ease-in-out hover:-rotate-90"
             />
-            {/* green flower — bottom right */}
             <img
-              src="/greenflower.svg" className="transition-transform duration-500 ease-in-out hover:-rotate-90"
-              style={{ position: "absolute", right: "-4vw", bottom: "-6vw", width: "16vw", height: "16vw", zIndex: 2 }}
+              src="/onboarding/greenflower.svg"
+              alt="Green flower decoration"
+              className="absolute left-[12vw] top-0 h-[8vw] w-[9vw] min-h-20 min-w-24 max-h-36 max-w-40 transition-transform duration-500 ease-in-out hover:-rotate-90"
+            />
+            <img
+              src="/onboarding/pinkflower.svg"
+              alt="Pink flower decoration"
+              className="absolute left-[8vw] top-[9vw] h-[8vw] w-[10vw] min-h-20 min-w-28 max-h-36 max-w-44 transition-transform duration-500 ease-in-out hover:-rotate-90"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center">
+          <div className="flex w-full max-w-xl flex-col items-center rounded-[1.5rem] bg-white px-8 py-10 text-center shadow-[0_4px_32px_rgba(0,0,0,0.1)] ring-1 ring-black/5 lg:px-12 lg:py-14">
+            <img
+              src="/clubhouse-logo-mobile.svg"
+              alt="Clubhouse logo"
+              className="h-auto w-28 md:w-32 lg:w-36"
+            />
+            <h2 className="mt-6 text-[clamp(1.75rem,2.4vw,3rem)] font-bold tracking-tight text-black">
+              Sign in to Clubhouse
+            </h2>
+            <p className="mt-3 max-w-md text-sm leading-6 text-[#6E808D] md:text-base">
+              To keep reviews accurate and trustworthy,
+              <br />
+              only verified UCLA students can contribute.
+            </p>
+            <div className="mt-8">
+              <GoogleSignIn />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative z-10 flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-10 md:hidden">
+        <div className="flex w-full max-w-sm flex-col items-center text-center">
+          <h1 className="text-[clamp(3rem,12vw,4.75rem)] font-bold tracking-tight text-black">
+            Hello!
+          </h1>
+          <h2 className="mt-2 text-[clamp(1.15rem,4.2vw,1.5rem)] font-normal text-[#6E808D]">
+            Start your journey with us
+          </h2>
+
+          <div className="relative mt-8 w-[min(82vw,22rem)]">
+            <img
+              src="/onboarding/blueflower.svg"
+              alt="Blue flower decoration"
+              className="absolute left-[-8vw] top-[-6vw] h-[18vw] w-[18vw] min-h-24 min-w-24 max-h-40 max-w-40 transition-transform duration-500 ease-in-out hover:-rotate-90"
+            />
+            <img
+              src="/onboarding/greenflower.svg"
+              alt="Green flower decoration"
+              className="absolute bottom-[-6vw] right-[-4vw] h-[16vw] w-[16vw] min-h-20 min-w-20 max-h-36 max-w-36 transition-transform duration-500 ease-in-out hover:-rotate-90"
             />
 
-            {/* white card */}
-            <div style={{
-              position: "relative",
-              zIndex: 1,
-              background: "white",
-              borderRadius: "1.5rem",
-              boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              padding: "4vw 2vw",
-            }}>
-              <img src="/clubhouse-logo-mobile.svg" style={{ width: "25vw", height: "auto", marginBottom: "3vw" }} />
-              <h2 style={{ fontSize: "5.5vw", fontWeight: "bold", color: "black", margin: "0 0 2vw 0" }}>
+            <div className="relative z-10 flex flex-col items-center rounded-[1.5rem] bg-white px-5 py-7 text-center shadow-[0_4px_32px_rgba(0,0,0,0.1)] ring-1 ring-black/5">
+              <img
+                src="/clubhouse-logo-mobile.svg"
+                alt="Clubhouse logo"
+                className="mb-4 h-auto w-24"
+              />
+              <h2 className="text-[clamp(1.45rem,5.5vw,2rem)] font-bold tracking-tight text-black">
                 Sign in to Clubhouse
               </h2>
-              <p style={{ fontSize: "3.2vw", color: "#6E808D", lineHeight: 1.6, marginBottom: "5vw" }}>
+              <p className="mt-3 max-w-xs text-[clamp(0.95rem,3.2vw,1rem)] leading-6 text-[#6E808D]">
                 To keep reviews accurate and trustworthy, only verified UCLA students can contribute.
               </p>
-              <div style={{ paddingBottom: "8vw"}}>
+              <div className="pb-2 pt-6">
                 <GoogleSignIn />
               </div>
             </div>
           </div>
         </div>
-
-      ) : (
-        // desktop #big
-        <div style={{
-          position: "relative",
-          zIndex: 10,
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          alignItems: "center",
-          width: "100vw",
-          minHeight: "calc(100vh - 84px)",
-          padding: "0 4vw",
-          boxSizing: "border-box",
-        }}>
-          {/* left */}
-          <div style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            justifyContent: "center",
-            paddingLeft: "8vw",
-          }}>
-            <h1 style={{ fontSize: "4vw", fontWeight: "bold", color: "black", margin: 0 }}>
-              Hello!
-            </h1>
-            <h2 style={{ fontSize: "2vw", color: "#6E808D", fontWeight: "normal", margin: 0 }}>
-              Start your journey with us
-            </h2>
-            <div style={{ position: "relative", width: "22vw", height: "18vw", marginTop: "3vw" }}>
-              <img src="/blueflower.svg" className="transition-transform duration-500 ease-in-out hover:-rotate-90"
-                style={{ position: "absolute", left: "2vw", top: "2vw", width: "10vw", height: "9vw" }} />
-              <img src="/greenflower.svg" className="transition-transform duration-500 ease-in-out hover:-rotate-90"
-                style={{ position: "absolute", left: "12vw", top: "0", width: "9vw", height: "8vw" }} />
-              <img src="/pinkflower.svg" className="transition-transform duration-500 ease-in-out hover:-rotate-90"
-                style={{ position: "absolute", left: "8vw", top: "9vw", width: "10vw", height: "8vw" }} />
-            </div>
-          </div>
-
-          {/* right */}
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <div style={{
-              background: "white",
-              borderRadius: "1.5rem",
-              boxShadow: "0 4px 32px rgba(0,0,0,0.10)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              width: "38vw",
-              padding: "5vw 4vw",
-            }}>
-              <img src="/clubhouse-logo-mobile.svg" style={{ width: "9vw", height: "auto" }} />
-              <h2 style={{ fontSize: "2.4vw", fontWeight: "bold", color: "black", margin: "1.5vw 0 0.5vw" }}>
-                Sign in to Clubhouse
-              </h2>
-              <p style={{ fontSize: "1vw", color: "#6E808D", lineHeight: 1.6, marginBottom: "2vw" }}>
-                To keep reviews accurate and trustworthy,
-                <br />
-                only verified UCLA students can contribute.
-              </p>
-              <GoogleSignIn />
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

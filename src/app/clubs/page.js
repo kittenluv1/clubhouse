@@ -31,6 +31,7 @@ function AllClubsPage() {
   const [sortType, setSortType] = useState("rating");
   const [isMobile, setIsMobile] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [filterOpenedOnce, setFilterOpenedOnce] = useState(false);
 
   const router = useRouter();
   const { user } = useAuth();
@@ -105,17 +106,6 @@ function AllClubsPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currPage]);
-
-  useEffect(() => {
-    if (loading) return;
-
-    if (window.location.hash === "#discover") {
-      const target = document.getElementById("discover");
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, [loading, clubs.length, pageTotal, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
 
   // Reset user-specific state on logout
   useEffect(() => {
@@ -218,6 +208,9 @@ function AllClubsPage() {
             initialSelectedTags={initialSelectedTags}
             show={filterParam}
             onInteraction={() => setShowSortModal(false)}
+            shouldDelay={filterParam} // Only delay auto-scroll on initial load with filter param
+            filterOpenedOnce={filterOpenedOnce}
+            onFilterOpened={() => setFilterOpenedOnce(true)}
           />
 
           {isMobile ? (
