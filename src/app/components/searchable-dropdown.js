@@ -11,6 +11,7 @@ const SearchableDropdown = ({
     required = true,
     placeholderColor = "#000", 
     value = "",
+    ref,
     className = ""
     }) => {
     const [inputValue, setInputValue] = useState(value || ''); 
@@ -115,6 +116,7 @@ const SearchableDropdown = ({
           style={{
             "--placeholder-color": placeholderColor,
           }}
+          ref={ref}
         />
         <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center pr-3">
           <svg

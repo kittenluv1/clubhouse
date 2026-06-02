@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import posthog from "posthog-js";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
@@ -16,6 +16,7 @@ import Tooltip from "../components/tooltip";
 import LoadingScreen from "../components/LoadingScreen";
 import Button from "../components/button";
 import Image from "next/image";
+import { textarea } from "framer-motion/client";
 
 
 const nouns = [
@@ -234,6 +235,10 @@ export default function ReviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
+  const [requiredError, setRequiredError] = useState("");
+  const satisfactionStars = useRef(null);
+  const textInput = useRef(null);
+  const clubNameInput = useRef(null);
   const [success, setSuccess] = useState(false);
   const [readyToSubmit, setReadyToSubmit] = useState(true)
 
@@ -365,10 +370,7 @@ export default function ReviewPage() {
       if (!startQuarter || !startYear)
         throw new Error("Please select a start date");
       if (!endQuarter || !endYear) throw new Error("Please select an end date");
-      if (overallSatisfaction === null){
-        const stars = document.getElementById("starSatisfaction");
-        stars.scrollIntoView({block: 'center', inline: 'center'});
-        throw new Error("Please rate your overall satisfaction");}
+      if (overallSatisfaction === null) throw new Error("Please rate your overall satisfaction");
       if (!reviewText) throw new Error("Please write a review");
 
 
@@ -475,8 +477,8 @@ const StarRating = ({ rating, setRating }) => {
 
   return (
     <div className="flex">
-          <div id="starSatisfaction" className={` border-3 scroll-mt-25
-          ${(error && overallSatisfaction == null) ? 'border-red-600' : 'border-hidden'}`}>
+          <div ref={satisfactionStars} tabIndex={0} className={` border-3 scroll-mt-25
+          ${(requiredError == "Satisfaction not Set" && overallSatisfaction == null) ? 'border-red-600' : 'border-hidden'}`}>
       {[1, 2, 3, 4, 5].map((star) => {
         const fill = getStarFill(star);
         
@@ -511,7 +513,25 @@ const StarRating = ({ rating, setRating }) => {
   );
 };
 
+{/* Required fields validation*/}
+const requireValid = (e) => {
+  const isClubNameValid = clubNameInput.current?.checkValidity()
+    if((selectedClub == "" && (!isClubNameValid)) )
+       {setRequiredError("Club not Selected"); return;} 
 
+    if(startQuarter == "") {setRequiredError("Start not Selected"); return;}
+    if(endQuarter == "") {setRequiredError("End not Selected"); return;}
+    if(overallSatisfaction == null) { 
+      e.preventDefault(); 
+      satisfactionStars.current.scrollIntoView({block: 'center', inline: 'center'});
+      setRequiredError("Satisfaction not Set"); 
+      return;
+    }
+    if(reviewText == "") {setRequiredError("Review not Typed"); 
+      textInput.current.scrollIntoView({block: 'center', inline: 'center'});
+      return;}
+  
+};
 
 
   if (isSubmitting) return LoadingScreen();
@@ -548,13 +568,17 @@ const StarRating = ({ rating, setRating }) => {
               <label className="mb-5 block text-sm text-[#6E808D]">
                 Help fellow students discover the best club experiences!
               </label>
-              <div className="max-w-md mb-5 text-sm text-gray-600">
+              <div className={`max-w-md mb-5 text-sm text-gray-600 rounded-full
+              ${(
+                (requiredError == "Club not Selected" && selectedClub=="")) 
+               ? 'border-red-600 border-1 ' : 'border-hidden'} `}>
                 <SearchableDropdown
                   tableName="clubs"
                   onSelect={handleClubSelect}
                   value={selectedClub}
                   className="w-full rounded-full border bg-gray-200 py-2 pr-10 pl-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                   placeholderColor="#374151"
+                  ref={clubNameInput}
                 />
               </div>
             </div>
@@ -582,7 +606,8 @@ const StarRating = ({ rating, setRating }) => {
                   <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="flex space-x-2">
-                  <div className="w-1/2">
+                  <div className={`w-1/2 
+                    ${(requiredError == "Start not Selected" && startQuarter == "") ? 'border-red-600 rounded-full border-1' : 'border-hidden'} `}>
                     <QuarterYearDropdown
                       selectedQuarter={startQuarter}
                       selectedYear={startYear}
@@ -600,7 +625,8 @@ const StarRating = ({ rating, setRating }) => {
                   Club Membership End Date <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="mb-5 flex space-x-2">
-                  <div className="w-1/2">
+                  <div className={`w-1/2 
+                    ${(requiredError == "End not Selected" && endQuarter == "") ? 'border-red-600 rounded-full border-1' : 'border-hidden'}`}>
                     <QuarterYearDropdown
                       selectedQuarter={endQuarter}
                       selectedYear={endYear}
@@ -789,7 +815,10 @@ const StarRating = ({ rating, setRating }) => {
             </label>
             <p className="text-sm text-[#6E808D] mb-5 ">Share insights to help future students understand what to expect from this club!</p>
             <textarea
-              className="h-32 w-full rounded-2xl border border-[#B4BEC5] bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            ref={textInput}
+              className={`h-32 w-full rounded-2xl border 
+                ${(requiredError == "Review not Typed" && reviewText == "") ? 'border-red-600' : 'border-[#B4BEC5]'}
+                 bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
               value={reviewText}
               onChange={(e) => {
@@ -815,6 +844,7 @@ const StarRating = ({ rating, setRating }) => {
               type="submit"
               disabled={isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
+              onClick={requireValid}
             >
               Submit Review
             </Button>
