@@ -15,13 +15,13 @@ export const renderRatingStars = (rating) => {
 			if ((rating - ratingDecimal) == x && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)) {
 				ratingStars.push(<img
 					key={x}
-					src={"reviewStarHalf.svg"}
+					src={"interactions/reviewStarHalf.svg"}
 					className="mr-1"
 				/>);
 			} else {
 				ratingStars.push(<img
 					key={x}
-					src={"reviewStarFilled.svg"}
+					src={"interactions/reviewStarFilled.svg"}
 					className="mr-1"
 				/>);
 			}
@@ -29,7 +29,7 @@ export const renderRatingStars = (rating) => {
 		} else {
 			ratingStars.push(<img
 				key={x}
-				src={"reviewStarUnfilled.svg"}
+				src={"interactions/reviewStarUnfilled.svg"}
 				className="mr-1"
 			/>);
 		}

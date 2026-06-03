@@ -173,7 +173,7 @@ const verbs = [
 const anonymousName = () => {
   const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
   const randomVerb = verbs[Math.floor(Math.random() * verbs.length)];
-  return `${randomVerb}${randomNoun}`;
+  return `@${randomVerb}${randomNoun}`;
 };
 
 
@@ -469,21 +469,21 @@ export default function ReviewPage() {
   };
 
 
-{/* Star Rating */}
-const StarRating = ({ rating, setRating }) => {
-  const handleClick = (e, star) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const value = x < rect.width / 2 ? star - 0.5 : star;
-    setRating(value);
-  };
+  {/* Star Rating */ }
+  const StarRating = ({ rating, setRating }) => {
+    const handleClick = (e, star) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const value = x < rect.width / 2 ? star - 0.5 : star;
+      setRating(value);
+    };
 
 
-  const getStarFill = (star) => {
-    if (rating >= star) return "full";
-    if (rating >= star - 0.5) return "half";
-    return "empty";
-  };
+    const getStarFill = (star) => {
+      if (rating >= star) return "full";
+      if (rating >= star - 0.5) return "half";
+      return "empty";
+    };
 
 
   return (
@@ -724,7 +724,7 @@ const requireValid = (e) => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-base font-semibold">Time Commitment</span>
                   <Image
-                    src="/time.svg"
+                    src="/review/time.svg"
                     alt="Time Commitment"
                     width={24}
                     height={24}
@@ -750,7 +750,7 @@ const requireValid = (e) => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-base font-semibold">Inclusivity</span>
                   <Image
-                    src="/inclusivity2.svg"
+                    src="/review/inclusivity2.svg"
                     alt="Inclusivity"
                     width={24}
                     height={24}
@@ -776,7 +776,7 @@ const requireValid = (e) => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-base font-semibold">Social Community</span>
                   <Image
-                    src="/community.svg"
+                    src="/review/community.svg"
                     alt="Social Community"
                     width={25}
                     height={25}
@@ -802,7 +802,7 @@ const requireValid = (e) => {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-base font-semibold">Competitiveness</span>
                   <Image
-                    src="/competitiveness.svg"
+                    src="/review/competitiveness.svg"
                     alt="Competitiveness"
                     width={23}
                     height={23}

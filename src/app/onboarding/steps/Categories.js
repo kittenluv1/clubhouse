@@ -13,13 +13,13 @@ const INTERESTS = [
 ];
 
 const ICONS = {
-    "Academic & Pre-Professional": "/academic-and-pre-professional.svg",
-    "Arts & Media": "/arts-and-media.svg",
-    "Community & Advocacy": "/community-and-advocacy.svg",
-    "Health & Wellness": "/health-and-wellness.svg",
-    "Spiritual & Religious": "/spiritual-and-religious.svg",
-    "Cultural & Identity-Based": "/cultural-and-identity-based.svg",
-    "Campus Life & Social": "/campus-and-social.svg",
+    "Academic & Pre-Professional": "/onboarding/academic-and-pre-professional.svg",
+    "Arts & Media": "/onboarding/arts-and-media.svg",
+    "Community & Advocacy": "/onboarding/community-and-advocacy.svg",
+    "Health & Wellness": "/onboarding/health-and-wellness.svg",
+    "Spiritual & Religious": "/onboarding/spiritual-and-religious.svg",
+    "Cultural & Identity-Based": "/onboarding/cultural-and-identity-based.svg",
+    "Campus Life & Social": "/onboarding/campus-and-social.svg",
 };
 
 export default function Interests({ formData, onUpdate, onValidChange }) {

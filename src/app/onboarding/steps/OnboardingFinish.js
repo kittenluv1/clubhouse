@@ -16,19 +16,19 @@ export default function OnboardingFinish() {
             <div className="flex flex-wrap justify-center gap-4 mt-10 sm:mt-25">
                 <button className="border border-[#B5BFC6] rounded-xl w-32 bg-[#F0F2F9]" onClick={() => { router.push("/clubs") }}>
                     <div className="flex align-middle p-3 flex-wrap flex-col">
-                        <img className="self-center mb-2 w-12" src="blueRecsIcon.svg" />
+                        <img className="self-center mb-2 w-12" src="/onboarding/blueRecsIcon.svg" />
                         <p className="text-[0.7rem]">Browse Club Recommendations</p>
                     </div>
                 </button>
                 <button className="rounded-xl w-32 border border-[#B5BFC6] bg-[#F0F2F9]" onClick={() => { router.push("/profile") }}>
                     <div className="flex p-3 flex-wrap flex-col">
-                        <img className="self-center mb-2 w-12" src="pinkProfileIcon.svg" />
+                        <img className="self-center mb-2 w-12" src="/onboarding/pinkProfileIcon.svg" />
                         <p className="text-[0.7rem]">View My Profile Page</p>
                     </div>
                 </button>
                 <button className="rounded-xl w-32 border border-[#B5BFC6] bg-[#F0F2F9]" onClick={() => { router.push("/clubs?showCategories") }}>
                     <div className="flex p-3 flex-wrap flex-col">
-                        <img className="mb-2 w-12 self-center" src="yellowReviewIcon.svg" />
+                        <img className="mb-2 w-12 self-center" src="/onboarding/yellowReviewIcon.svg" />
                         <p className="text-[0.69rem]">Write a Review for a Club</p>
                     </div>
                 </button>

@@ -13,6 +13,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import ConfirmationModal from "../components/confirmationModal";
 import Button from "../components/button";
 import PreferencesSection from "./components/PreferencesSection";
+import SectionToggle from "./components/SectionToggle";
 
 function ProfilePage() {
     const router = useRouter();
@@ -20,6 +21,7 @@ function ProfilePage() {
     const [activeSection, setActiveSection] = useState("approved");
     const [reviewsExpanded, setReviewsExpanded] = useState(true);
     const [clubsExpanded, setClubsExpanded] = useState(false);
+    const [settingsExpanded, setSettingsExpanded] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
     const [approvedReviews, setApprovedReviews] = useState([]);
     const [pendingReviews, setPendingReviews] = useState([]);
@@ -100,10 +102,8 @@ function ProfilePage() {
         console.log('Like review:', reviewId, isLiked);
     };
 
-    const handleEdit = (review) => {
-        // Navigate to edit page
-        console.log('Editing review:', review);
-        router.push(`/review/edit/${review.id}`);
+    const handleEdit = (review, source) => {
+        router.push(`/review/edit/${review.id}?source=${source}`);
     };
 
     const handleDelete = async (reviewId) => {
@@ -242,7 +242,7 @@ function ProfilePage() {
                                         status="approved"
                                         clickable={true}
                                         onLike={handleLike}
-                                        onEdit={handleEdit}
+                                        onEdit={(review) => handleEdit(review, "approved")}
                                         onDelete={handleDelete}
                                     />
                                 ))}
@@ -311,7 +311,7 @@ function ProfilePage() {
                                         status="rejected"
                                         clickable={true}
                                         onLike={handleLike}
-                                        onEdit={handleEdit}
+                                        onEdit={(review) => handleEdit(review, "rejected")}
                                         onDelete={handleDelete}
                                     />
                                 ))}
@@ -445,7 +445,7 @@ function ProfilePage() {
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 -bottom-17 lg:-bottom-22 lg:left-52 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
                     <img
-                        src={userProfile ? getAvatarUrl(userProfile.avatar_id) : "/bear-profile.svg"}
+                        src={getAvatarUrl(userProfile.avatar_id)}
                         alt="Profile"
                         className="h-full w-full rounded-full object-cover p-2"
                     />
@@ -460,34 +460,15 @@ function ProfilePage() {
                         <h1 className="mb-2 text-2xl md:text-3xl font-bold font-['DM-Sans']">{displayName}</h1>
                     </div>
                     <div className="sticky top-8 mt-8 rounded-lg bg-white p-8">
-                        {/* Reviews Section */}
                         <div className="mb-4">
-                            <button
+                            {/* Reviews Section */}
+                            <SectionToggle
+                                sectionName="Reviews"
+                                iconPath="/profile/profile_review.svg"
+                                iconAlt="review icon"
+                                isExpanded={reviewsExpanded}
                                 onClick={() => setReviewsExpanded(!reviewsExpanded)}
-                                className="mb-2 flex w-full items-center justify-between text-left font-semibold"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <img
-                                        src="profile_review.svg"
-                                        alt="review icon"
-                                        className="max-w-[20px]"
-                                    />
-                                    <span className="text-2xl">Reviews</span>
-                                </div>
-                                <svg
-                                    className={`h-4 w-4 transition-transform ${reviewsExpanded ? "rotate-180" : ""}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
-                                    />
-                                </svg>
-                            </button>
+                            />
 
                             {reviewsExpanded && (
                                 <div className="relative ml-2 space-y-1">
@@ -530,32 +511,13 @@ function ProfilePage() {
 
                         {/* Clubs Section */}
                         <div>
-                            <button
+                            <SectionToggle
+                                sectionName="Clubs"
+                                iconPath="/profile/profile_club.svg"
+                                iconAlt="club icon"
+                                isExpanded={clubsExpanded}
                                 onClick={() => setClubsExpanded(!clubsExpanded)}
-                                className="mb-2 flex w-full items-center justify-between text-left font-semibold"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <img
-                                        src="/profile_club.svg"
-                                        alt="club icon"
-                                        className="max-w-[20px]"
-                                    />
-                                    <span className="text-2xl">Clubs</span>
-                                </div>
-                                <svg
-                                    className={`h-4 w-4 transition-transform ${clubsExpanded ? "rotate-180" : ""}`}
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M19 9l-7 7-7-7"
-                                    />
-                                </svg>
-                            </button>
+                            />
 
                             {clubsExpanded && (
                                 <div className="relative ml-2 space-y-1">
@@ -581,19 +543,31 @@ function ProfilePage() {
 
                         {/* Preferences Section */}
                         <div className="mt-4">
-                            <button
-                                onClick={() => setActiveSection("preferences")}
-                                className={`mb-2 flex w-full items-center justify-between text-left font-semibold rounded-full px-2 py-1 ${activeSection === "preferences" ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"}`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <img
-                                        src="/edit-2.svg"
-                                        alt="preferences icon"
-                                        className="max-w-[20px]"
-                                    />
-                                    <span className="text-2xl">Preferences</span>
+                            <SectionToggle
+                                sectionName="Settings"
+                                iconPath="/profile/settings.svg"
+                                iconAlt="settings icon"
+                                isExpanded={settingsExpanded}
+                                onClick={() => setSettingsExpanded(!settingsExpanded)}
+                            />
+                            {settingsExpanded && (
+                                <div className="relative ml-2 space-y-1">
+                                    {/* Timeline vertical line */}
+                                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+                                    {[
+                                        { value: "preferences", label: "Preferences" },
+                                    ].map((item) => (
+                                        <button
+                                            key={item.value}
+                                            onClick={() => setActiveSection(item.value)}
+                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
+                                                }`}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
                                 </div>
-                            </button>
+                            )}
                         </div>
                     </div>
                 </div>
