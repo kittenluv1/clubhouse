@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import posthog from "posthog-js";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
@@ -16,6 +16,7 @@ import Tooltip from "../components/tooltip";
 import LoadingScreen from "../components/LoadingScreen";
 import Button from "../components/button";
 import Image from "next/image";
+import { textarea } from "framer-motion/client";
 
 
 const nouns = [
@@ -234,8 +235,12 @@ export default function ReviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const satisfactionStars = useRef(null);
+  const textInput = useRef(null);
+  const clubNameInput = useRef(null);
   const [success, setSuccess] = useState(false);
-
+  const [readyToSubmit, setReadyToSubmit] = useState(true)
 
   // Getting club name and ID from URL parameters
   useEffect(() => {
@@ -270,6 +275,14 @@ export default function ReviewPage() {
     }
   }, [startQuarter, startYear, endQuarter, endYear]);
 
+  useEffect(()=> {
+    if(clubId != null && startQuarter != "" && (endQuarter != "" || isMember ) && overallSatisfaction != null && reviewText != ""){
+      setReadyToSubmit(false);
+    } else {
+      setReadyToSubmit(true);
+    }
+
+  }, [clubId, startQuarter, endQuarter, isMember, overallSatisfaction, reviewText]);
 
   const handleMembershipCheckbox = (e) => {
     const checked = e.target.checked;
@@ -305,9 +318,21 @@ export default function ReviewPage() {
         );
       }
       setClubId(data.OrganizationID);
+      
     } catch (error) {
       console.error("Error fetching club ID:", error);
       setError("Club not found.");
+    }
+  };
+
+
+  // Keep selectedClub in sync with what's visible in the search box.
+  // Typing (or deleting) text means the previously selected club is no longer
+  // a valid selection, so clear clubId until an option is actually picked.
+  const handleClubInputChange = (value) => {
+    setSelectedClub(value);
+    if (clubId !== null) {
+      setClubId(null);
     }
   };
 
@@ -348,7 +373,6 @@ export default function ReviewPage() {
       return;
     }
 
-
     setIsSubmitting(true);
 
 
@@ -357,11 +381,8 @@ export default function ReviewPage() {
       if (!startQuarter || !startYear)
         throw new Error("Please select a start date");
       if (!endQuarter || !endYear) throw new Error("Please select an end date");
+      if (overallSatisfaction === null) throw new Error("Please rate your overall satisfaction");
       if (!reviewText) throw new Error("Please write a review");
-
-
-      if (overallSatisfaction === null)
-        throw new Error("Please rate your overall satisfaction");
 
 
       let userAlias = anonymousName();
@@ -465,40 +486,75 @@ export default function ReviewPage() {
     };
 
 
-    return (
-      <div className="flex">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const fill = getStarFill(star);
+  return (
+    <div className="flex">
+          <div ref={satisfactionStars} tabIndex={0} className={` border-3 scroll-mt-25
+          ${(fieldErrors.satisfaction && overallSatisfaction == null) ? 'border-red-600' : 'border-hidden'}`}>
+      {[1, 2, 3, 4, 5].map((star) => {
+        const fill = getStarFill(star);
+        
+        return (
+          
+          <button
+            key={star}
+            type="button"
+            onClick={(e) => handleClick(e, star)}
+            className="mr-1 focus:outline-none relative inline-block float-left"
+          >
+            <AiFillStar className="text-5xl text-[#E5EBF1]" />
 
 
-          return (
-            <button
-              key={star}
-              type="button"
-              onClick={(e) => handleClick(e, star)}
-              className="mr-1 focus:outline-none relative inline-block"
-            >
-              <AiFillStar className="text-5xl text-[#E5EBF1]" />
-
-
-              {fill !== "empty" && (
-                <span
-                  className="absolute top-0 left-0 overflow-hidden"
-                  style={{
-                    width: fill === "half" ? "50%" : "100%",
-                  }}
-                >
-                  <AiFillStar className="text-5xl text-yellow-400" />
-                </span>
-              )}
-            </button>
-          );
-        })}
+            {fill !== "empty" && (
+              <span
+                className="absolute top-0 left-0 overflow-hidden"
+                style={{
+                  width: fill === "half" ? "50%" : "100%",
+                }}
+              >
+                <AiFillStar className="text-5xl text-yellow-400" />
+              </span>
+            )}
+          
+          </button>
+        );
+      })}
       </div>
-    );
+   
+    </div>
+  );
+};
+
+{/* Required fields validation*/}
+const requireValid = (e) => {
+  // Compute the validity of every required field at once so all empty
+  // fields get flagged together, instead of one-at-a-time.
+  const errors = {
+    // clubId is the only reliable "a real club was selected" signal —
+    // typing text without picking an option leaves clubId null.
+    club: clubId == null,
+    start: startQuarter == "",
+    end: endQuarter == "" && !isMember,
+    satisfaction: overallSatisfaction == null,
+    review: reviewText == "",
   };
 
+  setFieldErrors(errors);
 
+  const hasError = Object.values(errors).some(Boolean);
+  if (!hasError) return;
+
+  // Block submission so handleSubmit doesn't run with invalid data.
+  e.preventDefault();
+
+  // Scroll to the first invalid field (top-to-bottom order).
+  if (errors.club) {
+    clubNameInput.current?.scrollIntoView({ block: "center", inline: "center" });
+  } else if (errors.satisfaction) {
+    satisfactionStars.current?.scrollIntoView({ block: "center", inline: "center" });
+  } else if (errors.review) {
+    textInput.current?.scrollIntoView({ block: "center", inline: "center" });
+  }
+};
 
 
   if (isSubmitting) return LoadingScreen();
@@ -535,13 +591,17 @@ export default function ReviewPage() {
               <label className="mb-5 block text-sm text-[#6E808D]">
                 Help fellow students discover the best club experiences!
               </label>
-              <div className="max-w-md mb-5 text-sm text-gray-600">
+              <div className={`max-w-md mb-5 text-sm text-gray-600 rounded-full
+              ${(fieldErrors.club && clubId == null)
+               ? 'border-red-600 border-1 ' : 'border-hidden'} `}>
                 <SearchableDropdown
                   tableName="clubs"
                   onSelect={handleClubSelect}
+                  onInputChange={handleClubInputChange}
                   value={selectedClub}
                   className="w-full rounded-full border bg-gray-200 py-2 pr-10 pl-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                   placeholderColor="#374151"
+                  ref={clubNameInput}
                 />
               </div>
             </div>
@@ -569,7 +629,8 @@ export default function ReviewPage() {
                   <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="flex space-x-2">
-                  <div className="w-1/2">
+                  <div className={`w-1/2
+                    ${(fieldErrors.start && startQuarter == "") ? 'border-red-600 rounded-full border-1' : 'border-hidden'} `}>
                     <QuarterYearDropdown
                       selectedQuarter={startQuarter}
                       selectedYear={startYear}
@@ -587,7 +648,8 @@ export default function ReviewPage() {
                   Club Membership End Date <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="mb-5 flex space-x-2">
-                  <div className="w-1/2">
+                  <div className={`w-1/2
+                    ${(fieldErrors.end && endQuarter == "" && !isMember) ? 'border-red-600 rounded-full border-1' : 'border-hidden'}`}>
                     <QuarterYearDropdown
                       selectedQuarter={endQuarter}
                       selectedYear={endYear}
@@ -776,7 +838,10 @@ export default function ReviewPage() {
             </label>
             <p className="text-sm text-[#6E808D] mb-5 ">Share insights to help future students understand what to expect from this club!</p>
             <textarea
-              className="h-32 w-full rounded-2xl border border-[#B4BEC5] bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            ref={textInput}
+              className={`h-32 w-full rounded-2xl border 
+                ${(fieldErrors.review && reviewText == "") ? 'border-red-600' : 'border-[#B4BEC5]'}
+                 bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
               value={reviewText}
               onChange={(e) => {
@@ -793,19 +858,19 @@ export default function ReviewPage() {
           </div>
 
 
-          {error && (
-            <div className="mb-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700">
-              {error}
-            </div>
-          )}
+         
 
 
           {/* Submit Button */}
+          {error && (
+            <p className="mt-6 text-right text-sm text-red-600">{error}</p>
+          )}
           <div className="mt-10 mb-15 flex justify-end">
             <Button
               type="submit"
               disabled={isSubmitting || dateError}
               className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
+              onClick={requireValid}
             >
               Submit Review
             </Button>
