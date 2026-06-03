@@ -235,7 +235,7 @@ export default function ReviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
-  const [requiredError, setRequiredError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const satisfactionStars = useRef(null);
   const textInput = useRef(null);
   const clubNameInput = useRef(null);
@@ -276,13 +276,13 @@ export default function ReviewPage() {
   }, [startQuarter, startYear, endQuarter, endYear]);
 
   useEffect(()=> {
-    if(selectedClub != "" && startQuarter != "" && (endQuarter != "" || isMember ) && overallSatisfaction != null && reviewText != ""){
+    if(clubId != null && startQuarter != "" && (endQuarter != "" || isMember ) && overallSatisfaction != null && reviewText != ""){
       setReadyToSubmit(false);
     } else {
       setReadyToSubmit(true);
     }
 
-  }, [selectedClub, startQuarter, endQuarter, isMember, overallSatisfaction, reviewText]);
+  }, [clubId, startQuarter, endQuarter, isMember, overallSatisfaction, reviewText]);
 
   const handleMembershipCheckbox = (e) => {
     const checked = e.target.checked;
@@ -322,6 +322,17 @@ export default function ReviewPage() {
     } catch (error) {
       console.error("Error fetching club ID:", error);
       setError("Club not found.");
+    }
+  };
+
+
+  // Keep selectedClub in sync with what's visible in the search box.
+  // Typing (or deleting) text means the previously selected club is no longer
+  // a valid selection, so clear clubId until an option is actually picked.
+  const handleClubInputChange = (value) => {
+    setSelectedClub(value);
+    if (clubId !== null) {
+      setClubId(null);
     }
   };
 
@@ -478,7 +489,7 @@ const StarRating = ({ rating, setRating }) => {
   return (
     <div className="flex">
           <div ref={satisfactionStars} tabIndex={0} className={` border-3 scroll-mt-25
-          ${(requiredError == "Satisfaction not Set" && overallSatisfaction == null) ? 'border-red-600' : 'border-hidden'}`}>
+          ${(fieldErrors.satisfaction && overallSatisfaction == null) ? 'border-red-600' : 'border-hidden'}`}>
       {[1, 2, 3, 4, 5].map((star) => {
         const fill = getStarFill(star);
         
@@ -515,22 +526,34 @@ const StarRating = ({ rating, setRating }) => {
 
 {/* Required fields validation*/}
 const requireValid = (e) => {
-  const isClubNameValid = clubNameInput.current?.checkValidity()
-    if((selectedClub == "" && (!isClubNameValid)) )
-       {setRequiredError("Club not Selected"); return;} 
+  // Compute the validity of every required field at once so all empty
+  // fields get flagged together, instead of one-at-a-time.
+  const errors = {
+    // clubId is the only reliable "a real club was selected" signal —
+    // typing text without picking an option leaves clubId null.
+    club: clubId == null,
+    start: startQuarter == "",
+    end: endQuarter == "" && !isMember,
+    satisfaction: overallSatisfaction == null,
+    review: reviewText == "",
+  };
 
-    if(startQuarter == "") {setRequiredError("Start not Selected"); return;}
-    if(endQuarter == "") {setRequiredError("End not Selected"); return;}
-    if(overallSatisfaction == null) { 
-      e.preventDefault(); 
-      satisfactionStars.current.scrollIntoView({block: 'center', inline: 'center'});
-      setRequiredError("Satisfaction not Set"); 
-      return;
-    }
-    if(reviewText == "") {setRequiredError("Review not Typed"); 
-      textInput.current.scrollIntoView({block: 'center', inline: 'center'});
-      return;}
-  
+  setFieldErrors(errors);
+
+  const hasError = Object.values(errors).some(Boolean);
+  if (!hasError) return;
+
+  // Block submission so handleSubmit doesn't run with invalid data.
+  e.preventDefault();
+
+  // Scroll to the first invalid field (top-to-bottom order).
+  if (errors.club) {
+    clubNameInput.current?.scrollIntoView({ block: "center", inline: "center" });
+  } else if (errors.satisfaction) {
+    satisfactionStars.current?.scrollIntoView({ block: "center", inline: "center" });
+  } else if (errors.review) {
+    textInput.current?.scrollIntoView({ block: "center", inline: "center" });
+  }
 };
 
 
@@ -569,12 +592,12 @@ const requireValid = (e) => {
                 Help fellow students discover the best club experiences!
               </label>
               <div className={`max-w-md mb-5 text-sm text-gray-600 rounded-full
-              ${(
-                (requiredError == "Club not Selected" && selectedClub=="")) 
+              ${(fieldErrors.club && clubId == null)
                ? 'border-red-600 border-1 ' : 'border-hidden'} `}>
                 <SearchableDropdown
                   tableName="clubs"
                   onSelect={handleClubSelect}
+                  onInputChange={handleClubInputChange}
                   value={selectedClub}
                   className="w-full rounded-full border bg-gray-200 py-2 pr-10 pl-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                   placeholderColor="#374151"
@@ -606,8 +629,8 @@ const requireValid = (e) => {
                   <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="flex space-x-2">
-                  <div className={`w-1/2 
-                    ${(requiredError == "Start not Selected" && startQuarter == "") ? 'border-red-600 rounded-full border-1' : 'border-hidden'} `}>
+                  <div className={`w-1/2
+                    ${(fieldErrors.start && startQuarter == "") ? 'border-red-600 rounded-full border-1' : 'border-hidden'} `}>
                     <QuarterYearDropdown
                       selectedQuarter={startQuarter}
                       selectedYear={startYear}
@@ -625,8 +648,8 @@ const requireValid = (e) => {
                   Club Membership End Date <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="mb-5 flex space-x-2">
-                  <div className={`w-1/2 
-                    ${(requiredError == "End not Selected" && endQuarter == "") ? 'border-red-600 rounded-full border-1' : 'border-hidden'}`}>
+                  <div className={`w-1/2
+                    ${(fieldErrors.end && endQuarter == "" && !isMember) ? 'border-red-600 rounded-full border-1' : 'border-hidden'}`}>
                     <QuarterYearDropdown
                       selectedQuarter={endQuarter}
                       selectedYear={endYear}
@@ -817,7 +840,7 @@ const requireValid = (e) => {
             <textarea
             ref={textInput}
               className={`h-32 w-full rounded-2xl border 
-                ${(requiredError == "Review not Typed" && reviewText == "") ? 'border-red-600' : 'border-[#B4BEC5]'}
+                ${(fieldErrors.review && reviewText == "") ? 'border-red-600' : 'border-[#B4BEC5]'}
                  bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
               value={reviewText}
@@ -839,6 +862,9 @@ const requireValid = (e) => {
 
 
           {/* Submit Button */}
+          {error && (
+            <p className="mt-6 text-right text-sm text-red-600">{error}</p>
+          )}
           <div className="mt-10 mb-15 flex justify-end">
             <Button
               type="submit"

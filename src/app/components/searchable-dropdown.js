@@ -6,8 +6,9 @@ import { supabase } from "../lib/db";
 const SearchableDropdown = ({  
     placeholder = "Search for your club here...",
     tableName = "clubs", 
-    nameColumn = "OrganizationName", 
+    nameColumn = "OrganizationName",
     onSelect = () => {},
+    onInputChange = () => {},
     required = true,
     placeholderColor = "#000", 
     value = "",
@@ -94,6 +95,7 @@ const SearchableDropdown = ({
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
     setIsOpen(true);
+    onInputChange(e.target.value);
   };
 
   const handleOptionClick = (option) => {
