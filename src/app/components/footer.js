@@ -31,7 +31,7 @@ export default function Footer() {
           <div className="py-10 md:px-10 lg:py-20">
             <h3 className="mb-5 text-2xl font-bold">Connect</h3>
             <div className="grid auto-cols-max grid-flow-col gap-2">
-              <a href="https://www.instagram.com/clubhouseucla/" target="_blank">
+              <a href="https://www.instagram.com/clubhousebruins/" target="_blank">
                 <img
                   src="/links/instagram.svg"
                   alt="instagram icon"
