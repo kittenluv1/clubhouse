@@ -27,6 +27,9 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
 
     useEffect(() => {
         onValidChange(selected.length >= 2);
+        // Report validity when the selection changes; onValidChange is a parent
+        // callback intentionally excluded to avoid re-run loops.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selected]);
 
     const toggle = (interest) => {

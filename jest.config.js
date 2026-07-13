@@ -20,6 +20,16 @@ const customJestConfig = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
     '!src/**/__tests__/**',
   ],
+  // Enforced floor for CI. Set just below current levels so it acts as a
+  // regression guard; ratchet these up as coverage grows.
+  coverageThreshold: {
+    global: {
+      statements: 22,
+      branches: 20,
+      functions: 18,
+      lines: 22,
+    },
+  },
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

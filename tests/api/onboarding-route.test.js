@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { GET, POST, PATCH } from "./route";
+import { GET, POST, PATCH } from "@/app/api/onboarding/route";
 
 jest.mock("@/app/lib/server-db", () => ({
     createAuthenticatedClient: jest.fn(),

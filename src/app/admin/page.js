@@ -67,6 +67,9 @@ const Page = () => {
     if (isAdmin) {
       fetchPendingReviews();
     }
+    // Intentionally refetch only when the sort or admin status changes;
+    // fetchPendingReviews is stable for these inputs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortType, isAdmin]);
 
   const handleSortChange = (e) => {

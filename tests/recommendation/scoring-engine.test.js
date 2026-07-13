@@ -1,5 +1,5 @@
-import { ScoringEngine } from '../scoring-engine';
-import { WeightRegistry } from '../weight-registry';
+import { ScoringEngine } from '@/app/lib/recommendation/scoring-engine';
+import { WeightRegistry } from '@/app/lib/recommendation/weight-registry';
 
 class StubFeature {
   constructor(name, value) {
