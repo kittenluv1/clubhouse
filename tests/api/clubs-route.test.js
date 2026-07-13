@@ -11,7 +11,7 @@ const mockSupabase = {
 	select: jest.fn().mockResolvedValue({ count: 1, error: null }),
 }
 
-jest.mock('../lib/server-db.js', () => ({
+jest.mock('@/app/lib/server-db.js', () => ({
 	supabaseServer: mockSupabase
 }));
 
@@ -75,7 +75,7 @@ describe('clubs API route: test fake fetch and update Supabase', () => {
 
 	test('return 200 and club data on success', async () => {
 		mockSuccessFetches();
-		const { GET } = await import('./route');
+		const { GET } = await import('@/app/api/route');
 		const response = await GET(new NextRequest('http://localhost/api', { method: 'PATCH' }));
 		const data = await response.json();
 
@@ -87,7 +87,7 @@ describe('clubs API route: test fake fetch and update Supabase', () => {
 		jest.spyOn(console, 'error').mockImplementation(() => {});
 		fetch.mockResolvedValueOnce({ ok: false, status: 500 });
 		const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-		const { GET } = await import('./route');
+		const { GET } = await import('@/app/api/route');
 		const response = await GET(new NextRequest('http://localhost/api', { method: 'PATCH' }));
 		consoleSpy.mockRestore();
 		expect(response.status).toBe(500);
@@ -95,7 +95,7 @@ describe('clubs API route: test fake fetch and update Supabase', () => {
 
 	test("don't include null club descriptions in update calls", async () => {
 		mockSuccessFetches();
-		const { GET } = await import('./route');
+		const { GET } = await import('@/app/api/route');
 		await GET(new NextRequest('http://localhost/api'));
 
 		// get all calls made to update()

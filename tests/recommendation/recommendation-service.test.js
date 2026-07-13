@@ -1,4 +1,4 @@
-import { RecommendationService } from '../recommendation-service';
+import { RecommendationService } from '@/app/lib/recommendation/recommendation-service';
 
 const makeClub = (id, name, cat1, cat2 = null) => ({
   OrganizationID: id,
