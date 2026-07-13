@@ -102,6 +102,8 @@ export default function GoogleSignIn() {
     return () => {
       data.subscription.unsubscribe();
     };
+    // Mount-only: set up the auth subscription once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

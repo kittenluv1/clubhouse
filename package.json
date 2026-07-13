@@ -7,7 +7,7 @@
     "dev:lan": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings=0",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

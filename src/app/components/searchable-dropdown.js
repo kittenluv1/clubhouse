@@ -29,6 +29,9 @@ const SearchableDropdown = ({
         if (value !== inputValue) {
             setInputValue(value || '');
         }
+        // Only sync from the `value` prop; adding inputValue would revert
+        // the user's in-progress typing.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);
 
     useEffect(() => {

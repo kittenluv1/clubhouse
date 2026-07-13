@@ -12,6 +12,8 @@ export default function Majors({ formData, onUpdate, onValidChange }) {
   // Set initial validity on mount (handles back-navigation with pre-filled data)
   useEffect(() => {
     onValidChange(majors.length > 0);
+    // Mount-only initial validity check.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addMajor = (major) => {
