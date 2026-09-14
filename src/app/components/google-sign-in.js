@@ -2,7 +2,7 @@
 
 import Button from "./button";
 import Script from "next/script";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/db";
 import { useSearchParams } from "next/navigation";
 import { isValidReturnUrl } from "../lib/utils/redirect";
@@ -17,10 +17,14 @@ export default function GoogleSignIn() {
   const searchParams = useSearchParams();
   const club = searchParams.get('club');
   const clubId = searchParams.get('clubId');
+  // Ref to this instance's own overlay div. Using a ref (not a shared
+  // getElementById id) keeps each mounted GoogleSignIn — the desktop and
+  // mobile layouts both render one — targeting its own button container.
+  const buttonRef = useRef(null);
 
   // Render the Google Sign-In button (called on render & auth state change)
   const renderGoogleButton = () => {
-    if (window.google) {
+    if (window.google && buttonRef.current) {
       window.google.accounts.id.initialize({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         callback: window.handleCredentialResponse,
@@ -29,7 +33,7 @@ export default function GoogleSignIn() {
       });
 
       window.google.accounts.id.renderButton(
-        document.getElementById("google-button"),
+        buttonRef.current,
         {
           theme: "outline",
           size: "large",
@@ -130,7 +134,7 @@ export default function GoogleSignIn() {
                 </span>
               </Button>
               <div
-                id="google-button"
+                ref={buttonRef}
                 className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
                 style={{ opacity: 0.001 }}
               />
@@ -147,7 +151,7 @@ export default function GoogleSignIn() {
     </span>
   </Button>
   <div
-    id="google-button"
+    ref={buttonRef}
     className="hide-google-loading absolute inset-0 overflow-hidden rounded-full"
     style={{ opacity: 0.001 }}
   />
