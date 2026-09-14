@@ -6,11 +6,13 @@ import { supabase } from "../lib/db";
 const SearchableDropdown = ({  
     placeholder = "Search for your club here...",
     tableName = "clubs", 
-    nameColumn = "OrganizationName", 
+    nameColumn = "OrganizationName",
     onSelect = () => {},
+    onInputChange = () => {},
     required = true,
     placeholderColor = "#000", 
     value = "",
+    ref,
     className = ""
     }) => {
     const [inputValue, setInputValue] = useState(value || ''); 
@@ -93,6 +95,7 @@ const SearchableDropdown = ({
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
     setIsOpen(true);
+    onInputChange(e.target.value);
   };
 
   const handleOptionClick = (option) => {
@@ -115,6 +118,7 @@ const SearchableDropdown = ({
           style={{
             "--placeholder-color": placeholderColor,
           }}
+          ref={ref}
         />
         <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center pr-3">
           <svg

@@ -31,9 +31,11 @@ function AllClubsPage() {
   const [sortType, setSortType] = useState("rating");
   const [isMobile, setIsMobile] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
 
   const router = useRouter();
   const { user } = useAuth();
+
 
   const initialSelectedTags = multiCategoriesParam
     ? multiCategoriesParam.split(",")
@@ -132,6 +134,19 @@ function AllClubsPage() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!user) {
+      setOnboardingCompleted(false);
+      return;
+    }
+    fetch("/api/onboarding")
+      .then((res) => res.json())
+      .then(({ onboarding_completed }) => {
+        setOnboardingCompleted(!!onboarding_completed);
+      })
+      .catch(() => setOnboardingCompleted(false));
+  }, [user]);
+
   const handlePreviousPage = () => currPage > 1 && setCurrPage((p) => p - 1);
   const handleNextPage = () =>
     currPage < pageTotal && setCurrPage((p) => p + 1);
@@ -209,7 +224,11 @@ function AllClubsPage() {
     <>
       <div className="flex flex-col p-6 md:p-20 lg:px-30 md:py-20">
 
-        <h1 className="font-bold text-4xl black mb-4">Club Recommendations</h1>
+        {user && onboardingCompleted && (
+          <>
+            <h1 className="font-bold text-4xl black mb-4">Club Recommendations</h1>
+          </>
+        )}
         <ClubSlider></ClubSlider>
 
         <h1 className="scroll-mt-20 md:scroll-mt-24 font-bold text-4xl black mb-4 mt-10" id="discover">Discover Clubs</h1>
