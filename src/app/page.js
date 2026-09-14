@@ -83,6 +83,8 @@ function Home() {
 
   useEffect(() => {
     setRandomCategories(getRandomItems(CATEGORIES, isMobile ? 5 : 12));
+    // Reshuffle featured categories only when the viewport size changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile]);
 
   return (

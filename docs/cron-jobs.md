@@ -20,3 +20,5 @@ Pings the dev Supabase project to **prevent it from pausing every 7 days** (Supa
 ### Weekly Prod Backup
 
 Uploads a dump of the production database as a **GitHub artifact** every week.
+
+> The `.github/workflows/` directory also contains a **CI workflow** (`ci.yaml`) that runs lint + tests on every push/PR. It is not a scheduled job — see [`testing.md`](./testing.md) and [`github.md`](./github.md).

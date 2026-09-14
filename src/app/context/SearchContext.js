@@ -26,7 +26,11 @@ export const SearchProvider = ({ children }) => {
         setIsClient(true);
     }, []);
 
-    // Sync state with URL parameters on mount and URL changes
+    // Sync state with URL parameters on mount and URL changes.
+    // `isClient` must be in the dependency array: the first effect flips it to
+    // true after mount, and this effect needs to re-run at that point to hydrate
+    // state from the URL (otherwise the initial ?name=/?category=/?categories=
+    // params are never applied).
     useEffect(() => {
         if (!isClient) return; // Only run on client side
 
@@ -37,7 +41,7 @@ export const SearchProvider = ({ children }) => {
         setSearchTerm(nameParam);
         setSingleCategory(singleCategoryParam);
         setSelectedCategories(multiCategoriesParam ? multiCategoriesParam.split(',') : []);
-    }, [searchParams]);
+    }, [searchParams, isClient]);
 
     // Clear all search states
     const clearAllSearch = () => {

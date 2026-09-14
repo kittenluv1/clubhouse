@@ -1,4 +1,4 @@
-import { WeightRegistry, DEFAULT_WEIGHTS } from '../weight-registry';
+import { WeightRegistry, DEFAULT_WEIGHTS } from '@/app/lib/recommendation/weight-registry';
 
 describe('WeightRegistry', () => {
   it('uses default weights when none provided', () => {

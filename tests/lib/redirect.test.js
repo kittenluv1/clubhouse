@@ -11,7 +11,7 @@
  * Run with: npm test
  */
 
-import { isValidReturnUrl, encodeReturnUrl, decodeReturnUrl } from './redirect';
+import { isValidReturnUrl, encodeReturnUrl, decodeReturnUrl } from '@/app/lib/utils/redirect';
 
 describe('isValidReturnUrl', () => {
   describe('Valid URLs', () => {

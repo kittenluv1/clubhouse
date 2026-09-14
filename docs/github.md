@@ -26,6 +26,18 @@ There are 2 special branches: `dev` and `main`.
 
 **Important:** Wherever you push to, make sure to merge that branch into yours before pushing!
 
+## Continuous Integration (GitHub Actions)
+
+A CI workflow (`.github/workflows/ci.yaml`) runs automatically on **every push and pull request**. It uses `npm ci` on the Node.js version pinned in `.nvmrc` (kept in sync with local development) and runs three jobs in parallel:
+
+| Job | Command | Purpose |
+|-----|---------|---------|
+| **lint** | `npm run lint` | ESLint (`--max-warnings=0`, so warnings fail) |
+| **test** | `npm run test:coverage` | Jest suite with an enforced coverage threshold |
+| **build** | `npm run build` | Next.js production build (dummy env vars) |
+
+All three jobs must pass before a PR can be safely merged. Run them locally before pushing to catch failures early. See [`testing.md`](./testing.md) for details on the test suite and coverage gate.
+
 ## Issues
 
 - **Projects** = groups of issues related to a specific goal/feature

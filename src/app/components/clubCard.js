@@ -151,6 +151,7 @@ export default function ClubCard({
               <>
                 <img
                   src={"interactions/reviewStarFilled.svg"}
+                  alt=""
                   className="mr-[5px]"
                 />
                 N/A

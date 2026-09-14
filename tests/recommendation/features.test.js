@@ -1,10 +1,10 @@
-import { MajorMatch } from '../features/major-match';
-import { MinorMatch } from '../features/minor-match';
-import { InterestOverlap } from '../features/interest-overlap';
-import { LikeHistory } from '../features/like-history';
-import { SaveHistory } from '../features/save-history';
-import { MembershipSimilarity } from '../features/membership-similarity';
-import { BaseFeature } from '../features/base-feature';
+import { MajorMatch } from '@/app/lib/recommendation/features/major-match';
+import { MinorMatch } from '@/app/lib/recommendation/features/minor-match';
+import { InterestOverlap } from '@/app/lib/recommendation/features/interest-overlap';
+import { LikeHistory } from '@/app/lib/recommendation/features/like-history';
+import { SaveHistory } from '@/app/lib/recommendation/features/save-history';
+import { MembershipSimilarity } from '@/app/lib/recommendation/features/membership-similarity';
+import { BaseFeature } from '@/app/lib/recommendation/features/base-feature';
 
 const makeClub = (cat1, cat2, description = '') => ({
   OrganizationID: 1,

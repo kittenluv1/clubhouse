@@ -147,6 +147,9 @@ export default function Filter({
       filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       onFilterOpened();
     }
+    // Runs on mobile/showFilter transitions only; onFilterOpened is a parent
+    // callback we intentionally do not want to re-trigger this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile, showFilter]);
 
   const toggleTag = (tag) => {

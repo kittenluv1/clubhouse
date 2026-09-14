@@ -1,6 +1,6 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { AuthProvider, useAuth, useRequireAuth } from "./AuthContext";
+import { AuthProvider, useAuth, useRequireAuth } from "@/app/context/AuthContext";
 
 // --- Supabase mock wiring ---
 
@@ -10,7 +10,7 @@ const mockGetSession = jest.fn();
 const mockSignOut = jest.fn();
 const mockProfileSingle = jest.fn();
 
-jest.mock("../lib/db", () => ({
+jest.mock("@/app/lib/db", () => ({
   supabase: {
     auth: {
       getSession: (...args) => mockGetSession(...args),

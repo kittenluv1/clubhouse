@@ -1,4 +1,4 @@
-import { splitUserInterests } from './splitUserInterests';
+import { splitUserInterests } from '@/app/utils/splitUserInterests';
 
 describe('splitUserInterests', () => {
   test('separates broad categories from subcategories', () => {

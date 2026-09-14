@@ -84,6 +84,8 @@ function ProfilePage() {
         };
 
         fetchProfileData();
+        // Refetch profile data when the authenticated user changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     if (loading) {

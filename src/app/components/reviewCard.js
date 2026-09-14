@@ -30,11 +30,13 @@ const renderStars = (rating, sizeClasses = "") => {
         stars.push(<img
           key={i}
           src="/interactions/reviewStarHalf.svg"
+          alt=""
           className={` ${sizeClasses}`} />);
       } else {
         stars.push(<img
           key={i}
           src="/interactions/reviewStarFilled.svg"
+          alt=""
           className={` ${sizeClasses}`} />);
       }
       // stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
@@ -43,6 +45,7 @@ const renderStars = (rating, sizeClasses = "") => {
       stars.push(<img
         src="/interactions/reviewStarUnfilled.svg"
         key={i}
+        alt=""
         className={`text-gray-300`} />);
     }
   }
@@ -266,6 +269,7 @@ export default function ReviewCard({
             >
               <div className="flex items-center gap-3">
                 <img src={"/profile/edit-2.svg"}
+                  alt=""
                   className="h-6 w-6"
                 />
                 Edit Review
@@ -284,9 +288,11 @@ export default function ReviewCard({
             >
               <div className="flex items-center gap-3">
                 <img src="/utility/trash.svg"
+                  alt=""
                   className="h-6 w-6 block group-hover:hidden"
                 />
                 <img src="/utility/trash-hover.svg"
+                  alt=""
                   className="hidden h-6 w-6 group-hover:block"
                 />
                 Delete
