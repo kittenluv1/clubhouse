@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import Button from "./button";
 import { supabase } from "@/app/lib/db";
 import { getAvatarUrl } from "@/app/lib/avatars";
@@ -26,27 +26,40 @@ const renderStars = (rating, sizeClasses = "") => {
   const ratingDecimal = rating - Math.floor(rating);
   for (let i = 0; i < 5; i++) {
     if (i < numStars) {
-      if ((rating - ratingDecimal) == i && (ratingDecimal < 0.8) && (ratingDecimal > 0.2)) {
-        stars.push(<img
-          key={i}
-          src="/interactions/reviewStarHalf.svg"
-          alt=""
-          className={` ${sizeClasses}`} />);
+      if (
+        rating - ratingDecimal == i &&
+        ratingDecimal < 0.8 &&
+        ratingDecimal > 0.2
+      ) {
+        stars.push(
+          <img
+            key={i}
+            src="/interactions/reviewStarHalf.svg"
+            alt=""
+            className={` ${sizeClasses}`}
+          />,
+        );
       } else {
-        stars.push(<img
-          key={i}
-          src="/interactions/reviewStarFilled.svg"
-          alt=""
-          className={` ${sizeClasses}`} />);
+        stars.push(
+          <img
+            key={i}
+            src="/interactions/reviewStarFilled.svg"
+            alt=""
+            className={` ${sizeClasses}`}
+          />,
+        );
       }
       // stars.push(<span key={i} className={`text-yellow-400 ${sizeClasses}`}>★</span>);
     } else {
       // stars.push(<span key={i} className={`text-gray-300 ${sizeClasses}`}>★</span>);
-      stars.push(<img
-        src="/interactions/reviewStarUnfilled.svg"
-        key={i}
-        alt=""
-        className={`text-gray-300`} />);
+      stars.push(
+        <img
+          src="/interactions/reviewStarUnfilled.svg"
+          key={i}
+          alt=""
+          className={`text-gray-300`}
+        />,
+      );
     }
   }
   return stars;
@@ -67,20 +80,13 @@ export default function ReviewCard({
   const [isClamped, setIsClamped] = useState(false);
   const textRef = useRef(null);
 
-  // Sync internal state with props when they change (e.g., after logout)
-  useEffect(() => {
-    setLiked(review.user_has_liked || false);
-  }, [review.user_has_liked]);
-
-  useEffect(() => {
-    setLikeCount(review.likes || 0);
-  }, [review.likes]);
-
   // Check if the review text is clamped (truncated)
   useLayoutEffect(() => {
     function checkClamp() {
       if (textRef.current) {
-        setIsClamped(textRef.current.scrollHeight > textRef.current.clientHeight);
+        setIsClamped(
+          textRef.current.scrollHeight > textRef.current.clientHeight,
+        );
       }
     }
     checkClamp();
@@ -98,9 +104,10 @@ export default function ReviewCard({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
-      return;
+      const returnUrl = encodeURIComponent(
+        window.location.pathname + window.location.search,
+      );
+      redirect(`/sign-in?returnUrl=${returnUrl}`);
     }
 
     setIsProcessing(true);
@@ -108,15 +115,15 @@ export default function ReviewCard({
 
     // Optimistic update
     setLiked(newLiked);
-    setLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
+    setLikeCount((prev) => (newLiked ? prev + 1 : Math.max(0, prev - 1)));
 
     try {
       await onLike(review.id, newLiked);
     } catch (error) {
       // Revert on failure
       setLiked(!newLiked);
-      setLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
-      console.error('Failed to toggle like:', error);
+      setLikeCount((prev) => (newLiked ? Math.max(0, prev - 1) : prev + 1));
+      console.error("Failed to toggle like:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -128,36 +135,47 @@ export default function ReviewCard({
   const canDelete = status === "rejected" && onDelete;
 
   const cardContent = (
-    <div className={`w-full transform space-y-4 rounded-4xl bg-[#FAFEEE] border border-[#A3CD1B] px-5 py-6 sm:px-4 sm:py-6 transition-all duration-300 ease-out md:space-y-5 md:px-10 md:py-10`}>
+    <div
+      className={`w-full transform space-y-4 rounded-4xl border border-[#A3CD1B] bg-[#FAFEEE] px-5 py-6 transition-all duration-300 ease-out sm:px-4 sm:py-6 md:space-y-5 md:px-10 md:py-10`}
+    >
       {/* Header section */}
-      <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-start">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         {/* Left side */}
-        <div className="flex flex-col gap-2 min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
           {/* Profile image + username row */}
-          <div className="flex items-center gap-3 justify-between md:justify-start">
-            <div className="flex items-center gap-1 md:gap-3 min-w-0 flex-1 md:flex-initial">
+          <div className="flex items-center justify-between gap-3 md:justify-start">
+            <div className="flex min-w-0 flex-1 items-center gap-1 md:flex-initial md:gap-3">
               {status === "displayed" && (
                 <img
-                  src={review.profiles ? getAvatarUrl(review.profiles.avatar_id) : "/profile.svg"}
+                  src={
+                    review.profiles
+                      ? getAvatarUrl(review.profiles.avatar_id)
+                      : "/profile.svg"
+                  }
                   alt="Profile"
-                  className="w-12 h-12 md:w-18 md:h-18 rounded-full object-cover flex-shrink-0 pb-2"
+                  className="h-12 w-12 flex-shrink-0 rounded-full object-cover pb-2 md:h-18 md:w-18"
                 />
               )}
-              <div className="flex flex-col gap-1 md:gap-2 min-w-0">
-                <h2 className="text-sm sm:text-lg md:text-xl font-bold text-black m-0 leading-tight break-words">
+              <div className="flex min-w-0 flex-col gap-1 md:gap-2">
+                <h2 className="m-0 text-sm leading-tight font-bold break-words text-black sm:text-lg md:text-xl">
                   {status === "displayed"
-                    ? (review.user_alias || "Anonymous")
-                    : review.club_name
-                  }
+                    ? review.user_alias || "Anonymous"
+                    : review.club_name}
                   {status === "displayed" && isCurrentUser && (
-                    <span className="ml-1.5 text-s font-bold text-[#FFA1CD]">(you)</span>
+                    <span className="text-s ml-1.5 font-bold text-[#FFA1CD]">
+                      (you)
+                    </span>
                   )}
                 </h2>
                 {status === "approved" && review.user_alias && (
-                  <span className="text-sm text-[#6E808D] font-medium">Displayed as: {review.user_alias}</span>
+                  <span className="text-sm font-medium text-[#6E808D]">
+                    Displayed as: {review.user_alias}
+                  </span>
                 )}
                 {status === "displayed" && (
-                  <span className="text-sm font-medium hidden md:block">{formatDate(review.created_at)}</span>
+                  <span className="hidden text-sm font-medium md:block">
+                    {formatDate(review.created_at)}
+                  </span>
                 )}
               </div>
             </div>
@@ -166,14 +184,16 @@ export default function ReviewCard({
             {canLike && (
               <button
                 onClick={toggleLike}
-                className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] flex-shrink-0 transition-all md:hidden"
+                className="-m-2 flex min-h-[44px] min-w-[44px] flex-shrink-0 items-center gap-1 p-2 transition-all md:hidden"
                 aria-label={liked ? "Unlike review" : "Like review"}
               >
                 <img
                   src={`/${liked ? "interactions/likeFilled" : "interactions/likeUnfilled"}.svg`}
                   alt="Heart Icon"
                 />
-                <span className="text-gray-700 inline-block min-w-[1rem] text-left">{likeCount}</span>
+                <span className="inline-block min-w-[1rem] text-left text-gray-700">
+                  {likeCount}
+                </span>
               </button>
             )}
           </div>
@@ -186,33 +206,37 @@ export default function ReviewCard({
           )}
 
           {/* Stars and Membership */}
-          <div className="flex flex-col  gap-2 md:flex-row md:items-center md:gap-2 text-sm text-[#6E808D] font-medium">
-            <div className="flex items-center gap-1 ">
+          <div className="flex flex-col gap-2 text-sm font-medium text-[#6E808D] md:flex-row md:items-center md:gap-2">
+            <div className="flex items-center gap-1">
               {renderStars(review.overall_satisfaction, "")}
             </div>
-            <span className="mt-1 hidden md:inline text-[#7F7F7F]">•</span>
-            <span className="mt-1 break-words ">
-              Member from {review.membership_start_quarter}{" "}{review.membership_start_year} - {review.membership_end_quarter}{" "}{review.membership_end_year}
+            <span className="mt-1 hidden text-[#7F7F7F] md:inline">•</span>
+            <span className="mt-1 break-words">
+              Member from {review.membership_start_quarter}{" "}
+              {review.membership_start_year} - {review.membership_end_quarter}{" "}
+              {review.membership_end_year}
             </span>
           </div>
         </div>
 
         {/* Right side */}
-        <div className="hidden md:flex flex-col items-end gap-2 flex-shrink-0">
+        <div className="hidden flex-shrink-0 flex-col items-end gap-2 md:flex">
           {status !== "displayed" && (
-            <span className="text-sm italic font-medium">Reviewed on {formatDate(review.created_at)}</span>
+            <span className="text-sm font-medium italic">
+              Reviewed on {formatDate(review.created_at)}
+            </span>
           )}
           {canLike && (
             <button
               onClick={toggleLike}
-              className="flex items-center gap-1 -m-2 min-w-[44px] min-h-[44px]"
+              className="-m-2 flex min-h-[44px] min-w-[44px] items-center gap-1"
               aria-label={liked ? "Unlike review" : "Like review"}
             >
               <img
                 src={`/${liked ? "interactions/likeFilled" : "interactions/likeUnfilled"}.svg`}
                 alt="Heart Icon"
               />
-              <span className="text-md text-gray-700 inline-block min-w-[1rem] text-left">
+              <span className="text-md inline-block min-w-[1rem] text-left text-gray-700">
                 {likeCount}
               </span>
             </button>
@@ -222,13 +246,13 @@ export default function ReviewCard({
       <div>
         <p
           ref={textRef}
-          className={`text-sm -mt-4 font-normal text-black md:text-base transition-all duration-200 ${!showFull ? "line-clamp-4" : ""}`}
+          className={`-mt-4 text-sm font-normal text-black transition-all duration-200 md:text-base ${!showFull ? "line-clamp-4" : ""}`}
         >
           {review.review_text}
         </p>
         {!showFull && isClamped && (
           <button
-            className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
+            className="mt-1 cursor-pointer border-0 bg-none p-0 text-sm text-blue-600 italic underline"
             type="button"
             onClick={(e) => {
               e.preventDefault();
@@ -241,7 +265,7 @@ export default function ReviewCard({
         )}
         {showFull && (
           <button
-            className="mt-1 text-sm text-blue-600 italic underline bg-none border-0 p-0 cursor-pointer"
+            className="mt-1 cursor-pointer border-0 bg-none p-0 text-sm text-blue-600 italic underline"
             type="button"
             onClick={(e) => {
               e.preventDefault();
@@ -268,10 +292,7 @@ export default function ReviewCard({
               }}
             >
               <div className="flex items-center gap-3">
-                <img src={"/profile/edit-2.svg"}
-                  alt=""
-                  className="h-6 w-6"
-                />
+                <img src={"/profile/edit-2.svg"} alt="" className="h-6 w-6" />
                 Edit Review
               </div>
             </Button>
@@ -287,11 +308,13 @@ export default function ReviewCard({
               style="group"
             >
               <div className="flex items-center gap-3">
-                <img src="/utility/trash.svg"
+                <img
+                  src="/utility/trash.svg"
                   alt=""
-                  className="h-6 w-6 block group-hover:hidden"
+                  className="block h-6 w-6 group-hover:hidden"
                 />
-                <img src="/utility/trash-hover.svg"
+                <img
+                  src="/utility/trash-hover.svg"
                   alt=""
                   className="hidden h-6 w-6 group-hover:block"
                 />

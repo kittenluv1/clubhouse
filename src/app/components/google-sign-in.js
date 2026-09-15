@@ -3,14 +3,15 @@
 import Button from "./button";
 import Script from "next/script";
 import { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../lib/db";
-import { useSearchParams } from "next/navigation";
 import { isValidReturnUrl } from "../lib/utils/redirect";
 import posthog from "posthog-js";
 
 export default function GoogleSignIn() {
   // userEmail is either: null (logged out), string (logged in), or INVALID (invalid email)
   const [userEmail, setUserEmail] = useState(null);
+  const router = useRouter();
   const searchParams = useSearchParams();
   const club = searchParams.get("club");
   const clubId = searchParams.get("clubId");
@@ -77,21 +78,18 @@ export default function GoogleSignIn() {
         // Check for returnUrl parameter first
         const returnUrl = searchParams.get("returnUrl");
         if (returnUrl && isValidReturnUrl(returnUrl)) {
-          window.location.href = returnUrl;
+          router.push(returnUrl);
           return;
         }
 
-        // Fallback: Keep backward compatibility with club/clubId params
         if (club != null) {
           if (clubId != null) {
-            // redirect to review page
-            window.location.href = `/review?club=${club}&clubId=${clubId}`;
+            router.push(`/review?club=${club}&clubId=${clubId}`);
           } else {
-            //redirect to club general page
-            window.location.href = `/clubs/${club}`;
+            router.push(`/clubs/${club}`);
           }
         } else {
-          window.location.href = `/profile`;
+          router.push("/profile");
         }
       } else {
         setUserEmail(null); // Clear email when signed out

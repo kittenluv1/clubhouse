@@ -1,7 +1,8 @@
 ## Description
 
-- Brief summary of changes.
-- Linked issue: Fixes # (issue number)
+<!-- Provide a brief summary of the changes introduced by this PR. Include why this change is necessary and how it solves the problem. -->
+
+Fixes # <!-- Add issue number here (e.g., #142) -->
 
 ## How Has This Been Tested?
 

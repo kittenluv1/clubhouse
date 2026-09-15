@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { supabase } from "../lib/db";
 
 const SearchableDropdown = ({  
@@ -15,24 +15,13 @@ const SearchableDropdown = ({
     ref,
     className = ""
     }) => {
-    const [inputValue, setInputValue] = useState(value || ''); 
-    const [filteredOptions, setFilteredOptions] = useState([]);
+    const [internalValue, setInternalValue] = useState(value || ''); 
     const [allOptions, setAllOptions] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const dropdownRef = useRef(null);
-
-   
-    useEffect(() => {
-        // Update inputValue when the value prop changes
-        if (value !== inputValue) {
-            setInputValue(value || '');
-        }
-        // Only sync from the `value` prop; adding inputValue would revert
-        // the user's in-progress typing.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
+    const inputValue = value !== undefined ? value : internalValue;
 
     useEffect(() => {
     const fetchClubNames = async () => {
@@ -60,26 +49,23 @@ const SearchableDropdown = ({
     fetchClubNames();
   }, [tableName, nameColumn]);
 
-  useEffect(() => {
+  const filteredOptions = useMemo(() => {
     if (inputValue.trim() === "") {
-      setFilteredOptions([]);
-    } else {
-      const filtered = allOptions
-        .filter((option) =>
-          option.toLowerCase().includes(inputValue.toLowerCase())
-        )
-        .sort((a, b) => {
-          const lowerA = a.toLowerCase();
-          const lowerB = b.toLowerCase();
-          const indexA = lowerA.indexOf(inputValue.toLowerCase());
-          const indexB = lowerB.indexOf(inputValue.toLowerCase());
-          // Sort by match position first (earlier matches come first)
-          if (indexA !== indexB) return indexA - indexB;
-          // Then alphabetically for ties
-          return lowerA.localeCompare(lowerB);
-        });
-      setFilteredOptions(filtered);
+      return [];
     }
+
+    return allOptions
+      .filter((option) =>
+        option.toLowerCase().includes(inputValue.toLowerCase()),
+      )
+      .sort((a, b) => {
+        const lowerA = a.toLowerCase();
+        const lowerB = b.toLowerCase();
+        const indexA = lowerA.indexOf(inputValue.toLowerCase());
+        const indexB = lowerB.indexOf(inputValue.toLowerCase());
+        if (indexA !== indexB) return indexA - indexB;
+        return lowerA.localeCompare(lowerB);
+      });
   }, [inputValue, allOptions]);
 
   useEffect(() => {
@@ -96,13 +82,14 @@ const SearchableDropdown = ({
   }, []);
 
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    const nextValue = e.target.value;
+    setInternalValue(nextValue);
     setIsOpen(true);
-    onInputChange(e.target.value);
+    onInputChange(nextValue);
   };
 
   const handleOptionClick = (option) => {
-    setInputValue(option);
+    setInternalValue(option);
     setIsOpen(false);
     onSelect(option);
   };

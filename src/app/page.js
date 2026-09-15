@@ -1,10 +1,60 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
 import Button from "./components/button";
-import ClubSlider from "./components/ClubSlider";
+import ClubCarousel from "./components/ClubCarousel";
+
+const CATEGORIES = [
+  "Academic",
+  "Business",
+  "Career Planning",
+  "Club Sports",
+  "Dental",
+  "Educational",
+  "Engineering",
+  "Honor Societies",
+  "Journals",
+  "Law",
+  "Leadership",
+  "Medical",
+  "Pre-Professional",
+  "Technology",
+  "Cultural",
+  "African American",
+  "Asian",
+  "Asian Pacific Islander",
+  "Latino/Latina",
+  "Ethnic",
+  "International Students",
+  "Out-of-state Students",
+  "Community Service",
+  "Social Activism",
+  "Service",
+  "LGBTQI",
+  "GSA Affiliated",
+  "Transfer Students",
+  "Faculty/Staff",
+  "Arts",
+  "Dance",
+  "Film",
+  "Music",
+  "Media",
+  "Theater",
+  "Fitness",
+  "Health and Wellness",
+  "Self Improvement",
+  "Sports",
+  "Martial Arts",
+  "Religious",
+  "Spiritual",
+  "Greek Life",
+  "Student Government",
+  "Social",
+  "Spirit/Booster",
+  "Recreation",
+];
 
 function useIsMobile(breakpoint = 1024) {
   const [isMobile, setIsMobile] = useState(false);
@@ -22,70 +72,17 @@ function useIsMobile(breakpoint = 1024) {
 function Home() {
   const router = useRouter();
   const searchRef = useRef();
-  const [randomCategories, setRandomCategories] = useState([]);
   const isMobile = useIsMobile();
-
-  // generate random categories
-  const CATEGORIES = [
-    "Academic",
-    "Business",
-    "Career Planning",
-    "Club Sports",
-    "Dental",
-    "Educational",
-    "Engineering",
-    "Honor Societies",
-    "Journals",
-    "Law",
-    "Leadership",
-    "Medical",
-    "Pre-Professional",
-    "Technology",
-    "Cultural",
-    "African American",
-    "Asian",
-    "Asian Pacific Islander",
-    "Latino/Latina",
-    "Ethnic",
-    "International Students",
-    "Out-of-state Students",
-    "Community Service",
-    "Social Activism",
-    "Service",
-    "LGBTQI",
-    "GSA Affiliated",
-    "Transfer Students",
-    "Faculty/Staff",
-    "Arts",
-    "Dance",
-    "Film",
-    "Music",
-    "Media",
-    "Theater",
-    "Fitness",
-    "Health and Wellness",
-    "Self Improvement",
-    "Sports",
-    "Martial Arts",
-    "Religious",
-    "Spiritual",
-    "Greek Life",
-    "Student Government",
-    "Social",
-    "Spirit/Booster",
-    "Recreation",
-  ];
 
   function getRandomItems(arr, count) {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
   }
 
-  useEffect(() => {
-    setRandomCategories(getRandomItems(CATEGORIES, isMobile ? 5 : 12));
-    // Reshuffle featured categories only when the viewport size changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isMobile]);
+  const randomCategories = useMemo(
+    () => getRandomItems(CATEGORIES, isMobile ? 5 : 12),
+    [isMobile],
+  );
 
   return (
     <div className="relative w-full">
@@ -128,7 +125,7 @@ function Home() {
           </Button>
         </div>
         <div className="mt-30 mb-16 w-full max-w-6xl">
-          <ClubSlider />
+          <ClubCarousel />
         </div>
       </div>
     </div>

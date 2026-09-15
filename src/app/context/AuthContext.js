@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  Fragment,
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 
@@ -34,6 +40,9 @@ export function AuthProvider({ children }) {
         if (prev?.id === newUser?.id) return prev;
         return newUser;
       });
+      if (!session) {
+        setProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -42,10 +51,7 @@ export function AuthProvider({ children }) {
   // Fetch profile row when user changes. Depends on user?.id (primitive)
   // so token refreshes don't re-trigger this.
   useEffect(() => {
-    if (!user?.id) {
-      setProfile(null);
-      return;
-    }
+    if (!user?.id) return;
 
     let cancelled = false;
     supabase
@@ -76,7 +82,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{ user, session, profile, isAdmin, loading, signOut }}
     >
-      {children}
+      <Fragment key={user?.id ?? "signed-out"}>{children}</Fragment>
     </AuthContext.Provider>
   );
 }

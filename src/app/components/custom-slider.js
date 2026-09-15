@@ -1,7 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import '../../../src/app/ratingSlider.css';
+import "../../../src/app/ratingSlider.css";
 
 const CustomSlider = ({
   min = 1,
@@ -12,15 +9,11 @@ const CustomSlider = ({
   lowLabel = "Low",
   highLabel = "High",
 }) => {
-  const [sliderValue, setSliderValue] = useState(value);
-
-  useEffect(() => {
-    setSliderValue(value);
-  }, [value]);
+  // slider does not maintain its own state; instead, when the slider value changes, the parent component updates the state and passes the updated value back to this component.
+  const sliderValue = value;
 
   const handleChange = (e) => {
     const newValue = parseFloat(e.target.value);
-    setSliderValue(newValue);
     onChange(newValue);
   };
 
@@ -44,23 +37,21 @@ const CustomSlider = ({
 
         {/* Thumb */}
         <div
-  className="absolute top-1/2 z-10 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B8DF64] shadow-md pointer-events-none"
-  style={{ left: `${calculateFillPercentage()}%` }}
-></div>
-
-        
+          className="pointer-events-none absolute top-1/2 z-10 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#B8DF64] shadow-md"
+          style={{ left: `${calculateFillPercentage()}%` }}
+        ></div>
 
         {/* Range input  */}
         <input
           id="sliderStyling"
-  type="range"
-  min={min}
-  max={max}
-  step={step}
-  value={sliderValue}
-  onChange={handleChange}
-  className="absolute top-1/2 left-0 z-20 h-8 w-full -translate-y-1/2 cursor-pointer opacity-0"
-  style={{ touchAction: "none" }}
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={sliderValue}
+          onChange={handleChange}
+          className="absolute top-1/2 left-0 z-20 h-8 w-full -translate-y-1/2 cursor-pointer opacity-0"
+          style={{ touchAction: "none" }}
         />
       </div>
 

@@ -12,20 +12,14 @@ function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, isAdmin, signOut } = useAuth();
-  const [isMounted, setIsMounted] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = React.useRef(null);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const attemptReview = () => {
     if (user) {
-      window.location.href = "/review";
+      router.push("/review");
     } else {
-      const returnUrl = encodeURIComponent("/review");
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      router.push("/sign-in?returnUrl=%2Freview");
     }
   };
 
@@ -40,10 +34,10 @@ function Header() {
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
-  if (!isMounted) return null;
-
   return (
-    <div className={`fixed top-0 left-0 z-50 flex w-full items-center justify-between bg-[#FFFFFF] p-2 md:px-20 lg:px-30 lg:py-4 min-h-[52px] ${pathname === "/" ? "shadow-[0_4px_8px_0_rgba(0,0,0,0.03)]" : "shadow-[0_4px_8px_0_rgba(0,0,0,0.07)]"}`}>
+    <div
+      className={`fixed top-0 left-0 z-50 flex min-h-[52px] w-full items-center justify-between bg-[#FFFFFF] p-2 md:px-20 lg:px-30 lg:py-4 ${pathname === "/" ? "shadow-[0_4px_8px_0_rgba(0,0,0,0.03)]" : "shadow-[0_4px_8px_0_rgba(0,0,0,0.07)]"}`}
+    >
       {/* Header is separated into 3 parts: LEFT, CENTER, RIGHT */}
 
       {/* LEFT: Logo =======================================================*/}
@@ -55,7 +49,7 @@ function Header() {
         <img
           src="/clubhouse-logo-desktop.svg"
           alt="ClubHouse Logo"
-          className="pointer-events-none hidden object-cover lg:block lg:w-[178px] mr-7"
+          className="pointer-events-none mr-7 hidden object-cover lg:block lg:w-[178px]"
         />
         <img
           src="/clubhouse-logo-mobile.svg"
@@ -64,10 +58,9 @@ function Header() {
         />
       </button>
 
-
       {/* =============================CENTER: Search Bar============================ */}
       {pathname !== "/" ? (
-        <div className="flex-1 mr-2">
+        <div className="mr-2 flex-1">
           <SearchBar />
         </div>
       ) : (
@@ -77,8 +70,9 @@ function Header() {
 
       {/* =========================================================RIGHT: Buttons */}
       <div className="relative h-full">
-        <div className="flex justify-center items-center gap-2">
-          {// show this button in the header on desktop only
+        <div className="flex items-center justify-center gap-2">
+          {
+            // show this button in the header on desktop only
             isAdmin ? (
               <Button
                 type="CTA"
@@ -86,21 +80,18 @@ function Header() {
                 style="hidden md:flex"
               >
                 Admin
-              </Button >
+              </Button>
             ) : (
-              <Button
-                onClick={attemptReview}
-                style="hidden md:flex"
-              >
+              <Button onClick={attemptReview} style="hidden md:flex">
                 Write a Review
               </Button>
             )
           }
 
-          {// Profile button
+          {
+            // Profile button
             user?.email && (
               <div ref={profileRef}>
-
                 {/* profile button */}
                 <button
                   type="button"
@@ -111,38 +102,59 @@ function Header() {
                   className="relative flex items-center"
                   aria-label="Sign out"
                 >
-                  <img src={profile ? getAvatarUrl(profile.avatar_id) : "/profile.svg"} className="h-12 rounded-full transition hover:ring-2 hover:ring-gray-200" alt="Profile" />
+                  <img
+                    src={
+                      profile ? getAvatarUrl(profile.avatar_id) : "/profile.svg"
+                    }
+                    className="h-12 rounded-full transition hover:ring-2 hover:ring-gray-200"
+                    alt="Profile"
+                  />
                 </button>
 
                 {/* profile menu */}
                 {showProfileMenu && (
-                  <div className="absolute top-full right-0 mt-1 shadow-[0_0_15px_#262B6A26] rounded-lg z-20 bg-white w-max max-w-[200px] md:max-w-none">
+                  <div className="absolute top-full right-0 z-20 mt-1 w-max max-w-[200px] rounded-lg bg-white shadow-[0_0_15px_#262B6A26] md:max-w-none">
                     <button
-                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-t-lg"
+                      className="flex w-full items-center rounded-t-lg px-2 py-2 hover:bg-[#F0F2F9]"
                       onClick={() => {
                         setShowProfileMenu(false);
                         router.push("/profile");
                       }}
                     >
-                      <img src={profile ? getAvatarUrl(profile.avatar_id) : "/profile.svg"} className="w-10 h-10 mx-2 shrink-0 rounded-full" alt="Profile" />
-                      <div className="flex flex-col items-start mr-2 min-w-0">
+                      <img
+                        src={
+                          profile
+                            ? getAvatarUrl(profile.avatar_id)
+                            : "/profile.svg"
+                        }
+                        className="mx-2 h-10 w-10 shrink-0 rounded-full"
+                        alt="Profile"
+                      />
+                      <div className="mr-2 flex min-w-0 flex-col items-start">
                         <p className="m-0 leading-tight">View Profile</p>
-                        <p className="text-[#A6B0B8] text-sm m-0 leading-tight truncate max-w-[120px] md:max-w-none">{user?.email}</p>
+                        <p className="m-0 max-w-[120px] truncate text-sm leading-tight text-[#A6B0B8] md:max-w-none">
+                          {user?.email}
+                        </p>
                       </div>
                     </button>
 
-                    { // these options only displayed here on mobile
+                    {
+                      // these options only displayed here on mobile
                       isAdmin ? (
                         <div className="md:hidden">
                           <hr className="w-full bg-gray-300" />
                           <button
-                            className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
+                            className="flex w-full items-center px-2 py-2 hover:bg-[#F0F2F9]"
                             onClick={() => {
                               setShowProfileMenu(false);
                               router.push("/admin");
                             }}
                           >
-                            <img src="/review/review_1.svg" className="w-4 h-4 mx-5" alt="Admin" />
+                            <img
+                              src="/review/review_1.svg"
+                              className="mx-5 h-4 w-4"
+                              alt="Admin"
+                            />
                             <div className="flex flex-col items-start">
                               <p className="m-0 leading-tight">Admin</p>
                             </div>
@@ -152,23 +164,32 @@ function Header() {
                         <div className="md:hidden">
                           <hr className="w-full bg-gray-300" />
                           <button
-                            className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9]"
+                            className="flex w-full items-center px-2 py-2 hover:bg-[#F0F2F9]"
                             onClick={attemptReview}
                           >
-                            <img src="/review/edit-review.svg" className="w-4 h-4 mx-5" alt="Sign Out" />
+                            <img
+                              src="/review/edit-review.svg"
+                              className="mx-5 h-4 w-4"
+                              alt="Sign Out"
+                            />
                             <div className="flex flex-col items-start">
                               <p className="m-0">Write a Review</p>
                             </div>
                           </button>
                         </div>
-                      )}
+                      )
+                    }
 
                     <hr className="w-full bg-gray-300" />
                     <button
-                      className="flex items-center w-full px-2 py-2 hover:bg-[#F0F2F9] rounded-b-lg"
+                      className="flex w-full items-center rounded-b-lg px-2 py-2 hover:bg-[#F0F2F9]"
                       onClick={signOut}
                     >
-                      <img src="/profile/sign-out.svg" className="w-4 h-4 mx-5 shrink-0" alt="Sign Out" />
+                      <img
+                        src="/profile/sign-out.svg"
+                        className="mx-5 h-4 w-4 shrink-0"
+                        alt="Sign Out"
+                      />
                       <div className="flex flex-col items-start">
                         <p className="m-0 whitespace-nowrap">Sign Out</p>
                       </div>
@@ -176,18 +197,14 @@ function Header() {
                   </div>
                 )}
               </div>
-            )}
+            )
+          }
 
           {!user?.email && (
             <Button
               type="CTA"
               onClick={() => {
-                if (window.location.pathname == "/") { //home page
-                  router.push("/sign-in");
-                }
-                else {
-                  router.push(`/sign-in?returnUrl=${window.location.pathname + window.location.search + window.location.hash}`);
-                }
+                router.push("/sign-in");
               }}
             >
               Sign In
