@@ -71,8 +71,6 @@ function AllClubsPage() {
       url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}&sort=${sortType}`;
     }
 
-    setError(null);
-
     fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);

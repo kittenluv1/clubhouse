@@ -42,6 +42,27 @@ const getCurrentQuarter = () => {
   }
 };
 
+function StarRating({ rating, setRating }) {
+  return (
+    <div className="flex">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => setRating(star)}
+          className="text-6xl focus:outline-none"
+        >
+          {star <= (rating || 0) ? (
+            <AiFillStar className="mr-2 text-4xl text-yellow-400" />
+          ) : (
+            <AiFillStar className="mr-2 text-4xl" />
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function EditReviewPage() {
   const params = useParams();
   const id = params.id;
@@ -84,10 +105,9 @@ export default function EditReviewPage() {
     }
 
     // prevents state updates if the component unmounts before the fetch completes
-    let isActiveReviewReview = true;
+    let isActiveReview = true;
 
     if (!id) {
-       
       setIsReviewLoading(false);
       return;
     }
@@ -290,27 +310,6 @@ export default function EditReviewPage() {
       setError(error.message || "Failed to submit review. Please try again.");
       setIsSubmitting(false);
     }
-  };
-
-  const StarRating = ({ rating, setRating }) => {
-    return (
-      <div className="flex">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            onClick={() => setRating(star)}
-            className="text-6xl focus:outline-none"
-          >
-            {star <= (rating || 0) ? (
-              <AiFillStar className="mr-2 text-4xl text-yellow-400" />
-            ) : (
-              <AiFillStar className="mr-2 text-4xl" />
-            )}
-          </button>
-        ))}
-      </div>
-    );
   };
 
   if (isReviewLoading) return LoadingScreen();

@@ -70,11 +70,14 @@ const Page = () => {
   };
 
   useEffect(() => {
-    if (isAdmin) {
-      fetchPendingReviews();
-    }
-    // Intentionally refetch only when the sort or admin status changes;
-    // fetchPendingReviews is stable for these inputs.
+    if (!isAdmin) return;
+
+    const loadReviews = async () => {
+      await fetchPendingReviews();
+    };
+
+    loadReviews();
+    // Intentionally refetch only when the sort or admin status changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortType, isAdmin]);
 

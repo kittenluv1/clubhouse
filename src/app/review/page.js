@@ -199,6 +199,54 @@ const getCurrentQuarter = () => {
   }
 };
 
+function StarRating({ rating, setRating, inputRef, hasError }) {
+  const handleClick = (event, star) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    setRating(x < rect.width / 2 ? star - 0.5 : star);
+  };
+
+  const getStarFill = (star) => {
+    if (rating >= star) return "full";
+    if (rating >= star - 0.5) return "half";
+    return "empty";
+  };
+
+  return (
+    <div className="flex">
+      <div
+        ref={inputRef}
+        tabIndex={0}
+        className={`scroll-mt-25 border-3 ${
+          hasError ? "border-red-600" : "border-hidden"
+        }`}
+      >
+        {[1, 2, 3, 4, 5].map((star) => {
+          const fill = getStarFill(star);
+          return (
+            <button
+              key={star}
+              type="button"
+              onClick={(event) => handleClick(event, star)}
+              className="relative float-left mr-1 inline-block focus:outline-none"
+            >
+              <AiFillStar className="text-5xl text-[#E5EBF1]" />
+              {fill !== "empty" && (
+                <span
+                  className="absolute top-0 left-0 overflow-hidden"
+                  style={{ width: fill === "half" ? "50%" : "100%" }}
+                >
+                  <AiFillStar className="text-5xl text-yellow-400" />
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function ReviewPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -425,64 +473,6 @@ export default function ReviewPage() {
   };
 
   {
-    /* Star Rating */
-  }
-  const StarRating = ({ rating, setRating }) => {
-    const handleClick = (e, star) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const value = x < rect.width / 2 ? star - 0.5 : star;
-      setRating(value);
-    };
-
-    const getStarFill = (star) => {
-      if (rating >= star) return "full";
-      if (rating >= star - 0.5) return "half";
-      return "empty";
-    };
-
-    return (
-      <div className="flex">
-        <div
-          ref={satisfactionStars}
-          tabIndex={0}
-          className={`scroll-mt-25 border-3 ${
-            fieldErrors.satisfaction && overallSatisfaction == null
-              ? "border-red-600"
-              : "border-hidden"
-          }`}
-        >
-          {[1, 2, 3, 4, 5].map((star) => {
-            const fill = getStarFill(star);
-
-            return (
-              <button
-                key={star}
-                type="button"
-                onClick={(e) => handleClick(e, star)}
-                className="relative float-left mr-1 inline-block focus:outline-none"
-              >
-                <AiFillStar className="text-5xl text-[#E5EBF1]" />
-
-                {fill !== "empty" && (
-                  <span
-                    className="absolute top-0 left-0 overflow-hidden"
-                    style={{
-                      width: fill === "half" ? "50%" : "100%",
-                    }}
-                  >
-                    <AiFillStar className="text-5xl text-yellow-400" />
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  {
     /* Required fields validation*/
   }
   const requireValid = (e) => {
@@ -665,6 +655,8 @@ export default function ReviewPage() {
               <StarRating
                 rating={overallSatisfaction}
                 setRating={setOverallSatisfaction}
+                inputRef={satisfactionStars}
+                hasError={fieldErrors.satisfaction && overallSatisfaction == null}
               />
             </div>
           </div>
