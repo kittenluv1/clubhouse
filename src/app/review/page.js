@@ -1,7 +1,6 @@
 "use client";
 
-
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import posthog from "posthog-js";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
@@ -10,14 +9,11 @@ import { supabase } from "../lib/db";
 import { useRequireAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { AiFillStar, AiOutlineStar } from "react-icons/ai";
-import { FaStarHalfAlt } from "react-icons/fa";
+import { AiFillStar } from "react-icons/ai";
 import Tooltip from "../components/tooltip";
 import LoadingScreen from "../components/LoadingScreen";
 import Button from "../components/button";
 import Image from "next/image";
-import { textarea } from "framer-motion/client";
-
 
 const nouns = [
   "Panda",
@@ -176,15 +172,12 @@ const anonymousName = () => {
   return `@${randomVerb}${randomNoun}`;
 };
 
-
 const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
   if (!startQuarter || !startYear || !endQuarter || !endYear) return true;
   const startYearNum = parseInt(startYear);
   const endYearNum = parseInt(endYear);
 
-
   if (endYearNum > startYearNum) return true;
-
 
   if (endYearNum === startYearNum) {
     const quarters = ["Winter", "Spring", "Fall"];
@@ -193,11 +186,9 @@ const isEndDateValid = (startQuarter, startYear, endQuarter, endYear) => {
   return false;
 };
 
-
 // Helper function to determine the current quarter
 const getCurrentQuarter = () => {
   const month = new Date().getMonth() + 1;
-
 
   if (month >= 9 && month <= 12) {
     return "Fall";
@@ -208,14 +199,16 @@ const getCurrentQuarter = () => {
   }
 };
 
-
 export default function ReviewPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useRequireAuth();
+  const clubFromUrl = searchParams.get("club");
+  const clubIdFromUrl = searchParams.get("clubId");
 
-
-  const [selectedClub, setSelectedClub] = useState("");
+  const [selectedClub, setSelectedClub] = useState(
+    clubFromUrl ? decodeURIComponent(clubFromUrl) : "",
+  );
   const [clubId, setClubId] = useState(null);
   const [startQuarter, setStartQuarter] = useState("");
   const [startYear, setStartYear] = useState("");
@@ -231,7 +224,6 @@ export default function ReviewPage() {
   const [reviewText, setReviewText] = useState("");
   const [isMember, setIsMember] = useState(false);
 
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
@@ -239,50 +231,38 @@ export default function ReviewPage() {
   const satisfactionStars = useRef(null);
   const textInput = useRef(null);
   const clubNameInput = useRef(null);
-  const [success, setSuccess] = useState(false);
-  const [readyToSubmit, setReadyToSubmit] = useState(true)
+  const dateErrorValue =
+    startQuarter && startYear && endQuarter && endYear
+      ? isEndDateValid(startQuarter, startYear, endQuarter, endYear)
+        ? null
+        : "End date cannot be earlier than start date"
+      : null;
 
-  // Getting club name and ID from URL parameters
+  // legacy - was used to disable submit button if required fields were not filled, but now we just show errors on submit to reduce confusion about whether the submit button is working or not
+  const readyToSubmit = !!(
+    clubId != null &&
+    startQuarter !== "" &&
+    (endQuarter !== "" || isMember) &&
+    overallSatisfaction != null &&
+    reviewText.trim() !== ""
+  );
+
   useEffect(() => {
-    const clubFromUrl = searchParams.get("club");
-    const clubIdFromUrl = searchParams.get("clubId");
-
-
-    if (clubFromUrl) {
-      setSelectedClub(decodeURIComponent(clubFromUrl));
-    }
-
-
     if (clubIdFromUrl) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setClubId(parseInt(clubIdFromUrl));
     }
-  }, [searchParams]);
-
+  }, [clubIdFromUrl]);
 
   useEffect(() => {
-    if (startQuarter && startYear && endQuarter && endYear) {
-      const isValid = isEndDateValid(
-        startQuarter,
-        startYear,
-        endQuarter,
-        endYear,
-      );
-      setDateError(
-        isValid ? null : "End date cannot be earlier than start date",
-      );
+    if (dateErrorValue) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDateError(dateErrorValue);
     } else {
+       
       setDateError(null);
     }
-  }, [startQuarter, startYear, endQuarter, endYear]);
-
-  useEffect(()=> {
-    if(clubId != null && startQuarter != "" && (endQuarter != "" || isMember ) && overallSatisfaction != null && reviewText != ""){
-      setReadyToSubmit(false);
-    } else {
-      setReadyToSubmit(true);
-    }
-
-  }, [clubId, startQuarter, endQuarter, isMember, overallSatisfaction, reviewText]);
+  }, [dateErrorValue]);
 
   const handleMembershipCheckbox = (e) => {
     const checked = e.target.checked;
@@ -300,7 +280,6 @@ export default function ReviewPage() {
     setIsMember(checked);
   };
 
-
   const handleClubSelect = async (club) => {
     setSelectedClub(club);
     try {
@@ -310,7 +289,6 @@ export default function ReviewPage() {
         .eq("OrganizationName", club)
         .single();
 
-
       if (error) {
         console.error("Full error object:", error);
         throw new Error(
@@ -318,13 +296,11 @@ export default function ReviewPage() {
         );
       }
       setClubId(data.OrganizationID);
-      
     } catch (error) {
       console.error("Error fetching club ID:", error);
       setError("Club not found.");
     }
   };
-
 
   // Keep selectedClub in sync with what's visible in the search box.
   // Typing (or deleting) text means the previously selected club is no longer
@@ -336,16 +312,13 @@ export default function ReviewPage() {
     }
   };
 
-
   const handleStartQuarterChange = (e) => {
     setStartQuarter(e.target.value);
   };
 
-
   const handleStartYearChange = (e) => {
     setStartYear(e.target.value);
   };
-
 
   const handleEndQuarterChange = (e) => {
     if (!isMember) {
@@ -353,68 +326,53 @@ export default function ReviewPage() {
     }
   };
 
-
   const handleEndYearChange = (e) => {
     if (!isMember) {
       setEndYear(e.target.value);
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setSuccess(false);
-    setDateError(null);
-
-
-    if (!isEndDateValid(startQuarter, startYear, endQuarter, endYear)) {
-      setDateError("End date cannot be earlier than start date");
-      return;
-    }
-
     setIsSubmitting(true);
-
 
     try {
       if (!clubId) throw new Error("Please select a club");
       if (!startQuarter || !startYear)
         throw new Error("Please select a start date");
       if (!endQuarter || !endYear) throw new Error("Please select an end date");
-      if (overallSatisfaction === null) throw new Error("Please rate your overall satisfaction");
-      if (!reviewText) throw new Error("Please write a review");
+      if (!reviewText.trim()) throw new Error("Please write a review");
+      if (overallSatisfaction === null)
+        throw new Error("Please rate your overall satisfaction");
 
-
-      let userAlias = anonymousName();
-
-
-      const reviewData = {
-        club_id: clubId,
-        user_id: user?.id,
-        user_email: user?.email,
-        membership_start_quarter: startQuarter,
-        membership_start_year: parseInt(startYear),
-        membership_end_quarter: endQuarter,
-        membership_end_year: parseInt(endYear),
-        time_commitment_rating: timeCommitment,
-        inclusivity_rating: inclusivityRating,
-        social_community_rating: socialCommunity,
-        competitiveness_rating: competitiveness,
-        overall_satisfaction: overallSatisfaction,
-        review_text: reviewText,
-        updated_at: null,
-        club_name: selectedClub,
-        user_alias: userAlias,
-      };
-
-
-      const { data, error } = await supabase
-        .from("pending_reviews")
-        .insert(reviewData)
+      const { data, error: dbError } = await supabase
+        .from("reviews")
+        .insert([
+          {
+            club_id: clubId,
+            user_id: user?.id,
+            user_email: user?.email,
+            club_name: selectedClub,
+            review_text: reviewText,
+            membership_start_quarter: startQuarter,
+            membership_start_year: parseInt(startYear, 10),
+            membership_end_quarter: endQuarter,
+            membership_end_year: parseInt(endYear, 10),
+            time_commitment_rating: timeCommitment,
+            inclusivity_rating: inclusivityRating,
+            social_community_rating: socialCommunity,
+            competitiveness_rating: competitiveness,
+            overall_satisfaction: overallSatisfaction,
+            is_current_member: isMember,
+            user_alias: anonymousName(),
+          },
+        ])
         .select();
 
-
-      if (error) throw new Error(error.message);
+      if (dbError) {
+        throw new Error(dbError.message || "Failed to submit review.");
+      }
 
       posthog.capture("review_submitted", {
         club_id: clubId,
@@ -429,18 +387,16 @@ export default function ReviewPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            club_name: data[0].club_name,
-            overall_satisfaction: data[0].overall_satisfaction,
-            review_text: data[0].review_text,
-            user_email: data[0].user_email,
+            club_name: data?.[0]?.club_name || selectedClub,
+            overall_satisfaction:
+              data?.[0]?.overall_satisfaction ?? overallSatisfaction,
+            review_text: data?.[0]?.review_text || reviewText,
+            user_email: data?.[0]?.user_email || user?.email,
           }),
         },
       );
 
-
       router.push("/review/thankyou");
-
-
     } catch (error) {
       console.error("Error submitting review:", error);
       setError(error.message || "Failed to submit review. Please try again.");
@@ -448,7 +404,7 @@ export default function ReviewPage() {
     }
   };
 
-
+  // legacy - was used to reset the form after submission, but now we just redirect to a thank you page
   const resetForm = () => {
     setSelectedClub("");
     setClubId(null);
@@ -468,8 +424,9 @@ export default function ReviewPage() {
     setDateError(null);
   };
 
-
-  {/* Star Rating */ }
+  {
+    /* Star Rating */
+  }
   const StarRating = ({ rating, setRating }) => {
     const handleClick = (e, star) => {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -478,94 +435,101 @@ export default function ReviewPage() {
       setRating(value);
     };
 
-
     const getStarFill = (star) => {
       if (rating >= star) return "full";
       if (rating >= star - 0.5) return "half";
       return "empty";
     };
 
+    return (
+      <div className="flex">
+        <div
+          ref={satisfactionStars}
+          tabIndex={0}
+          className={`scroll-mt-25 border-3 ${
+            fieldErrors.satisfaction && overallSatisfaction == null
+              ? "border-red-600"
+              : "border-hidden"
+          }`}
+        >
+          {[1, 2, 3, 4, 5].map((star) => {
+            const fill = getStarFill(star);
 
-  return (
-    <div className="flex">
-          <div ref={satisfactionStars} tabIndex={0} className={` border-3 scroll-mt-25
-          ${(fieldErrors.satisfaction && overallSatisfaction == null) ? 'border-red-600' : 'border-hidden'}`}>
-      {[1, 2, 3, 4, 5].map((star) => {
-        const fill = getStarFill(star);
-        
-        return (
-          
-          <button
-            key={star}
-            type="button"
-            onClick={(e) => handleClick(e, star)}
-            className="mr-1 focus:outline-none relative inline-block float-left"
-          >
-            <AiFillStar className="text-5xl text-[#E5EBF1]" />
-
-
-            {fill !== "empty" && (
-              <span
-                className="absolute top-0 left-0 overflow-hidden"
-                style={{
-                  width: fill === "half" ? "50%" : "100%",
-                }}
+            return (
+              <button
+                key={star}
+                type="button"
+                onClick={(e) => handleClick(e, star)}
+                className="relative float-left mr-1 inline-block focus:outline-none"
               >
-                <AiFillStar className="text-5xl text-yellow-400" />
-              </span>
-            )}
-          
-          </button>
-        );
-      })}
-      </div>
-   
-    </div>
-  );
-};
+                <AiFillStar className="text-5xl text-[#E5EBF1]" />
 
-{/* Required fields validation*/}
-const requireValid = (e) => {
-  // Compute the validity of every required field at once so all empty
-  // fields get flagged together, instead of one-at-a-time.
-  const errors = {
-    // clubId is the only reliable "a real club was selected" signal —
-    // typing text without picking an option leaves clubId null.
-    club: clubId == null,
-    start: startQuarter == "",
-    end: endQuarter == "" && !isMember,
-    satisfaction: overallSatisfaction == null,
-    review: reviewText == "",
+                {fill !== "empty" && (
+                  <span
+                    className="absolute top-0 left-0 overflow-hidden"
+                    style={{
+                      width: fill === "half" ? "50%" : "100%",
+                    }}
+                  >
+                    <AiFillStar className="text-5xl text-yellow-400" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
-  setFieldErrors(errors);
-
-  const hasError = Object.values(errors).some(Boolean);
-  if (!hasError) return;
-
-  // Block submission so handleSubmit doesn't run with invalid data.
-  e.preventDefault();
-
-  // Scroll to the first invalid field (top-to-bottom order).
-  if (errors.club) {
-    clubNameInput.current?.scrollIntoView({ block: "center", inline: "center" });
-  } else if (errors.satisfaction) {
-    satisfactionStars.current?.scrollIntoView({ block: "center", inline: "center" });
-  } else if (errors.review) {
-    textInput.current?.scrollIntoView({ block: "center", inline: "center" });
+  {
+    /* Required fields validation*/
   }
-};
+  const requireValid = (e) => {
+    // Compute the validity of every required field at once so all empty
+    // fields get flagged together, instead of one-at-a-time.
+    const errors = {
+      // clubId is the only reliable "a real club was selected" signal —
+      // typing text without picking an option leaves clubId null.
+      club: clubId == null,
+      start: startQuarter == "",
+      end: endQuarter == "" && !isMember,
+      satisfaction: overallSatisfaction == null,
+      review: reviewText == "",
+    };
 
+    setFieldErrors(errors);
+
+    const hasError = Object.values(errors).some(Boolean);
+    if (!hasError) return;
+
+    // Block submission so handleSubmit doesn't run with invalid data.
+    e.preventDefault();
+
+    // Scroll to the first invalid field (top-to-bottom order).
+    if (errors.club) {
+      clubNameInput.current?.scrollIntoView({
+        block: "center",
+        inline: "center",
+      });
+    } else if (errors.satisfaction) {
+      satisfactionStars.current?.scrollIntoView({
+        block: "center",
+        inline: "center",
+      });
+    } else if (errors.review) {
+      textInput.current?.scrollIntoView({ block: "center", inline: "center" });
+    }
+  };
 
   if (isSubmitting) return LoadingScreen();
 
-
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-6">Write a Review</h1>
-          <p className="text-sm text-[#6E808D] leading-relaxed max-w-2xl mx-auto px-6 mb-14">
+          <h1 className="mb-6 text-4xl font-bold">Write a Review</h1>
+          <p className="mx-auto mb-14 max-w-2xl px-6 text-sm leading-relaxed text-[#6E808D]">
             Your review is completely anonymous, so feel free to be honest! Your
             insights help other students get a better sense of what the club is
             really like. Be real, respectful, and specific—your voice makes a
@@ -573,27 +537,28 @@ const requireValid = (e) => {
           </p>
         </div>
 
-
         <div>
           <hr className="border-t border-gray-300" />
         </div>
-
-
-
 
         <form onSubmit={handleSubmit} className="px-16">
           <div className="mt-14">
             {/* Search for a club to review */}
             <div>
               <label className="mb-3 block text-2xl font-bold">
-                Search for a club to review <span className="text-[#FFA1CD]">*</span>
+                Search for a club to review{" "}
+                <span className="text-[#FFA1CD]">*</span>
               </label>
               <label className="mb-5 block text-sm text-[#6E808D]">
                 Help fellow students discover the best club experiences!
               </label>
-              <div className={`max-w-md mb-5 text-sm text-gray-600 rounded-full
-              ${(fieldErrors.club && clubId == null)
-               ? 'border-red-600 border-1 ' : 'border-hidden'} `}>
+              <div
+                className={`mb-5 max-w-md rounded-full text-sm text-gray-600 ${
+                  fieldErrors.club && clubId == null
+                    ? "border-1 border-red-600"
+                    : "border-hidden"
+                } `}
+              >
                 <SearchableDropdown
                   tableName="clubs"
                   onSelect={handleClubSelect}
@@ -607,18 +572,20 @@ const requireValid = (e) => {
             </div>
             <p className="mb-14 text-sm text-[#6E808D]">
               Review our community guidelines{" "}
-              <Link href="/community-guidelines" target="_blank" className="underline text-blue-600">
+              <Link
+                href="/community-guidelines"
+                target="_blank"
+                className="text-blue-600 underline"
+              >
                 here
               </Link>
               .
             </p>
           </div>
 
-
           <div className="mb-12">
             <hr className="border-t border-gray-300" />
           </div>
-
 
           {/* Membership dates */}
           <div className="mx-auto">
@@ -629,8 +596,9 @@ const requireValid = (e) => {
                   <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="flex space-x-2">
-                  <div className={`w-1/2
-                    ${(fieldErrors.start && startQuarter == "") ? 'border-red-600 rounded-full border-1' : 'border-hidden'} `}>
+                  <div
+                    className={`w-1/2 ${fieldErrors.start && startQuarter == "" ? "rounded-full border-1 border-red-600" : "border-hidden"} `}
+                  >
                     <QuarterYearDropdown
                       selectedQuarter={startQuarter}
                       selectedYear={startYear}
@@ -642,14 +610,14 @@ const requireValid = (e) => {
                 </div>
               </div>
               <div>
-
-
                 <label className="mb-3 block text-2xl font-bold">
-                  Club Membership End Date <span className="text-[#FFA1CD]">*</span>
+                  Club Membership End Date{" "}
+                  <span className="text-[#FFA1CD]">*</span>
                 </label>
                 <div className="mb-5 flex space-x-2">
-                  <div className={`w-1/2
-                    ${(fieldErrors.end && endQuarter == "" && !isMember) ? 'border-red-600 rounded-full border-1' : 'border-hidden'}`}>
+                  <div
+                    className={`w-1/2 ${fieldErrors.end && endQuarter == "" && !isMember ? "rounded-full border-1 border-red-600" : "border-hidden"}`}
+                  >
                     <QuarterYearDropdown
                       selectedQuarter={endQuarter}
                       selectedYear={endYear}
@@ -674,7 +642,7 @@ const requireValid = (e) => {
                   />
                   <label
                     htmlFor="member"
-                    className="ml-4 block text-sm text-gray-700 cursor-pointer mb-14"
+                    className="mb-14 ml-4 block cursor-pointer text-sm text-gray-700"
                   >
                     I am currently a member.
                   </label>
@@ -683,11 +651,9 @@ const requireValid = (e) => {
             </div>
           </div>
 
-
           <div className="mb-12">
             <hr className="border-t border-gray-300" />
           </div>
-
 
           {/* Satisfaction Stars */}
           <div>
@@ -703,11 +669,9 @@ const requireValid = (e) => {
             </div>
           </div>
 
-
           <div className="mb-12">
             <hr className="border-t border-gray-300" />
           </div>
-
 
           {/* Ratings */}
           <div className="mt-14">
@@ -715,14 +679,16 @@ const requireValid = (e) => {
               Share your experience with the club in these areas{" "}
               <span className="text-[#FFA1CD]">*</span>
             </label>
-            <p className="text-sm text-[#6E808D] mb-8">
+            <p className="mb-8 text-sm text-[#6E808D]">
               This is private between Clubhouse reviews
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+            <div className="grid grid-cols-1 gap-x-16 gap-y-12 md:grid-cols-2">
               {/* time commitment w/ svg */}
               <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-base font-semibold">Time Commitment</span>
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="text-base font-semibold">
+                    Time Commitment
+                  </span>
                   <Image
                     src="/review/time.svg"
                     alt="Time Commitment"
@@ -744,10 +710,9 @@ const requireValid = (e) => {
                 </div>
               </div>
 
-
               {/* inclusivity w/ svg */}
               <div>
-                <div className="flex items-center gap-2 mb-4">
+                <div className="mb-4 flex items-center gap-2">
                   <span className="text-base font-semibold">Inclusivity</span>
                   <Image
                     src="/review/inclusivity2.svg"
@@ -770,11 +735,12 @@ const requireValid = (e) => {
                 </div>
               </div>
 
-
               {/* social community w/ svg */}
               <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-base font-semibold">Social Community</span>
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="text-base font-semibold">
+                    Social Community
+                  </span>
                   <Image
                     src="/review/community.svg"
                     alt="Social Community"
@@ -796,11 +762,12 @@ const requireValid = (e) => {
                 </div>
               </div>
 
-
               {/* competitiveness w/ svg */}
               <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-base font-semibold">Competitiveness</span>
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="text-base font-semibold">
+                    Competitiveness
+                  </span>
                   <Image
                     src="/review/competitiveness.svg"
                     alt="Competitiveness"
@@ -825,23 +792,22 @@ const requireValid = (e) => {
             </div>
           </div>
 
-
           <div className="mt-14 mb-14">
             <hr className="border-t border-gray-300" />
           </div>
-
 
           {/* Review Text */}
           <div className="mt-14">
             <label className="mb-3 block text-3xl font-bold">
               Write a public review <span className="text-[#FFA1CD]">*</span>
             </label>
-            <p className="text-sm text-[#6E808D] mb-5 ">Share insights to help future students understand what to expect from this club!</p>
+            <p className="mb-5 text-sm text-[#6E808D]">
+              Share insights to help future students understand what to expect
+              from this club!
+            </p>
             <textarea
-            ref={textInput}
-              className={`h-32 w-full rounded-2xl border 
-                ${(fieldErrors.review && reviewText == "") ? 'border-red-600' : 'border-[#B4BEC5]'}
-                 bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
+              ref={textInput}
+              className={`h-32 w-full rounded-2xl border ${fieldErrors.review && reviewText == "" ? "border-red-600" : "border-[#B4BEC5]"} bg-white p-3 text-sm text-gray-700 focus:ring-1 focus:ring-blue-500 focus:outline-none`}
               placeholder="Write about the recruitment process, types of activities the club offers, professional opportunities, social culture & community, or anything else that shaped your overall experience."
               value={reviewText}
               onChange={(e) => {
@@ -852,14 +818,12 @@ const requireValid = (e) => {
               maxLength={2500}
               required
             ></textarea>
-            <div className={`mt-1 text-right text-sm ${reviewText.length >= 2500 ? 'text-[#FFA1CD]' : 'text-gray-500'}`}>
+            <div
+              className={`mt-1 text-right text-sm ${reviewText.length >= 2500 ? "text-[#FFA1CD]" : "text-gray-500"}`}
+            >
               {reviewText.length} / 2500 Characters
             </div>
           </div>
-
-
-         
-
 
           {/* Submit Button */}
           {error && (
@@ -880,7 +844,3 @@ const requireValid = (e) => {
     </div>
   );
 }
-
-
-
-

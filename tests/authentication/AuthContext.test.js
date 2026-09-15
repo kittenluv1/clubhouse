@@ -454,9 +454,9 @@ describe("AuthContext", () => {
         },
       });
 
-      let capturedAuth;
+      const [capturedAuth, setCapturedAuth] = React.useState();
       function Capturer() {
-        capturedAuth = useRequireAuth();
+        setCapturedAuth(useRequireAuth());
         return null;
       }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/db";
 import { useRequireAuth } from "../context/AuthContext";
 import PendingCard from "../components/pendingCard";
@@ -15,12 +16,12 @@ const PRESET_REASONS = [
 ];
 
 const Page = () => {
+  const router = useRouter();
   const { isAdmin } = useRequireAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState("newest");
   const [numPending, setNumPending] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
@@ -28,9 +29,12 @@ const Page = () => {
   const [customMessage, setCustomMessage] = useState("");
   const [isRejecting, setIsRejecting] = useState(false);
 
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false,
+  );
+
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 1024);
-    update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
@@ -38,18 +42,20 @@ const Page = () => {
   const fetchPendingReviews = async () => {
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session) {
-        console.error('No session found');
-        window.location.href = "./sign-in";
+        console.error("No session found");
+        router.push("/sign-in");
         return;
       }
 
       const res = await fetch(`/api/pendingReviews?sort=${sortType}`, {
         headers: {
-          "Authorization": `Bearer ${session.access_token}`,
-        }
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
       if (!res.ok) throw new Error("Failed to load");
 
@@ -104,11 +110,13 @@ const Page = () => {
 
   const handleApprove = async (record) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session) {
-        console.error('No session found');
-        window.location.href = "./sign-in";
+        console.error("No session found");
+        router.push("/sign-in");
         return;
       }
 
@@ -116,7 +124,7 @@ const Page = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ reviewID: record.id, approve: true }),
       });
@@ -144,7 +152,10 @@ const Page = () => {
         return;
       }
 
-      posthog.capture("review_approved", { review_id: record.id, club_name: record.club_name });
+      posthog.capture("review_approved", {
+        review_id: record.id,
+        club_name: record.club_name,
+      });
       fetchPendingReviews();
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -159,11 +170,13 @@ const Page = () => {
     setIsRejecting(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session) {
-        console.error('No session found');
-        window.location.href = "./sign-in";
+        console.error("No session found");
+        router.push("/sign-in");
         return;
       }
 
@@ -176,7 +189,7 @@ const Page = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           reviewID: selectedReview.id,
@@ -260,7 +273,7 @@ const Page = () => {
               <>
                 <button
                   onClick={() => setShowSortModal(true)}
-                  className="rounded-full border bg-[#FFF7D6] py-2 px-4 text-sm font-bold"
+                  className="rounded-full border bg-[#FFF7D6] px-4 py-2 text-sm font-bold"
                 >
                   Sort by
                 </button>
@@ -315,9 +328,7 @@ const Page = () => {
             className="absolute inset-0 bg-black/10 backdrop-blur-sm"
           />
 
-          <div
-            className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl md:p-8"
-          >
+          <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl md:p-8">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-2xl font-bold">Reject review</h3>
@@ -334,7 +345,7 @@ const Page = () => {
                   {PRESET_REASONS.map((reason) => (
                     <label
                       key={reason}
-                      className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 border-gray-300`}
+                      className={`flex cursor-pointer items-start gap-3 rounded-xl border border-gray-300 px-4 py-3`}
                     >
                       <input
                         type="checkbox"
@@ -349,7 +360,10 @@ const Page = () => {
               </div>
 
               <div>
-                <label htmlFor="custom-message" className="text-sm font-semibold">
+                <label
+                  htmlFor="custom-message"
+                  className="text-sm font-semibold"
+                >
                   Optional Custom message
                 </label>
                 <textarea

@@ -9,7 +9,7 @@ import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
 import Button from "../components/button";
 import { supabase } from "../lib/db";
-import ClubSlider from "../components/ClubSlider";
+import ClubCarousel from "../components/ClubCarousel";
 import { useAuth } from "../context/AuthContext";
 import posthog from "posthog-js";
 
@@ -36,7 +36,6 @@ function AllClubsPage() {
   const router = useRouter();
   const { user } = useAuth();
 
-
   const initialSelectedTags = multiCategoriesParam
     ? multiCategoriesParam.split(",")
     : [];
@@ -49,35 +48,30 @@ function AllClubsPage() {
   }, []);
 
   useEffect(() => {
-    setShowSortModal(false);
-  }, [nameParam, singleCategoryParam, multiCategoriesParam]);
-
-  useEffect(() => {
     if (nameParam) {
       posthog.capture("club_searched", { query: nameParam });
     } else if (multiCategoriesParam) {
-      posthog.capture("club_filter_applied", { categories: multiCategoriesParam.split(",") });
+      posthog.capture("club_filter_applied", {
+        categories: multiCategoriesParam.split(","),
+      });
     } else if (singleCategoryParam) {
-      posthog.capture("club_filter_applied", { categories: [singleCategoryParam] });
+      posthog.capture("club_filter_applied", {
+        categories: [singleCategoryParam],
+      });
     }
   }, [nameParam, singleCategoryParam, multiCategoriesParam]);
 
   useEffect(() => {
-    setError(null);
     let url = `/api/clubs?page=${currPage}&sort=${sortType}`;
     if (nameParam) {
-      url = `/api/clubs?name=${encodeURIComponent(
-        nameParam,
-      )}&page=${currPage}&sort=${sortType}`;
+      url = `/api/clubs?name=${encodeURIComponent(nameParam)}&page=${currPage}&sort=${sortType}`;
     } else if (multiCategoriesParam) {
-      url = `/api/categories/multi?list=${encodeURIComponent(
-        multiCategoriesParam,
-      )}&page=${currPage}&sort=${sortType}`;
+      url = `/api/categories/multi?list=${encodeURIComponent(multiCategoriesParam)}&page=${currPage}&sort=${sortType}`;
     } else if (singleCategoryParam) {
-      url = `/api/categories/${encodeURIComponent(
-        singleCategoryParam,
-      )}?page=${currPage}&sort=${sortType}`;
+      url = `/api/categories/${encodeURIComponent(singleCategoryParam)}?page=${currPage}&sort=${sortType}`;
     }
+
+    setError(null);
 
     fetch(url)
       .then((res) => {
@@ -117,34 +111,40 @@ function AllClubsPage() {
         target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
-  }, [loading, clubs.length, pageTotal, sortType, nameParam, singleCategoryParam, multiCategoriesParam]);
-
-  // Reset user-specific state on logout
-  useEffect(() => {
-    if (!user) {
-      setUserLikedClubs([]);
-      setUserSavedClubs([]);
-      setLikesMap(prev => {
-        const updated = {};
-        for (const clubId in prev) {
-          updated[clubId] = { ...prev[clubId], userLiked: false };
-        }
-        return updated;
-      });
-    }
-  }, [user]);
+  }, [
+    loading,
+    clubs.length,
+    pageTotal,
+    sortType,
+    nameParam,
+    singleCategoryParam,
+    multiCategoriesParam,
+  ]);
 
   useEffect(() => {
     if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOnboardingCompleted(false);
       return;
     }
+
+    let ignore = false;
     fetch("/api/onboarding")
       .then((res) => res.json())
       .then(({ onboarding_completed }) => {
-        setOnboardingCompleted(!!onboarding_completed);
+        if (!ignore) {
+          setOnboardingCompleted(!!onboarding_completed);
+        }
       })
-      .catch(() => setOnboardingCompleted(false));
+      .catch(() => {
+        if (!ignore) {
+          setOnboardingCompleted(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [user]);
 
   const handlePreviousPage = () => currPage > 1 && setCurrPage((p) => p - 1);
@@ -222,16 +222,22 @@ function AllClubsPage() {
 
   return (
     <>
-      <div className="flex flex-col p-6 md:p-20 lg:px-30 md:py-20">
-
+      <div className="flex flex-col p-6 md:p-20 md:py-20 lg:px-30">
         {user && onboardingCompleted && (
           <>
-            <h1 className="font-bold text-4xl black mb-4">Club Recommendations</h1>
+            <h1 className="black mb-4 text-4xl font-bold">
+              Club Recommendations
+            </h1>
           </>
         )}
-        <ClubSlider></ClubSlider>
+        <ClubCarousel></ClubCarousel>
 
-        <h1 className="scroll-mt-20 md:scroll-mt-24 font-bold text-4xl black mb-4 mt-10" id="discover">Discover Clubs</h1>
+        <h1
+          className="black mt-10 mb-4 scroll-mt-20 text-4xl font-bold md:scroll-mt-24"
+          id="discover"
+        >
+          Discover Clubs
+        </h1>
         <div className="mb-4 flex items-start justify-between">
           <Filter
             initialSelectedTags={initialSelectedTags}
@@ -276,7 +282,7 @@ function AllClubsPage() {
           ) : (
             <div className="relative">
               <div
-                className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
+                className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 border-[#6E808D] px-4 py-2 text-sm hover:bg-[#E5EBF1]"
                 onClick={() => setShowSortModal(!showSortModal)}
               >
                 <span className="font-medium text-[#6E808D]">Sort by:</span>
@@ -287,12 +293,17 @@ function AllClubsPage() {
                   {sortType === "alphabetical" && "A–Z"}
                 </span>
                 <svg
-                  className={`text-[#6E808D] h-4 w-4 transition-transform ${showSortModal ? "rotate-180" : ""}`}
+                  className={`h-4 w-4 text-[#6E808D] transition-transform ${showSortModal ? "rotate-180" : ""}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
               <SortModal
@@ -338,8 +349,17 @@ function AllClubsPage() {
             disabled={currPage === 1}
             style="flex items-center gap-2"
           >
-            <svg width="5" height="10" viewBox="0 0 5 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 0.81727L4.25637 0L0.206022 4.45412C0.140733 4.5255 0.0889179 4.61037 0.0535603 4.70385C0.0182026 4.79734 0 4.89759 0 4.99884C0 5.1001 0.0182026 5.20035 0.0535603 5.29384C0.0889179 5.38732 0.140733 5.47219 0.206022 5.54356L4.25637 10L4.9993 9.18273L1.19776 5L5 0.81727Z" fill="black" />
+            <svg
+              width="5"
+              height="10"
+              viewBox="0 0 5 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 0.81727L4.25637 0L0.206022 4.45412C0.140733 4.5255 0.0889179 4.61037 0.0535603 4.70385C0.0182026 4.79734 0 4.89759 0 4.99884C0 5.1001 0.0182026 5.20035 0.0535603 5.29384C0.0889179 5.38732 0.140733 5.47219 0.206022 5.54356L4.25637 10L4.9993 9.18273L1.19776 5L5 0.81727Z"
+                fill="black"
+              />
             </svg>
             Previous
           </Button>
@@ -354,8 +374,17 @@ function AllClubsPage() {
             style="flex items-center gap-2"
           >
             Next
-            <svg width="5" height="10" viewBox="0 0 5 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 0.81727L0.743627 0L4.79398 4.45412C4.85927 4.5255 4.91108 4.61037 4.94644 4.70385C4.9818 4.79734 5 4.89759 5 4.99884C5 5.1001 4.9818 5.20035 4.94644 5.29384C4.91108 5.38732 4.85927 5.47219 4.79398 5.54356L0.743627 10L0.000700951 9.18273L3.80224 5L0 0.81727Z" fill="black" />
+            <svg
+              width="5"
+              height="10"
+              viewBox="0 0 5 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 0.81727L0.743627 0L4.79398 4.45412C4.85927 4.5255 4.91108 4.61037 4.94644 4.70385C4.9818 4.79734 5 4.89759 5 4.99884C5 5.1001 4.9818 5.20035 4.94644 5.29384C4.91108 5.38732 4.85927 5.47219 4.79398 5.54356L0.743627 10L0.000700951 9.18273L3.80224 5L0 0.81727Z"
+                fill="black"
+              />
             </svg>
           </Button>
         </div>

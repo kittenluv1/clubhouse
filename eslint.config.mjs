@@ -1,17 +1,7 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = [
+const config = [
   {
-    // Build output, deps, and coverage artifacts should never be linted.
     ignores: [
       ".next/**",
       "out/**",
@@ -21,7 +11,7 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
-  ...compat.extends("next/core-web-vitals"),
+  ...nextCoreWebVitals,
   {
     rules: {
       // This UI intentionally uses <img> for local SVG icons. next/image adds
@@ -33,4 +23,4 @@ const eslintConfig = [
   },
 ];
 
-export default eslintConfig;
+export default config;
