@@ -16,12 +16,14 @@ export const renderRatingStars = (rating) => {
 				ratingStars.push(<img
 					key={x}
 					src={"interactions/reviewStarHalf.svg"}
+					alt=""
 					className="mr-1"
 				/>);
 			} else {
 				ratingStars.push(<img
 					key={x}
 					src={"interactions/reviewStarFilled.svg"}
+					alt=""
 					className="mr-1"
 				/>);
 			}
@@ -30,6 +32,7 @@ export const renderRatingStars = (rating) => {
 			ratingStars.push(<img
 				key={x}
 				src={"interactions/reviewStarUnfilled.svg"}
+				alt=""
 				className="mr-1"
 			/>);
 		}

@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearch } from "../context/SearchContext";
 import Button from "./button";
@@ -62,10 +61,10 @@ const GROUPED_TAGS = {
 export default function Filter({
   initialSelectedTags = [],
   show = false,
-  onInteraction = () => { },
+  onInteraction = () => {},
   shouldDelay = false,
   filterOpenedOnce = false,
-  onFilterOpened = () => { },
+  onFilterOpened = () => {},
 }) {
   const { selectedCategories, searchByCategories } = useSearch();
   const [showFilter, setShowFilter] = useState(show);
@@ -73,12 +72,6 @@ export default function Filter({
   const [isMobile, setIsMobile] = useState(false);
   const filterRef = useRef(null);
   const buttonRef = useRef(null);
-  const router = useRouter();
-
-  // Sync with context state
-  useEffect(() => {
-    setTempSelectedTags(selectedCategories);
-  }, [selectedCategories]);
 
   // detect mobile screen
   useEffect(() => {
@@ -123,7 +116,6 @@ export default function Filter({
     return () => {
       document.body.style.overflow = "";
     };
-
   }, [isMobile, showFilter]);
 
   useEffect(() => {
@@ -139,14 +131,19 @@ export default function Filter({
     if (shouldDelay && !filterOpenedOnce) {
       onFilterOpened();
       const t = setTimeout(() => {
-        filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        filterRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
       }, 500);
       return () => clearTimeout(t);
-    }
-    else {
+    } else {
       filterRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
       onFilterOpened();
     }
+    // Runs on mobile/showFilter transitions only; onFilterOpened is a parent
+    // callback we intentionally do not want to re-trigger this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile, showFilter]);
 
   const toggleTag = (tag) => {
@@ -187,7 +184,7 @@ export default function Filter({
           onClick={toggleFilter}
         >
           <span className="text-xs lg:text-sm">
-            {isMobile ? 'Categories' : 'Search by Category'}
+            {isMobile ? "Categories" : "Search by Category"}
           </span>
         </Button>
 
@@ -197,7 +194,7 @@ export default function Filter({
               {selectedCategories.map((tag) => (
                 <div
                   key={tag}
-                  className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] flex items-center"
+                  className="flex items-center rounded-full border-1 border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
                 >
                   <span>{tag}</span>
                   <button onClick={() => handleRemoveTag(tag)} className="ml-2">
@@ -251,10 +248,13 @@ export default function Filter({
                         {tempSelectedTags.map((tag) => (
                           <div
                             key={tag}
-                            className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] flex items-center"
+                            className="flex items-center rounded-full border-1 border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
                           >
                             <span>{tag}</span>
-                            <button onClick={() => toggleTag(tag)} className="ml-1">
+                            <button
+                              onClick={() => toggleTag(tag)}
+                              className="ml-1"
+                            >
                               <img src="/X.png" alt="remove tag" width="19" />
                             </button>
                           </div>
@@ -291,7 +291,7 @@ export default function Filter({
 
                 <div className="fixed bottom-0 left-0 flex w-full justify-between border-t bg-white px-6 py-4">
                   <Button
-                    style='font-bold'
+                    style="font-bold"
                     className="text-md px-4 py-2 font-semibold"
                     onClick={handleClose}
                   >
@@ -323,7 +323,7 @@ export default function Filter({
                     {tempSelectedTags.map((tag) => (
                       <div
                         key={tag}
-                        className="rounded-full py-2 px-4 text-sm bg-[#FFCEE5] border-1 border-[#FFA1CD] flex items-center"
+                        className="flex items-center rounded-full border-1 border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
                       >
                         <span>{tag}</span>
                         <button onClick={() => toggleTag(tag)} className="ml-1">
@@ -363,7 +363,7 @@ export default function Filter({
 
             <div className="flex justify-end pt-4 pb-2">
               <Button
-                style='font-bold'
+                style="font-bold"
                 className="text-md px-4 py-2 font-semibold"
                 onClick={handleClose}
               >

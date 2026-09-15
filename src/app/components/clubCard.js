@@ -19,19 +19,6 @@ export default function ClubCard({
   const [clubLikeCount, setClubLikeCount] = useState(likeCount);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Sync internal state with props when they change (e.g., after logout)
-  useEffect(() => {
-    setLiked(userLiked);
-  }, [userLiked]);
-
-  useEffect(() => {
-    setSaved(userSaved);
-  }, [userSaved]);
-
-  useEffect(() => {
-    setClubLikeCount(likeCount);
-  }, [likeCount]);
-
   const toggleLike = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -45,7 +32,7 @@ export default function ClubCard({
 
     if (!session) {
       const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      router.push(`/sign-in?returnUrl=${returnUrl}`);
       return;
     }
 
@@ -81,7 +68,7 @@ export default function ClubCard({
 
     if (!session) {
       const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      router.push(`/sign-in?returnUrl=${returnUrl}`);
       return;
     }
 
@@ -151,6 +138,7 @@ export default function ClubCard({
               <>
                 <img
                   src={"interactions/reviewStarFilled.svg"}
+                  alt=""
                   className="mr-[5px]"
                 />
                 N/A

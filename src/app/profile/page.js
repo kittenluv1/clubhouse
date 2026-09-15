@@ -84,6 +84,8 @@ function ProfilePage() {
         };
 
         fetchProfileData();
+        // Refetch profile data when the authenticated user changes.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     if (loading) {
@@ -93,7 +95,7 @@ function ProfilePage() {
     const displayName = userProfile?.full_name || "Anonymous Bruin";
 
     const attemptReview = () => {
-        window.location.href = "/review";
+        router.push("/review");
     };
 
     // Handler functions for review actions

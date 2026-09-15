@@ -1,6 +1,6 @@
 import { render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import OnboardingGuard from "./OnboardingGuard";
+import OnboardingGuard from "@/app/components/OnboardingGuard";
 
 // --- Mocks ---
 
@@ -14,7 +14,7 @@ jest.mock("next/navigation", () => ({
 
 let mockAuth = { user: null, loading: false };
 
-jest.mock("../context/AuthContext", () => ({
+jest.mock("@/app/context/AuthContext", () => ({
   useAuth: () => mockAuth,
 }));
 
@@ -25,7 +25,7 @@ const mockFrom = jest.fn(() => ({
   update: mockUpdate,
 }));
 
-jest.mock("../lib/db", () => ({
+jest.mock("@/app/lib/db", () => ({
   supabase: {
     from: (...args) => mockFrom(...args),
   },

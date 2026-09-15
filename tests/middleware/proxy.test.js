@@ -35,7 +35,7 @@ jest.mock("next/server", () => ({
 
 // --- Import after mocks ---
 
-const { proxy, config } = require("./proxy");
+const { proxy, config } = require("@/proxy");
 
 // --- Helpers ---
 

@@ -4,7 +4,6 @@ import React from "react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
-import { supabase } from "@/app/lib/db";
 import posthog from "posthog-js";
 
 import ErrorScreen from "@/app/components/ErrorScreen";
@@ -17,8 +16,8 @@ import ReviewCard from "@/app/components/reviewCard";
 
 function IconImg({ media }) {
   return (
-    <div className="inline-flex items-center justify-center w-8 h-8 border border-[#EC9304] rounded-full hover:opacity-80">
-      <img src={`/icons/${media}.svg`} alt={media} className="w-full h-full" />
+    <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#EC9304] hover:opacity-80">
+      <img src={`/icons/${media}.svg`} alt={media} className="h-full w-full" />
     </div>
   );
 }
@@ -77,18 +76,18 @@ function RatingBar({ title, tooltipRating, value }) {
           <span className="font-semibold">{title}</span>
           <Tooltip rating={tooltipRating} />
         </div>
-        <span>
-          {value ? value.toFixed(1) + "/5" : "N/A"}
-        </span>
+        <span>{value ? value.toFixed(1) + "/5" : "N/A"}</span>
       </div>
       <div className="h-3 w-full overflow-hidden rounded-full border border-[#D9D9D9] bg-gray-200">
         <div
           className="h-full rounded-full"
           style={{
             width: `${value ? (value / 5) * 100 : 0}%`,
-            background: value ? 'linear-gradient(to right, #FFA2CC, #FEF38C, #B8DF64)' : 'none',
-            backgroundSize: value ? `${500 / value}% 100%` : 'auto',
-            backgroundPosition: 'left center',
+            background: value
+              ? "linear-gradient(to right, #FFA2CC, #FEF38C, #B8DF64)"
+              : "none",
+            backgroundSize: value ? `${500 / value}% 100%` : "auto",
+            backgroundPosition: "left center",
           }}
         />
       </div>
@@ -215,10 +214,10 @@ export default function ClubDetailsPage() {
           });
 
           // Map reviews with like data
-          const reviewsWithLikes = (data.reviews || []).map(review => ({
+          const reviewsWithLikes = (data.reviews || []).map((review) => ({
             ...review,
             likes: data.reviewLikesMap?.[review.id] || 0,
-            user_has_liked: data.userLikedReviews?.includes(review.id) || false
+            user_has_liked: data.userLikedReviews?.includes(review.id) || false,
           }));
 
           setReviews(reviewsWithLikes);
@@ -240,36 +239,21 @@ export default function ClubDetailsPage() {
     };
 
     fetchClubData();
-  }, [
-    id
-  ]);
+  }, [id]);
 
   const sortedReviews = useMemo(() => {
     const baseReviews = [...reviews];
 
     if (sortType === "mostLiked") {
       return baseReviews.sort((a, b) => (b.likes || 0) - (a.likes || 0));
-    }
-    else if (sortType === "mostRecent") {
-      return baseReviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortType === "mostRecent") {
+      return baseReviews.sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at),
+      );
     }
 
     return baseReviews;
   }, [reviews, sortType]);
-
-  // Reset user-specific state on logout
-  useEffect(() => {
-    if (!user) {
-      setUserLikedClub(false);
-      setUserSavedClub(false);
-      setUserLikedReviews([]);
-      setCurrentUserId(null);
-      setReviews(prev => prev.map(review => ({
-        ...review,
-        user_has_liked: false
-      })));
-    }
-  }, [user]);
 
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(false);
@@ -292,7 +276,7 @@ export default function ClubDetailsPage() {
     if (!user) {
       const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
       const returnUrl = encodeURIComponent(currentPath);
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      router.push(`/sign-in?returnUrl=${returnUrl}`);
       return;
     }
 
@@ -342,17 +326,16 @@ export default function ClubDetailsPage() {
 
   if (!club) return <p className="p-4">No club found with ID: {id}</p>;
 
-
   const attemptReview = (href) => {
     if (user) {
       posthog.capture("write_review_clicked", {
         club_id: club.OrganizationID,
         club_name: club.OrganizationName,
       });
-      window.location.href = href;
+      router.push(href);
     } else {
       const returnUrl = encodeURIComponent(href);
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      router.push(`/sign-in?returnUrl=${returnUrl}`);
     }
   };
 
@@ -362,7 +345,7 @@ export default function ClubDetailsPage() {
     if (!user) {
       const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
       const returnUrl = encodeURIComponent(currentPath);
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      router.push(`/sign-in?returnUrl=${returnUrl}`);
       return;
     }
 
@@ -405,7 +388,7 @@ export default function ClubDetailsPage() {
     if (!user) {
       const currentPath = `/clubs/${encodeURIComponent(club.OrganizationName)}`;
       const returnUrl = encodeURIComponent(currentPath);
-      window.location.href = `/sign-in?returnUrl=${returnUrl}`;
+      router.push(`/sign-in?returnUrl=${returnUrl}`);
       return;
     }
 
@@ -441,34 +424,49 @@ export default function ClubDetailsPage() {
   return (
     <>
       {/* Club Information */}
-      <section className="relative p-6 md:p-20 bg-[url('/club-page/club-page-bg.svg')] bg-cover">
-        <div className="relative mb-10 mx-auto max-w-7xl flex flex-col gap-8 rounded-3xl border-1 bg-white p-6 md:p-10 lg:flex-row border-[#9DC663] shadow-[15px_15px_0_#A3CD1B]">
-
+      <section className="relative bg-[url('/club-page/club-page-bg.svg')] bg-cover p-6 md:p-20">
+        <div className="relative mx-auto mb-10 flex max-w-7xl flex-col gap-8 rounded-3xl border-1 border-[#9DC663] bg-white p-6 shadow-[15px_15px_0_#A3CD1B] md:p-10 lg:flex-row">
           {/* left side of the box */}
-          <div className="lg:pr-5 lg:w-4/6">
+          <div className="lg:w-4/6 lg:pr-5">
             <div className="mb-3 flex items-center justify-between">
-              <h1 className="text-2xl md:text-3xl font-bold">
+              <h1 className="text-2xl font-bold md:text-3xl">
                 {club.OrganizationName}
               </h1>
 
-              <div className="flex items-center gap-0 md:gap-2 flex-shrink-0">
+              <div className="flex flex-shrink-0 items-center gap-0 md:gap-2">
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className="flex items-center gap-0 md:gap-1 p-1 transition-all min-w-[44px] min-h-[44px]"
+                  className="flex min-h-[44px] min-w-[44px] items-center gap-0 p-1 transition-all md:gap-1"
                   aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
-                  <img src={userLikedClub ? "/interactions/likeFilled.svg" : "/interactions/likeUnfilled.svg"} alt="Like Icon" className="flex-shrink-0" />
+                  <img
+                    src={
+                      userLikedClub
+                        ? "/interactions/likeFilled.svg"
+                        : "/interactions/likeUnfilled.svg"
+                    }
+                    alt="Like Icon"
+                    className="flex-shrink-0"
+                  />
                   <span className="text-gray-700">{clubLikeCount}</span>
                 </button>
 
                 {/* Save Button */}
                 <button
                   onClick={handleSaveToggle}
-                  className="flex items-center gap-0 md:gap-2 p-1 transition-all min-w-[44px] min-h-[44px]"
+                  className="flex min-h-[44px] min-w-[44px] items-center gap-0 p-1 transition-all md:gap-2"
                   aria-label={userSavedClub ? "Unsave club" : "Save club"}
                 >
-                  <img src={userSavedClub ? "/interactions/saveFilled.svg" : "/interactions/saveUnfilled.svg"} alt="Save Icon" className="flex-shrink-0" />
+                  <img
+                    src={
+                      userSavedClub
+                        ? "/interactions/saveFilled.svg"
+                        : "/interactions/saveUnfilled.svg"
+                    }
+                    alt="Save Icon"
+                    className="flex-shrink-0"
+                  />
                 </button>
               </div>
             </div>
@@ -500,16 +498,14 @@ export default function ClubDetailsPage() {
             </div>
 
             {/* Description with clamp/expand */}
-            <DescriptionWithClamp
-              description={club.OrganizationDescription}
-            />
+            <DescriptionWithClamp description={club.OrganizationDescription} />
 
             {club.OrganizationEmail && (
               <p className="mt-6 break-words">
                 Email:{" "}
                 <a
                   href={`mailto:${club.OrganizationEmail}`}
-                  className="underline break-all"
+                  className="break-all underline"
                 >
                   {club.OrganizationEmail}
                 </a>
@@ -519,9 +515,7 @@ export default function ClubDetailsPage() {
             <div className="mt-6 mb-6">
               <div className="mb-1">
                 <div className="flex items-center gap-2">
-                  <span>
-                    Connect:
-                  </span>
+                  <span>Connect:</span>
                   {/* Website Icon */}
                   {club.OrganizationWebSite && (
                     <a
@@ -545,7 +539,7 @@ export default function ClubDetailsPage() {
           </div>
 
           {/* right side */}
-          <div className="lg:pl-5 lg:w-2/6">
+          <div className="lg:w-2/6 lg:pl-5">
             {/* Overall Rating */}
             <div className="mt-2 flex flex-wrap items-center">
               <span className="text-2xl font-bold">
@@ -553,13 +547,12 @@ export default function ClubDetailsPage() {
                   ? club.average_satisfaction.toFixed(1)
                   : "N/A"}
               </span>
-              <AiFillStar className="mr-1 ml-1 text-2xl text-yellow-400 flex-shrink-0" />
-              <h2 className="text-2xl font-bold">
-                Satisfaction Rating
-              </h2>
+              <AiFillStar className="mr-1 ml-1 flex-shrink-0 text-2xl text-yellow-400" />
+              <h2 className="text-2xl font-bold">Satisfaction Rating</h2>
             </div>
             <p className="mb-4 text-sm text-[#6E808D]">
-              From {club.total_num_reviews || reviews.length || 0} trusted students
+              From {club.total_num_reviews || reviews.length || 0} trusted
+              students
             </p>
 
             <section>
@@ -595,10 +588,10 @@ export default function ClubDetailsPage() {
       <section className="p-6 md:p-20">
         <section className="mx-auto max-w-7xl">
           <div>
-            <h2 className="py-4 text-lg md:text-2xl font-bold">
+            <h2 className="py-4 text-lg font-bold md:text-2xl">
               Student Reviews ({club.total_num_reviews || reviews.length || 0})
             </h2>
-            <p className="mb-6 hidden md:block text-[16px] text-[#6E808D]">
+            <p className="mb-6 hidden text-[16px] text-[#6E808D] md:block">
               Have something to say? Share your experience...
             </p>
             <div className="mb-8 md:mb-12">
@@ -614,7 +607,7 @@ export default function ClubDetailsPage() {
               </Button>
             </div>
           </div>
-          <div className="flex items-end justify-end mb-12">
+          <div className="mb-12 flex items-end justify-end">
             {isMobile ? (
               <>
                 <Button
@@ -623,7 +616,9 @@ export default function ClubDetailsPage() {
                   onClick={() => setShowSortModal(true)}
                 >
                   <div className="flex gap-1">
-                    <span className="font-font-semi text-[#6E808D]">Sort By:</span>
+                    <span className="font-font-semi text-[#6E808D]">
+                      Sort By:
+                    </span>
                     <span className="font-bold text-[#6E808D]">
                       {sortType === "mostLiked" && "Most liked"}
                       {sortType === "mostRecent" && "Most recent"}
@@ -639,14 +634,14 @@ export default function ClubDetailsPage() {
                   }}
                   sortOptions={[
                     { label: "Most liked", value: "mostLiked" },
-                    { label: "Most recent", value: "mostRecent" }
+                    { label: "Most recent", value: "mostRecent" },
                   ]}
                 />
               </>
             ) : (
               <div className="relative">
                 <div
-                  className="flex flex-shrink-0 cursor-pointer items-center gap-1 rounded-full border-1 py-2 px-4 text-sm border-[#6E808D] hover:bg-[#E5EBF1]"
+                  className="flex flex-shrink-0 cursor-pointer items-center gap-1 rounded-full border-1 border-[#6E808D] px-4 py-2 text-sm hover:bg-[#E5EBF1]"
                   onClick={() => setShowSortModal(!showSortModal)}
                 >
                   <span className="font-semi text-[#6E808D]">Sort by:</span>
@@ -655,12 +650,17 @@ export default function ClubDetailsPage() {
                     {sortType === "mostRecent" && "Most recent"}
                   </span>
                   <svg
-                    className={`h-4 w-4 text-[#6E808D] transition-transform ml-1 ${showSortModal ? "rotate-180" : ""}`}
+                    className={`ml-1 h-4 w-4 text-[#6E808D] transition-transform ${showSortModal ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
                 <SortModal
@@ -672,7 +672,7 @@ export default function ClubDetailsPage() {
                   }}
                   sortOptions={[
                     { label: "Most liked", value: "mostLiked" },
-                    { label: "Most recent", value: "mostRecent" }
+                    { label: "Most recent", value: "mostRecent" },
                   ]}
                   variant="desktop"
                 />
@@ -694,7 +694,9 @@ export default function ClubDetailsPage() {
                   status="displayed"
                   clickable={false}
                   onLike={handleLike}
-                  isCurrentUser={currentUserId && review.user_id === currentUserId}
+                  isCurrentUser={
+                    currentUserId && review.user_id === currentUserId
+                  }
                 />
               ))}
             </div>

@@ -1,118 +1,108 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import React, { createContext, useContext, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 const SearchContext = createContext();
 
 export const useSearch = () => {
-    const context = useContext(SearchContext);
-    if (!context) {
-        throw new Error('useSearch must be used within a SearchProvider');
-    }
-    return context;
+  const context = useContext(SearchContext);
+  if (!context) {
+    throw new Error("useSearch must be used within a SearchProvider");
+  }
+  return context;
 };
 
 export const SearchProvider = ({ children }) => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [singleCategory, setSingleCategory] = useState('');
-    const [isClient, setIsClient] = useState(false);
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const initialName = searchParams.get("name") || "";
+  const initialSingleCategory = searchParams.get("category") || "";
+  const initialCategories = searchParams.get("categories") || "";
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+  const [searchTerm, setSearchTerm] = useState(initialName);
+  const [selectedCategories, setSelectedCategories] = useState(
+    initialCategories ? initialCategories.split(",") : [],
+  );
+  const [singleCategory, setSingleCategory] = useState(initialSingleCategory);
 
-    // Sync state with URL parameters on mount and URL changes
-    useEffect(() => {
-        if (!isClient) return; // Only run on client side
+  // Clear all search states
+  const clearAllSearch = () => {
+    setSearchTerm("");
+    setSelectedCategories([]);
+    setSingleCategory("");
+  };
 
-        const nameParam = searchParams.get('name') || '';
-        const singleCategoryParam = searchParams.get('category') || '';
-        const multiCategoriesParam = searchParams.get('categories') || '';
+  // Search by name - clears category selections
+  const searchByName = (term) => {
+    const trimmedTerm = (term || "").trim();
 
-        setSearchTerm(nameParam);
-        setSingleCategory(singleCategoryParam);
-        setSelectedCategories(multiCategoriesParam ? multiCategoriesParam.split(',') : []);
-    }, [searchParams]);
+    // Clear category states
+    setSelectedCategories([]);
+    setSingleCategory("");
+    setSearchTerm(trimmedTerm);
 
-    // Clear all search states
-    const clearAllSearch = () => {
-        setSearchTerm('');
-        setSelectedCategories([]);
-        setSingleCategory('');
-    };
+    if (!trimmedTerm) {
+      router.push("/clubs");
+      return;
+    }
 
-    // Search by name - clears category selections
-    const searchByName = (term) => {
-        if (!isClient) return;
-        const trimmedTerm = (term || '').trim();
+    const encoded = encodeURIComponent(trimmedTerm);
+    router.push(`/clubs?name=${encoded}`);
+  };
 
-        // Clear category states
-        setSelectedCategories([]);
-        setSingleCategory('');
-        setSearchTerm(trimmedTerm);
-
-        if (!trimmedTerm) {
-            router.push('/clubs');
-            return;
-        }
-
-        const encoded = encodeURIComponent(trimmedTerm);
-        router.push(`/clubs?name=${encoded}`);
-    };
-
-    // Search by single category - clears name search
-    const searchBySingleCategory = (category) => {
-    const trimmedCategory = (category || '').trim();
+  // Search by single category - clears name search
+  const searchBySingleCategory = (category) => {
+    const trimmedCategory = (category || "").trim();
 
     // Clear name search and multi-categories
-    setSearchTerm('');
+    setSearchTerm("");
     setSelectedCategories([]);
     setSingleCategory(trimmedCategory);
 
     if (!trimmedCategory) {
-        router.push('/clubs');
-        return;
+      router.push("/clubs");
+      return;
     }
 
     const encoded = encodeURIComponent(trimmedCategory);
     router.push(`/clubs?category=${encoded}`);
-    };
+  };
 
-    // Search by multiple categories - clears name search
-    const searchByCategories = (categories) => {
-    const validCategories = Array.isArray(categories) ? categories.filter(Boolean) : [];
+  // Search by multiple categories - clears name search
+  const searchByCategories = (categories) => {
+    const validCategories = Array.isArray(categories)
+      ? categories.filter(Boolean)
+      : [];
 
     // Clear name search and single category
-    setSearchTerm('');
-    setSingleCategory('');
+    setSearchTerm("");
+    setSingleCategory("");
     setSelectedCategories(validCategories);
 
     if (validCategories.length === 0) {
-        router.push('/clubs');
-        return;
+      router.push("/clubs");
+      return;
     }
 
-    const encoded = encodeURIComponent(validCategories.join(','));
+    const encoded = encodeURIComponent(validCategories.join(","));
     router.push(`/clubs?categories=${encoded}`);
-    };
+  };
 
-    // Get current search state for UI display
-    const getCurrentSearchState = () => {
-    if (searchTerm) return { type: 'name', value: searchTerm };
-    if (singleCategory) return { type: 'category', value: singleCategory };
-    if (selectedCategories.length > 0) return { type: 'categories', value: selectedCategories };
-    return { type: 'none', value: null };
-    };
+  // Get current search state for UI display
+  const getCurrentSearchState = () => {
+    if (searchTerm) return { type: "name", value: searchTerm };
+    if (singleCategory) return { type: "category", value: singleCategory };
+    if (selectedCategories.length > 0)
+      return { type: "categories", value: selectedCategories };
+    return { type: "none", value: null };
+  };
 
-    // Check if we're currently on the clubs page (for conditional behavior)
-    const isOnClubsPage = pathname === '/clubs';
+  // Check if we're currently on the clubs page (for conditional behavior)
+  const isOnClubsPage = pathname === "/clubs";
 
-    const value = {
+  const value = {
     // State
     searchTerm,
     selectedCategories,
@@ -130,11 +120,9 @@ export const SearchProvider = ({ children }) => {
     setSearchTerm,
     setSelectedCategories,
     setSingleCategory,
-    };
+  };
 
-    return (
-    <SearchContext.Provider value={value}>
-        {children}
-    </SearchContext.Provider>
-    );
+  return (
+    <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
+  );
 };

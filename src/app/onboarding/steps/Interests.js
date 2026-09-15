@@ -68,6 +68,9 @@ export default function Avocations({ formData, onUpdate, onValidChange }) {
 
     useEffect(() => {
         onValidChange(selected.length >= 2);
+        // Report validity when the selection changes; onValidChange is a parent
+        // callback intentionally excluded to avoid re-run loops.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selected])
 
     const select = (interest) => {
@@ -83,7 +86,7 @@ export default function Avocations({ formData, onUpdate, onValidChange }) {
             <div className="mx-0 sm:mx-15">
                 <h1 className="text-2xl font-bold text-[#1C350F]">Choose Your Interest</h1>
                 <p className="text-[0.8rem] mt-2 text-[#6E808D] mb-10">
-                    We'll be using this information to personalize club recommendations for you.
+                    We&apos;ll be using this information to personalize club recommendations for you.
                     Please select at least 2 categories to continue.</p>
                 {Object.entries(filtered).map(([group, tags]) => (
                     <div key={group} className="mb-4">

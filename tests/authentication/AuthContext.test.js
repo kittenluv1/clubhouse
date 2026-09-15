@@ -1,6 +1,10 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { AuthProvider, useAuth, useRequireAuth } from "./AuthContext";
+import {
+  AuthProvider,
+  useAuth,
+  useRequireAuth,
+} from "@/app/context/AuthContext";
 
 // --- Supabase mock wiring ---
 
@@ -10,7 +14,7 @@ const mockGetSession = jest.fn();
 const mockSignOut = jest.fn();
 const mockProfileSingle = jest.fn();
 
-jest.mock("../lib/db", () => ({
+jest.mock("@/app/lib/db", () => ({
   supabase: {
     auth: {
       getSession: (...args) => mockGetSession(...args),
@@ -60,7 +64,7 @@ function renderWithProvider() {
   return render(
     <AuthProvider>
       <TestConsumer />
-    </AuthProvider>
+    </AuthProvider>,
   );
 }
 
@@ -193,7 +197,9 @@ describe("AuthContext", () => {
     });
 
     it("logs error when signOut fails", async () => {
-      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       mockSignOut.mockResolvedValue({ error: { message: "network error" } });
       mockGetSession.mockResolvedValue({ data: { session: null } });
 
@@ -206,7 +212,10 @@ describe("AuthContext", () => {
         screen.getByTestId("sign-out").click();
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith("Sign out error:", "network error");
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Sign out error:",
+        "network error",
+      );
       consoleSpy.mockRestore();
     });
   });
@@ -253,7 +262,7 @@ describe("AuthContext", () => {
       render(
         <AuthProvider>
           <SessionTracker />
-        </AuthProvider>
+        </AuthProvider>,
       );
 
       await waitFor(() => {
@@ -343,7 +352,9 @@ describe("AuthContext", () => {
   describe("useAuth outside provider", () => {
     it("throws when used without AuthProvider", () => {
       // Suppress React error boundary noise
-      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = jest
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       expect(() => {
         render(<TestConsumer />);
@@ -374,7 +385,7 @@ describe("AuthContext", () => {
       return render(
         <AuthProvider>
           <RequireAuthConsumer />
-        </AuthProvider>
+        </AuthProvider>,
       );
     }
 
@@ -383,7 +394,9 @@ describe("AuthContext", () => {
       renderRequireAuth();
 
       await waitFor(() => {
-        expect(mockRouter.replace).toHaveBeenCalledWith("/sign-in?returnUrl=%2Fprofile");
+        expect(mockRouter.replace).toHaveBeenCalledWith(
+          "/sign-in?returnUrl=%2Fprofile",
+        );
       });
     });
 
@@ -393,7 +406,9 @@ describe("AuthContext", () => {
       renderRequireAuth();
 
       await waitFor(() => {
-        expect(mockRouter.replace).toHaveBeenCalledWith("/sign-in?returnUrl=%2Freview%2Fedit%2F42");
+        expect(mockRouter.replace).toHaveBeenCalledWith(
+          "/sign-in?returnUrl=%2Freview%2Fedit%2F42",
+        );
       });
     });
 
@@ -440,7 +455,9 @@ describe("AuthContext", () => {
       });
 
       await waitFor(() => {
-        expect(mockRouter.replace).toHaveBeenCalledWith("/sign-in?returnUrl=%2Fprofile");
+        expect(mockRouter.replace).toHaveBeenCalledWith(
+          "/sign-in?returnUrl=%2Fprofile",
+        );
       });
     });
 
@@ -456,6 +473,8 @@ describe("AuthContext", () => {
 
       let capturedAuth;
       function Capturer() {
+        // The test captures the hook result for assertions after React renders.
+        // eslint-disable-next-line react-hooks/globals
         capturedAuth = useRequireAuth();
         return null;
       }
@@ -463,7 +482,7 @@ describe("AuthContext", () => {
       render(
         <AuthProvider>
           <Capturer />
-        </AuthProvider>
+        </AuthProvider>,
       );
 
       await waitFor(() => {

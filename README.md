@@ -25,6 +25,29 @@ This project requires environment variables to be set up for local development.
    cp .env.example .env.local
    ```
 
+## Testing & Linting
+
+This project uses [Jest](https://jestjs.io) with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) for its test suite, and [ESLint](https://eslint.org) (with `eslint-config-next`) for static analysis.
+
+```bash
+npm test              # run the full test suite once
+npm run test:watch    # re-run tests on file changes
+npm run test:coverage # run tests and generate a coverage report
+npm run lint          # run ESLint across the project
+```
+
+All tests live in the top-level `tests/` directory, organized by feature (`api/`, `authentication/`, `components/`, `lib/`, `middleware/`, `onboarding/`, `profile/`, `recommendation/`, `search/`) and import source via the `@/` alias. The suite covers pure helpers (`clubCardHelpers`, `avatars`, `splitUserInterests`, the recommendation engine and its features), API route handlers, React components (`Button`, `Footer`, `ConfirmationModal`, `LoadingScreen`/`ErrorScreen`, `SectionToggle`, `Gradient`, `OnboardingGuard`), and the `AuthContext` / `SearchContext` providers. See [`docs/testing.md`](docs/testing.md) for conventions.
+
+## Continuous Integration
+
+A GitHub Actions workflow (`.github/workflows/ci.yaml`) runs automatically on every push and pull request. It installs dependencies with `npm ci` (Node.js version pinned in `.nvmrc`) and runs three jobs in parallel:
+
+- **lint** — `npm run lint` (ESLint, warnings fail the build)
+- **test** — `npm run test:coverage` (Jest with an enforced coverage threshold)
+- **build** — `npm run build` (Next.js production build)
+
+Make sure all three pass locally before pushing. Coverage thresholds are defined in `jest.config.js`; see [`docs/testing.md`](docs/testing.md).
+
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
