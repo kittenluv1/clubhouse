@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import CustomSlider from "@/app/components/custom-slider";
 import MobileRatingsDropdown from "@/app/components/MobileRatingsDropdown";
+import { useState } from "react";
 
 describe("CustomSlider", () => {
   it("renders the current value to one decimal place", () => {
@@ -11,7 +12,12 @@ describe("CustomSlider", () => {
 
   it("renders the low and high labels at the ends", () => {
     render(
-      <CustomSlider value={2} onChange={jest.fn()} lowLabel="Easy" highLabel="Hard" />
+      <CustomSlider
+        value={2}
+        onChange={jest.fn()}
+        lowLabel="Easy"
+        highLabel="Hard"
+      />,
     );
     expect(screen.getByText("Easy")).toBeInTheDocument();
     expect(screen.getByText("Hard")).toBeInTheDocument();
@@ -25,8 +31,18 @@ describe("CustomSlider", () => {
   });
 
   it("updates the displayed value after a change", () => {
-    render(<CustomSlider value={1} onChange={jest.fn()} />);
-    fireEvent.change(screen.getByRole("slider"), { target: { value: "5" } });
+    function TestWrapper() {
+      const [value, setValue] = useState(1);
+
+      return <CustomSlider value={value} onChange={setValue} />;
+    }
+
+    render(<TestWrapper />);
+
+    fireEvent.change(screen.getByRole("slider"), {
+      target: { value: "5" },
+    });
+
     expect(screen.getByText("5.0")).toBeInTheDocument();
   });
 });
@@ -34,9 +50,11 @@ describe("CustomSlider", () => {
 describe("MobileRatingsDropdown", () => {
   it("renders without crashing when collapsed", () => {
     const { container } = render(
-      <MobileRatingsDropdown club={{ average_time_commitment: 3 }} />
+      <MobileRatingsDropdown club={{ average_time_commitment: 3 }} />,
     );
     // Collapsed by default — the ratings menu is not shown
-    expect(container.querySelector("#rating-bars-menu")).not.toBeInTheDocument();
+    expect(
+      container.querySelector("#rating-bars-menu"),
+    ).not.toBeInTheDocument();
   });
 });
