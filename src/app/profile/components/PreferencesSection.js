@@ -7,7 +7,6 @@ import MAJORS from "../../onboarding/data/majors.json";
 import MINORS from "../../onboarding/data/minors.json";
 import INTERESTS from "../../onboarding/data/interests.json";
 import Button from "../../components/button";
-import { supabase } from "../../lib/db";
 import { splitUserInterests } from "../../lib/utils/splitUserInterests";
 
 const BROAD_CATEGORIES = Object.keys(INTERESTS);
@@ -82,11 +81,10 @@ export default function PreferencesSection({
 
   useEffect(() => {
     const fetchClubNames = async () => {
-      const { data, error } = await supabase
-        .from("clubs")
-        .select("OrganizationName");
-      if (!error && data) {
-        setClubOptions(data.map((c) => c.OrganizationName));
+      const response = await fetch("/api/clubs/names");
+      const { clubs } = await response.json();
+      if (response.ok && clubs) {
+        setClubOptions(clubs.map((c) => c.OrganizationName));
       }
     };
     fetchClubNames();

@@ -5,7 +5,6 @@ import posthog from "posthog-js";
 import SearchableDropdown from "../../../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../../../components/dropdowns";
 import CustomSlider from "../../../components/custom-slider";
-import { supabase } from "../../../lib/db";
 import { useRequireAuth } from "../../../context/AuthContext";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -191,19 +190,13 @@ export default function EditReviewPage() {
   const handleClubSelect = async (club) => {
     setSelectedClub(club);
     try {
-      const { data, error } = await supabase
-        .from("clubs")
-        .select("OrganizationID")
-        .eq("OrganizationName", club)
-        .single();
-
-      if (error) {
-        console.error("Full error object:", error);
-        throw new Error(
-          `${error.message}${error.details ? " - " + error.details : ""}${error.hint ? " - " + error.hint : ""}`,
-        );
-      }
-      setClubId(data.OrganizationID);
+      const response = await fetch(
+        `/api/clubs/names?search=${encodeURIComponent(club)}`,
+      );
+      const { clubs = [] } = await response.json();
+      const match = clubs.find((item) => item.OrganizationName === club);
+      if (!response.ok || !match) throw new Error("Club not found");
+      setClubId(match.OrganizationID);
     } catch (error) {
       console.error("Error fetching club ID:", error);
       setError("Club not found.");
@@ -346,7 +339,6 @@ export default function EditReviewPage() {
             </label>
             <div className="pointer-events-none max-w-md">
               <SearchableDropdown
-                tableName="clubs"
                 onSelect={handleClubSelect}
                 value={selectedClub}
                 className="w-full rounded-md border border-gray-300 bg-white py-2 pr-10 pl-3 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"

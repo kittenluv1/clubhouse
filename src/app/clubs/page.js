@@ -8,7 +8,6 @@ import ErrorScreen from "../components/ErrorScreen";
 import LoadingScreen from "../components/LoadingScreen";
 import SortModal from "../components/sortModal";
 import Button from "../components/button";
-import { supabase } from "../lib/db";
 import ClubCarousel from "../components/ClubCarousel";
 import { useAuth } from "../context/AuthContext";
 import posthog from "posthog-js";
