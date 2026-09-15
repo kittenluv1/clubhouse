@@ -2,11 +2,11 @@
 
 ## Overview
 
-Sign-in logic checks for a user session in **3 places**:
+Authentication state is managed centrally by `AuthContext`. The provider loads the current Supabase session, listens for auth changes, and exposes the current `user`, `session`, `profile`, and `loading` state through `useAuth()`.
 
-1. **Google Sign In component** - Displays the Google Sign In button or user email depending on session state
-2. **Login button** - Switches between "Sign In" / "Log Out" depending on session state
-3. **Review club page** - Redirects to sign in page if user is not signed in
+Pages that require authentication use `useRequireAuth()`. If the session check finishes without a user, the hook redirects to `/sign-in` and preserves the current path in `returnUrl`.
+
+The header uses the same context to show the sign-in or sign-out action. Actions such as reviewing a club also redirect unauthenticated users to `/sign-in`.
 
 ## Supabase Auth
 
@@ -15,39 +15,15 @@ Sign-in logic checks for a user session in **3 places**:
 
 ## Sign In Flow
 
-1. User signs in, inserting into `auth.users` and receiving a JWT token
-2. `auth.users` is managed by Supabase and **does not allow `BEGIN INSERT` triggers**, so email validation must be handled **AFTER INSERT**
-3. An `AFTER INSERT` trigger on `auth.users` runs `handle_new_user()`, which attempts to insert into `profiles`
-4. `profiles` checks the email constraint:
-   - **Invalid email** (non-UCLA): Returns a database error and **rolls back the entire transaction** (including the insert into `auth.users`)
-   - **Valid email**: Adds user to `profiles` table (user also stays in `auth.users`)
-5. If the database sign-in returned with no error, the user is signed in
+1. The user selects the Google Sign-In button.
+2. Google returns an ID token to the client.
+3. The client passes the token to `supabase.auth.signInWithIdToken()`.
+4. Supabase creates or retrieves the user in `auth.users` and emits an auth state change.
+5. The database creates the corresponding `profiles` row through the existing auth trigger and validates the email domain.
+6. After a successful sign-in, the component redirects the user:
 
-## Google Sign In Button (GSI) - User Flow
+- to the validated `returnUrl`, when one was supplied;
+- to the relevant club or review page for legacy `club` and `clubId` parameters; or
+- to `/profile` by default.
 
-The component alternates between **4 UI states**:
-
-### 1. Google Sign In Button
-
-- Displayed when navigating to the page while signed out
-- Displayed after pressing the sign out button on the page
-- Supabase auth state change event listener updates `userEmail`, triggering a re-render
-
-### 2. Google Sign In Button with "Invalid Email" Message
-
-- Displayed when a user tries to sign in with a non-UCLA email
-- `userEmail` is set to `"INVALID"`
-
-### 3. "You are signed in as \_\_"
-
-Displayed when:
-- Signing in using the Google Sign In Button (auth state change listener updates `userEmail`, triggering re-render)
-- Navigating to the page when already signed in
-  - This can only be done by manually adding `/sign-in` to the URL, because the sign in/out button directly signs you out instead of redirecting to the page
-  - Supabase auth event listener detects the initial session and updates `userEmail`, triggering a re-render
-
-### 4. Loading
-
-- Waiting for Supabase to authenticate the UCLA email
-- If the email is **valid**, transition to UI #3
-- If the email is **invalid**, **DELETE** the user from Supabase and display UI #2
+If the email is not valid, the sign-in is rolled back, the partial session is signed out, and the component shows the invalid-email message.

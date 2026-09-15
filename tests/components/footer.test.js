@@ -14,10 +14,7 @@ describe("Footer", () => {
     const emailLink = screen.getByRole("link", {
       name: "clubhouseucla@gmail.com",
     });
-    expect(emailLink).toHaveAttribute(
-      "href",
-      "mailto:clubhouseucla@gmail.com"
-    );
+    expect(emailLink).toHaveAttribute("href", "mailto:clubhouseucla@gmail.com");
   });
 
   it("renders external social links that open in a new tab", () => {
@@ -27,7 +24,7 @@ describe("Footer", () => {
     });
     expect(instagram).toHaveAttribute(
       "href",
-      "https://www.instagram.com/clubhouseucla/"
+      "https://www.instagram.com/clubhousebruins/",
     );
     expect(instagram).toHaveAttribute("target", "_blank");
   });
