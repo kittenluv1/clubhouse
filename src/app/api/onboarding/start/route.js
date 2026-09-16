@@ -12,15 +12,27 @@ export async function POST() {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { error } = await supabase
+    const { data: profile, error } = await supabase
       .from("profiles")
       .update({ onboarding_started: true })
-      .eq("id", user.id);
+      .eq("id", user.id)
+      .select("id, onboarding_started");
 
     if (error) {
+      console.error("Failed to update onboarding_started:", error);
       return Response.json(
         { error: "Failed to update onboarding state" },
         { status: 500 },
+      );
+    }
+
+    if (!profile) {
+      console.error("No profile was updated for onboarding_started", {
+        userId: user.id,
+      });
+      return Response.json(
+        { error: "Profile not found" },
+        { status: 404 },
       );
     }
 

@@ -60,11 +60,11 @@ const ClubSearchBar = forwardRef(({ style = "bg-[#F0F2F9]" }, ref) => {
       const response = await fetch("/api/clubs/names");
       const { clubs } = await response.json();
       if (response.ok && clubs) {
-        setAllOptions(clubs.map((club) => club[nameColumn]));
+        setAllOptions(clubs.map((club) => club["OrganizationName"]));
       }
     };
     fetchClubNames();
-  }, [tableName, nameColumn]);
+  }, []);
 
   useEffect(() => {
     if (inputValue.trim() === "") {
