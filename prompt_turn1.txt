@@ -1,0 +1,28 @@
+The user is reporting that the error message "Please sign in with a valid UCLA email." is not displayed when an invalid email is used for Google Sign-In in the `src/app/components/google-sign-in.js` component.
+
+The component already has logic to set `userEmail` to "INVALID" on an error and a conditional `p` tag to display the message:
+```javascript
+// if signin fails profiles email constraint, supabase will return a database error
+if (error) {
+  await supabase.auth.signOut(); // Clear any partial/corrupted session
+  setUserEmail("INVALID");
+  return;
+}
+...
+{userEmail === "INVALID" && (
+  <p>Please sign in with a valid UCLA email.</p>
+)}
+```
+
+Your task is to:
+1.  Investigate why this `p` tag is not visible when `userEmail` is "INVALID". This might involve examining CSS, parent container styles, or potential rendering issues. Make the error message clearly visible.
+2.  Add a new test case to `tests/authentication/google-sign-in.test.js` (or create this file if it doesn't exist within `tests/authentication/`) that specifically asserts the display of this error message when an invalid email sign-in occurs.
+3.  Ensure all existing tests pass after your changes.
+
+**PLAN.md path:** `/tmp/oss-work/clubhouse/PLAN.md`
+**Exact test command:** `npm test`
+**Exact lint command:** `npm run lint`
+
+**TDD:** Start by creating a failing test in `tests/authentication/google-sign-in.test.js` for the error message, then implement the fix to make it pass.
+
+Iterate up to 3 times internally until tests pass; end with a line: STATUS: PASS or STATUS: FAIL plus the last test output.
