@@ -2,10 +2,10 @@
  * @jest-environment node
  */
 import { GET } from "@/app/api/categories/route";
-import { supabase } from "@/app/lib/db";
+import { supabaseServer as supabase } from "@/app/lib/server-db";
 
-jest.mock("@/app/lib/db", () => ({
-  supabase: { from: jest.fn() },
+jest.mock("@/app/lib/server-db", () => ({
+  supabaseServer: { from: jest.fn() },
 }));
 
 // Wire supabase.from("clubs").select(...).limit(...) to resolve `result`
@@ -31,7 +31,9 @@ describe("GET /api/categories", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     const names = body.map((c) => c.name);
-    expect(names).toEqual(expect.arrayContaining(["Academic", "Sports", "Arts"]));
+    expect(names).toEqual(
+      expect.arrayContaining(["Academic", "Sports", "Arts"]),
+    );
     expect(names.filter((n) => n === "Academic")).toHaveLength(1);
     expect(names).not.toContain("");
     expect(body[0]).toHaveProperty("id");

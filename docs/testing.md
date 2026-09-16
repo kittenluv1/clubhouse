@@ -31,10 +31,11 @@ The core idea of testing is to make sure the application can be used as intended
 - **Review moderation** - Pending reviews are not public until approved. Approved reviews appear publicly, while rejected reviews are visible to the author in their profile with appropriate unread/read notification behavior.
 - **Admin access** - The configured admin user can access moderation tools and approve or reject pending reviews. Regular users and anonymous visitors cannot perform admin actions.
 - **User profiles** - Signed-in users can load their profile, view saved clubs and reviews, see unread rejected-review notifications, and update profile preferences. Profile editing follows the required onboarding/profile completion rules.
-- **Onboarding and recommendations** - Users can start onboarding from the recommendations prompt.
-  - First time users or users who have started but not completed onboarding are prompted to start the flow rather than being treated as fully onboarded.
+- **Onboarding and recommendations** - Different user states have different interactions with the onboarding page.
+  - First time users are automatically redirected to start onboarding
+  - Returning users who have started but not completed onboarding are prompted to start the flow from the beginning when they click on the club recommendations prompt.
   - We do not save partial onboarding states - either the user is fully onboarded, or not
-  - Users who complete onboarding have their preferences saved, see personalized recommendations on the clubs page, and see the relevant profile information populated.
+  - Users who complete onboarding will have their preferences saved, can see personalized recommendations on the clubs page, and see the relevant profile information populated.
   - Users who have completed onboarding cannot re-enter the setup flow as if they were new users.
 - **Error and empty states** - Failed requests, missing clubs, no search results, no reviews, unavailable recommendations, unauthorized access, and incomplete profile data show an appropriate fallback without breaking the surrounding page.
 - **Desktop and mobile** - Navigation, filters, sorting controls, review cards, sliders, club details, recommendations, profiles, and onboarding remain usable across desktop and mobile layouts.
