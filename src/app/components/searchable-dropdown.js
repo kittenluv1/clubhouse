@@ -1,42 +1,36 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { supabase } from "../lib/db";
 
-const SearchableDropdown = ({  
-    placeholder = "Search for your club here...",
-    tableName = "clubs", 
-    nameColumn = "OrganizationName",
-    onSelect = () => {},
-    onInputChange = () => {},
-    required = true,
-    placeholderColor = "#000", 
-    value = "",
-    ref,
-    className = ""
-    }) => {
-    const [internalValue, setInternalValue] = useState(value || ''); 
-    const [allOptions, setAllOptions] = useState([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const dropdownRef = useRef(null);
-    const inputValue = value !== undefined ? value : internalValue;
+const SearchableDropdown = ({
+  placeholder = "Search for your club here...",
+  onSelect = () => {},
+  onInputChange = () => {},
+  required = true,
+  placeholderColor = "#000",
+  value = "",
+  ref,
+  className = "",
+}) => {
+  const [internalValue, setInternalValue] = useState(value || "");
+  const [allOptions, setAllOptions] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const dropdownRef = useRef(null);
+  const inputValue = value !== undefined ? value : internalValue;
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchClubNames = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        const { data, error } = await supabase
-          .from(tableName)
-          .select(nameColumn)
-          .order(nameColumn, { ascending: true });
+        const response = await fetch("/api/clubs/names");
+        const { clubs } = await response.json();
+        if (!response.ok) throw new Error("Failed to fetch clubs");
 
-        if (error) throw error;
-
-        const clubNames = data.map((club) => club[nameColumn]);
+        const clubNames = clubs.map((club) => club.OrganizationName);
         setAllOptions(clubNames);
       } catch (err) {
         console.error("Error fetching club names:", err);
@@ -47,7 +41,7 @@ const SearchableDropdown = ({
     };
 
     fetchClubNames();
-  }, [tableName, nameColumn]);
+  }, []);
 
   const filteredOptions = useMemo(() => {
     if (inputValue.trim() === "") {
@@ -103,7 +97,7 @@ const SearchableDropdown = ({
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="placeholder-custom w-full rounded-full bg-[#F4F5F6] hover:bg-[#E5EBF1] active:bg-[#B5BFC6] focus:bg-[#B5BFC6] pl-5 pr-12 py-3 text-gray-700 text-base focus:outline-none text-ellipsis overflow-hidden"
+          className="placeholder-custom w-full overflow-hidden rounded-full bg-[#F4F5F6] py-3 pr-12 pl-5 text-base text-ellipsis text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#B5BFC6] focus:outline-none active:bg-[#B5BFC6]"
           required={required}
           style={{
             "--placeholder-color": placeholderColor,
@@ -137,7 +131,7 @@ const SearchableDropdown = ({
             <li
               key={index}
               onClick={() => handleOptionClick(option)}
-              className="relative cursor-pointer py-2 pr-3 pl-3 select-none hover:bg-gray-100 truncate"
+              className="relative cursor-pointer truncate py-2 pr-3 pl-3 select-none hover:bg-gray-100"
               title={option}
             >
               {option}
@@ -147,8 +141,10 @@ const SearchableDropdown = ({
       )}
 
       {isOpen && inputValue && filteredOptions.length === 0 && !isLoading && (
-        <div className="absolute z-10 mt-1 w-full rounded-md bg-white px-3 py-3 text-sm shadow-lg overflow-hidden">
-          <span className="block truncate">No clubs found matching &quot;{inputValue}&quot;</span>
+        <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-md bg-white px-3 py-3 text-sm shadow-lg">
+          <span className="block truncate">
+            No clubs found matching &quot;{inputValue}&quot;
+          </span>
         </div>
       )}
 

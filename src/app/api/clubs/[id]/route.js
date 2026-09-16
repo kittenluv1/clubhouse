@@ -1,5 +1,4 @@
-import { supabase } from "@/app/lib/db";
-import { createAuthenticatedClient, supabaseServer } from "@/app/lib/server-db";
+import { createAuthenticatedClient, supabaseServer as supabase } from "@/app/lib/server-db";
 
 export async function GET(request, context) {
   const resolvedParams = await context.params;
@@ -52,7 +51,7 @@ export async function GET(request, context) {
       const clubData = data[0];
 
       // Fetch reviews
-      const { data: reviewsData, error: reviewsError } = await supabaseServer
+      const { data: reviewsData, error: reviewsError } = await supabase
         .from("reviews")
         .select("*, profiles:user_id ( avatar_id )")
         .eq("club_id", clubData.OrganizationID)
