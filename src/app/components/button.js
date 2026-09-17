@@ -18,10 +18,10 @@ export default function Button({
         ${(type === 'CTA' || type === 'submit') && 'bg-gradient-to-r to-[#FFB464] from-[#FFA1CD] text-white font-medium hover:from-[#B21D58] hover:to-[#D86761] border-none'}
         ${type === 'default' && 'bg-white text-black hover:bg-[#E5EBF1] border-none'}
         ${type === 'tag' && (isSelected
-          ? 'bg-[#FFCEE5] border-1 border-[#FFA1CD] hover:bg-[#FFB3D7]'
-          : 'border-[#6E808D] border-1 bg-white text-black hover:bg-[#E5EBF1]')}
-        ${type === 'border' && 'border-1 border-[#6E808D] hover:bg-[#E5EBF1] text-[#6E808D]'}
-        ${type === 'border-light' && 'border-1 border-[#D9D9D9] hover:bg-[#E5EBF1] text-[#6E808D]'}
+          ? 'bg-[#FFCEE5] border border-[#FFA1CD] hover:bg-[#FFB3D7]'
+          : 'border-[#6E808D] border bg-white text-black hover:bg-[#E5EBF1]')}
+        ${type === 'border' && 'border border-[#6E808D] hover:bg-[#E5EBF1] text-[#6E808D]'}
+        ${type === 'border-light' && 'border border-[#D9D9D9] hover:bg-[#E5EBF1] text-[#6E808D]' }
         ${type === 'pink' && 'hover:bg-[#FBB2D4] border-none bg-[#FFCEE5]'}
         ${type === 'gradient' && '!transition-none bg-[linear-gradient(275deg,#FFB464_-21.2%,#FFA1CD_95.86%)] text-black border-none hover:bg-none hover:bg-[#FBB2D4] active:bg-none active:bg-[#FBB2D4]'}
         ${type === 'gradient-border' && '!transition-none [background:linear-gradient(white,white)_padding-box,linear-gradient(275deg,#FFB464_-21.2%,#FFA1CD_95.86%)_border-box] border border-transparent hover:[background:#FBB2D4] active:[background:#FBB2D4]'}

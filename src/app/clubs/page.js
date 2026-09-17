@@ -280,7 +280,7 @@ function AllClubsPage() {
           ) : (
             <div className="relative">
               <div
-                className="flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full border-1 border-[#6E808D] px-4 py-2 text-sm hover:bg-[#E5EBF1]"
+                className="flex shrink-0 cursor-pointer items-center gap-2 rounded-full border border-[#6E808D] px-4 py-2 text-sm hover:bg-[#E5EBF1]"
                 onClick={() => setShowSortModal(!showSortModal)}
               >
                 <span className="font-medium text-[#6E808D]">Sort by:</span>

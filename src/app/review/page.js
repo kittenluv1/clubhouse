@@ -545,7 +545,7 @@ export default function ReviewPage() {
               <div
                 className={`mb-5 max-w-md rounded-full text-sm text-gray-600 ${
                   fieldErrors.club && clubId == null
-                    ? "border-1 border-red-600"
+                    ? "border border-red-600"
                     : "border-hidden"
                 } `}
               >
@@ -587,7 +587,7 @@ export default function ReviewPage() {
                 </label>
                 <div className="flex space-x-2">
                   <div
-                    className={`w-1/2 ${fieldErrors.start && startQuarter == "" ? "rounded-full border-1 border-red-600" : "border-hidden"} `}
+                    className={`w-1/2 ${fieldErrors.start && startQuarter == "" ? "rounded-full border border-red-600" : "border-hidden"} `}
                   >
                     <QuarterYearDropdown
                       selectedQuarter={startQuarter}
@@ -606,7 +606,7 @@ export default function ReviewPage() {
                 </label>
                 <div className="mb-5 flex space-x-2">
                   <div
-                    className={`w-1/2 ${fieldErrors.end && endQuarter == "" && !isMember ? "rounded-full border-1 border-red-600" : "border-hidden"}`}
+                    className={`w-1/2 ${fieldErrors.end && endQuarter == "" && !isMember ? "rounded-full border border-red-600" : "border-hidden"}`}
                   >
                     <QuarterYearDropdown
                       selectedQuarter={endQuarter}
@@ -825,7 +825,7 @@ export default function ReviewPage() {
             <Button
               type="submit"
               disabled={isSubmitting || dateError}
-              className="w-24 rounded-full border-1 border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
+              className="w-24 rounded-full border border-black bg-gray-900 px-4 py-2 font-medium text-white transition duration-300 ease-in-out hover:bg-white hover:text-black disabled:opacity-50"
               onClick={requireValid}
             >
               Submit Review

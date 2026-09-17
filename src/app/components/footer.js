@@ -6,7 +6,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="flex w-full flex-col gap-8 bg-[#C4E1FC] p-15 pt-20 break-words md:py-10 lg:flex-row lg:justify-between lg:gap-12 lg:px-20 lg:py-15">
+      <footer className="flex w-full flex-col gap-8 bg-[#C4E1FC] p-15 pt-20 wrap-break-word md:py-10 lg:flex-row lg:justify-between lg:gap-12 lg:px-20 lg:py-15">
         {/* contact us */}
         <div className="w-full flex-1 md:px-10 md:py-10 lg:max-w-120 lg:py-20 lg:pl-10">
           <h3 className="mb-5 text-2xl font-bold">Contact Us</h3>
@@ -31,7 +31,10 @@ export default function Footer() {
           <div className="py-10 md:px-10 lg:py-20">
             <h3 className="mb-5 text-2xl font-bold">Connect</h3>
             <div className="grid auto-cols-max grid-flow-col gap-2">
-              <a href="https://www.instagram.com/clubhousebruins/" target="_blank">
+              <a
+                href="https://www.instagram.com/clubhousebruins/"
+                target="_blank"
+              >
                 <img
                   src="/links/instagram.svg"
                   alt="instagram icon"
@@ -68,7 +71,7 @@ export default function Footer() {
             </div>
           </div>
           {/* bear */}
-          <div className="flex shrink-1 items-center justify-center lg:justify-end lg:p-0">
+          <div className="flex shrink items-center justify-center lg:justify-end lg:p-0">
             <img src="/Bear.svg" alt="bear icon" />
           </div>
         </div>
