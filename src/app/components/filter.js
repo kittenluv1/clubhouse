@@ -189,7 +189,7 @@ export default function Filter({
         </Button>
 
         {!isMobile && selectedCategories.length > 0 && (
-          <div className="flex-grow overflow-x-auto pb-2">
+          <div className="grow overflow-x-auto pb-2">
             <div className="flex flex-wrap gap-2">
               {selectedCategories.map((tag) => (
                 <div
