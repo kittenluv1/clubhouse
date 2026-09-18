@@ -22,22 +22,24 @@ There are 2 special branches: `dev` and `main`.
 ### `dev` (Staging)
 
 - Long-lived branch for a fully testable preview environment
-- You _can_ develop directly on `dev`, but it's **not recommended** - best to make a branch and PR/merge
 - Preview link: https://clubhouse-git-dev-clubhouse-ucla.vercel.app/
-- Use the Vercel dev preview to test sign-in related features (registered as an authorized JavaScript origin for GSO)
+- Use the Vercel dev preview for a production-like preview environment to test sign-in related features (registered as an authorized JavaScript origin for GSO)
+- This branch is the default branch on GitHub, meaning GitHub Actions workflows and other GitHub branch configurations target this branch
+- You _can_ develop directly on `dev`, but it's **not recommended** - best to make a branch and PR/merge
 
 ### `main` (Production)
 
-- Deploys to production
-- Merging to main **requires a PR**
+- Set as the production branch in Vercel - this is the **live site**
+- Merging to main requires a PR
+- Completing a merge to main requires an approved review
 - Don't develop directly on main - you won't be able to push
 
 ### Should I push to `dev` or `main`?
 
-| Scenario                              | Target Branch     |
-| ------------------------------------- | ----------------- |
-| Developing an ongoing feature/project | Merge/PR to `dev` |
-| Urgent or small fixes                 | PR to `main`      |
+| Scenario                              | Target Branch                         |
+| ------------------------------------- | ------------------------------------- |
+| Developing an ongoing feature/project | Merge/PR to `dev` or a feature branch |
+| Urgent or small fixes                 | PR to `main`                          |
 
 **Important:** Wherever you push to, make sure to merge that branch into yours before pushing!
 

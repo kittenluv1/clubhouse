@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../lib/db";
 
 // Paths where the onboarding check should not run
 const EXCLUDED_PATHS = ["/sign-in", "/onboarding"];
@@ -19,25 +18,29 @@ export default function OnboardingGuard() {
     if (EXCLUDED_PATHS.some((p) => pathname.startsWith(p))) return;
 
     const checkOnboarding = async () => {
-      // Detects whether the logged-in user has completed onboarding.
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_started")
-        .eq("id", user.id)
-        .single();
+      const response = await fetch("/api/onboarding");
+      const profile = await response.json();
 
-      // If onboarding_started is false/null, mark it done and redirect once.
+      if (!response.ok) return;
+
+      console.log(profile);
+
+      let startResponse = null;
       if (!profile?.onboarding_started) {
-        await supabase
-          .from("profiles")
-          .update({ onboarding_started: true })
-          .eq("id", user.id);
-        console.log('pushing to onboarding')
+        try {
+          startResponse = await fetch("/api/onboarding/start", { method: "POST" });
+        } catch (error) {
+          console.error("Failed to update onboarding_started:", error);
+        }
+      }
+
+      if (!profile?.onboarding_started && startResponse?.ok) {
+        router.replace("/onboarding");
       }
     };
 
     checkOnboarding();
-  }, [pathname, user, loading]);
+  }, [pathname, router, user, loading]);
 
   return null;
 }

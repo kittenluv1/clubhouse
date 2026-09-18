@@ -13,6 +13,7 @@ const mockUnsubscribe = jest.fn();
 const mockGetSession = jest.fn();
 const mockSignOut = jest.fn();
 const mockProfileSingle = jest.fn();
+const mockFetch = jest.fn();
 
 jest.mock("@/app/lib/db", () => ({
   supabase: {
@@ -78,6 +79,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  global.fetch = mockFetch;
   authChangeCallback = undefined;
   // Default: no session
   mockGetSession.mockResolvedValue({ data: { session: null } });
@@ -85,6 +87,12 @@ beforeEach(() => {
   mockProfileSingle.mockResolvedValue({
     data: { avatar_id: 1, onboarding_completed: true },
     error: null,
+  });
+  mockFetch.mockResolvedValue({
+    ok: true,
+    json: jest.fn().mockResolvedValue({
+      profile: { avatar_id: 1, onboarding_completed: true },
+    }),
   });
 });
 

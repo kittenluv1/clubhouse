@@ -118,7 +118,7 @@ function DescriptionWithClamp({ description }) {
 
   if (!description) {
     return (
-      <p className="text-m mb-6 italic">
+      <p className="mb-6 text-base italic">
         No description available for this club.
       </p>
     );
@@ -127,7 +127,7 @@ function DescriptionWithClamp({ description }) {
     <div>
       <p
         ref={ref}
-        className={`text-m italic transition-all duration-200 ${!showFull ? "line-clamp-7" : ""}`}
+        className={`text-base italic transition-all duration-200 ${!showFull ? "line-clamp-7" : ""}`}
       >
         {description}
       </p>
@@ -425,7 +425,7 @@ export default function ClubDetailsPage() {
     <>
       {/* Club Information */}
       <section className="relative bg-[url('/club-page/club-page-bg.svg')] bg-cover p-6 md:p-20">
-        <div className="relative mx-auto mb-10 flex max-w-7xl flex-col gap-8 rounded-3xl border-1 border-[#9DC663] bg-white p-6 shadow-[15px_15px_0_#A3CD1B] md:p-10 lg:flex-row">
+        <div className="relative mx-auto mb-10 flex max-w-7xl flex-col gap-8 rounded-3xl border border-[#9DC663] bg-white p-6 shadow-[15px_15px_0_#A3CD1B] md:p-10 lg:flex-row">
           {/* left side of the box */}
           <div className="lg:w-4/6 lg:pr-5">
             <div className="mb-3 flex items-center justify-between">
@@ -433,11 +433,11 @@ export default function ClubDetailsPage() {
                 {club.OrganizationName}
               </h1>
 
-              <div className="flex flex-shrink-0 items-center gap-0 md:gap-2">
+              <div className="flex shrink-0 items-center gap-0 md:gap-2">
                 {/* Like Button */}
                 <button
                   onClick={handleLikeToggle}
-                  className="flex min-h-[44px] min-w-[44px] items-center gap-0 p-1 transition-all md:gap-1"
+                  className="flex min-h-11 min-w-11 items-center gap-0 p-1 transition-all md:gap-1"
                   aria-label={userLikedClub ? "Unlike club" : "Like club"}
                 >
                   <img
@@ -447,7 +447,7 @@ export default function ClubDetailsPage() {
                         : "/interactions/likeUnfilled.svg"
                     }
                     alt="Like Icon"
-                    className="flex-shrink-0"
+                    className="shrink-0"
                   />
                   <span className="text-gray-700">{clubLikeCount}</span>
                 </button>
@@ -455,7 +455,7 @@ export default function ClubDetailsPage() {
                 {/* Save Button */}
                 <button
                   onClick={handleSaveToggle}
-                  className="flex min-h-[44px] min-w-[44px] items-center gap-0 p-1 transition-all md:gap-2"
+                  className="flex min-h-11 min-w-11 items-center gap-0 p-1 transition-all md:gap-2"
                   aria-label={userSavedClub ? "Unsave club" : "Save club"}
                 >
                   <img
@@ -465,7 +465,7 @@ export default function ClubDetailsPage() {
                         : "/interactions/saveUnfilled.svg"
                     }
                     alt="Save Icon"
-                    className="flex-shrink-0"
+                    className="shrink-0"
                   />
                 </button>
               </div>
@@ -501,7 +501,7 @@ export default function ClubDetailsPage() {
             <DescriptionWithClamp description={club.OrganizationDescription} />
 
             {club.OrganizationEmail && (
-              <p className="mt-6 break-words">
+              <p className="mt-6 wrap-break-word">
                 Email:{" "}
                 <a
                   href={`mailto:${club.OrganizationEmail}`}
@@ -547,7 +547,7 @@ export default function ClubDetailsPage() {
                   ? club.average_satisfaction.toFixed(1)
                   : "N/A"}
               </span>
-              <AiFillStar className="mr-1 ml-1 flex-shrink-0 text-2xl text-yellow-400" />
+              <AiFillStar className="mr-1 ml-1 shrink-0 text-2xl text-yellow-400" />
               <h2 className="text-2xl font-bold">Satisfaction Rating</h2>
             </div>
             <p className="mb-4 text-sm text-[#6E808D]">
@@ -616,7 +616,7 @@ export default function ClubDetailsPage() {
                   onClick={() => setShowSortModal(true)}
                 >
                   <div className="flex gap-1">
-                    <span className="font-font-semi text-[#6E808D]">
+                    <span className="font-semibold text-[#6E808D]">
                       Sort By:
                     </span>
                     <span className="font-bold text-[#6E808D]">
@@ -641,10 +641,10 @@ export default function ClubDetailsPage() {
             ) : (
               <div className="relative">
                 <div
-                  className="flex flex-shrink-0 cursor-pointer items-center gap-1 rounded-full border-1 border-[#6E808D] px-4 py-2 text-sm hover:bg-[#E5EBF1]"
+                  className="flex shrink-0 cursor-pointer items-center gap-1 rounded-full border border-[#6E808D] px-4 py-2 text-sm hover:bg-[#E5EBF1]"
                   onClick={() => setShowSortModal(!showSortModal)}
                 >
-                  <span className="font-semi text-[#6E808D]">Sort by:</span>
+                  <span className="font-semibold text-[#6E808D]">Sort by:</span>
                   <span className="font-bold text-[#6E808D]">
                     {sortType === "mostLiked" && "Most liked"}
                     {sortType === "mostRecent" && "Most recent"}

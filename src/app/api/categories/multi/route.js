@@ -1,4 +1,4 @@
-import { supabase } from "../../../lib/db";
+import { supabaseServer as supabase } from "../../../lib/server-db";
 import { createAuthenticatedClient } from "@/app/lib/server-db";
 
 export async function GET(request) {

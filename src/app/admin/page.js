@@ -255,14 +255,14 @@ const Page = () => {
   if (!isAdmin) return null;
 
   if (loading) {
-    return <div className="space-y-6 p-6 md:p-[80px]">Loading reviews...</div>;
+    return <div className="space-y-6 p-6 md:p-20">Loading reviews...</div>;
   }
 
   return (
     <>
-      <div className="space-y-6 p-6 md:p-[80px]">
+      <div className="space-y-6 p-6 md:p-20">
         <div className="flex flex-row items-center justify-between gap-4">
-          <div className="flex flex-row items-center space-x-[4px]">
+          <div className="flex flex-row items-center space-x-1">
             <h1 className="text-[20px] font-bold text-black md:text-[28px]">
               Pending Reviews
             </h1>
@@ -311,7 +311,7 @@ const Page = () => {
         {reviews.length === 0 ? (
           <p>No pending reviews.</p>
         ) : (
-          <div className="space-y-[24px]">
+          <div className="space-y-6">
             {reviews.map((review) => (
               <PendingCard
                 key={review.id}
@@ -325,7 +325,7 @@ const Page = () => {
       </div>
 
       {showRejectModal && selectedReview && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-500 flex items-center justify-center px-4">
           <div
             onClick={closeRejectModal}
             className="absolute inset-0 bg-black/10 backdrop-blur-sm"
@@ -374,7 +374,7 @@ const Page = () => {
                   value={customMessage}
                   onChange={(event) => setCustomMessage(event.target.value)}
                   placeholder="Add a short note for the reviewer..."
-                  className="mt-3 min-h-[120px] w-full rounded-xl text-sm outline-none"
+                  className="mt-3 min-h-30 w-full rounded-xl text-sm outline-none"
                   disabled={isRejecting}
                 />
               </div>

@@ -3,7 +3,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/db";
 import Button from "./button";
-import { handleCategoryClick, renderRatingStars } from "../lib/utils/clubCardHelpers";
+import {
+  handleCategoryClick,
+  renderRatingStars,
+} from "../lib/utils/clubCardHelpers";
 
 export default function ClubCard({
   club,
@@ -11,7 +14,7 @@ export default function ClubCard({
   userLiked = false,
   userSaved = false,
   onLike,
-  onSave
+  onSave,
 }) {
   const router = useRouter();
   const [liked, setLiked] = useState(userLiked);
@@ -31,7 +34,9 @@ export default function ClubCard({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      const returnUrl = encodeURIComponent(
+        window.location.pathname + window.location.search,
+      );
       router.push(`/sign-in?returnUrl=${returnUrl}`);
       return;
     }
@@ -41,15 +46,15 @@ export default function ClubCard({
 
     // Optimistic update
     setLiked(newLiked);
-    setClubLikeCount(prev => newLiked ? prev + 1 : Math.max(0, prev - 1));
+    setClubLikeCount((prev) => (newLiked ? prev + 1 : Math.max(0, prev - 1)));
 
     try {
       await onLike(club.OrganizationID, newLiked);
     } catch (error) {
       // Revert on failure
       setLiked(!newLiked);
-      setClubLikeCount(prev => newLiked ? Math.max(0, prev - 1) : prev + 1);
-      console.error('Failed to toggle like:', error);
+      setClubLikeCount((prev) => (newLiked ? Math.max(0, prev - 1) : prev + 1));
+      console.error("Failed to toggle like:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -67,7 +72,9 @@ export default function ClubCard({
     } = await supabase.auth.getSession();
 
     if (!session) {
-      const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+      const returnUrl = encodeURIComponent(
+        window.location.pathname + window.location.search,
+      );
       router.push(`/sign-in?returnUrl=${returnUrl}`);
       return;
     }
@@ -83,7 +90,7 @@ export default function ClubCard({
     } catch (error) {
       // Revert on failure
       setSaved(!newSaved);
-      console.error('Failed to toggle save:', error);
+      console.error("Failed to toggle save:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -92,17 +99,17 @@ export default function ClubCard({
   return (
     <Link
       href={`/clubs/${encodeURIComponent(club.OrganizationName)}`}
-      className="w-full transform space-y-4 rounded-4xl bg-[#E6F4FF] border border-[#92C7F1] px-7 py-8 sm:px-6 sm:py-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] md:space-y-5 md:px-10 md:py-10"
+      className="w-full transform space-y-4 rounded-4xl border border-[#92C7F1] bg-[#E6F4FF] px-7 py-8 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_0_13px_#1C6AB380] sm:px-6 sm:py-8 md:space-y-5 md:px-10 md:py-10"
     >
-      <div className="flex justify-between items-start">
-        <h2 className="text-xl font-bold text-black md:text-2xl flex-1 min-w-0 break-words">
+      <div className="flex items-start justify-between">
+        <h2 className="min-w-0 flex-1 text-xl font-bold wrap-break-word text-black md:text-2xl">
           {club.OrganizationName}
         </h2>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex shrink-0 items-center gap-1">
           {/* Like button */}
           <button
             onClick={toggleLike}
-            className="flex items-center gap-1 p-2 -m-2 min-w-[44px] min-h-[44px] transition-all"
+            className="-m-2 flex min-h-11 min-w-11 items-center gap-1 p-2 transition-all"
             disabled={isProcessing}
             aria-label={liked ? "Unlike club" : "Like club"}
           >
@@ -115,7 +122,7 @@ export default function ClubCard({
           {/* Save button */}
           <button
             onClick={toggleSave}
-            className="flex items-center p-2 -m-2 min-w-[44px] min-h-[44px]"
+            className="-m-2 flex min-h-11 min-w-11 items-center p-2"
             disabled={isProcessing}
             aria-label={saved ? "Unsave club" : "Save club"}
           >
@@ -131,22 +138,24 @@ export default function ClubCard({
         <div className="flex flex-col space-y-1 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
           <label className="flex items-center text-xl font-bold text-black">
             {club.average_satisfaction ? (
-              <>
-                {renderRatingStars(club.average_satisfaction)}
-              </>
+              <>{renderRatingStars(club.average_satisfaction)}</>
             ) : (
               <>
                 <img
                   src={"interactions/reviewStarFilled.svg"}
                   alt=""
-                  className="mr-[5px]"
+                  className="mr-1.25"
                 />
                 N/A
               </>
             )}
           </label>
-          <label className="text-base  text-[#303030]">
-            <span className="font-bold mr-1 ml-1">{club.average_satisfaction ? club.average_satisfaction.toFixed(1) : ""}</span>
+          <label className="text-base text-[#303030]">
+            <span className="mr-1 ml-1 font-bold">
+              {club.average_satisfaction
+                ? club.average_satisfaction.toFixed(1)
+                : ""}
+            </span>
             {/* Reviews */}
             {club.total_num_reviews === 0
               ? "(0 reviews)"
@@ -160,7 +169,7 @@ export default function ClubCard({
       </p>
 
       <div className="flex flex-wrap gap-2">
-        {club.Category1Name &&
+        {club.Category1Name && (
           <Button
             onClick={(e) => handleCategoryClick(router, e, club.Category1Name)}
             type="tag"
@@ -168,8 +177,9 @@ export default function ClubCard({
             size="small"
           >
             {club.Category1Name}
-          </Button>}
-        {club.Category2Name &&
+          </Button>
+        )}
+        {club.Category2Name && (
           <Button
             onClick={(e) => handleCategoryClick(router, e, club.Category2Name)}
             type="tag"
@@ -177,9 +187,9 @@ export default function ClubCard({
             size="small"
           >
             {club.Category2Name}
-          </Button>}
+          </Button>
+        )}
       </div>
-
     </Link>
   );
 }

@@ -6,7 +6,10 @@ import { createAuthenticatedClient } from "@/app/lib/server-db";
 export async function GET() {
   try {
     const supabase = await createAuthenticatedClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,15 +17,21 @@ export async function GET() {
 
     const { data: profile, error } = await supabase
       .from("profiles")
-      .select("onboarding_completed")
+      .select("onboarding_completed, onboarding_started")
       .eq("id", user.id)
       .single();
 
     if (error) {
-      return Response.json({ error: "Failed to fetch onboarding status" }, { status: 500 });
+      return Response.json(
+        { error: "Failed to fetch onboarding status" },
+        { status: 500 },
+      );
     }
 
-    return Response.json({ onboarding_completed: profile?.onboarding_completed ?? false });
+    return Response.json({
+      onboarding_completed: profile?.onboarding_completed ?? false,
+      onboarding_started: profile?.onboarding_started ?? false,
+    });
   } catch {
     return Response.json({ error: "Internal server error" }, { status: 500 });
   }
@@ -34,13 +43,22 @@ export async function GET() {
 export async function POST(req) {
   try {
     const supabase = await createAuthenticatedClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { majors = [], minors = [], broadCategories = [], subcategories = [], currentClubs = [] } = await req.json();
+    const {
+      majors = [],
+      minors = [],
+      broadCategories = [],
+      subcategories = [],
+      currentClubs = [],
+    } = await req.json();
 
     // Save academic info and mark onboarding complete
     const { error: profileError } = await supabase
@@ -54,7 +72,10 @@ export async function POST(req) {
       .eq("id", user.id);
 
     if (profileError) {
-      return Response.json({ error: "Failed to save profile preferences" }, { status: 500 });
+      return Response.json(
+        { error: "Failed to save profile preferences" },
+        { status: 500 },
+      );
     }
 
     // Replace user's interest rows with the new selections.
@@ -63,17 +84,19 @@ export async function POST(req) {
     const allInterests = [...new Set(subcategories)];
 
     if (allInterests.length > 0) {
-      await supabase
-        .from("user_interests")
-        .delete()
-        .eq("user_id", user.id);
+      await supabase.from("user_interests").delete().eq("user_id", user.id);
 
       const { error: interestsError } = await supabase
         .from("user_interests")
-        .insert(allInterests.map((category) => ({ user_id: user.id, category })));
+        .insert(
+          allInterests.map((category) => ({ user_id: user.id, category })),
+        );
 
       if (interestsError) {
-        return Response.json({ error: "Failed to save interest preferences" }, { status: 500 });
+        return Response.json(
+          { error: "Failed to save interest preferences" },
+          { status: 500 },
+        );
       }
     }
 
@@ -89,13 +112,22 @@ export async function POST(req) {
 export async function PATCH(req) {
   try {
     const supabase = await createAuthenticatedClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { majors = [], minors = [], broadCategories = [], subcategories = [], currentClubs = [] } = await req.json();
+    const {
+      majors = [],
+      minors = [],
+      broadCategories = [],
+      subcategories = [],
+      currentClubs = [],
+    } = await req.json();
 
     const { error: profileError } = await supabase
       .from("profiles")
@@ -107,7 +139,10 @@ export async function PATCH(req) {
       .eq("id", user.id);
 
     if (profileError) {
-      return Response.json({ error: "Failed to save profile preferences" }, { status: 500 });
+      return Response.json(
+        { error: "Failed to save profile preferences" },
+        { status: 500 },
+      );
     }
 
     // Always delete existing interests first, then re-insert if any selected.
@@ -117,7 +152,10 @@ export async function PATCH(req) {
       .eq("user_id", user.id);
 
     if (deleteError) {
-      return Response.json({ error: "Failed to clear interest preferences" }, { status: 500 });
+      return Response.json(
+        { error: "Failed to clear interest preferences" },
+        { status: 500 },
+      );
     }
 
     // Note: delete and insert are not atomic. If the insert fails after the delete
@@ -128,10 +166,15 @@ export async function PATCH(req) {
     if (allInterests.length > 0) {
       const { error: interestsError } = await supabase
         .from("user_interests")
-        .insert(allInterests.map((category) => ({ user_id: user.id, category })));
+        .insert(
+          allInterests.map((category) => ({ user_id: user.id, category })),
+        );
 
       if (interestsError) {
-        return Response.json({ error: "Failed to save interest preferences" }, { status: 500 });
+        return Response.json(
+          { error: "Failed to save interest preferences" },
+          { status: 500 },
+        );
       }
     }
 

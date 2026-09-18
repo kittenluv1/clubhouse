@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRequireAuth } from "../context/AuthContext";
-import { supabase } from "../lib/db";
 import { getAvatarUrl } from "../lib/avatars";
 import posthog from "posthog-js";
 import ClubCard from "../components/clubCard";
@@ -16,572 +15,645 @@ import PreferencesSection from "./components/PreferencesSection";
 import SectionToggle from "./components/SectionToggle";
 
 function ProfilePage() {
-    const router = useRouter();
-    const { user } = useRequireAuth();
-    const [activeSection, setActiveSection] = useState("approved");
-    const [reviewsExpanded, setReviewsExpanded] = useState(true);
-    const [clubsExpanded, setClubsExpanded] = useState(false);
-    const [settingsExpanded, setSettingsExpanded] = useState(false);
-    const [userProfile, setUserProfile] = useState(null);
-    const [approvedReviews, setApprovedReviews] = useState([]);
-    const [pendingReviews, setPendingReviews] = useState([]);
-    const [rejectedReviews, setRejectedReviews] = useState([]);
-    const [likedClubs, setLikedClubs] = useState([]);
-    const [savedClubs, setSavedClubs] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
-    const [reviewToDelete, setReviewToDelete] = useState(null);
-    const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
-    const [profilePreferences, setProfilePreferences] = useState(null);
+  const router = useRouter();
+  const { user } = useRequireAuth();
+  const [activeSection, setActiveSection] = useState("approved");
+  const [reviewsExpanded, setReviewsExpanded] = useState(true);
+  const [clubsExpanded, setClubsExpanded] = useState(false);
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+  const [approvedReviews, setApprovedReviews] = useState([]);
+  const [pendingReviews, setPendingReviews] = useState([]);
+  const [rejectedReviews, setRejectedReviews] = useState([]);
+  const [likedClubs, setLikedClubs] = useState([]);
+  const [savedClubs, setSavedClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [reviewToDelete, setReviewToDelete] = useState(null);
+  const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
+  const [profilePreferences, setProfilePreferences] = useState(null);
 
-    // Fetch all profile data from API
-    useEffect(() => {
-        if (!user) return;
+  // Fetch all profile data from API
+  useEffect(() => {
+    if (!user) return;
 
-        const fetchProfileData = async () => {
-            try {
-                // Only show loading screen if we don't have data yet
-                if (!userProfile) {
-                    setLoading(true);
-                }
+    const fetchProfileData = async () => {
+      try {
+        // Only show loading screen if we don't have data yet
+        if (!userProfile) {
+          setLoading(true);
+        }
 
-                // No userId param needed - API gets it from session cookies
-                const response = await fetch(`/api/profile`);
-                const data = await response.json();
+        // No userId param needed - API gets it from session cookies
+        const response = await fetch(`/api/profile`);
+        const data = await response.json();
 
-                if (response.ok) {
-                    // Set user profile
-                    if (data.profile) {
-                        setUserProfile({
-                            full_name: data.profile.display_name,
-                            avatar_id: data.profile.avatar_id,
-                        });
-                    }
+        if (response.ok) {
+          // Set user profile
+          if (data.profile) {
+            setUserProfile({
+              full_name: data.profile.display_name,
+              avatar_id: data.profile.avatar_id,
+            });
+          }
 
-                    // Set reviews
-                    setApprovedReviews(data.approvedReviews || []);
-                    setPendingReviews(data.pendingReviews || []);
-                    setRejectedReviews(data.rejectedReviews || []);
-                    setUnreadRejectedCount(data.unreadRejectedCount || 0);
-                    setProfilePreferences({
-                        majors: data.profile?.majors || [],
-                        minors: data.profile?.minors || [],
-                        currentClubs: data.profile?.current_clubs || [],
-                        userInterests: data.userInterests || [],
-                    });
+          // Set reviews
+          setApprovedReviews(data.approvedReviews || []);
+          setPendingReviews(data.pendingReviews || []);
+          setRejectedReviews(data.rejectedReviews || []);
+          setUnreadRejectedCount(data.unreadRejectedCount || 0);
+          setProfilePreferences({
+            majors: data.profile?.majors || [],
+            minors: data.profile?.minors || [],
+            currentClubs: data.profile?.current_clubs || [],
+            userInterests: data.userInterests || [],
+          });
 
-                    // Set clubs
-                    setLikedClubs(data.likedClubs || []);
-                    setSavedClubs(data.savedClubs || []);
-                } else {
-                    console.error('Error fetching profile data:', data.error);
-                }
-            } catch (error) {
-                console.error('Error fetching profile data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+          // Set clubs
+          setLikedClubs(data.likedClubs || []);
+          setSavedClubs(data.savedClubs || []);
+        } else {
+          console.error("Error fetching profile data:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        fetchProfileData();
-        // Refetch profile data when the authenticated user changes.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+    fetchProfileData();
+    // Refetch profile data when the authenticated user changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
-    if (loading) {
-        return <LoadingScreen />;
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  const displayName = userProfile?.full_name || "Anonymous Bruin";
+
+  const attemptReview = () => {
+    router.push("/review");
+  };
+
+  // Handler functions for review actions
+  const handleLike = async (reviewId, isLiked) => {
+    // TODO: Implement API call to like/unlike review
+    console.log("Like review:", reviewId, isLiked);
+  };
+
+  const handleEdit = (review, source) => {
+    router.push(`/review/edit/${review.id}?source=${source}`);
+  };
+
+  const handleDelete = async (reviewId) => {
+    setReviewToDelete(reviewId);
+    setConfirmationModalOpen(true);
+  };
+
+  const deleteReview = async () => {
+    if (!reviewToDelete) return;
+
+    // TODO: Implement API call to delete review
+    const response = await fetch(`/api/rejectedReviews/${reviewToDelete}`, {
+      method: "DELETE",
+    });
+    if (response.ok) {
+      // console.log('Deleted review: ', reviewToDelete);
+      posthog.capture("review_deleted", { review_id: reviewToDelete });
+      // Remove from local state
+      setRejectedReviews((prev) => prev.filter((r) => r.id !== reviewToDelete));
+    } else {
+      console.error("Error deleting review");
     }
 
-    const displayName = userProfile?.full_name || "Anonymous Bruin";
+    // Reset state
+    setReviewToDelete(null);
+  };
 
-    const attemptReview = () => {
-        router.push("/review");
-    };
+  // Handler for club like/unlike
+  const handleClubLike = async (clubId, isLiked) => {
+    try {
+      const response = await fetch("/api/clubLikes", {
+        method: isLiked ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ club_id: clubId }),
+      });
 
-    // Handler functions for review actions
-    const handleLike = async (reviewId, isLiked) => {
-        // TODO: Implement API call to like/unlike review
-        console.log('Like review:', reviewId, isLiked);
-    };
+      if (!response.ok) {
+        throw new Error("Failed to update like");
+      }
 
-    const handleEdit = (review, source) => {
-        router.push(`/review/edit/${review.id}?source=${source}`);
-    };
-
-    const handleDelete = async (reviewId) => {
-        setReviewToDelete(reviewId);
-        setConfirmationModalOpen(true);
-    };
-
-    const deleteReview = async () => {
-        if (!reviewToDelete) return;
-
-        // TODO: Implement API call to delete review
-        const response = await fetch(`/api/rejectedReviews/${reviewToDelete}`, { method: 'DELETE' });
-        if (response.ok) {
-            // console.log('Deleted review: ', reviewToDelete);
-            posthog.capture("review_deleted", { review_id: reviewToDelete });
-            // Remove from local state
-            setRejectedReviews(prev => prev.filter(r => r.id !== reviewToDelete));
-        } else {
-            console.error('Error deleting review');
+      // Update local state - sync like counts across both arrays
+      if (isLiked) {
+        // Find the club from savedClubs if it exists there
+        const clubToAdd = savedClubs.find((c) => c.OrganizationID === clubId);
+        if (clubToAdd && !likedClubs.some((c) => c.OrganizationID === clubId)) {
+          // Increment like count and add to liked clubs
+          const updatedClub = {
+            ...clubToAdd,
+            like_count: (clubToAdd.like_count || 0) + 1,
+          };
+          setLikedClubs((prev) => [...prev, updatedClub]);
+          // Also update the like count in savedClubs
+          setSavedClubs((prev) =>
+            prev.map((c) => (c.OrganizationID === clubId ? updatedClub : c)),
+          );
         }
+      } else {
+        // Get current like count before removing
+        const currentClub =
+          likedClubs.find((c) => c.OrganizationID === clubId) ||
+          savedClubs.find((c) => c.OrganizationID === clubId);
+        const newLikeCount = Math.max(0, (currentClub?.like_count || 0) - 1);
 
-        // Reset state
-        setReviewToDelete(null);
-    };
+        // Remove from liked clubs
+        setLikedClubs((prev) =>
+          prev.filter((c) => c.OrganizationID !== clubId),
+        );
+        // Update like count in savedClubs if the club exists there
+        setSavedClubs((prev) =>
+          prev.map((c) =>
+            c.OrganizationID === clubId
+              ? { ...c, like_count: newLikeCount }
+              : c,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("Error updating club like:", error);
+      throw error; // Re-throw to trigger revert in ClubCard
+    }
+  };
 
-    // Handler for club like/unlike
-    const handleClubLike = async (clubId, isLiked) => {
-        try {
-            const response = await fetch('/api/clubLikes', {
-                method: isLiked ? 'POST' : 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ club_id: clubId }),
-            });
+  // Handler to mark rejected reviews as viewed
+  const handleViewRejected = async () => {
+    if (unreadRejectedCount > 0) {
+      setUnreadRejectedCount(0);
+      try {
+        await fetch("/api/profile/viewed-rejected", { method: "POST" });
+      } catch (error) {
+        console.error("Error marking rejected reviews as viewed:", error);
+      }
+    }
+  };
 
-            if (!response.ok) {
-                throw new Error('Failed to update like');
-            }
+  // Handler for club save/unsave
+  const handleClubSave = async (clubId, isSaved) => {
+    try {
+      const response = await fetch("/api/clubSaves", {
+        method: isSaved ? "POST" : "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ club_id: clubId }),
+      });
 
-            // Update local state - sync like counts across both arrays
-            if (isLiked) {
-                // Find the club from savedClubs if it exists there
-                const clubToAdd = savedClubs.find(c => c.OrganizationID === clubId);
-                if (clubToAdd && !likedClubs.some(c => c.OrganizationID === clubId)) {
-                    // Increment like count and add to liked clubs
-                    const updatedClub = { ...clubToAdd, like_count: (clubToAdd.like_count || 0) + 1 };
-                    setLikedClubs(prev => [...prev, updatedClub]);
-                    // Also update the like count in savedClubs
-                    setSavedClubs(prev => prev.map(c =>
-                        c.OrganizationID === clubId ? updatedClub : c
-                    ));
-                }
-            } else {
-                // Get current like count before removing
-                const currentClub = likedClubs.find(c => c.OrganizationID === clubId) ||
-                    savedClubs.find(c => c.OrganizationID === clubId);
-                const newLikeCount = Math.max(0, (currentClub?.like_count || 0) - 1);
+      if (!response.ok) {
+        throw new Error("Failed to update save");
+      }
 
-                // Remove from liked clubs
-                setLikedClubs(prev => prev.filter(c => c.OrganizationID !== clubId));
-                // Update like count in savedClubs if the club exists there
-                setSavedClubs(prev => prev.map(c =>
-                    c.OrganizationID === clubId
-                        ? { ...c, like_count: newLikeCount }
-                        : c
-                ));
-            }
-        } catch (error) {
-            console.error('Error updating club like:', error);
-            throw error; // Re-throw to trigger revert in ClubCard
+      // Update local state
+      if (isSaved) {
+        // Find the club from likedClubs if it exists there
+        const clubToAdd = likedClubs.find((c) => c.OrganizationID === clubId);
+        if (clubToAdd && !savedClubs.some((c) => c.OrganizationID === clubId)) {
+          // Add to saved clubs with current like count from likedClubs
+          setSavedClubs((prev) => [...prev, clubToAdd]);
         }
-    };
+      } else {
+        // Remove from saved clubs
+        setSavedClubs((prev) =>
+          prev.filter((c) => c.OrganizationID !== clubId),
+        );
+      }
+    } catch (error) {
+      console.error("Error updating club save:", error);
+      throw error; // Re-throw to trigger revert in ClubCard
+    }
+  };
 
-    // Handler to mark rejected reviews as viewed
-    const handleViewRejected = async () => {
-        if (unreadRejectedCount > 0) {
-            setUnreadRejectedCount(0);
-            try {
-                await fetch('/api/profile/viewed-rejected', { method: 'POST' });
-            } catch (error) {
-                console.error('Error marking rejected reviews as viewed:', error);
-            }
-        }
-    };
-
-    // Handler for club save/unsave
-    const handleClubSave = async (clubId, isSaved) => {
-        try {
-            const response = await fetch('/api/clubSaves', {
-                method: isSaved ? 'POST' : 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ club_id: clubId }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update save');
-            }
-
-            // Update local state
-            if (isSaved) {
-                // Find the club from likedClubs if it exists there
-                const clubToAdd = likedClubs.find(c => c.OrganizationID === clubId);
-                if (clubToAdd && !savedClubs.some(c => c.OrganizationID === clubId)) {
-                    // Add to saved clubs with current like count from likedClubs
-                    setSavedClubs(prev => [...prev, clubToAdd]);
-                }
-            } else {
-                // Remove from saved clubs
-                setSavedClubs(prev => prev.filter(c => c.OrganizationID !== clubId));
-            }
-        } catch (error) {
-            console.error('Error updating club save:', error);
-            throw error; // Re-throw to trigger revert in ClubCard
-        }
-    };
-
-    const getContentForSection = () => {
-        switch (activeSection) {
-            case "approved":
-                return (
-                    <div className="mx-8">
-                        <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold mb-4">Approved Reviews</p>
-                            <p className="text-[#747474] text-[20px]">These reviews have been approved and posted on the club page!</p>
-                        </div>
-                        <h2 className="text-[16px] text-[#747474] mb-4">Approved Reviews ({approvedReviews.length})</h2>
-                        {approvedReviews.length === 0 ? (
-                            <div className="text-center py-12">
-                                <p className="text-[#B5BEC7]">No approved reviews</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 gap-4">
-                                {approvedReviews.map(review => (
-                                    <ReviewCard
-                                        key={review.id}
-                                        review={review}
-                                        status="approved"
-                                        clickable={true}
-                                        onLike={handleLike}
-                                        onEdit={(review) => handleEdit(review, "approved")}
-                                        onDelete={handleDelete}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                );
-
-            case "pending":
-                return (
-                    <div className="mx-8">
-                        <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold mb-4">Pending Reviews</p>
-                            <p className="text-[#747474] text-[20px]">These reviews are currently being processed for approval.</p>
-                        </div>
-                        <h2 className="text-[16px] text-[#747474] mb-4">Pending Reviews ({pendingReviews.length})</h2>
-                        {pendingReviews.length === 0 ? (
-                            <div className="text-center py-12">
-                                <p className="text-[#B5BEC7] mb-4">No pending reviews</p>
-                                <Button type="CTA" onClick={attemptReview}>
-                                    Write a Review
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 gap-4">
-                                {pendingReviews.map(review => (
-                                    <ReviewCard
-                                        key={review.id}
-                                        review={review}
-                                        status="pending"
-                                        clickable={true}
-                                        onLike={handleLike}
-                                        onEdit={handleEdit}
-                                        onDelete={handleDelete}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                );
-
-            case "rejected":
-                return (
-                    <div className="mx-8">
-                        <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold mb-4">Rejected Reviews</p>
-                            <p className="text-[#747474] text-[20px]">
-                                These reviews did not pass our{" "}
-                                <Link href="/community-guidelines" className="underline text-[#7fbefa]">
-                                    Community Guidelines
-                                </Link>
-                                . Please edit them and resubmit for approval.
-                            </p>
-                        </div>
-                        <h2 className="text-[16px] text-[#747474] mb-4">Rejected Reviews ({rejectedReviews.length})</h2>
-                        {rejectedReviews.length === 0 ? (
-                            <div className="text-center py-12">
-                                <p className="text-[#B5BEC7]">No rejected reviews</p>
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 gap-4">
-                                {rejectedReviews.map(review => (
-                                    <ReviewCard
-                                        key={review.id}
-                                        review={review}
-                                        status="rejected"
-                                        clickable={true}
-                                        onLike={handleLike}
-                                        onEdit={(review) => handleEdit(review, "rejected")}
-                                        onDelete={handleDelete}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                );
-
-            case "liked-clubs":
-                return (
-                    <div className="mx-8">
-                        <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold mb-4">Liked Clubs</p>
-                            <p className="text-[#747474] text-[20px]">Unlike to remove club from &apos;Liked Clubs&apos; list!</p>
-                        </div>
-                        <h2 className="text-[16px] text-[#747474] mb-4">Liked Clubs ({likedClubs.length})</h2>
-                        {
-                            likedClubs.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <p className="text-[#B5BEC7] mb-4">No liked clubs yet</p>
-                                    <Button type="CTA" onClick={() => router.push("/clubs")}>
-                                        Browse Clubs
-                                    </Button>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="grid grid-cols-1 gap-4">
-                                        {likedClubs.map((club) => (
-                                            <ClubCard
-                                                key={`${club.OrganizationID}-${club.OrganizationName}`}
-                                                club={club}
-                                                likeCount={club.like_count || 0}
-                                                userLiked={true}
-                                                userSaved={savedClubs.some(c => c.OrganizationID === club.OrganizationID)}
-                                                onLike={handleClubLike}
-                                                onSave={handleClubSave}
-                                            />
-                                        ))}
-                                    </div>
-                                </>
-
-                            )
-                        }
-                    </div>
-
-                );
-
-            case "saved-clubs":
-                return (
-                    <div className="mx-8">
-                        <div className="text-center mb-8">
-                            <p className="text-[#000000] text-4xl font-bold mb-4">Saved Clubs</p>
-                            <p className="text-[#747474] text-[20px]">Unsave to remove club from &apos;Saved Clubs&apos; list!</p>
-                        </div>
-                        <h2 className="text-[16px] text-[#747474] mb-6">Saved Clubs ({savedClubs.length})</h2>
-                        {
-                            savedClubs.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <p className="text-[#B5BEC7]">No saved clubs</p>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="grid grid-cols-1 gap-4">
-                                        {savedClubs.map((club) => (
-                                            <ClubCard
-                                                key={`${club.OrganizationID}-${club.OrganizationName}`}
-                                                club={club}
-                                                likeCount={club.like_count || 0}
-                                                userLiked={likedClubs.some(c => c.OrganizationID === club.OrganizationID)}
-                                                userSaved={true}
-                                                onLike={handleClubLike}
-                                                onSave={handleClubSave}
-                                            />
-                                        ))}
-                                    </div>
-                                </>
-                            )
-                        }
-                    </div>
-                );
-
-            case "preferences":
-                return profilePreferences ? (
-                    <PreferencesSection
-                        majors={profilePreferences.majors}
-                        minors={profilePreferences.minors}
-                        currentClubs={profilePreferences.currentClubs}
-                        userInterests={profilePreferences.userInterests}
-                    />
-                ) : (
-                    <LoadingScreen />
-                );
-
-            default:
-                return null;
-        }
-    };
-
-    return (
-        <div className="min-h-screen">
-            <ConfirmationModal
-                isOpen={confirmationModalOpen}
-                onClose={() => {
-                    setConfirmationModalOpen(false);
-                    setReviewToDelete(null);
-                }}
-                onConfirm={deleteReview}
-                title="Confirm Deletion"
-                message="Are you sure you want to delete this review?"
-            />
-            {/* User Information Section */}
-            <div className="relative mb-22">
-                <div className="relative overflow-hidden rounded-lg bg-white px-12 py-15 lg:px-26 lg:py-25 border-b border-[#E5EBF1]">
-                    {/* lime blob — bottom left */}
-                    <div className="absolute bottom-0 h-[50%] left-[-10%] w-[35%] blur-[70px] opacity-50 rounded-full"
-                        style={{ background: "#C8F06A" }} />
-                    {/* pink blob — top center */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[50%] w-[50%] blur-[70px] opacity-80"
-                        style={{ background: "radial-gradient(ellipse at 50% 0%, #FFCBCA, #FEEBC8)" }} />
-                    {/* blue blob — bottom right */}
-                    <div className="absolute bottom-0 right-0 h-[50%] w-[30%] blur-[70px] opacity-70"
-                        style={{ background: "radial-gradient(ellipse at 100% 100%, #b0d8ff, #b0d8ff)" }} />
-                    {/* lime dot grid — bottom left */}
-                    <div className="absolute bottom-0 left-0 h-full w-[40%]"
-                        style={{
-                            backgroundImage: "radial-gradient(circle, #A8E040 1.5px, transparent 1.5px)",
-                            backgroundSize: "16px 16px",
-                            WebkitMaskImage: "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
-                            maskImage: "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
-                        }} />
-                </div>
-                <div className="absolute left-1/2 -translate-x-1/2 -bottom-17 lg:-bottom-22 lg:left-52 flex h-35 w-35 md:h-35 md:w-35 lg:h-45 lg:w-45 items-center justify-center rounded-full border border-lime-300 bg-white">
-                    <img
-                        src={getAvatarUrl(userProfile.avatar_id)}
-                        alt="Profile"
-                        className="h-full w-full rounded-full object-cover p-2"
-                    />
-                </div>
+  const getContentForSection = () => {
+    switch (activeSection) {
+      case "approved":
+        return (
+          <div className="mx-8">
+            <div className="mb-8 text-center">
+              <p className="mb-4 text-4xl font-bold text-[#000000]">
+                Approved Reviews
+              </p>
+              <p className="text-[20px] text-[#747474]">
+                These reviews have been approved and posted on the club page!
+              </p>
             </div>
+            <h2 className="mb-4 text-[16px] text-[#747474]">
+              Approved Reviews ({approvedReviews.length})
+            </h2>
+            {approvedReviews.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-[#B5BEC7]">No approved reviews</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {approvedReviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    status="approved"
+                    clickable={true}
+                    onLike={handleLike}
+                    onEdit={(review) => handleEdit(review, "approved")}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        );
 
-            {/* Main Content with Sidebar */}
-            <div className="flex flex-col gap-8 p-6 pt-0 md:p-12 md:pt-0 lg:flex-row lg:p-20 lg:pt-0">
-                {/* Sidebar Navigation */}
-                <div className="flex-shrink-0 lg:w-64">
-                    <div className="mt-2 flex-1 self-center text-center">
-                        <h1 className="mb-2 text-2xl md:text-3xl font-bold font-['DM-Sans']">{displayName}</h1>
-                    </div>
-                    <div className="sticky top-8 mt-8 rounded-lg bg-white p-8">
-                        <div className="mb-4">
-                            {/* Reviews Section */}
-                            <SectionToggle
-                                sectionName="Reviews"
-                                iconPath="/profile/profile_review.svg"
-                                iconAlt="review icon"
-                                isExpanded={reviewsExpanded}
-                                onClick={() => setReviewsExpanded(!reviewsExpanded)}
-                            />
-
-                            {reviewsExpanded && (
-                                <div className="relative ml-2 space-y-1">
-                                    {/* Timeline vertical line */}
-                                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
-
-                                    {[
-                                        { value: "approved", label: "Approved" },
-                                        { value: "pending", label: "Pending" },
-                                        { value: "rejected", label: "Rejected" },
-                                        // { value: "liked-reviews", label: "Liked" },
-                                    ].map((item) => (
-                                        <button
-                                            key={item.value}
-                                            onClick={() => {
-                                                setActiveSection(item.value);
-                                                if (item.value === "rejected") {
-                                                    handleViewRejected();
-                                                }
-                                            }}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
-                                                }`}
-                                        >
-                                            <span className="flex items-center justify-between">
-                                                {item.label}
-                                                {item.value === "rejected" && unreadRejectedCount > 0 && (
-                                                    <span
-                                                        className="ml-2 text-white text-xs font-bold rounded-full h-5 min-w-5 flex items-center justify-center px-1"
-                                                        style={{ background: 'linear-gradient(to right, #FFB464, #FFA1CD)' }}
-                                                    >
-                                                        {unreadRejectedCount}
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Clubs Section */}
-                        <div>
-                            <SectionToggle
-                                sectionName="Clubs"
-                                iconPath="/profile/profile_club.svg"
-                                iconAlt="club icon"
-                                isExpanded={clubsExpanded}
-                                onClick={() => setClubsExpanded(!clubsExpanded)}
-                            />
-
-                            {clubsExpanded && (
-                                <div className="relative ml-2 space-y-1">
-                                    {/* Timeline vertical line */}
-                                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
-
-                                    {[
-                                        { value: "liked-clubs", label: "Liked" },
-                                        { value: "saved-clubs", label: "Saved" },
-                                    ].map((item) => (
-                                        <button
-                                            key={item.value}
-                                            onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
-                                                }`}
-                                        >
-                                            {item.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Preferences Section */}
-                        <div className="mt-4">
-                            <SectionToggle
-                                sectionName="Settings"
-                                iconPath="/profile/settings.svg"
-                                iconAlt="settings icon"
-                                isExpanded={settingsExpanded}
-                                onClick={() => setSettingsExpanded(!settingsExpanded)}
-                            />
-                            {settingsExpanded && (
-                                <div className="relative ml-2 space-y-1">
-                                    {/* Timeline vertical line */}
-                                    <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
-                                    {[
-                                        { value: "preferences", label: "Preferences" },
-                                    ].map((item) => (
-                                        <button
-                                            key={item.value}
-                                            onClick={() => setActiveSection(item.value)}
-                                            className={`ml-3 block w-full text-left text-[#6E808D] font-medium py-2 px-3 rounded-full relative ${activeSection === item.value ? "bg-[#F0F2F9]" : "hover:bg-[#F0F2F9]"
-                                                }`}
-                                        >
-                                            {item.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Vertical Divider */}
-                <div className="hidden w-px bg-gray-200 lg:block"></div>
-
-                {/* Main Content Area */}
-                <div className="min-h-[400px] flex-1">{getContentForSection()}</div>
+      case "pending":
+        return (
+          <div className="mx-8">
+            <div className="mb-8 text-center">
+              <p className="mb-4 text-4xl font-bold text-[#000000]">
+                Pending Reviews
+              </p>
+              <p className="text-[20px] text-[#747474]">
+                These reviews are currently being processed for approval.
+              </p>
             </div>
+            <h2 className="mb-4 text-[16px] text-[#747474]">
+              Pending Reviews ({pendingReviews.length})
+            </h2>
+            {pendingReviews.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="mb-4 text-[#B5BEC7]">No pending reviews</p>
+                <Button type="CTA" onClick={attemptReview}>
+                  Write a Review
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {pendingReviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    status="pending"
+                    clickable={true}
+                    onLike={handleLike}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        );
+
+      case "rejected":
+        return (
+          <div className="mx-8">
+            <div className="mb-8 text-center">
+              <p className="mb-4 text-4xl font-bold text-[#000000]">
+                Rejected Reviews
+              </p>
+              <p className="text-[20px] text-[#747474]">
+                These reviews did not pass our{" "}
+                <Link
+                  href="/community-guidelines"
+                  className="text-[#7fbefa] underline"
+                >
+                  Community Guidelines
+                </Link>
+                . Please edit them and resubmit for approval.
+              </p>
+            </div>
+            <h2 className="mb-4 text-[16px] text-[#747474]">
+              Rejected Reviews ({rejectedReviews.length})
+            </h2>
+            {rejectedReviews.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-[#B5BEC7]">No rejected reviews</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {rejectedReviews.map((review) => (
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    status="rejected"
+                    clickable={true}
+                    onLike={handleLike}
+                    onEdit={(review) => handleEdit(review, "rejected")}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        );
+
+      case "liked-clubs":
+        return (
+          <div className="mx-8">
+            <div className="mb-8 text-center">
+              <p className="mb-4 text-4xl font-bold text-[#000000]">
+                Liked Clubs
+              </p>
+              <p className="text-[20px] text-[#747474]">
+                Unlike to remove club from &apos;Liked Clubs&apos; list!
+              </p>
+            </div>
+            <h2 className="mb-4 text-[16px] text-[#747474]">
+              Liked Clubs ({likedClubs.length})
+            </h2>
+            {likedClubs.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="mb-4 text-[#B5BEC7]">No liked clubs yet</p>
+                <Button type="CTA" onClick={() => router.push("/clubs")}>
+                  Browse Clubs
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-4">
+                  {likedClubs.map((club) => (
+                    <ClubCard
+                      key={`${club.OrganizationID}-${club.OrganizationName}`}
+                      club={club}
+                      likeCount={club.like_count || 0}
+                      userLiked={true}
+                      userSaved={savedClubs.some(
+                        (c) => c.OrganizationID === club.OrganizationID,
+                      )}
+                      onLike={handleClubLike}
+                      onSave={handleClubSave}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        );
+
+      case "saved-clubs":
+        return (
+          <div className="mx-8">
+            <div className="mb-8 text-center">
+              <p className="mb-4 text-4xl font-bold text-[#000000]">
+                Saved Clubs
+              </p>
+              <p className="text-[20px] text-[#747474]">
+                Unsave to remove club from &apos;Saved Clubs&apos; list!
+              </p>
+            </div>
+            <h2 className="mb-6 text-[16px] text-[#747474]">
+              Saved Clubs ({savedClubs.length})
+            </h2>
+            {savedClubs.length === 0 ? (
+              <div className="py-12 text-center">
+                <p className="text-[#B5BEC7]">No saved clubs</p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-4">
+                  {savedClubs.map((club) => (
+                    <ClubCard
+                      key={`${club.OrganizationID}-${club.OrganizationName}`}
+                      club={club}
+                      likeCount={club.like_count || 0}
+                      userLiked={likedClubs.some(
+                        (c) => c.OrganizationID === club.OrganizationID,
+                      )}
+                      userSaved={true}
+                      onLike={handleClubLike}
+                      onSave={handleClubSave}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        );
+
+      case "preferences":
+        return profilePreferences ? (
+          <PreferencesSection
+            majors={profilePreferences.majors}
+            minors={profilePreferences.minors}
+            currentClubs={profilePreferences.currentClubs}
+            userInterests={profilePreferences.userInterests}
+          />
+        ) : (
+          <LoadingScreen />
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen">
+      <ConfirmationModal
+        isOpen={confirmationModalOpen}
+        onClose={() => {
+          setConfirmationModalOpen(false);
+          setReviewToDelete(null);
+        }}
+        onConfirm={deleteReview}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this review?"
+      />
+      {/* User Information Section */}
+      <div className="relative mb-22">
+        <div className="relative overflow-hidden rounded-lg border-b border-[#E5EBF1] bg-white px-12 py-15 lg:px-26 lg:py-25">
+          {/* lime blob — bottom left */}
+          <div
+            className="absolute bottom-0 left-[-10%] h-[50%] w-[35%] rounded-full opacity-50 blur-[70px]"
+            style={{ background: "#C8F06A" }}
+          />
+          {/* pink blob — top center */}
+          <div
+            className="absolute top-0 left-1/2 h-[50%] w-[50%] -translate-x-1/2 opacity-80 blur-[70px]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 0%, #FFCBCA, #FEEBC8)",
+            }}
+          />
+          {/* blue blob — bottom right */}
+          <div
+            className="absolute right-0 bottom-0 h-[50%] w-[30%] opacity-70 blur-[70px]"
+            style={{
+              background:
+                "radial-gradient(ellipse at 100% 100%, #b0d8ff, #b0d8ff)",
+            }}
+          />
+          {/* lime dot grid — bottom left */}
+          <div
+            className="absolute bottom-0 left-0 h-full w-[40%]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #A8E040 1.5px, transparent 1.5px)",
+              backgroundSize: "16px 16px",
+              WebkitMaskImage:
+                "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
+              maskImage:
+                "radial-gradient(ellipse 100% 100% at 0% 100%, black 30%, transparent 70%)",
+            }}
+          />
         </div>
-    );
+        <div className="absolute -bottom-17 left-1/2 flex h-35 w-35 -translate-x-1/2 items-center justify-center rounded-full border border-lime-300 bg-white md:h-35 md:w-35 lg:-bottom-22 lg:left-52 lg:h-45 lg:w-45">
+          <img
+            src={getAvatarUrl(userProfile.avatar_id)}
+            alt="Profile"
+            className="h-full w-full rounded-full object-cover p-2"
+          />
+        </div>
+      </div>
+
+      {/* Main Content with Sidebar */}
+      <div className="flex flex-col gap-8 p-6 pt-0 md:p-12 md:pt-0 lg:flex-row lg:p-20 lg:pt-0">
+        {/* Sidebar Navigation */}
+        <div className="flex-shrink-0 lg:w-64">
+          <div className="mt-2 flex-1 self-center text-center">
+            <h1 className="mb-2 font-['DM-Sans'] text-2xl font-bold md:text-3xl">
+              {displayName}
+            </h1>
+          </div>
+          <div className="sticky top-8 mt-8 rounded-lg bg-white p-8">
+            <div className="mb-4">
+              {/* Reviews Section */}
+              <SectionToggle
+                sectionName="Reviews"
+                iconPath="/profile/profile_review.svg"
+                iconAlt="review icon"
+                isExpanded={reviewsExpanded}
+                onClick={() => setReviewsExpanded(!reviewsExpanded)}
+              />
+
+              {reviewsExpanded && (
+                <div className="relative ml-2 space-y-1">
+                  {/* Timeline vertical line */}
+                  <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+
+                  {[
+                    { value: "approved", label: "Approved" },
+                    { value: "pending", label: "Pending" },
+                    { value: "rejected", label: "Rejected" },
+                    // { value: "liked-reviews", label: "Liked" },
+                  ].map((item) => (
+                    <button
+                      key={item.value}
+                      onClick={() => {
+                        setActiveSection(item.value);
+                        if (item.value === "rejected") {
+                          handleViewRejected();
+                        }
+                      }}
+                      className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${
+                        activeSection === item.value
+                          ? "bg-[#F0F2F9]"
+                          : "hover:bg-[#F0F2F9]"
+                      }`}
+                    >
+                      <span className="flex items-center justify-between">
+                        {item.label}
+                        {item.value === "rejected" &&
+                          unreadRejectedCount > 0 && (
+                            <span
+                              className="ml-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-bold text-white"
+                              style={{
+                                background:
+                                  "linear-gradient(to right, #FFB464, #FFA1CD)",
+                              }}
+                            >
+                              {unreadRejectedCount}
+                            </span>
+                          )}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Clubs Section */}
+            <div>
+              <SectionToggle
+                sectionName="Clubs"
+                iconPath="/profile/profile_club.svg"
+                iconAlt="club icon"
+                isExpanded={clubsExpanded}
+                onClick={() => setClubsExpanded(!clubsExpanded)}
+              />
+
+              {clubsExpanded && (
+                <div className="relative ml-2 space-y-1">
+                  {/* Timeline vertical line */}
+                  <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+
+                  {[
+                    { value: "liked-clubs", label: "Liked" },
+                    { value: "saved-clubs", label: "Saved" },
+                  ].map((item) => (
+                    <button
+                      key={item.value}
+                      onClick={() => setActiveSection(item.value)}
+                      className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${
+                        activeSection === item.value
+                          ? "bg-[#F0F2F9]"
+                          : "hover:bg-[#F0F2F9]"
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Preferences Section */}
+            <div className="mt-4">
+              <SectionToggle
+                sectionName="Settings"
+                iconPath="/profile/settings.svg"
+                iconAlt="settings icon"
+                isExpanded={settingsExpanded}
+                onClick={() => setSettingsExpanded(!settingsExpanded)}
+              />
+              {settingsExpanded && (
+                <div className="relative ml-2 space-y-1">
+                  {/* Timeline vertical line */}
+                  <div className="absolute top-0 bottom-0 left-0 w-px bg-gray-300"></div>
+                  {[{ value: "preferences", label: "Preferences" }].map(
+                    (item) => (
+                      <button
+                        key={item.value}
+                        onClick={() => setActiveSection(item.value)}
+                        className={`relative ml-3 block w-full rounded-full px-3 py-2 text-left font-medium text-[#6E808D] ${
+                          activeSection === item.value
+                            ? "bg-[#F0F2F9]"
+                            : "hover:bg-[#F0F2F9]"
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ),
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Vertical Divider */}
+        <div className="hidden w-px bg-gray-200 lg:block"></div>
+
+        {/* Main Content Area */}
+        <div className="min-h-100 flex-1">{getContentForSection()}</div>
+      </div>
+    </div>
+  );
 }
 
 export default ProfilePage;
