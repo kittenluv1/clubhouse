@@ -54,18 +54,19 @@ export function AuthProvider({ children }) {
     if (!user?.id) return;
 
     let cancelled = false;
-    supabase
-      .from("profiles")
-      .select("avatar_id, onboarding_completed")
-      .eq("id", user.id)
-      .single()
-      .then(({ data, error }) => {
+    fetch("/api/profile")
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok)
+          throw new Error(data.error || "Failed to fetch profile");
+        return data.profile;
+      })
+      .then((data) => {
         if (cancelled) return;
-        if (error) {
-          console.error("Profile fetch error:", error.message);
-          return;
-        }
         setProfile(data);
+      })
+      .catch((error) => {
+        if (!cancelled) console.error("Profile fetch error:", error.message);
       });
 
     return () => {

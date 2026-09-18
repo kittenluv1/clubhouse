@@ -5,7 +5,6 @@ import posthog from "posthog-js";
 import SearchableDropdown from "../components/searchable-dropdown";
 import { QuarterYearDropdown } from "../components/dropdowns";
 import CustomSlider from "../components/custom-slider";
-import { supabase } from "../lib/db";
 import { useRequireAuth } from "../context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -307,7 +306,6 @@ export default function ReviewPage() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setDateError(dateErrorValue);
     } else {
-       
       setDateError(null);
     }
   }, [dateErrorValue]);
@@ -331,19 +329,13 @@ export default function ReviewPage() {
   const handleClubSelect = async (club) => {
     setSelectedClub(club);
     try {
-      const { data, error } = await supabase
-        .from("clubs")
-        .select("OrganizationID")
-        .eq("OrganizationName", club)
-        .single();
-
-      if (error) {
-        console.error("Full error object:", error);
-        throw new Error(
-          `${error.message}${error.details ? " - " + error.details : ""}${error.hint ? " - " + error.hint : ""}`,
-        );
-      }
-      setClubId(data.OrganizationID);
+      const response = await fetch(
+        `/api/clubs/names?search=${encodeURIComponent(club)}`,
+      );
+      const { clubs = [] } = await response.json();
+      const match = clubs.find((item) => item.OrganizationName === club);
+      if (!response.ok || !match) throw new Error("Club not found");
+      setClubId(match.OrganizationID);
     } catch (error) {
       console.error("Error fetching club ID:", error);
       setError("Club not found.");
@@ -394,33 +386,28 @@ export default function ReviewPage() {
       if (overallSatisfaction === null)
         throw new Error("Please rate your overall satisfaction");
 
-      const { data, error: dbError } = await supabase
-        .from("reviews")
-        .insert([
-          {
-            club_id: clubId,
-            user_id: user?.id,
-            user_email: user?.email,
-            club_name: selectedClub,
-            review_text: reviewText,
-            membership_start_quarter: startQuarter,
-            membership_start_year: parseInt(startYear, 10),
-            membership_end_quarter: endQuarter,
-            membership_end_year: parseInt(endYear, 10),
-            time_commitment_rating: timeCommitment,
-            inclusivity_rating: inclusivityRating,
-            social_community_rating: socialCommunity,
-            competitiveness_rating: competitiveness,
-            overall_satisfaction: overallSatisfaction,
-            is_current_member: isMember,
-            user_alias: anonymousName(),
-          },
-        ])
-        .select();
-
-      if (dbError) {
-        throw new Error(dbError.message || "Failed to submit review.");
-      }
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          club_id: clubId,
+          club_name: selectedClub,
+          review_text: reviewText,
+          membership_start_quarter: startQuarter,
+          membership_start_year: parseInt(startYear, 10),
+          membership_end_quarter: endQuarter,
+          membership_end_year: parseInt(endYear, 10),
+          time_commitment_rating: timeCommitment,
+          inclusivity_rating: inclusivityRating,
+          social_community_rating: socialCommunity,
+          competitiveness_rating: competitiveness,
+          overall_satisfaction: overallSatisfaction,
+          is_current_member: isMember,
+          user_alias: anonymousName(),
+        }),
+      });
+      const { review, error: apiError } = await response.json();
+      if (!response.ok) throw new Error(apiError || "Failed to submit review.");
 
       posthog.capture("review_submitted", {
         club_id: clubId,
@@ -435,11 +422,11 @@ export default function ReviewPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            club_name: data?.[0]?.club_name || selectedClub,
+            club_name: review?.club_name || selectedClub,
             overall_satisfaction:
-              data?.[0]?.overall_satisfaction ?? overallSatisfaction,
-            review_text: data?.[0]?.review_text || reviewText,
-            user_email: data?.[0]?.user_email || user?.email,
+              review?.overall_satisfaction ?? overallSatisfaction,
+            review_text: review?.review_text || reviewText,
+            user_email: review?.user_email || user?.email,
           }),
         },
       );
@@ -550,7 +537,6 @@ export default function ReviewPage() {
                 } `}
               >
                 <SearchableDropdown
-                  tableName="clubs"
                   onSelect={handleClubSelect}
                   onInputChange={handleClubInputChange}
                   value={selectedClub}
@@ -656,7 +642,9 @@ export default function ReviewPage() {
                 rating={overallSatisfaction}
                 setRating={setOverallSatisfaction}
                 inputRef={satisfactionStars}
-                hasError={fieldErrors.satisfaction && overallSatisfaction == null}
+                hasError={
+                  fieldErrors.satisfaction && overallSatisfaction == null
+                }
               />
             </div>
           </div>

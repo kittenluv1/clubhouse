@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRequireAuth } from "../context/AuthContext";
-import { supabase } from "../lib/db";
 import { getAvatarUrl } from "../lib/avatars";
 import posthog from "posthog-js";
 import ClubCard from "../components/clubCard";
@@ -515,7 +514,7 @@ function ProfilePage() {
       {/* Main Content with Sidebar */}
       <div className="flex flex-col gap-8 p-6 pt-0 md:p-12 md:pt-0 lg:flex-row lg:p-20 lg:pt-0">
         {/* Sidebar Navigation */}
-        <div className="shrink-0 lg:w-64">
+        <div className="flex-shrink-0 lg:w-64">
           <div className="mt-2 flex-1 self-center text-center">
             <h1 className="mb-2 font-['DM-Sans'] text-2xl font-bold md:text-3xl">
               {displayName}
