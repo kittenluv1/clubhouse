@@ -66,6 +66,24 @@ describe("POST /api/reviews", () => {
     expect(generated).toBe(true);
   });
 
+  it("400 with the reason for an invalid review, without inserting", async () => {
+    setup();
+
+    const res = await post({ ...validReview, overall_satisfaction: 9 });
+
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toMatch("overall_satisfaction");
+    expect(db.callsTo("insert")).toHaveLength(0);
+  });
+
+  it("400 for a body that is not JSON", async () => {
+    setup();
+
+    const res = await POST(makeRequest({ url: "http://localhost/api/reviews" }));
+
+    expect(res.status).toBe(400);
+  });
+
   it("takes the author from the session, not the request body", async () => {
     setup();
 

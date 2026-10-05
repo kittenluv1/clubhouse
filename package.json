@@ -25,7 +25,8 @@
     "react-dom": "^19.3.0",
     "react-icons": "^5.5.0",
     "react-slick": "^0.31.0",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
