@@ -4,6 +4,16 @@
 import { escapeLike, ilikeAnyFilter } from "@/app/lib/server/postgrest";
 import { createUserToggleRepository, USER_TOGGLES } from "@/app/lib/server/repositories/userToggles";
 
+/**
+ * A clubs table row. Columns mirror the UCLA directory's field names.
+ * @typedef {Record<string, any> & {
+ *   OrganizationID: string | number,
+ *   OrganizationName: string,
+ *   Category1Name?: string | null,
+ *   Category2Name?: string | null,
+ * }} Club
+ */
+
 export const CLUBS_PAGE_SIZE = 10;
 
 const desc = (column) => ({ column, ascending: false });
@@ -34,7 +44,7 @@ export function createClubsRepository(supabase) {
   return {
     /**
      * @param {ClubListQuery} query
-     * @returns {Promise<{ clubs: object[], totalPages: number }>}
+     * @returns {Promise<{ clubs: Club[], totalPages: number }>}
      */
     async listPage({ page, sort, name, categories }) {
       let query = supabase.from("clubs").select("*", { count: "exact" });
@@ -104,7 +114,10 @@ export function createClubsRepository(supabase) {
       if (insertError) throw insertError;
     },
 
-    /** Every club, for ranking. */
+    /**
+     * Every club, for ranking.
+     * @returns {Promise<Club[]>}
+     */
     async listAll() {
       const { data, error } = await supabase.from("clubs").select("*");
       if (error) throw error;
@@ -121,7 +134,7 @@ export function createClubsRepository(supabase) {
 
     /**
      * @param {string} name exact club name
-     * @returns {Promise<object | null>}
+     * @returns {Promise<Club | null>}
      */
     async findByName(name) {
       const { data, error } = await supabase.from("clubs").select("*").eq("OrganizationName", name).limit(1);
@@ -157,7 +170,7 @@ const MARKED_CLUB_JOINS = {
  * @param {string} userId
  * @param {"liked" | "saved"} kind
  * @param {string} [columns] club columns to return
- * @returns {Promise<object[]>}
+ * @returns {Promise<Club[]>}
  */
 export async function listMarkedClubs(supabase, userId, kind, columns = "*") {
   const { table, join } = MARKED_CLUB_JOINS[kind];

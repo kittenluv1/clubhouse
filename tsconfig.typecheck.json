@@ -1,0 +1,26 @@
+{
+  // Type-checks the server/data layer's JSDoc types. Not used by the Next.js
+  // build; run with `npm run typecheck`. Widen "include" as more files gain
+  // JSDoc types.
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2023", "DOM"],
+    "types": ["node"],
+    "skipLibCheck": true,
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": [
+    "src/app/lib/server/**/*.js",
+    "src/app/lib/reviews/**/*.js",
+    "src/app/lib/profiles/**/*.js",
+    "src/app/lib/clubs/**/*.js",
+    "src/app/api/**/*.js"
+  ]
+}

@@ -37,7 +37,7 @@ export async function readJson(req) {
 /**
  * @typedef {{ id: string, email?: string }} SessionUser
  * @typedef {{ user: SessionUser, supabase: any, params: Record<string, string> }} RouteContext
- * @typedef {(req: Request, ctx: RouteContext) => Promise<Response>} AuthedHandler
+ * @typedef {(req: import("next/server").NextRequest, ctx: RouteContext) => Promise<Response>} AuthedHandler
  */
 
 /**

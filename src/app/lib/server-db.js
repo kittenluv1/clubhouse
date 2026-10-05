@@ -2,19 +2,23 @@ import { createClient } from "@supabase/supabase-js";
 import { createServerClient as createSSRClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error("Supabase URL or Service Role Key is missing.");
+/** @param {string} name */
+function requireEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is missing.`);
+  return value;
 }
+
+const supabaseUrl = requireEnv("NEXT_PUBLIC_SUPABASE_URL");
+const supabaseServiceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+const supabaseAnonKey = requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY");
 
 export const supabaseServer = createClient(supabaseUrl, supabaseServiceKey);
 
 export async function createAuthenticatedClient() {
   const cookieStore = await cookies();
 
-  return createSSRClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+  return createSSRClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

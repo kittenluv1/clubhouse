@@ -6,13 +6,21 @@ import { createAuthenticatedClient, supabaseServer } from "@/app/lib/server-db";
 import { CLUB_SORTS, createClubsRepository, getUserClubMarks } from "@/app/lib/server/repositories/clubs";
 import { errorResponse } from "@/app/lib/server/route";
 
+/**
+ * @param {string | null} value
+ * @returns {value is keyof typeof CLUB_SORTS}
+ */
+function isClubSort(value) {
+  return value !== null && Object.hasOwn(CLUB_SORTS, value);
+}
+
 /** @param {URLSearchParams} searchParams */
 export function readPageAndSort(searchParams) {
   const page = Number.parseInt(searchParams.get("page") ?? "", 10);
   const sort = searchParams.get("sort");
   return {
     page: Number.isInteger(page) && page > 0 ? page : 1,
-    sort: Object.hasOwn(CLUB_SORTS, sort) ? sort : "rating",
+    sort: isClubSort(sort) ? sort : "rating",
   };
 }
 

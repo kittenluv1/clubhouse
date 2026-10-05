@@ -17,6 +17,7 @@ export class ScoringEngine {
    */
   score(user, club, context = {}) {
     let totalScore = 0;
+    /** @type {Record<string, number>} */
     const breakdown = {};
 
     for (const feature of this.features) {
