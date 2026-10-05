@@ -54,6 +54,13 @@ export function createClubsRepository(supabase) {
       return { clubs: data ?? [], totalPages: Math.ceil((count ?? 0) / CLUBS_PAGE_SIZE) };
     },
 
+    /** Every club, for ranking. */
+    async listAll() {
+      const { data, error } = await supabase.from("clubs").select("*");
+      if (error) throw error;
+      return data ?? [];
+    },
+
     /**
      * Number of likes for each club id (0 for clubs without likes).
      * @param {Array<string | number>} clubIds
