@@ -1,22 +1,48 @@
 import { createAuthenticatedClient, supabaseServer as supabase } from "@/app/lib/server-db";
 
+// Reviews are anonymous: only these fields ever leave the server. user_id is
+// read separately to flag the viewer's own reviews and is never returned.
+const PUBLIC_REVIEW_FIELDS = [
+  "id",
+  "club_id",
+  "club_name",
+  "review_text",
+  "membership_start_quarter",
+  "membership_start_year",
+  "membership_end_quarter",
+  "membership_end_year",
+  "time_commitment_rating",
+  "inclusivity_rating",
+  "social_community_rating",
+  "competitiveness_rating",
+  "overall_satisfaction",
+  "is_current_member",
+  "user_alias",
+  "created_at",
+  "profiles",
+];
+
+const REVIEW_COLUMNS = [
+  ...PUBLIC_REVIEW_FIELDS.filter((field) => field !== "profiles"),
+  "user_id",
+  "profiles:user_id ( avatar_id )",
+].join(", ");
+
+function toPublicReview(row, viewerId) {
+  const review = Object.fromEntries(
+    PUBLIC_REVIEW_FIELDS.filter((field) => field in row).map((field) => [field, row[field]]),
+  );
+  return { ...review, is_own_review: viewerId != null && row.user_id === viewerId };
+}
+
 export async function GET(request, context) {
   const resolvedParams = await context.params;
-  const encodedClubId = resolvedParams.id;
+  // Next.js already URL-decodes route params
+  const clubName = resolvedParams.id;
 
-  if (!encodedClubId) {
+  if (!clubName) {
     console.error("API Error: ID parameter is missing from the URL.");
     return Response.json({ error: "ID parameter is missing" }, { status: 400 });
-  }
-
-  try {
-    decodeURIComponent(encodedClubId);
-  } catch (e) {
-    console.error("API Error: Failed to decode ID parameter:", encodedClubId, e);
-    return Response.json(
-      { error: "Invalid ID parameter encoding" },
-      { status: 400 },
-    );
   }
 
   try {
@@ -24,7 +50,7 @@ export async function GET(request, context) {
     const { data: data, error: clubError } = await supabase
       .from("clubs")
       .select("*")
-      .eq("OrganizationName", encodedClubId);
+      .eq("OrganizationName", clubName);
 
     if (clubError) {
       console.error("Supabase error:", clubError);
@@ -53,7 +79,7 @@ export async function GET(request, context) {
       // Fetch reviews
       const { data: reviewsData, error: reviewsError } = await supabase
         .from("reviews")
-        .select("*, profiles:user_id ( avatar_id )")
+        .select(REVIEW_COLUMNS)
         .eq("club_id", clubData.OrganizationID)
         .order("created_at", { ascending: false });
 
@@ -61,7 +87,7 @@ export async function GET(request, context) {
         console.error("Reviews fetch error:", reviewsError);
         // Don't fail the whole request if reviews fail, just return empty array
       } else {
-        reviews = reviewsData || [];
+        reviews = (reviewsData || []).map((review) => toPublicReview(review, currentUserId));
       }
 
       // Fetch club likes
@@ -136,7 +162,6 @@ export async function GET(request, context) {
       currentUserSaved,
       reviewLikesMap,
       userLikedReviews,
-      currentUserId
     });
   } catch (error) {
     console.error("Error fetching data:", error);
