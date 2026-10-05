@@ -1,11 +1,12 @@
 import { supabaseServer as supabase } from "../../../lib/server-db";
 import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { ilikeAnyFilter } from "@/app/lib/server/postgrest";
 
 export async function GET(req, { params }) {
   try {
-    // Extract URL params and search params
+    // Next.js already URL-decodes route params; decoding again breaks on "%"
     const { category: raw } = await params;
-    const category = decodeURIComponent(raw).trim().slice(0, 200).replace(/[%_\\]/g, '\\$&');
+    const category = raw.trim().slice(0, 200);
     const searchParams = req.nextUrl.searchParams;
     const pageParam = searchParams.get("page");
     const sortType = searchParams.get("sort") || "rating";
@@ -51,7 +52,7 @@ export async function GET(req, { params }) {
     let query = supabase
       .from("clubs")
       .select("*", { count: "exact" })
-      .or(`Category1Name.ilike.%${category}%,Category2Name.ilike.%${category}%`);
+      .or(ilikeAnyFilter(["Category1Name", "Category2Name"], [category]));
 
     // Apply all sorts from config
     for (const sort of sortConfig) {

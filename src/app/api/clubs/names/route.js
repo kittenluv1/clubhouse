@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/app/lib/server-db";
+import { escapeLike } from "@/app/lib/server/postgrest";
 
 export async function GET(req) {
   const search = req.nextUrl.searchParams.get("search")?.trim() || "";
@@ -9,7 +10,7 @@ export async function GET(req) {
     .order("OrganizationName", { ascending: true });
 
   if (search) {
-    query = query.ilike("OrganizationName", `%${search.slice(0, 200)}%`);
+    query = query.ilike("OrganizationName", `%${escapeLike(search.slice(0, 200))}%`);
   }
 
   const { data, error } = await query;

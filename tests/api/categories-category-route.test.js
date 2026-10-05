@@ -41,3 +41,15 @@ describe("GET /api/categories/[category]", () => {
     expect(body.totalNumPages).toBe(1);
   });
 });
+
+describe("GET /api/categories/[category] filter injection", () => {
+  it("keeps a crafted category inside a single quoted condition", async () => {
+    await call("x%,OrganizationID.gt.0");
+
+    const clubsQuery = db.queries.find((q) => q.table === "clubs");
+    const [filter] = findCall(clubsQuery, "or").args;
+    expect(filter).toBe(
+      'Category1Name.ilike."%x\\\\%,OrganizationID.gt.0%",Category2Name.ilike."%x\\\\%,OrganizationID.gt.0%"',
+    );
+  });
+});

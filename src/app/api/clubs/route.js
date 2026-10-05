@@ -1,5 +1,6 @@
 import { supabaseServer as supabase } from "../../lib/server-db";
 import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { escapeLike } from "@/app/lib/server/postgrest";
 
 export async function GET(req) {
   try {
@@ -56,7 +57,7 @@ export async function GET(req) {
 
     // Apply search filter if provided
     if (name) {
-      const sanitizedName = name.slice(0, 200).replace(/[%_\\]/g, '\\$&');
+      const sanitizedName = escapeLike(name.slice(0, 200));
       query = query.ilike("OrganizationName", `%${sanitizedName}%`);
     }
 

@@ -1,5 +1,6 @@
 import { supabaseServer as supabase } from "../../../lib/server-db";
 import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { ilikeAnyFilter } from "@/app/lib/server/postgrest";
 
 export async function GET(request) {
   try {
@@ -20,9 +21,10 @@ export async function GET(request) {
       );
     }
 
-    const categories = decodeURIComponent(rawList)
+    // searchParams values are already decoded; decoding again breaks on "%"
+    const categories = rawList
       .split(",")
-      .map((s) => s.trim().slice(0, 200).replace(/[%_\\]/g, '\\$&'))
+      .map((s) => s.trim().slice(0, 200))
       .filter(Boolean)
       .slice(0, 20);
 
@@ -32,12 +34,6 @@ export async function GET(request) {
         { status: 200 },
       );
     }
-
-    // Build dynamic OR filters
-    const filters = categories.flatMap((cat) => [
-      `Category1Name.ilike.%${cat}%`,
-      `Category2Name.ilike.%${cat}%`,
-    ]);
 
     // Configure sort priority based on sortType
     let sortConfig = [];
@@ -75,7 +71,7 @@ export async function GET(request) {
     let query = supabase
       .from("clubs")
       .select(`*`, { count: "exact" })
-      .or(filters.join(","));
+      .or(ilikeAnyFilter(["Category1Name", "Category2Name"], categories));
 
     // Apply all sorts from config
     for (const sort of sortConfig) {
