@@ -255,3 +255,16 @@ describe("PATCH /api/onboarding", () => {
         expect(res.status).toBe(500);
     });
 });
+
+describe("preference validation", () => {
+    test.each([["POST"], ["PATCH"]])("%s returns 400 for malformed preferences without writing", async (method) => {
+        const client = makeClient();
+        createAuthenticatedClient.mockResolvedValue(client);
+        const handler = method === "POST" ? POST : PATCH;
+
+        const res = await handler(makeRequest(method, { majors: "Biology" }));
+
+        expect(res.status).toBe(400);
+        expect(client._mocks.profileUpdate).not.toHaveBeenCalled();
+    });
+});
