@@ -4,7 +4,7 @@ import { createAuthenticatedClient } from "@/app/lib/server-db";
 export async function GET(req, { params }) {
   try {
     // Extract URL params and search params
-    const raw = params.category;
+    const { category: raw } = await params;
     const category = decodeURIComponent(raw).trim().slice(0, 200).replace(/[%_\\]/g, '\\$&');
     const searchParams = req.nextUrl.searchParams;
     const pageParam = searchParams.get("page");
