@@ -1,4 +1,7 @@
 import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { randomAlias } from "@/app/lib/reviews/alias";
+
+// New reviews wait in pending_reviews until an admin approves them.
 
 export async function POST(req) {
   try {
@@ -26,12 +29,11 @@ export async function POST(req) {
       competitiveness_rating,
       overall_satisfaction,
       review_text,
-      user_alias,
       is_current_member,
     } = body;
 
     const { data, error } = await supabase
-      .from("reviews")
+      .from("pending_reviews")
       .insert({
         club_id,
         user_id: user.id,
@@ -48,7 +50,7 @@ export async function POST(req) {
         competitiveness_rating,
         overall_satisfaction,
         is_current_member,
-        user_alias,
+        user_alias: randomAlias(),
       })
       .select()
       .single();
