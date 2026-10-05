@@ -42,5 +42,37 @@ export function createUserToggleRepository(supabase, { table, target }) {
       const { error } = await supabase.from(table).delete().eq(target, targetId).eq("user_id", userId);
       if (error) throw error;
     },
+
+    /**
+     * Number of rows for each target (0 for targets without any).
+     * Needs a client that can read every user's rows (service role).
+     * @param {Array<string | number>} targetIds
+     * @returns {Promise<Map<string | number, number>>}
+     */
+    async countByTarget(targetIds) {
+      const counts = new Map(targetIds.map((id) => [id, 0]));
+      if (targetIds.length === 0) return counts;
+
+      const { data, error } = await supabase.from(table).select(target).in(target, targetIds);
+      if (error) throw error;
+
+      for (const row of data ?? []) counts.set(row[target], (counts.get(row[target]) ?? 0) + 1);
+      return counts;
+    },
+
+    /**
+     * Which of `targetIds` the user has marked.
+     * @param {string} userId
+     * @param {Array<string | number>} targetIds
+     * @returns {Promise<Set<string | number>>}
+     */
+    async listMarked(userId, targetIds) {
+      if (targetIds.length === 0) return new Set();
+
+      const { data, error } = await supabase.from(table).select(target).eq("user_id", userId).in(target, targetIds);
+      if (error) throw error;
+
+      return new Set((data ?? []).map((row) => row[target]));
+    },
   };
 }

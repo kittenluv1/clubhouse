@@ -2,6 +2,7 @@
 // (OrganizationID, Category1Name, ...); keep that knowledge in this file.
 
 import { escapeLike, ilikeAnyFilter } from "@/app/lib/server/postgrest";
+import { createUserToggleRepository, USER_TOGGLES } from "@/app/lib/server/repositories/userToggles";
 
 export const CLUBS_PAGE_SIZE = 10;
 
@@ -56,17 +57,19 @@ export function createClubsRepository(supabase) {
     /**
      * Number of likes for each club id (0 for clubs without likes).
      * @param {Array<string | number>} clubIds
-     * @returns {Promise<Map<string | number, number>>}
      */
-    async likeCounts(clubIds) {
-      const counts = new Map(clubIds.map((id) => [id, 0]));
-      if (clubIds.length === 0) return counts;
+    likeCounts(clubIds) {
+      return createUserToggleRepository(supabase, USER_TOGGLES.clubLike).countByTarget(clubIds);
+    },
 
-      const { data, error } = await supabase.from("club_likes").select("club_id").in("club_id", clubIds);
+    /**
+     * @param {string} name exact club name
+     * @returns {Promise<object | null>}
+     */
+    async findByName(name) {
+      const { data, error } = await supabase.from("clubs").select("*").eq("OrganizationName", name).limit(1);
       if (error) throw error;
-
-      for (const { club_id } of data ?? []) counts.set(club_id, (counts.get(club_id) ?? 0) + 1);
-      return counts;
+      return data?.[0] ?? null;
     },
   };
 }
@@ -78,11 +81,9 @@ export function createClubsRepository(supabase) {
  * @param {Array<string | number>} clubIds
  */
 export async function getUserClubMarks(supabase, userId, clubIds) {
-  const idsIn = async (table) => {
-    const { data, error } = await supabase.from(table).select("club_id").eq("user_id", userId).in("club_id", clubIds);
-    if (error) throw error;
-    return new Set((data ?? []).map((row) => row.club_id));
-  };
-  const [liked, saved] = await Promise.all([idsIn("club_likes"), idsIn("club_saves")]);
+  const [liked, saved] = await Promise.all([
+    createUserToggleRepository(supabase, USER_TOGGLES.clubLike).listMarked(userId, clubIds),
+    createUserToggleRepository(supabase, USER_TOGGLES.clubSave).listMarked(userId, clubIds),
+  ]);
   return { liked, saved };
 }

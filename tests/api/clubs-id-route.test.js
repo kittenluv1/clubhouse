@@ -19,15 +19,17 @@ const reviews = [
   { id: 2, user_id: "other", user_email: "other@ucla.edu", user_alias: "@BraveFox", review_text: "ok" },
 ];
 
-function setup({ user = null } = {}) {
+function setup({ user = null, clubFound = true, clubLikes = [], reviewLikes = [], userData = {} } = {}) {
   serviceDb = createSupabaseMock({
     respond: ({ table }) => {
-      if (table === "clubs") return { data: [club] };
+      if (table === "clubs") return { data: clubFound ? [club] : [] };
       if (table === "reviews") return { data: reviews.map((r) => ({ ...r })) };
+      if (table === "club_likes") return { data: clubLikes };
+      if (table === "review_likes") return { data: reviewLikes };
       return { data: [] };
     },
   });
-  userDb = createSupabaseMock({ user, respond: () => ({ data: [] }) });
+  userDb = createSupabaseMock({ user, respond: ({ table }) => ({ data: userData[table] ?? [] }) });
 }
 
 const call = (id = club.OrganizationName) =>
@@ -81,5 +83,47 @@ describe("GET /api/clubs/[id] club lookup", () => {
 
     expect(res.status).toBe(200);
     expect((await res.json()).orgList).toEqual([club]);
+  });
+});
+
+describe("GET /api/clubs/[id] likes and saves", () => {
+  it("returns an empty result for an unknown club", async () => {
+    setup({ clubFound: false });
+    const body = await (await call()).json();
+
+    expect(body.orgList).toEqual([]);
+    expect(body.reviews).toEqual([]);
+    expect(serviceDb.queries.some((q) => q.table === "reviews")).toBe(false);
+  });
+
+  it("counts club likes and review likes for visitors", async () => {
+    setup({
+      clubLikes: [{ club_id: 7, user_id: "a" }, { club_id: 7, user_id: "b" }],
+      reviewLikes: [{ review_id: 1 }, { review_id: 1 }, { review_id: 2 }],
+    });
+    const body = await (await call()).json();
+
+    expect(body).toMatchObject({
+      likeCount: 2,
+      currentUserLiked: false,
+      currentUserSaved: false,
+      reviewLikesMap: { 1: 2, 2: 1 },
+      userLikedReviews: [],
+    });
+  });
+
+  it("reports the signed-in user's club like, save and review likes", async () => {
+    setup({
+      user: { id: "me" },
+      clubLikes: [{ club_id: 7, user_id: "me" }],
+      userData: {
+        club_likes: [{ club_id: 7 }],
+        club_saves: [{ club_id: 7 }],
+        review_likes: [{ review_id: 2 }],
+      },
+    });
+    const body = await (await call()).json();
+
+    expect(body).toMatchObject({ currentUserLiked: true, currentUserSaved: true, userLikedReviews: [2] });
   });
 });

@@ -129,3 +129,55 @@ export function createReviewsRepository(supabase) {
     },
   };
 }
+
+// Reviews are anonymous: only these fields ever leave the server. user_id is
+// read separately to flag the viewer's own reviews and is never returned.
+const PUBLIC_REVIEW_FIELDS = [
+  "id",
+  "club_id",
+  "club_name",
+  "review_text",
+  "membership_start_quarter",
+  "membership_start_year",
+  "membership_end_quarter",
+  "membership_end_year",
+  "time_commitment_rating",
+  "inclusivity_rating",
+  "social_community_rating",
+  "competitiveness_rating",
+  "overall_satisfaction",
+  "is_current_member",
+  "user_alias",
+  "created_at",
+  "profiles",
+];
+
+const REVIEW_COLUMNS = [
+  ...PUBLIC_REVIEW_FIELDS.filter((field) => field !== "profiles"),
+  "user_id",
+  "profiles:user_id ( avatar_id )",
+].join(", ");
+
+function toPublicReview(row, viewerId) {
+  const review = Object.fromEntries(
+    PUBLIC_REVIEW_FIELDS.filter((field) => field in row).map((field) => [field, row[field]]),
+  );
+  return { ...review, is_own_review: viewerId != null && row.user_id === viewerId };
+}
+
+/**
+ * Approved reviews for a club, safe to show to anyone. `is_own_review` marks
+ * the viewer's own reviews.
+ * @param {any} supabase service-role client (reviews are public once approved)
+ * @param {string | number} clubId
+ * @param {string | null} viewerId
+ */
+export async function listPublicReviews(supabase, clubId, viewerId) {
+  const { data, error } = await supabase
+    .from(REVIEW_TABLES.approved)
+    .select(REVIEW_COLUMNS)
+    .eq("club_id", clubId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row) => toPublicReview(row, viewerId));
+}
