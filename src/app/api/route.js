@@ -1,147 +1,26 @@
-import { supabaseServer } from "../lib/server-db.js";
-import { hasCronSecret } from "../lib/server/cron.js";
+import { fetchUclaClubs } from "@/app/lib/clubs/uclaSource";
+import { supabaseServer } from "@/app/lib/server-db";
+import { hasCronSecret } from "@/app/lib/server/cron";
+import { createClubsRepository } from "@/app/lib/server/repositories/clubs";
+import { errorResponse, jsonError } from "@/app/lib/server/route";
 
-// keep all logic in GET route - Vercel cron jobs only support GET requests
+// Monthly Vercel cron job (see vercel.json): sync the club directory from
+// UCLA. Vercel cron jobs only send GET requests.
 export async function GET(req) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
     console.error("CRON_SECRET is not set; refusing to run the club sync.");
-    return Response.json({ error: "Server configuration error" }, { status: 500 });
+    return jsonError(500, "Server configuration error");
   }
-  if (!hasCronSecret(req, cronSecret)) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  if (!supabaseServer) {
-    console.error("supabaseServer client is not initialized.");
-    return new Response(
-      JSON.stringify({ error: "Server configuration error" }),
-      { status: 500 },
-    );
-  }
+  if (!hasCronSecret(req, cronSecret)) return jsonError(401, "Unauthorized");
 
   try {
-    // Fetch regular clubs
-    const response = await fetch(
-      "https://sa.ucla.edu/RCO/Public/SearchOrganizations",
-      {
-        method: "POST",
-      },
-    );
+    const { clubs, regularCount, sportsCount } = await fetchUclaClubs();
+    const repo = createClubsRepository(supabaseServer);
+    for (const club of clubs) await repo.saveClub(club);
 
-    if (!response.ok) {
-      throw new Error(`Clubs response status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const orgList = data.orgList;
-
-    // Fetch club sports
-    const clubSportsResponse = await fetch(
-      "https://sa.ucla.edu/RCO/Public/SearchOrganizations",
-      {
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          catValueStringText: "All Categories",
-          searchString: "",
-          catValueString: -1,
-        }),
-        method: "POST",
-      },
-    );
-
-    if (!clubSportsResponse.ok) {
-      throw new Error(`Club sports response status: ${clubSportsResponse.status}`);
-    }
-
-    const clubSportsData = await clubSportsResponse.json();
-    const clubSportsOrgList = clubSportsData.clubSportsOrgList || [];
-
-    // Map club sports to match regular clubs in Supabase
-    const mappedClubSports = clubSportsOrgList.map(sport => ({
-      OrganizationID: sport.id,
-      OrganizationName: sport.name,
-      OrganizationDescription: sport.description,
-      OrganizationEmail: sport.program_email_address,
-      OrganizationWebSite: sport.links?.find(link => link.name && link.url.includes("uclaclubsports.com"))?.url || null,
-      Category1Name: "Club Sports",
-      Category2Name: sport.identification,
-      AdvisorName: null,
-      Sig1Name: null,
-      Sig2Name: null,
-      Sig3Name: null,
-      MemberType: null,
-      SocialMediaLink: sport.links?.find(link => link.name && (link.name.includes("Instagram") || link.name.includes("Facebook")))?.url || null
-    }));
-
-    const combinedOrgList = [...orgList, ...mappedClubSports];
-
-    // Sanitize a single object by removing null characters and null fields
-    function sanitizeObject(obj) {
-      const sanitizedObj = {};
-      for (const key in obj) {
-        if (obj[key] === null) {
-          continue;
-        }
-        if (typeof obj[key] === "string") {
-          sanitizedObj[key] = obj[key].replace(/\u0000/g, "");
-        } else {
-          sanitizedObj[key] = obj[key];
-        }
-      }
-      return sanitizedObj;
-    }
-
-    const sanitizedOrgList = combinedOrgList.map(sanitizeObject);
-
-    // Insert data into the Supabase database using manual update/insert logic
-    for (const org of sanitizedOrgList) {
-      const { id, ...fields } = org;
-
-      const { count, error: updateError } = await supabaseServer
-        .from("clubs")
-        .update(fields)
-        .eq("OrganizationID", org.OrganizationID)
-        .select("OrganizationID", { count: "exact", head: true });
-
-      if (updateError) {
-        console.error("Error updating data in Supabase:", updateError);
-        return new Response(
-          JSON.stringify({ error: `Failed to update data in database for club: ${org.OrganizationName}` }),
-          { status: 500 },
-        );
-      }
-
-      // if the update did not find a matching record, insert a new one
-      if (count === 0) {
-        const { error } = await supabaseServer
-          .from("clubs")
-          .insert(org);
-
-        if (error) {
-          console.error("Error inserting data into Supabase:", error);
-          return new Response(
-            JSON.stringify({ error: `Failed to insert data into database for club: ${org.OrganizationName}` }),
-            { status: 500 },
-          );
-        }
-      }
-    }
-
-    return new Response(
-      JSON.stringify({
-        totalClubs: sanitizedOrgList.length,
-        regularClubs: orgList.length,
-        clubSports: clubSportsOrgList.length,
-      }),
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
-      status: 500,
-    });
+    return Response.json({ totalClubs: clubs.length, regularClubs: regularCount, clubSports: sportsCount });
+  } catch (err) {
+    return errorResponse(req, err);
   }
 }

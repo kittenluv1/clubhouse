@@ -54,6 +54,56 @@ export function createClubsRepository(supabase) {
       return { clubs: data ?? [], totalPages: Math.ceil((count ?? 0) / CLUBS_PAGE_SIZE) };
     },
 
+    /**
+     * Club ids and names, optionally filtered by a name substring.
+     * @param {string} [search]
+     */
+    async listNames(search) {
+      let query = supabase
+        .from("clubs")
+        .select("OrganizationID, OrganizationName")
+        .order("OrganizationName", { ascending: true });
+      if (search) query = query.ilike("OrganizationName", `%${escapeLike(search)}%`);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data ?? [];
+    },
+
+    /**
+     * Distinct, non-empty category names across clubs.
+     * @returns {Promise<string[]>}
+     */
+    async listCategoryNames() {
+      const { data, error } = await supabase.from("clubs").select("Category1Name, Category2Name").limit(1000);
+      if (error) throw error;
+
+      const names = new Set();
+      for (const { Category1Name, Category2Name } of data ?? []) {
+        if (Category1Name) names.add(Category1Name);
+        if (Category2Name) names.add(Category2Name);
+      }
+      return [...names];
+    },
+
+    /**
+     * Update a club from the UCLA directory, inserting it if it is new.
+     * @param {Record<string, unknown>} club row keyed by OrganizationID
+     */
+    async saveClub(club) {
+      const { id: _localId, ...fields } = club;
+      const { count, error } = await supabase
+        .from("clubs")
+        .update(fields)
+        .eq("OrganizationID", club.OrganizationID)
+        .select("OrganizationID", { count: "exact", head: true });
+      if (error) throw error;
+      if (count > 0) return;
+
+      const { error: insertError } = await supabase.from("clubs").insert(club);
+      if (insertError) throw insertError;
+    },
+
     /** Every club, for ranking. */
     async listAll() {
       const { data, error } = await supabase.from("clubs").select("*");
