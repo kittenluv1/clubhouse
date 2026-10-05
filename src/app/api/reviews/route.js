@@ -8,6 +8,10 @@ export const POST = withUser(async (req, { supabase, user }) => {
   const parsed = parseReviewInput(await readJson(req));
   if (!parsed.success) throw new HttpError(400, parsed.error);
 
-  const review = await createReviewsRepository(supabase).submit(user, parsed.data, randomAlias());
+  const review = await createReviewsRepository(supabase).submit(
+    user,
+    parsed.data,
+    randomAlias(),
+  );
   return Response.json({ review }, { status: 201 });
 });

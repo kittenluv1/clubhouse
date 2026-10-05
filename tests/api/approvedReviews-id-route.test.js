@@ -10,11 +10,24 @@ jest.mock("@/app/lib/server-db", () => ({
 
 const params = { params: Promise.resolve({ id: "10" }) };
 
-function mockClient({ user = { id: "u1" }, authError = null, review = { id: 10, user_id: "u1" }, reviewError = null }) {
-  const single = jest.fn().mockResolvedValue({ data: review, error: reviewError });
+function mockClient({
+  user = { id: "u1" },
+  authError = null,
+  review = { id: 10, user_id: "u1" },
+  reviewError = null,
+}) {
+  const single = jest
+    .fn()
+    .mockResolvedValue({ data: review, error: reviewError });
   createAuthenticatedClient.mockResolvedValue({
-    auth: { getUser: jest.fn().mockResolvedValue({ data: { user }, error: authError }) },
-    from: jest.fn(() => ({ select: jest.fn(() => ({ eq: jest.fn(() => ({ single })) })) })),
+    auth: {
+      getUser: jest
+        .fn()
+        .mockResolvedValue({ data: { user }, error: authError }),
+    },
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({ eq: jest.fn(() => ({ single })) })),
+    })),
   });
 }
 
@@ -27,7 +40,10 @@ describe("GET /api/approvedReviews/[id]", () => {
   });
 
   it("404 when the review does not exist", async () => {
-    mockClient({ review: null, reviewError: { code: "PGRST116", message: "no rows" } });
+    mockClient({
+      review: null,
+      reviewError: { code: "PGRST116", message: "no rows" },
+    });
     expect((await GET({}, params)).status).toBe(404);
   });
 

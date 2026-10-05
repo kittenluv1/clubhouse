@@ -12,7 +12,9 @@ async function readPreferences(req) {
 // Whether the user has started/completed onboarding. Used by the onboarding
 // page to block re-entry.
 export const GET = withUser(async (_req, { supabase, user }) => {
-  const status = await createProfilesRepository(supabase).getOnboardingStatus(user.id);
+  const status = await createProfilesRepository(supabase).getOnboardingStatus(
+    user.id,
+  );
   return Response.json(status);
 });
 
@@ -23,7 +25,9 @@ export const POST = withUser(async (req, { supabase, user }) => {
   const preferences = await readPreferences(req);
   const profiles = createProfilesRepository(supabase);
 
-  await profiles.updatePreferences(user.id, preferences, { completeOnboarding: true });
+  await profiles.updatePreferences(user.id, preferences, {
+    completeOnboarding: true,
+  });
   // Skipping the interests step leaves any existing interests alone.
   if (preferences.interests.length > 0) {
     await profiles.replaceInterests(user.id, preferences.interests);

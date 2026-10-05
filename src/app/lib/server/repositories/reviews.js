@@ -26,25 +26,41 @@ const NOT_FOUND_CODES = new Set(["PGRST116", "22P02"]);
  */
 export function createReviewsRepository(supabase) {
   async function findById(table, id, columns = "*") {
-    const { data, error } = await supabase.from(table).select(columns).eq("id", id).single();
-    if (NOT_FOUND_CODES.has(error?.code) || (!error && !data)) throw new HttpError(404, "Review not found");
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .eq("id", id)
+      .single();
+    if (NOT_FOUND_CODES.has(error?.code) || (!error && !data))
+      throw new HttpError(404, "Review not found");
     if (error) throw error;
     return data;
   }
 
   /** Insert `row` into `toTable`, then delete `id` from `fromTable`. */
   async function move(fromTable, toTable, id, row, deleteFilters = {}) {
-    const { data: inserted, error: insertError } = await supabase.from(toTable).insert(row).select("id").single();
+    const { data: inserted, error: insertError } = await supabase
+      .from(toTable)
+      .insert(row)
+      .select("id")
+      .single();
     if (insertError) throw insertError;
 
     let remove = supabase.from(fromTable).delete().eq("id", id);
-    for (const [column, value] of Object.entries(deleteFilters)) remove = remove.eq(column, value);
+    for (const [column, value] of Object.entries(deleteFilters))
+      remove = remove.eq(column, value);
     const { error: deleteError } = await remove;
 
     if (deleteError) {
-      const { error: rollbackError } = await supabase.from(toTable).delete().eq("id", inserted.id);
+      const { error: rollbackError } = await supabase
+        .from(toTable)
+        .delete()
+        .eq("id", inserted.id);
       if (rollbackError) {
-        console.error(`Rollback failed: review ${inserted.id} is now in both ${fromTable} and ${toTable}`, rollbackError);
+        console.error(
+          `Rollback failed: review ${inserted.id} is now in both ${fromTable} and ${toTable}`,
+          rollbackError,
+        );
       }
       throw deleteError;
     }
@@ -71,7 +87,12 @@ export function createReviewsRepository(supabase) {
     async submit(user, input, alias) {
       const { data, error } = await supabase
         .from(REVIEW_TABLES.pending)
-        .insert({ ...input, user_id: user.id, user_email: user.email, user_alias: alias })
+        .insert({
+          ...input,
+          user_id: user.id,
+          user_email: user.email,
+          user_alias: alias,
+        })
         .select()
         .single();
       if (error) throw error;
@@ -88,8 +109,15 @@ export function createReviewsRepository(supabase) {
      */
     async resubmit(status, id, user, input) {
       const existing = await this.getOwned(status, id, user.id);
-      const row = { ...input, user_id: user.id, user_email: user.email, user_alias: existing.user_alias };
-      await move(REVIEW_TABLES[status], REVIEW_TABLES.pending, id, row, { user_id: user.id });
+      const row = {
+        ...input,
+        user_id: user.id,
+        user_email: user.email,
+        user_alias: existing.user_alias,
+      };
+      await move(REVIEW_TABLES[status], REVIEW_TABLES.pending, id, row, {
+        user_id: user.id,
+      });
     },
 
     /**
@@ -99,7 +127,11 @@ export function createReviewsRepository(supabase) {
      */
     async deleteOwned(status, id, userId) {
       await this.getOwned(status, id, userId);
-      const { error } = await supabase.from(REVIEW_TABLES[status]).delete().eq("id", id).eq("user_id", userId);
+      const { error } = await supabase
+        .from(REVIEW_TABLES[status])
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId);
       if (error) throw error;
     },
 
@@ -109,7 +141,10 @@ export function createReviewsRepository(supabase) {
      */
     async listForUser(userId) {
       const list = async (table) => {
-        const { data, error } = await supabase.from(table).select("*").eq("user_id", userId);
+        const { data, error } = await supabase
+          .from(table)
+          .select("*")
+          .eq("user_id", userId);
         if (error) throw error;
         return data ?? [];
       };
@@ -178,9 +213,15 @@ const REVIEW_COLUMNS = [
 
 function toPublicReview(row, viewerId) {
   const review = Object.fromEntries(
-    PUBLIC_REVIEW_FIELDS.filter((field) => field in row).map((field) => [field, row[field]]),
+    PUBLIC_REVIEW_FIELDS.filter((field) => field in row).map((field) => [
+      field,
+      row[field],
+    ]),
   );
-  return { ...review, is_own_review: viewerId != null && row.user_id === viewerId };
+  return {
+    ...review,
+    is_own_review: viewerId != null && row.user_id === viewerId,
+  };
 }
 
 /**

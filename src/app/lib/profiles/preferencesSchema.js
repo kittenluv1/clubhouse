@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-const names = (maxItems) => z.array(z.string().trim().min(1).max(200)).max(maxItems).default([]);
+const names = (maxItems) =>
+  z.array(z.string().trim().min(1).max(200)).max(maxItems).default([]);
 
 // Body sent by onboarding and the profile preferences editor. broadCategories
 // is sent too but not stored; subcategories are the user's interests.
@@ -22,7 +23,9 @@ const preferencesSchema = z.object({
 export function parsePreferences(input) {
   const result = preferencesSchema.safeParse(input ?? {});
   if (!result.success) {
-    const error = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ");
+    const error = result.error.issues
+      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+      .join("; ");
     return { success: false, error };
   }
   const { subcategories, ...rest } = result.data;

@@ -52,8 +52,7 @@ const Page = () => {
         return;
       }
 
-      const res = await fetch(`/api/pendingReviews?sort=${sortType}`, {
-      });
+      const res = await fetch(`/api/pendingReviews?sort=${sortType}`);
       if (!res.ok) throw new Error("Failed to load");
 
       const { pendingReviews } = await res.json();

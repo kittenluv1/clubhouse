@@ -7,7 +7,10 @@ import { createUserToggleRepository } from "@/app/lib/server/repositories/userTo
 import { HttpError, readJson, withUser } from "@/app/lib/server/route";
 
 // Club ids are numeric for regular clubs and strings for club sports.
-const targetId = z.union([z.number().int().positive(), z.string().trim().min(1).max(64)]);
+const targetId = z.union([
+  z.number().int().positive(),
+  z.string().trim().min(1).max(64),
+]);
 
 /**
  * @param {object} options
@@ -29,17 +32,27 @@ export function userToggleHandlers({ toggle, resultKey, events, messages }) {
   }
 
   function track(userId, event, id) {
-    getPostHogClient()?.capture({ distinctId: userId, event, properties: { [toggle.target]: id } });
+    getPostHogClient()?.capture({
+      distinctId: userId,
+      event,
+      properties: { [toggle.target]: id },
+    });
   }
 
   return {
     POST: withUser(async (req, { supabase, user }) => {
       const id = await readTarget(req);
-      const { created, row } = await createUserToggleRepository(supabase, toggle).add(user.id, id);
+      const { created, row } = await createUserToggleRepository(
+        supabase,
+        toggle,
+      ).add(user.id, id);
       if (!created) return Response.json({ message: messages.already });
 
       track(user.id, events.on, id);
-      return Response.json({ message: messages.on, [resultKey]: row }, { status: 201 });
+      return Response.json(
+        { message: messages.on, [resultKey]: row },
+        { status: 201 },
+      );
     }),
 
     DELETE: withUser(async (req, { supabase, user }) => {

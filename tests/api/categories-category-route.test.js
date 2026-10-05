@@ -2,7 +2,11 @@
  * @jest-environment node
  */
 import { GET } from "@/app/api/categories/[category]/route";
-import { createSupabaseMock, findCall, makeRequest } from "../helpers/supabaseMock";
+import {
+  createSupabaseMock,
+  findCall,
+  makeRequest,
+} from "../helpers/supabaseMock";
 
 let db;
 jest.mock("@/app/lib/server-db", () => ({
@@ -16,7 +20,8 @@ const clubs = [{ OrganizationID: 1, OrganizationName: "Chess Club" }];
 
 beforeEach(() => {
   db = createSupabaseMock({
-    respond: ({ table }) => (table === "clubs" ? { data: clubs, count: 1 } : { data: [] }),
+    respond: ({ table }) =>
+      table === "clubs" ? { data: clubs, count: 1 } : { data: [] },
   });
 });
 

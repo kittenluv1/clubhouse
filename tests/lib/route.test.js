@@ -1,7 +1,12 @@
 /**
  * @jest-environment node
  */
-import { HttpError, readJson, withAdmin, withUser } from "@/app/lib/server/route";
+import {
+  HttpError,
+  readJson,
+  withAdmin,
+  withUser,
+} from "@/app/lib/server/route";
 import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
 let db;
@@ -29,7 +34,9 @@ describe("withUser", () => {
   it("passes the user, client and awaited params to the handler", async () => {
     const handler = jest.fn(async () => Response.json({ ok: true }));
 
-    await withUser(handler)(makeRequest(), { params: Promise.resolve({ id: "5" }) });
+    await withUser(handler)(makeRequest(), {
+      params: Promise.resolve({ id: "5" }),
+    });
 
     expect(handler).toHaveBeenCalledWith(expect.anything(), {
       user: expect.objectContaining({ id: "u1" }),
@@ -80,7 +87,9 @@ describe("withAdmin", () => {
 
 describe("readJson", () => {
   it("rejects a malformed body with a 400 HttpError", async () => {
-    await expect(readJson(makeRequest())).rejects.toMatchObject({ status: 400 });
+    await expect(readJson(makeRequest())).rejects.toMatchObject({
+      status: 400,
+    });
   });
 
   it("returns the parsed body", async () => {

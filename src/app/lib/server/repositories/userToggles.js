@@ -29,7 +29,8 @@ export function createUserToggleRepository(supabase, { table, target }) {
         .from(table)
         .insert([{ [target]: targetId, user_id: userId }])
         .select();
-      if (error?.code === UNIQUE_VIOLATION) return { created: false, row: null };
+      if (error?.code === UNIQUE_VIOLATION)
+        return { created: false, row: null };
       if (error) throw error;
       return { created: true, row: data?.[0] ?? null };
     },
@@ -39,7 +40,11 @@ export function createUserToggleRepository(supabase, { table, target }) {
      * @param {string | number} targetId
      */
     async remove(userId, targetId) {
-      const { error } = await supabase.from(table).delete().eq(target, targetId).eq("user_id", userId);
+      const { error } = await supabase
+        .from(table)
+        .delete()
+        .eq(target, targetId)
+        .eq("user_id", userId);
       if (error) throw error;
     },
 
@@ -53,10 +58,14 @@ export function createUserToggleRepository(supabase, { table, target }) {
       const counts = new Map(targetIds.map((id) => [id, 0]));
       if (targetIds.length === 0) return counts;
 
-      const { data, error } = await supabase.from(table).select(target).in(target, targetIds);
+      const { data, error } = await supabase
+        .from(table)
+        .select(target)
+        .in(target, targetIds);
       if (error) throw error;
 
-      for (const row of data ?? []) counts.set(row[target], (counts.get(row[target]) ?? 0) + 1);
+      for (const row of data ?? [])
+        counts.set(row[target], (counts.get(row[target]) ?? 0) + 1);
       return counts;
     },
 
@@ -69,7 +78,11 @@ export function createUserToggleRepository(supabase, { table, target }) {
     async listMarked(userId, targetIds) {
       if (targetIds.length === 0) return new Set();
 
-      const { data, error } = await supabase.from(table).select(target).eq("user_id", userId).in(target, targetIds);
+      const { data, error } = await supabase
+        .from(table)
+        .select(target)
+        .eq("user_id", userId)
+        .in(target, targetIds);
       if (error) throw error;
 
       return new Set((data ?? []).map((row) => row[target]));

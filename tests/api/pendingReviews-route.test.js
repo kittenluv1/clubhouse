@@ -11,26 +11,34 @@ jest.mock("@/app/lib/server-db", () => ({
 
 const ADMIN = { id: "a1", email: "admin@ucla.edu" };
 const WRITES = ["insert", "update", "delete"];
-const op = (q) => q.calls.find((c) => WRITES.includes(c.method))?.method ?? "select";
+const op = (q) =>
+  q.calls.find((c) => WRITES.includes(c.method))?.method ?? "select";
 
 beforeAll(() => {
   process.env.NEXT_PUBLIC_ADMIN_EMAIL = ADMIN.email;
 });
 
-function setup({ user = ADMIN, pending = [{ id: 1, review_text: "hi" }] } = {}) {
+function setup({
+  user = ADMIN,
+  pending = [{ id: 1, review_text: "hi" }],
+} = {}) {
   db = createSupabaseMock({
     user,
     respond: (query) => {
       if (op(query) !== "select") return { data: { id: 1 } };
       const isSingle = query.calls.some((c) => c.method === "single");
       if (!isSingle) return { data: pending };
-      return pending[0] ? { data: pending[0] } : { data: null, error: { code: "PGRST116" } };
+      return pending[0]
+        ? { data: pending[0] }
+        : { data: null, error: { code: "PGRST116" } };
     },
   });
 }
 
-const get = (sort = "newest") => GET(makeRequest({ url: `http://localhost/api/pendingReviews?sort=${sort}` }));
-const post = (body) => POST(makeRequest({ url: "http://localhost/api/pendingReviews", body }));
+const get = (sort = "newest") =>
+  GET(makeRequest({ url: `http://localhost/api/pendingReviews?sort=${sort}` }));
+const post = (body) =>
+  POST(makeRequest({ url: "http://localhost/api/pendingReviews", body }));
 
 describe("GET /api/pendingReviews", () => {
   it("401 when nobody is signed in", async () => {
@@ -47,7 +55,9 @@ describe("GET /api/pendingReviews", () => {
     setup();
     const res = await get();
     expect(res.status).toBe(200);
-    expect((await res.json()).pendingReviews).toEqual([{ id: 1, review_text: "hi" }]);
+    expect((await res.json()).pendingReviews).toEqual([
+      { id: 1, review_text: "hi" },
+    ]);
   });
 
   it.each([
@@ -88,7 +98,9 @@ describe("POST /api/pendingReviews", () => {
     const res = await post({ reviewID: 1, approve: false });
 
     expect((await res.json()).message).toMatch(/rejected/i);
-    expect(db.queries.find((q) => op(q) === "insert").table).toBe("rejected_reviews");
+    expect(db.queries.find((q) => op(q) === "insert").table).toBe(
+      "rejected_reviews",
+    );
   });
 
   it("404 when the pending review does not exist", async () => {

@@ -16,7 +16,10 @@ jest.mock("@/app/lib/server-db", () => ({
 const chess = { OrganizationID: 1, OrganizationName: "Chess" };
 const dance = { OrganizationID: 2, OrganizationName: "Dance" };
 
-function setup({ user = { id: "u1" }, profile = { id: "u1", last_viewed_rejected_at: "2026-01-02T00:00:00Z" } } = {}) {
+function setup({
+  user = { id: "u1" },
+  profile = { id: "u1", last_viewed_rejected_at: "2026-01-02T00:00:00Z" },
+} = {}) {
   const tables = {
     profiles: { data: profile },
     reviews: { data: [{ id: 1, review_text: "approved" }] },
@@ -31,9 +34,15 @@ function setup({ user = { id: "u1" }, profile = { id: "u1", last_viewed_rejected
     club_saves: { data: [{ club_id: 2, clubs: dance }] },
     user_interests: { data: [{ category: "Games" }] },
   };
-  userDb = createSupabaseMock({ user, respond: ({ table }) => tables[table] ?? { data: [] } });
+  userDb = createSupabaseMock({
+    user,
+    respond: ({ table }) => tables[table] ?? { data: [] },
+  });
   serviceDb = createSupabaseMock({
-    respond: ({ table }) => (table === "club_likes" ? { data: [{ club_id: 1 }, { club_id: 1 }] } : { data: [] }),
+    respond: ({ table }) =>
+      table === "club_likes"
+        ? { data: [{ club_id: 1 }, { club_id: 1 }] }
+        : { data: [] },
   });
 }
 
@@ -75,7 +84,10 @@ describe("GET /api/profile", () => {
 
     const userScoped = userDb.queries.filter((q) => q.table !== "profiles");
     for (const query of userScoped) {
-      expect(query.calls).toContainEqual({ method: "eq", args: ["user_id", "u1"] });
+      expect(query.calls).toContainEqual({
+        method: "eq",
+        args: ["user_id", "u1"],
+      });
     }
   });
 

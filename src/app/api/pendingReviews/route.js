@@ -3,14 +3,19 @@ import { HttpError, readJson, withAdmin } from "@/app/lib/server/route";
 
 export const GET = withAdmin(async (req, { supabase }) => {
   const newestFirst = req.nextUrl.searchParams.get("sort") === "newest";
-  const pendingReviews = await createReviewsRepository(supabase).listPending({ newestFirst });
+  const pendingReviews = await createReviewsRepository(supabase).listPending({
+    newestFirst,
+  });
   return Response.json({ pendingReviews });
 });
 
 export const POST = withAdmin(async (req, { supabase }) => {
   const { reviewID, approve } = await readJson(req);
   if (!reviewID || typeof approve !== "boolean") {
-    throw new HttpError(400, "Invalid request: issue with id or approve boolean");
+    throw new HttpError(
+      400,
+      "Invalid request: issue with id or approve boolean",
+    );
   }
 
   await createReviewsRepository(supabase).moderate(reviewID, approve);

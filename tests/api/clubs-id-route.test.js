@@ -2,7 +2,11 @@
  * @jest-environment node
  */
 import { GET } from "@/app/api/clubs/[id]/route";
-import { createSupabaseMock, findCall, makeRequest } from "../helpers/supabaseMock";
+import {
+  createSupabaseMock,
+  findCall,
+  makeRequest,
+} from "../helpers/supabaseMock";
 
 let serviceDb;
 let userDb;
@@ -15,11 +19,29 @@ jest.mock("@/app/lib/server-db", () => ({
 
 const club = { OrganizationID: 7, OrganizationName: "Chess Club" };
 const reviews = [
-  { id: 1, user_id: "me", user_email: "me@ucla.edu", user_alias: "@WiseOwl", review_text: "great" },
-  { id: 2, user_id: "other", user_email: "other@ucla.edu", user_alias: "@BraveFox", review_text: "ok" },
+  {
+    id: 1,
+    user_id: "me",
+    user_email: "me@ucla.edu",
+    user_alias: "@WiseOwl",
+    review_text: "great",
+  },
+  {
+    id: 2,
+    user_id: "other",
+    user_email: "other@ucla.edu",
+    user_alias: "@BraveFox",
+    review_text: "ok",
+  },
 ];
 
-function setup({ user = null, clubFound = true, clubLikes = [], reviewLikes = [], userData = {} } = {}) {
+function setup({
+  user = null,
+  clubFound = true,
+  clubLikes = [],
+  reviewLikes = [],
+  userData = {},
+} = {}) {
   serviceDb = createSupabaseMock({
     respond: ({ table }) => {
       if (table === "clubs") return { data: clubFound ? [club] : [] };
@@ -29,11 +51,16 @@ function setup({ user = null, clubFound = true, clubLikes = [], reviewLikes = []
       return { data: [] };
     },
   });
-  userDb = createSupabaseMock({ user, respond: ({ table }) => ({ data: userData[table] ?? [] }) });
+  userDb = createSupabaseMock({
+    user,
+    respond: ({ table }) => ({ data: userData[table] ?? [] }),
+  });
 }
 
 const call = (id = club.OrganizationName) =>
-  GET(makeRequest({ url: "http://localhost/api/clubs/x" }), { params: Promise.resolve({ id }) });
+  GET(makeRequest({ url: "http://localhost/api/clubs/x" }), {
+    params: Promise.resolve({ id }),
+  });
 
 describe("GET /api/clubs/[id] reviewer privacy", () => {
   it("never returns reviewer emails or user ids", async () => {
@@ -98,7 +125,10 @@ describe("GET /api/clubs/[id] likes and saves", () => {
 
   it("counts club likes and review likes for visitors", async () => {
     setup({
-      clubLikes: [{ club_id: 7, user_id: "a" }, { club_id: 7, user_id: "b" }],
+      clubLikes: [
+        { club_id: 7, user_id: "a" },
+        { club_id: 7, user_id: "b" },
+      ],
       reviewLikes: [{ review_id: 1 }, { review_id: 1 }, { review_id: 2 }],
     });
     const body = await (await call()).json();
@@ -124,6 +154,10 @@ describe("GET /api/clubs/[id] likes and saves", () => {
     });
     const body = await (await call()).json();
 
-    expect(body).toMatchObject({ currentUserLiked: true, currentUserSaved: true, userLikedReviews: [2] });
+    expect(body).toMatchObject({
+      currentUserLiked: true,
+      currentUserSaved: true,
+      userLikedReviews: [2],
+    });
   });
 });

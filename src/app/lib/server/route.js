@@ -76,6 +76,9 @@ export function withAdmin(handler) {
  */
 export function errorResponse(req, err) {
   if (err instanceof HttpError) return jsonError(err.status, err.message);
-  console.error(`Unhandled error in ${req?.method ?? "?"} ${req?.url ?? ""}:`, err);
+  console.error(
+    `Unhandled error in ${req?.method ?? "?"} ${req?.url ?? ""}:`,
+    err,
+  );
   return jsonError(500, "Internal server error");
 }

@@ -30,7 +30,12 @@ describe("parseReviewInput", () => {
   });
 
   it("drops fields that are not part of a review", () => {
-    const result = parseReviewInput({ ...valid, user_id: "victim", user_alias: "@Admin", id: 1 });
+    const result = parseReviewInput({
+      ...valid,
+      user_id: "victim",
+      user_alias: "@Admin",
+      id: 1,
+    });
     expect(result.data).not.toHaveProperty("user_id");
     expect(result.data).not.toHaveProperty("user_alias");
     expect(result.data).not.toHaveProperty("id");
@@ -56,21 +61,34 @@ describe("parseReviewInput", () => {
   });
 
   it("rejects review text over 5000 characters", () => {
-    expect(errorFor({ ...valid, review_text: "a".repeat(5001) })).toMatch("review_text");
+    expect(errorFor({ ...valid, review_text: "a".repeat(5001) })).toMatch(
+      "review_text",
+    );
   });
 
   it("rejects an unknown quarter", () => {
-    expect(errorFor({ ...valid, membership_start_quarter: "Autumn" })).toMatch("membership_start_quarter");
+    expect(errorFor({ ...valid, membership_start_quarter: "Autumn" })).toMatch(
+      "membership_start_quarter",
+    );
   });
 
   it("rejects a membership that ends before it starts", () => {
     expect(
-      errorFor({ ...valid, membership_start_year: 2025, membership_end_quarter: "Winter", membership_end_year: 2025 }),
+      errorFor({
+        ...valid,
+        membership_start_year: 2025,
+        membership_end_quarter: "Winter",
+        membership_end_year: 2025,
+      }),
     ).toMatch(/end/i);
   });
 
   it("accepts a membership that starts and ends in the same quarter", () => {
-    const sameQuarter = { ...valid, membership_end_quarter: "Fall", membership_end_year: 2024 };
+    const sameQuarter = {
+      ...valid,
+      membership_end_quarter: "Fall",
+      membership_end_year: 2024,
+    };
     expect(parseReviewInput(sameQuarter).success).toBe(true);
   });
 

@@ -23,15 +23,22 @@ describe("ilikeAnyFilter", () => {
 
   it("keeps reserved characters inside the quoted value", () => {
     // Unquoted, the comma would start a second condition that the caller controls.
-    const filter = ilikeAnyFilter(["Category1Name"], ["x%,OrganizationID.gt.0"]);
+    const filter = ilikeAnyFilter(
+      ["Category1Name"],
+      ["x%,OrganizationID.gt.0"],
+    );
     expect(filter).toBe('Category1Name.ilike."%x\\\\%,OrganizationID.gt.0%"');
   });
 
   it("escapes double quotes so a term cannot close the quoted value", () => {
-    expect(ilikeAnyFilter(["Category1Name"], ['a"),or(b'])).toBe('Category1Name.ilike."%a\\"),or(b%"');
+    expect(ilikeAnyFilter(["Category1Name"], ['a"),or(b'])).toBe(
+      'Category1Name.ilike."%a\\"),or(b%"',
+    );
   });
 
   it("skips empty terms", () => {
-    expect(ilikeAnyFilter(["Category1Name"], ["", "  ", "Arts"])).toBe('Category1Name.ilike."%Arts%"');
+    expect(ilikeAnyFilter(["Category1Name"], ["", "  ", "Arts"])).toBe(
+      'Category1Name.ilike."%Arts%"',
+    );
   });
 });

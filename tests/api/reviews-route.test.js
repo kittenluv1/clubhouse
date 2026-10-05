@@ -37,7 +37,8 @@ function setup({ signedIn = true } = {}) {
   });
 }
 
-const post = (body) => POST(makeRequest({ url: "http://localhost/api/reviews", body }));
+const post = (body) =>
+  POST(makeRequest({ url: "http://localhost/api/reviews", body }));
 const insertedRow = () => db.callsTo("insert")[0]?.[0];
 
 describe("POST /api/reviews", () => {
@@ -52,7 +53,9 @@ describe("POST /api/reviews", () => {
     setup();
 
     expect((await post(validReview)).status).toBe(201);
-    const [query] = db.queries.filter((q) => q.calls.some((c) => c.method === "insert"));
+    const [query] = db.queries.filter((q) =>
+      q.calls.some((c) => c.method === "insert"),
+    );
     expect(query.table).toBe("pending_reviews");
   });
 
@@ -62,7 +65,9 @@ describe("POST /api/reviews", () => {
     await post({ ...validReview, user_alias: "@TheRealAdmin" });
 
     const alias = insertedRow().user_alias;
-    const generated = ALIAS_ADJECTIVES.some((a) => ALIAS_NOUNS.some((n) => alias === `@${a}${n}`));
+    const generated = ALIAS_ADJECTIVES.some((a) =>
+      ALIAS_NOUNS.some((n) => alias === `@${a}${n}`),
+    );
     expect(generated).toBe(true);
   });
 
@@ -79,7 +84,9 @@ describe("POST /api/reviews", () => {
   it("400 for a body that is not JSON", async () => {
     setup();
 
-    const res = await POST(makeRequest({ url: "http://localhost/api/reviews" }));
+    const res = await POST(
+      makeRequest({ url: "http://localhost/api/reviews" }),
+    );
 
     expect(res.status).toBe(400);
   });
@@ -87,8 +94,15 @@ describe("POST /api/reviews", () => {
   it("takes the author from the session, not the request body", async () => {
     setup();
 
-    await post({ ...validReview, user_id: "victim", user_email: "victim@ucla.edu" });
+    await post({
+      ...validReview,
+      user_id: "victim",
+      user_email: "victim@ucla.edu",
+    });
 
-    expect(insertedRow()).toMatchObject({ user_id: "u1", user_email: "student@ucla.edu" });
+    expect(insertedRow()).toMatchObject({
+      user_id: "u1",
+      user_email: "student@ucla.edu",
+    });
   });
 });

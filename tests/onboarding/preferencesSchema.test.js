@@ -9,7 +9,10 @@ describe("parsePreferences", () => {
   });
 
   it("reads interests from subcategories and ignores broad categories", () => {
-    const result = parsePreferences({ subcategories: ["Dance"], broadCategories: ["Arts & Media"] });
+    const result = parsePreferences({
+      subcategories: ["Dance"],
+      broadCategories: ["Arts & Media"],
+    });
     expect(result.data.interests).toEqual(["Dance"]);
   });
 

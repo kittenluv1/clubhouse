@@ -5,7 +5,8 @@ import { createProfilesRepository } from "@/app/lib/server/repositories/profiles
 import { createSupabaseMock } from "../helpers/supabaseMock";
 
 const WRITES = ["insert", "update", "delete"];
-const op = (q) => q.calls.find((c) => WRITES.includes(c.method))?.method ?? "select";
+const op = (q) =>
+  q.calls.find((c) => WRITES.includes(c.method))?.method ?? "select";
 
 function setup(respond = () => ({ data: null })) {
   const db = createSupabaseMock({ respond });
@@ -25,7 +26,9 @@ describe("profiles repository", () => {
   it("throws 404 when marking onboarding started for a user with no profile row", async () => {
     const { repo } = setup(() => ({ data: [] }));
 
-    await expect(repo.markOnboardingStarted("u1")).rejects.toMatchObject({ status: 404 });
+    await expect(repo.markOnboardingStarted("u1")).rejects.toMatchObject({
+      status: 404,
+    });
   });
 
   it("marks onboarding started on the user's own row", async () => {
@@ -40,17 +43,31 @@ describe("profiles repository", () => {
   it("updates only the given preference fields", async () => {
     const { db, repo } = setup();
 
-    await repo.updatePreferences("u1", { majors: ["Biology"], minors: [], currentClubs: ["Chess"] });
+    await repo.updatePreferences("u1", {
+      majors: ["Biology"],
+      minors: [],
+      currentClubs: ["Chess"],
+    });
 
-    expect(db.callsTo("update")[0][0]).toEqual({ majors: ["Biology"], minors: [], current_clubs: ["Chess"] });
+    expect(db.callsTo("update")[0][0]).toEqual({
+      majors: ["Biology"],
+      minors: [],
+      current_clubs: ["Chess"],
+    });
   });
 
   it("can complete onboarding while updating preferences", async () => {
     const { db, repo } = setup();
 
-    await repo.updatePreferences("u1", { majors: [], minors: [], currentClubs: [] }, { completeOnboarding: true });
+    await repo.updatePreferences(
+      "u1",
+      { majors: [], minors: [], currentClubs: [] },
+      { completeOnboarding: true },
+    );
 
-    expect(db.callsTo("update")[0][0]).toMatchObject({ onboarding_completed: true });
+    expect(db.callsTo("update")[0][0]).toMatchObject({
+      onboarding_completed: true,
+    });
   });
 
   it("replaces interests: deletes the old rows, then inserts unique new ones", async () => {
@@ -85,6 +102,8 @@ describe("profiles repository", () => {
 
     await repo.markRejectedViewed("u1");
 
-    expect(db.callsTo("update")[0][0]).toEqual({ last_viewed_rejected_at: expect.any(String) });
+    expect(db.callsTo("update")[0][0]).toEqual({
+      last_viewed_rejected_at: expect.any(String),
+    });
   });
 });

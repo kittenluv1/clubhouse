@@ -12,14 +12,18 @@ jest.mock("@/app/lib/server-db", () => ({
 }));
 
 const SECRET = "test-cron-secret";
-const call = (headers) => GET(makeRequest({ url: "http://localhost/api", headers }));
+const call = (headers) =>
+  GET(makeRequest({ url: "http://localhost/api", headers }));
 
 beforeEach(() => {
   process.env.CRON_SECRET = SECRET;
   db = createSupabaseMock({ respond: () => ({ count: 1 }) });
   global.fetch = jest.fn(async () => ({
     ok: true,
-    json: async () => ({ orgList: [{ OrganizationID: 1, OrganizationName: "A" }], clubSportsOrgList: [] }),
+    json: async () => ({
+      orgList: [{ OrganizationID: 1, OrganizationName: "A" }],
+      clubSportsOrgList: [],
+    }),
   }));
 });
 
@@ -78,7 +82,13 @@ describe("GET /api (club sync cron)", () => {
     global.fetch = jest.fn(async () => ({
       ok: true,
       json: async () => ({
-        orgList: [{ OrganizationID: 1, OrganizationName: "A", OrganizationDescription: null }],
+        orgList: [
+          {
+            OrganizationID: 1,
+            OrganizationName: "A",
+            OrganizationDescription: null,
+          },
+        ],
         clubSportsOrgList: [],
       }),
     }));

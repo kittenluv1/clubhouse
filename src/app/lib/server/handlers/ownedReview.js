@@ -9,7 +9,11 @@ import { HttpError, readJson, withUser } from "@/app/lib/server/route";
 export function ownedReviewHandlers(status) {
   return {
     GET: withUser(async (_req, { supabase, user, params }) => {
-      const review = await createReviewsRepository(supabase).getOwned(status, params.id, user.id);
+      const review = await createReviewsRepository(supabase).getOwned(
+        status,
+        params.id,
+        user.id,
+      );
       return Response.json({ review });
     }),
 
@@ -17,12 +21,21 @@ export function ownedReviewHandlers(status) {
       const parsed = parseReviewInput(await readJson(req));
       if (!parsed.success) throw new HttpError(400, parsed.error);
 
-      await createReviewsRepository(supabase).resubmit(status, params.id, user, parsed.data);
+      await createReviewsRepository(supabase).resubmit(
+        status,
+        params.id,
+        user,
+        parsed.data,
+      );
       return Response.json({ message: "Review resubmitted for approval" });
     }),
 
     DELETE: withUser(async (_req, { supabase, user, params }) => {
-      await createReviewsRepository(supabase).deleteOwned(status, params.id, user.id);
+      await createReviewsRepository(supabase).deleteOwned(
+        status,
+        params.id,
+        user.id,
+      );
       return Response.json({ message: "Review deleted" });
     }),
   };

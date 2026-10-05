@@ -4,7 +4,11 @@
 import { GET as listClubs } from "@/app/api/clubs/route";
 import { GET as listCategory } from "@/app/api/categories/[category]/route";
 import { GET as listMulti } from "@/app/api/categories/multi/route";
-import { createSupabaseMock, findCall, makeRequest } from "../helpers/supabaseMock";
+import {
+  createSupabaseMock,
+  findCall,
+  makeRequest,
+} from "../helpers/supabaseMock";
 
 let serviceDb;
 let userDb;
@@ -15,9 +19,19 @@ jest.mock("@/app/lib/server-db", () => ({
   createAuthenticatedClient: jest.fn(async () => userDb),
 }));
 
-const clubs = [{ OrganizationID: 1 }, { OrganizationID: 2 }, { OrganizationID: "V3Q2" }];
+const clubs = [
+  { OrganizationID: 1 },
+  { OrganizationID: 2 },
+  { OrganizationID: "V3Q2" },
+];
 
-function setup({ user = null, likes = [], userLikes = [], userSaves = [], count = 23 } = {}) {
+function setup({
+  user = null,
+  likes = [],
+  userLikes = [],
+  userSaves = [],
+  count = 23,
+} = {}) {
   serviceDb = createSupabaseMock({
     respond: ({ table }) => {
       if (table === "clubs") return { data: clubs, count };
@@ -27,12 +41,15 @@ function setup({ user = null, likes = [], userLikes = [], userSaves = [], count 
   });
   userDb = createSupabaseMock({
     user,
-    respond: ({ table }) => ({ data: table === "club_likes" ? userLikes : userSaves }),
+    respond: ({ table }) => ({
+      data: table === "club_likes" ? userLikes : userSaves,
+    }),
   });
 }
 
 const clubsQuery = () => serviceDb.queries.find((q) => q.table === "clubs");
-const get = (query = "") => listClubs(makeRequest({ url: `http://localhost/api/clubs${query}` }));
+const get = (query = "") =>
+  listClubs(makeRequest({ url: `http://localhost/api/clubs${query}` }));
 
 describe("GET /api/clubs", () => {
   it("returns the requested page and page count", async () => {
@@ -40,23 +57,38 @@ describe("GET /api/clubs", () => {
     const body = await (await get("?page=2")).json();
 
     expect(findCall(clubsQuery(), "range").args).toEqual([10, 19]);
-    expect(body).toMatchObject({ orgList: clubs, currPage: 2, totalNumPages: 3 });
+    expect(body).toMatchObject({
+      orgList: clubs,
+      currPage: 2,
+      totalNumPages: 3,
+    });
   });
 
-  it.each(["abc", "0", "-3"])("treats page=%s as the first page", async (page) => {
-    setup();
-    const body = await (await get(`?page=${page}`)).json();
+  it.each(["abc", "0", "-3"])(
+    "treats page=%s as the first page",
+    async (page) => {
+      setup();
+      const body = await (await get(`?page=${page}`)).json();
 
-    expect(findCall(clubsQuery(), "range").args).toEqual([0, 9]);
-    expect(body.currPage).toBe(1);
-  });
+      expect(findCall(clubsQuery(), "range").args).toEqual([0, 9]);
+      expect(body.currPage).toBe(1);
+    },
+  );
 
   it("orders by the requested sort, then by id", async () => {
     setup();
     await get("?sort=likes");
 
-    const orders = clubsQuery().calls.filter((c) => c.method === "order").map((c) => c.args[0]);
-    expect(orders).toEqual(["like_count", "average_satisfaction", "total_num_reviews", "OrganizationName", "OrganizationID"]);
+    const orders = clubsQuery()
+      .calls.filter((c) => c.method === "order")
+      .map((c) => c.args[0]);
+    expect(orders).toEqual([
+      "like_count",
+      "average_satisfaction",
+      "total_num_reviews",
+      "OrganizationName",
+      "OrganizationID",
+    ]);
   });
 
   it("falls back to rating order for an unknown sort", async () => {
@@ -64,14 +96,20 @@ describe("GET /api/clubs", () => {
     await get("?sort=bogus");
 
     const firstOrder = findCall(clubsQuery(), "order").args;
-    expect(firstOrder).toEqual(["average_satisfaction", { ascending: false, nullsFirst: false }]);
+    expect(firstOrder).toEqual([
+      "average_satisfaction",
+      { ascending: false, nullsFirst: false },
+    ]);
   });
 
   it("filters by name when one is given", async () => {
     setup();
     await get("?name=chess");
 
-    expect(findCall(clubsQuery(), "ilike").args).toEqual(["OrganizationName", "%chess%"]);
+    expect(findCall(clubsQuery(), "ilike").args).toEqual([
+      "OrganizationName",
+      "%chess%",
+    ]);
   });
 
   it("counts likes per club for signed-out visitors", async () => {
@@ -103,9 +141,12 @@ describe("GET /api/clubs", () => {
 describe("category list routes share the club list behaviour", () => {
   it("/api/categories/[category] paginates and counts likes like /api/clubs", async () => {
     setup({ likes: [{ club_id: 2 }] });
-    const res = await listCategory(makeRequest({ url: "http://localhost/api/categories/Arts?page=3" }), {
-      params: Promise.resolve({ category: "Arts" }),
-    });
+    const res = await listCategory(
+      makeRequest({ url: "http://localhost/api/categories/Arts?page=3" }),
+      {
+        params: Promise.resolve({ category: "Arts" }),
+      },
+    );
     const body = await res.json();
 
     expect(findCall(clubsQuery(), "range").args).toEqual([20, 29]);
@@ -114,7 +155,11 @@ describe("category list routes share the club list behaviour", () => {
 
   it("/api/categories/multi paginates and counts likes like /api/clubs", async () => {
     setup({ likes: [{ club_id: 1 }] });
-    const res = await listMulti(makeRequest({ url: "http://localhost/api/categories/multi?list=Arts&page=2" }));
+    const res = await listMulti(
+      makeRequest({
+        url: "http://localhost/api/categories/multi?list=Arts&page=2",
+      }),
+    );
     const body = await res.json();
 
     expect(findCall(clubsQuery(), "range").args).toEqual([10, 19]);

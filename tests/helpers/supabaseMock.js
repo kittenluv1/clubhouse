@@ -13,7 +13,11 @@
  *   db.queries        // [{ table, calls: [{ method, args }] }, ...]
  *   db.callsTo("or")  // args of every `.or(...)` call across queries
  */
-export function createSupabaseMock({ user = null, authError = null, respond = () => ({ data: null, error: null }) } = {}) {
+export function createSupabaseMock({
+  user = null,
+  authError = null,
+  respond = () => ({ data: null, error: null }),
+} = {}) {
   const queries = [];
 
   function from(table) {
@@ -26,7 +30,8 @@ export function createSupabaseMock({ user = null, authError = null, respond = ()
         get(_target, prop) {
           if (prop === "then") {
             const result = { data: null, error: null, ...respond(query) };
-            return (resolve, reject) => Promise.resolve(result).then(resolve, reject);
+            return (resolve, reject) =>
+              Promise.resolve(result).then(resolve, reject);
           }
           return (...args) => {
             query.calls.push({ method: prop, args });
@@ -45,7 +50,9 @@ export function createSupabaseMock({ user = null, authError = null, respond = ()
     from: jest.fn(from),
     queries,
     callsTo(method) {
-      return queries.flatMap((q) => q.calls.filter((c) => c.method === method).map((c) => c.args));
+      return queries.flatMap((q) =>
+        q.calls.filter((c) => c.method === method).map((c) => c.args),
+      );
     },
   };
 }
@@ -56,14 +63,19 @@ export function findCall(query, method) {
 }
 
 /** Build a minimal NextRequest-like object for route handler tests. */
-export function makeRequest({ url = "http://localhost/api", body, headers = {} } = {}) {
+export function makeRequest({
+  url = "http://localhost/api",
+  body,
+  headers = {},
+} = {}) {
   const parsed = new URL(url);
   return {
     url,
     nextUrl: parsed,
     headers: new Headers(headers),
     json: async () => {
-      if (body === undefined) throw new SyntaxError("Unexpected end of JSON input");
+      if (body === undefined)
+        throw new SyntaxError("Unexpected end of JSON input");
       return body;
     },
   };

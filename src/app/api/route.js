@@ -19,7 +19,11 @@ export async function GET(req) {
     const repo = createClubsRepository(supabaseServer);
     for (const club of clubs) await repo.saveClub(club);
 
-    return Response.json({ totalClubs: clubs.length, regularClubs: regularCount, clubSports: sportsCount });
+    return Response.json({
+      totalClubs: clubs.length,
+      regularClubs: regularCount,
+      clubSports: sportsCount,
+    });
   } catch (err) {
     return errorResponse(req, err);
   }

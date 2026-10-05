@@ -1,7 +1,10 @@
 /**
  * @jest-environment node
  */
-import { createUserToggleRepository, USER_TOGGLES } from "@/app/lib/server/repositories/userToggles";
+import {
+  createUserToggleRepository,
+  USER_TOGGLES,
+} from "@/app/lib/server/repositories/userToggles";
 import { createSupabaseMock } from "../helpers/supabaseMock";
 
 const setup = (result) => {
@@ -13,19 +16,33 @@ describe("user toggle repository", () => {
   it("adds a row for the user and target", async () => {
     const { db, repo } = setup({ data: [{ id: 1 }] });
 
-    await expect(repo.add("u1", 42)).resolves.toEqual({ created: true, row: { id: 1 } });
+    await expect(repo.add("u1", 42)).resolves.toEqual({
+      created: true,
+      row: { id: 1 },
+    });
     expect(db.queries[0].table).toBe("review_likes");
-    expect(db.callsTo("insert")[0][0]).toEqual([{ review_id: 42, user_id: "u1" }]);
+    expect(db.callsTo("insert")[0][0]).toEqual([
+      { review_id: 42, user_id: "u1" },
+    ]);
   });
 
   it("treats a unique violation as already added", async () => {
-    const { repo } = setup({ data: null, error: { code: "23505", message: "anything" } });
+    const { repo } = setup({
+      data: null,
+      error: { code: "23505", message: "anything" },
+    });
 
-    await expect(repo.add("u1", 42)).resolves.toEqual({ created: false, row: null });
+    await expect(repo.add("u1", 42)).resolves.toEqual({
+      created: false,
+      row: null,
+    });
   });
 
   it("throws other insert errors", async () => {
-    const { repo } = setup({ data: null, error: { code: "23503", message: "fk violation" } });
+    const { repo } = setup({
+      data: null,
+      error: { code: "23503", message: "fk violation" },
+    });
 
     await expect(repo.add("u1", 42)).rejects.toMatchObject({ code: "23503" });
   });
@@ -36,11 +53,18 @@ describe("user toggle repository", () => {
     await repo.remove("u1", 42);
 
     const filters = db.callsTo("eq");
-    expect(filters).toEqual(expect.arrayContaining([["review_id", 42], ["user_id", "u1"]]));
+    expect(filters).toEqual(
+      expect.arrayContaining([
+        ["review_id", 42],
+        ["user_id", "u1"],
+      ]),
+    );
   });
 
   it("counts rows per target, including targets with none", async () => {
-    const { repo } = setup({ data: [{ review_id: 1 }, { review_id: 1 }, { review_id: 3 }] });
+    const { repo } = setup({
+      data: [{ review_id: 1 }, { review_id: 1 }, { review_id: 3 }],
+    });
 
     const counts = await repo.countByTarget([1, 2, 3]);
 

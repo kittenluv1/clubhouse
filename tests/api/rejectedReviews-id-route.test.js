@@ -11,18 +11,24 @@ jest.mock("@/app/lib/server-db", () => ({
 
 const params = { params: Promise.resolve({ id: "10" }) };
 
-function setup({ user = { id: "u1" }, review = { id: 10, user_id: "u1" } } = {}) {
+function setup({
+  user = { id: "u1" },
+  review = { id: 10, user_id: "u1" },
+} = {}) {
   db = createSupabaseMock({
     user,
     respond: ({ calls }) => {
       const isDelete = calls.some((c) => c.method === "delete");
       if (isDelete) return { error: null };
-      return review ? { data: review } : { data: null, error: { code: "PGRST116", message: "no rows" } };
+      return review
+        ? { data: review }
+        : { data: null, error: { code: "PGRST116", message: "no rows" } };
     },
   });
 }
 
-const deleteQueries = () => db.queries.filter((q) => q.calls.some((c) => c.method === "delete"));
+const deleteQueries = () =>
+  db.queries.filter((q) => q.calls.some((c) => c.method === "delete"));
 
 describe("DELETE /api/rejectedReviews/[id]", () => {
   it("401 when unauthenticated, without deleting anything", async () => {
@@ -52,8 +58,15 @@ describe("DELETE /api/rejectedReviews/[id]", () => {
     expect((await DELETE(makeRequest(), params)).status).toBe(200);
     const [query] = deleteQueries();
     expect(query.table).toBe("rejected_reviews");
-    const filters = query.calls.filter((c) => c.method === "eq").map((c) => c.args);
-    expect(filters).toEqual(expect.arrayContaining([["id", "10"], ["user_id", "u1"]]));
+    const filters = query.calls
+      .filter((c) => c.method === "eq")
+      .map((c) => c.args);
+    expect(filters).toEqual(
+      expect.arrayContaining([
+        ["id", "10"],
+        ["user_id", "u1"],
+      ]),
+    );
   });
 });
 
@@ -97,6 +110,9 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     const res = await post({ ...edit, user_alias: "@Other" });
 
     expect(res.status).toBe(200);
-    expect(db.callsTo("insert")[0][0]).toMatchObject({ is_current_member: true, user_alias: "@WiseOwl" });
+    expect(db.callsTo("insert")[0][0]).toMatchObject({
+      is_current_member: true,
+      user_alias: "@WiseOwl",
+    });
   });
 });

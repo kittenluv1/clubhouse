@@ -2,7 +2,11 @@
  * @jest-environment node
  */
 import { GET } from "@/app/api/categories/multi/route";
-import { createSupabaseMock, findCall, makeRequest } from "../helpers/supabaseMock";
+import {
+  createSupabaseMock,
+  findCall,
+  makeRequest,
+} from "../helpers/supabaseMock";
 
 let db;
 jest.mock("@/app/lib/server-db", () => ({
@@ -14,12 +18,17 @@ jest.mock("@/app/lib/server-db", () => ({
 
 beforeEach(() => {
   db = createSupabaseMock({
-    respond: ({ table }) => (table === "clubs" ? { data: [], count: 0 } : { data: [] }),
+    respond: ({ table }) =>
+      table === "clubs" ? { data: [], count: 0 } : { data: [] },
   });
 });
 
 const call = (list) =>
-  GET(makeRequest({ url: `http://localhost/api/categories/multi?list=${encodeURIComponent(list)}` }));
+  GET(
+    makeRequest({
+      url: `http://localhost/api/categories/multi?list=${encodeURIComponent(list)}`,
+    }),
+  );
 
 describe("GET /api/categories/multi", () => {
   it("matches clubs in any of the listed categories", async () => {
@@ -36,7 +45,9 @@ describe("GET /api/categories/multi", () => {
     await call("Arts.gt.(0)");
 
     const [filter] = findCall(db.queries[0], "or").args;
-    expect(filter).toBe('Category1Name.ilike."%Arts.gt.(0)%",Category2Name.ilike."%Arts.gt.(0)%"');
+    expect(filter).toBe(
+      'Category1Name.ilike."%Arts.gt.(0)%",Category2Name.ilike."%Arts.gt.(0)%"',
+    );
   });
 
   it("accepts a literal % in a category (query params arrive decoded)", async () => {
@@ -48,7 +59,9 @@ describe("GET /api/categories/multi", () => {
   });
 
   it("returns an empty page without querying when no list is given", async () => {
-    const res = await GET(makeRequest({ url: "http://localhost/api/categories/multi" }));
+    const res = await GET(
+      makeRequest({ url: "http://localhost/api/categories/multi" }),
+    );
     expect((await res.json()).orgList).toEqual([]);
     expect(db.queries).toHaveLength(0);
   });

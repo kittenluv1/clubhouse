@@ -7,7 +7,10 @@ import { HttpError } from "@/app/lib/server/errors";
  */
 export function createProfilesRepository(supabase) {
   async function update(userId, fields) {
-    const { error } = await supabase.from("profiles").update(fields).eq("id", userId);
+    const { error } = await supabase
+      .from("profiles")
+      .update(fields)
+      .eq("id", userId);
     if (error) throw error;
   }
 
@@ -18,7 +21,11 @@ export function createProfilesRepository(supabase) {
      * @returns {Promise<Record<string, any> | null>} null when the user has no profile row
      */
     async getProfile(userId, columns = "*") {
-      const { data, error } = await supabase.from("profiles").select(columns).eq("id", userId).maybeSingle();
+      const { data, error } = await supabase
+        .from("profiles")
+        .select(columns)
+        .eq("id", userId)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -53,7 +60,11 @@ export function createProfilesRepository(supabase) {
      * @param {{ majors: string[], minors: string[], currentClubs: string[] }} preferences
      * @param {{ completeOnboarding?: boolean }} [options]
      */
-    async updatePreferences(userId, { majors, minors, currentClubs }, { completeOnboarding = false } = {}) {
+    async updatePreferences(
+      userId,
+      { majors, minors, currentClubs },
+      { completeOnboarding = false } = {},
+    ) {
       await update(userId, {
         ...(completeOnboarding && { onboarding_completed: true }),
         majors,
@@ -69,7 +80,10 @@ export function createProfilesRepository(supabase) {
      * @param {string[]} interests
      */
     async replaceInterests(userId, interests) {
-      const { error: deleteError } = await supabase.from("user_interests").delete().eq("user_id", userId);
+      const { error: deleteError } = await supabase
+        .from("user_interests")
+        .delete()
+        .eq("user_id", userId);
       if (deleteError) throw deleteError;
 
       const unique = [...new Set(interests)];
@@ -83,14 +97,19 @@ export function createProfilesRepository(supabase) {
 
     /** @param {string} userId */
     async listInterests(userId) {
-      const { data, error } = await supabase.from("user_interests").select("category").eq("user_id", userId);
+      const { data, error } = await supabase
+        .from("user_interests")
+        .select("category")
+        .eq("user_id", userId);
       if (error) throw error;
       return (data ?? []).map((row) => row.category);
     },
 
     /** @param {string} userId */
     async markRejectedViewed(userId) {
-      await update(userId, { last_viewed_rejected_at: new Date().toISOString() });
+      await update(userId, {
+        last_viewed_rejected_at: new Date().toISOString(),
+      });
     },
   };
 }

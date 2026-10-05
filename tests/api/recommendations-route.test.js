@@ -13,7 +13,11 @@ jest.mock("@/app/lib/server-db", () => ({
   createAuthenticatedClient: jest.fn(async () => userDb),
 }));
 
-const club = (id, name, category) => ({ OrganizationID: id, OrganizationName: name, Category1Name: category });
+const club = (id, name, category) => ({
+  OrganizationID: id,
+  OrganizationName: name,
+  Category1Name: category,
+});
 const allClubs = [
   club(1, "Chess", "Games"),
   club(2, "Go", "Games"),
@@ -22,18 +26,29 @@ const allClubs = [
   ...Array.from({ length: 30 }, (_, i) => club(100 + i, `Club ${i}`, "Misc")),
 ];
 
-function setup({ user = { id: "u1" }, profile = { majors: ["Computer Science"], minors: [], current_clubs: ["dance "] } } = {}) {
+function setup({
+  user = { id: "u1" },
+  profile = {
+    majors: ["Computer Science"],
+    minors: [],
+    current_clubs: ["dance "],
+  },
+} = {}) {
   const tables = {
     profiles: { data: profile },
     user_interests: { data: [{ category: "Games" }] },
     club_likes: { data: [{ club_id: 1, clubs: allClubs[0] }] },
     club_saves: { data: [{ club_id: 2, clubs: allClubs[1] }] },
   };
-  userDb = createSupabaseMock({ user, respond: ({ table }) => tables[table] ?? { data: [] } });
+  userDb = createSupabaseMock({
+    user,
+    respond: ({ table }) => tables[table] ?? { data: [] },
+  });
   serviceDb = createSupabaseMock({ respond: () => ({ data: allClubs }) });
 }
 
-const get = (query = "") => GET(makeRequest({ url: `http://localhost/api/recommendations${query}` }));
+const get = (query = "") =>
+  GET(makeRequest({ url: `http://localhost/api/recommendations${query}` }));
 const ids = (body) => body.recommendations.map((c) => c.OrganizationID);
 
 describe("GET /api/recommendations", () => {
@@ -56,13 +71,18 @@ describe("GET /api/recommendations", () => {
     setup();
     const [first] = (await (await get("?limit=1")).json()).recommendations;
 
-    expect(first).toEqual(expect.objectContaining({ recommendation_score: expect.any(Number) }));
+    expect(first).toEqual(
+      expect.objectContaining({ recommendation_score: expect.any(Number) }),
+    );
     expect(first).toHaveProperty("recommendation_breakdown");
   });
 
   it("reports whether the profile has enough data", async () => {
     setup({ profile: { majors: [], minors: [], current_clubs: [] } });
-    userDb = createSupabaseMock({ user: { id: "u1" }, respond: () => ({ data: [] }) });
+    userDb = createSupabaseMock({
+      user: { id: "u1" },
+      respond: () => ({ data: [] }),
+    });
 
     expect((await (await get()).json()).profileComplete).toBe(false);
   });

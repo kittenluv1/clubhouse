@@ -14,5 +14,7 @@ function parseUtc(timestamp) {
 export function countUnreadRejected(rejectedReviews, lastViewedAt) {
   if (!lastViewedAt) return rejectedReviews.length;
   const lastViewed = parseUtc(lastViewedAt);
-  return rejectedReviews.filter((review) => !review.updated_at || parseUtc(review.updated_at) > lastViewed).length;
+  return rejectedReviews.filter(
+    (review) => !review.updated_at || parseUtc(review.updated_at) > lastViewed,
+  ).length;
 }

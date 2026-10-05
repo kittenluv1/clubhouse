@@ -40,6 +40,9 @@ describe("mapClubSport", () => {
 
 describe("sanitizeClub", () => {
   it("drops null fields and strips NUL characters from strings", () => {
-    expect(sanitizeClub({ a: "x\u0000y", b: null, c: 3 })).toEqual({ a: "xy", c: 3 });
+    expect(sanitizeClub({ a: "x\u0000y", b: null, c: 3 })).toEqual({
+      a: "xy",
+      c: 3,
+    });
   });
 });

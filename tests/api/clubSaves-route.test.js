@@ -60,7 +60,10 @@ describe("POST /api/clubSaves", () => {
     authed();
     mockChain.select.mockResolvedValue({
       data: null,
-      error: { code: "23505", message: "duplicate key value violates unique constraint" },
+      error: {
+        code: "23505",
+        message: "duplicate key value violates unique constraint",
+      },
     });
     const res = await POST(req({ club_id: 5 }));
     expect(res.status).toBe(200);

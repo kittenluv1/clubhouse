@@ -20,7 +20,8 @@ const year = z
   .min(MIN_YEAR)
   .refine((y) => y <= new Date().getFullYear() + 1, "is too far in the future");
 
-const quarterIndex = (quarter, yr) => yr * QUARTERS.length + QUARTERS.indexOf(quarter);
+const quarterIndex = (quarter, yr) =>
+  yr * QUARTERS.length + QUARTERS.indexOf(quarter);
 
 // z.object strips unknown keys, so identity fields such as user_id or
 // user_alias in a request body never reach the database.
@@ -44,7 +45,10 @@ const reviewInputSchema = z
     (r) =>
       quarterIndex(r.membership_end_quarter, r.membership_end_year) >=
       quarterIndex(r.membership_start_quarter, r.membership_start_year),
-    { message: "membership end must not be before its start", path: ["membership_end_year"] },
+    {
+      message: "membership end must not be before its start",
+      path: ["membership_end_year"],
+    },
   );
 
 /**
@@ -59,6 +63,8 @@ const reviewInputSchema = z
 export function parseReviewInput(input) {
   const result = reviewInputSchema.safeParse(input);
   if (result.success) return { success: true, data: result.data };
-  const error = result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`).join("; ");
+  const error = result.error.issues
+    .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+    .join("; ");
   return { success: false, error };
 }
