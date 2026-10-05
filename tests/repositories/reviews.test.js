@@ -19,7 +19,6 @@ const input = {
   social_community_rating: 5,
   competitiveness_rating: 2,
   overall_satisfaction: 4,
-  is_current_member: true,
 };
 
 const WRITE_METHODS = ["insert", "update", "delete"];

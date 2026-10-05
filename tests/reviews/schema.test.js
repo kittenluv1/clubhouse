@@ -41,9 +41,10 @@ describe("parseReviewInput", () => {
     expect(result.data).not.toHaveProperty("id");
   });
 
-  it("defaults is_current_member to false", () => {
-    const { is_current_member, ...rest } = valid;
-    expect(parseReviewInput(rest).data.is_current_member).toBe(false);
+  it("drops is_current_member, which the review tables do not store", () => {
+    expect(parseReviewInput(valid).data).not.toHaveProperty(
+      "is_current_member",
+    );
   });
 
   it.each([

@@ -24,7 +24,8 @@ const quarterIndex = (quarter, yr) =>
   yr * QUARTERS.length + QUARTERS.indexOf(quarter);
 
 // z.object strips unknown keys, so identity fields such as user_id or
-// user_alias in a request body never reach the database.
+// user_alias in a request body never reach the database. The form also sends
+// is_current_member (used for analytics only); no review table stores it.
 const reviewInputSchema = z
   .object({
     club_id: z.number().int().positive(),
@@ -39,7 +40,6 @@ const reviewInputSchema = z
     social_community_rating: rating(1),
     competitiveness_rating: rating(1),
     overall_satisfaction: rating(0.5),
-    is_current_member: z.boolean().default(false),
   })
   .refine(
     (r) =>

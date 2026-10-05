@@ -135,7 +135,6 @@ export default function EditReviewPage() {
           setCompetitiveness(review.competitiveness_rating);
           setOverallSatisfaction(review.overall_satisfaction);
           setReviewText(review.review_text);
-          setIsMember(Boolean(review.is_current_member));
           setReviewAuthorId(review.user_id);
         } else if (isActiveReview) {
           console.error("Error fetching rejected review:", result.error);
@@ -257,7 +256,6 @@ export default function EditReviewPage() {
         overall_satisfaction: overallSatisfaction,
         review_text: reviewText,
         club_name: selectedClub,
-        is_current_member: isMember,
       };
 
       const apiBase =

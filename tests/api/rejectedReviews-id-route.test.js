@@ -106,13 +106,12 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     expect(db.callsTo("insert")).toHaveLength(0);
   });
 
-  it("queues the edit with the member flag and original alias", async () => {
+  it("queues the edit under the original alias", async () => {
     const res = await post({ ...edit, user_alias: "@Other" });
 
     expect(res.status).toBe(200);
-    expect(db.callsTo("insert")[0][0]).toMatchObject({
-      is_current_member: true,
-      user_alias: "@WiseOwl",
-    });
+    const row = db.callsTo("insert")[0][0];
+    expect(row.user_alias).toBe("@WiseOwl");
+    expect(row).not.toHaveProperty("is_current_member");
   });
 });

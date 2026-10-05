@@ -245,7 +245,6 @@ export default function ReviewPage() {
           social_community_rating: socialCommunity,
           competitiveness_rating: competitiveness,
           overall_satisfaction: overallSatisfaction,
-          is_current_member: isMember,
         }),
       });
       const { review, error: apiError } = await response.json();

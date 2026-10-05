@@ -183,9 +183,9 @@ export function createReviewsRepository(supabase) {
   };
 }
 
-// Reviews are anonymous: only these fields ever leave the server. user_id is
-// read separately to flag the viewer's own reviews and is never returned.
-const PUBLIC_REVIEW_FIELDS = [
+// Columns of the reviews, pending_reviews and rejected_reviews tables
+// (rejected_reviews also has updated_at). Keep in sync with the database.
+export const REVIEW_TABLE_COLUMNS = [
   "id",
   "club_id",
   "club_name",
@@ -199,7 +199,29 @@ const PUBLIC_REVIEW_FIELDS = [
   "social_community_rating",
   "competitiveness_rating",
   "overall_satisfaction",
-  "is_current_member",
+  "user_alias",
+  "user_id",
+  "user_email",
+  "created_at",
+  "updated_at",
+];
+
+// Reviews are anonymous: only these fields ever leave the server. user_id is
+// read separately to flag the viewer's own reviews and is never returned.
+export const PUBLIC_REVIEW_FIELDS = [
+  "id",
+  "club_id",
+  "club_name",
+  "review_text",
+  "membership_start_quarter",
+  "membership_start_year",
+  "membership_end_quarter",
+  "membership_end_year",
+  "time_commitment_rating",
+  "inclusivity_rating",
+  "social_community_rating",
+  "competitiveness_rating",
+  "overall_satisfaction",
   "user_alias",
   "created_at",
   "profiles",
