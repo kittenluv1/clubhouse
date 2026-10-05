@@ -103,6 +103,24 @@ export function createReviewsRepository(supabase) {
       if (error) throw error;
     },
 
+    /**
+     * The user's reviews in every moderation state.
+     * @param {string} userId
+     */
+    async listForUser(userId) {
+      const list = async (table) => {
+        const { data, error } = await supabase.from(table).select("*").eq("user_id", userId);
+        if (error) throw error;
+        return data ?? [];
+      };
+      const [approved, pending, rejected] = await Promise.all([
+        list(REVIEW_TABLES.approved),
+        list(REVIEW_TABLES.pending),
+        list(REVIEW_TABLES.rejected),
+      ]);
+      return { approved, pending, rejected };
+    },
+
     /** @param {{ newestFirst?: boolean }} [options] */
     async listPending({ newestFirst = false } = {}) {
       const { data, error } = await supabase

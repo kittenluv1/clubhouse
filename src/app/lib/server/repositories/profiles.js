@@ -12,6 +12,17 @@ export function createProfilesRepository(supabase) {
   }
 
   return {
+    /**
+     * @param {string} userId
+     * @param {string} [columns]
+     * @returns {Promise<object | null>} null when the user has no profile row
+     */
+    async getProfile(userId, columns = "*") {
+      const { data, error } = await supabase.from("profiles").select(columns).eq("id", userId).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+
     /** @param {string} userId */
     async getOnboardingStatus(userId) {
       const { data, error } = await supabase

@@ -87,3 +87,24 @@ export async function getUserClubMarks(supabase, userId, clubIds) {
   ]);
   return { liked, saved };
 }
+
+// Foreign keys from the like/save tables to clubs, for embedded selects.
+const MARKED_CLUB_JOINS = {
+  liked: { table: "club_likes", join: "clubs!club_likes_club_id_fkey" },
+  saved: { table: "club_saves", join: "clubs!saved_clubs_club_id_fkey" },
+};
+
+/**
+ * Clubs the user has liked or saved.
+ * @param {any} supabase client acting as the user
+ * @param {string} userId
+ * @param {"liked" | "saved"} kind
+ * @param {string} [columns] club columns to return
+ * @returns {Promise<object[]>}
+ */
+export async function listMarkedClubs(supabase, userId, kind, columns = "*") {
+  const { table, join } = MARKED_CLUB_JOINS[kind];
+  const { data, error } = await supabase.from(table).select(`club_id, ${join}(${columns})`).eq("user_id", userId);
+  if (error) throw error;
+  return (data ?? []).map((row) => row.clubs).filter(Boolean);
+}
