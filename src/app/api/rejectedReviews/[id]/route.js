@@ -126,10 +126,31 @@ export async function DELETE(req, { params }) {
 
 	try {
 		const supabase = await createAuthenticatedClient();
+
+		const { data: { user }, error: authError } = await supabase.auth.getUser();
+		if (authError || !user) {
+			return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+		}
+
+		const { data: review, error: fetchError } = await supabase
+			.from('rejected_reviews')
+			.select('user_id')
+			.eq('id', id)
+			.single();
+
+		if (fetchError || !review) {
+			return new Response(JSON.stringify({ error: "Review not found" }), { status: 404 });
+		}
+
+		if (review.user_id !== user.id) {
+			return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403 });
+		}
+
 		const { error: deleteError } = await supabase
 			.from('rejected_reviews')
 			.delete()
-			.eq('id', id);
+			.eq('id', id)
+			.eq('user_id', user.id);
 		if (deleteError) {
 			console.error('Error deleting rejected review:', deleteError);
 			return new Response(
