@@ -2,104 +2,97 @@
  * @jest-environment node
  */
 import { GET, POST } from "@/app/api/pendingReviews/route";
-import { createServerClient } from "@/app/lib/server-db";
+import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
+let db;
 jest.mock("@/app/lib/server-db", () => ({
-  createServerClient: jest.fn(),
+  createAuthenticatedClient: jest.fn(async () => db),
 }));
 
-const ADMIN = "admin@ucla.edu";
+const ADMIN = { id: "a1", email: "admin@ucla.edu" };
+const WRITES = ["insert", "update", "delete"];
+const op = (q) => q.calls.find((c) => WRITES.includes(c.method))?.method ?? "select";
+
 beforeAll(() => {
-  process.env.NEXT_PUBLIC_ADMIN_EMAIL = ADMIN;
+  process.env.NEXT_PUBLIC_ADMIN_EMAIL = ADMIN.email;
 });
-beforeEach(() => jest.clearAllMocks());
 
-function makeReq({ auth = `Bearer tok`, sort = "newest", body } = {}) {
-  return {
-    nextUrl: { searchParams: { get: () => sort } },
-    headers: { get: () => auth },
-    json: async () => body,
-  };
-}
-
-// Build a supabase mock for GET (select→order) and POST flows
-function mockServer({ user = { email: ADMIN, id: "u1" }, userError = null, orderResult, single, insertError = null, deleteError = null }) {
-  const order = jest.fn().mockResolvedValue(orderResult || { data: [], error: null });
-  const singleFn = jest.fn().mockResolvedValue(single || { data: { id: 1 }, error: null });
-  const chain = {
-    select: jest.fn(() => ({ order, eq: jest.fn(() => ({ single: singleFn })) })),
-    insert: jest.fn().mockResolvedValue({ error: insertError }),
-    delete: jest.fn(() => ({ eq: jest.fn().mockResolvedValue({ error: deleteError }) })),
-  };
-  createServerClient.mockReturnValue({
-    auth: { getUser: jest.fn().mockResolvedValue({ data: { user }, error: userError }) },
-    from: jest.fn(() => chain),
+function setup({ user = ADMIN, pending = [{ id: 1, review_text: "hi" }] } = {}) {
+  db = createSupabaseMock({
+    user,
+    respond: (query) => {
+      if (op(query) !== "select") return { data: { id: 1 } };
+      const isSingle = query.calls.some((c) => c.method === "single");
+      if (!isSingle) return { data: pending };
+      return pending[0] ? { data: pending[0] } : { data: null, error: { code: "PGRST116" } };
+    },
   });
-  return chain;
 }
+
+const get = (sort = "newest") => GET(makeRequest({ url: `http://localhost/api/pendingReviews?sort=${sort}` }));
+const post = (body) => POST(makeRequest({ url: "http://localhost/api/pendingReviews", body }));
 
 describe("GET /api/pendingReviews", () => {
-  it("401 without an authorization header", async () => {
-    expect((await GET(makeReq({ auth: null }))).status).toBe(401);
-  });
-
-  it("401 when the token yields no user", async () => {
-    mockServer({ user: null, userError: { message: "bad" } });
-    expect((await GET(makeReq())).status).toBe(401);
+  it("401 when nobody is signed in", async () => {
+    setup({ user: null });
+    expect((await get()).status).toBe(401);
   });
 
   it("403 when the user is not the admin", async () => {
-    mockServer({ user: { email: "someone@ucla.edu" } });
-    expect((await GET(makeReq())).status).toBe(403);
+    setup({ user: { id: "u1", email: "someone@ucla.edu" } });
+    expect((await get()).status).toBe(403);
   });
 
   it("200 with pending reviews for the admin", async () => {
-    mockServer({ orderResult: { data: [{ id: 1 }], error: null } });
-    const res = await GET(makeReq());
+    setup();
+    const res = await get();
     expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.pendingReviews).toEqual([{ id: 1 }]);
+    expect((await res.json()).pendingReviews).toEqual([{ id: 1, review_text: "hi" }]);
   });
 
-  it("500 when the query errors", async () => {
-    mockServer({ orderResult: { data: null, error: { message: "db" } } });
-    expect((await GET(makeReq())).status).toBe(500);
+  it.each([
+    ["newest", false],
+    ["oldest", true],
+  ])("sort=%s orders by created_at ascending=%p", async (sort, ascending) => {
+    setup();
+    await get(sort);
+    expect(db.callsTo("order")[0]).toEqual(["created_at", { ascending }]);
   });
 });
 
 describe("POST /api/pendingReviews", () => {
-  it("401 without an auth header", async () => {
-    expect((await POST(makeReq({ auth: null }))).status).toBe(401);
+  it("403 for non-admins, without moderating", async () => {
+    setup({ user: { id: "u1", email: "someone@ucla.edu" } });
+
+    expect((await post({ reviewID: 1, approve: true })).status).toBe(403);
+    expect(db.queries).toHaveLength(0);
   });
 
-  it("403 for a non-admin", async () => {
-    mockServer({ user: { email: "nope@ucla.edu" } });
-    expect((await POST(makeReq({ body: { reviewID: 1, approve: true } }))).status).toBe(403);
+  it("400 when reviewID or approve is missing", async () => {
+    setup();
+    expect((await post({ reviewID: 1 })).status).toBe(400);
+    expect((await post({ approve: true })).status).toBe(400);
   });
 
-  it("400 for an invalid body", async () => {
-    mockServer({});
-    expect((await POST(makeReq({ body: { reviewID: null, approve: "yes" } }))).status).toBe(400);
-  });
+  it("approves into reviews", async () => {
+    setup();
+    const res = await post({ reviewID: 1, approve: true });
 
-  it("200 on approve (moves to reviews and deletes pending)", async () => {
-    mockServer({ single: { data: { id: 5, review_text: "x" }, error: null } });
-    const res = await POST(makeReq({ body: { reviewID: 5, approve: true } }));
     expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.message).toMatch(/approved/i);
+    expect((await res.json()).message).toMatch(/approved/i);
+    expect(db.queries.find((q) => op(q) === "insert").table).toBe("reviews");
   });
 
-  it("200 on reject (moves to rejected and deletes pending)", async () => {
-    mockServer({ single: { data: { id: 5 }, error: null } });
-    const res = await POST(makeReq({ body: { reviewID: 5, approve: false } }));
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.message).toMatch(/rejected/i);
+  it("rejects into rejected_reviews", async () => {
+    setup();
+    const res = await post({ reviewID: 1, approve: false });
+
+    expect((await res.json()).message).toMatch(/rejected/i);
+    expect(db.queries.find((q) => op(q) === "insert").table).toBe("rejected_reviews");
   });
 
-  it("500 when the pending review cannot be found", async () => {
-    mockServer({ single: { data: null, error: { message: "not found" } } });
-    expect((await POST(makeReq({ body: { reviewID: 5, approve: true } }))).status).toBe(500);
+  it("404 when the pending review does not exist", async () => {
+    setup({ pending: [] });
+    expect((await post({ reviewID: 1, approve: true })).status).toBe(404);
   });
 });

@@ -27,7 +27,7 @@ describe("GET /api/approvedReviews/[id]", () => {
   });
 
   it("404 when the review does not exist", async () => {
-    mockClient({ review: null, reviewError: { message: "none" } });
+    mockClient({ review: null, reviewError: { code: "PGRST116", message: "no rows" } });
     expect((await GET({}, params)).status).toBe(404);
   });
 

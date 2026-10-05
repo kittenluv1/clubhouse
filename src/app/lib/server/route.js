@@ -4,18 +4,9 @@
 // and library error details never reach the client.
 
 import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { HttpError } from "@/app/lib/server/errors";
 
-export class HttpError extends Error {
-  /**
-   * @param {number} status
-   * @param {string} message safe to show to the client
-   */
-  constructor(status, message) {
-    super(message);
-    this.name = "HttpError";
-    this.status = status;
-  }
-}
+export { HttpError };
 
 /**
  * @param {number} status

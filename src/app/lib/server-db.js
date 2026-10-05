@@ -11,20 +11,6 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 export const supabaseServer = createClient(supabaseUrl, supabaseServiceKey);
 
-export function createServerClient(authHeader) {
-  if (!authHeader) {
-    throw new Error("No authorization header provided");
-  }
-
-  return createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
-    global: {
-      headers: {
-        Authorization: authHeader,
-      },
-    },
-  });
-}
-
 export async function createAuthenticatedClient() {
   const cookieStore = await cookies();
 

@@ -17,7 +17,7 @@ function setup({ user = { id: "u1" }, review = { id: 10, user_id: "u1" } } = {})
     respond: ({ calls }) => {
       const isDelete = calls.some((c) => c.method === "delete");
       if (isDelete) return { error: null };
-      return review ? { data: review } : { data: null, error: { message: "not found" } };
+      return review ? { data: review } : { data: null, error: { code: "PGRST116", message: "no rows" } };
     },
   });
 }
@@ -54,5 +54,49 @@ describe("DELETE /api/rejectedReviews/[id]", () => {
     expect(query.table).toBe("rejected_reviews");
     const filters = query.calls.filter((c) => c.method === "eq").map((c) => c.args);
     expect(filters).toEqual(expect.arrayContaining([["id", "10"], ["user_id", "u1"]]));
+  });
+});
+
+describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
+  const { POST } = require("@/app/api/rejectedReviews/[id]/route");
+  const edit = {
+    club_id: 7,
+    club_name: "Chess Club",
+    review_text: "Edited",
+    membership_start_quarter: "Fall",
+    membership_start_year: 2024,
+    membership_end_quarter: "Spring",
+    membership_end_year: 2025,
+    time_commitment_rating: 3,
+    inclusivity_rating: 4,
+    social_community_rating: 5,
+    competitiveness_rating: 2,
+    overall_satisfaction: 4,
+    is_current_member: true,
+  };
+  const post = (body) => POST(makeRequest({ body }), params);
+
+  beforeEach(() => {
+    db = createSupabaseMock({
+      user: { id: "u1", email: "student@ucla.edu" },
+      respond: ({ calls }) =>
+        calls.some((c) => c.method === "insert" || c.method === "delete")
+          ? { data: { id: 11 } }
+          : { data: { id: 10, user_id: "u1", user_alias: "@WiseOwl" } },
+    });
+  });
+
+  it("400 for an invalid edit, without writing", async () => {
+    const res = await post({ ...edit, review_text: "" });
+
+    expect(res.status).toBe(400);
+    expect(db.callsTo("insert")).toHaveLength(0);
+  });
+
+  it("queues the edit with the member flag and original alias", async () => {
+    const res = await post({ ...edit, user_alias: "@Other" });
+
+    expect(res.status).toBe(200);
+    expect(db.callsTo("insert")[0][0]).toMatchObject({ is_current_member: true, user_alias: "@WiseOwl" });
   });
 });
