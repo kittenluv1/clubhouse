@@ -395,7 +395,7 @@ export default function ReviewPage() {
         throw new Error("Please rate your overall satisfaction");
 
       const { data, error: dbError } = await supabase
-        .from("reviews")
+        .from("pending_reviews")
         .insert([
           {
             club_id: clubId,
@@ -412,7 +412,6 @@ export default function ReviewPage() {
             social_community_rating: socialCommunity,
             competitiveness_rating: competitiveness,
             overall_satisfaction: overallSatisfaction,
-            is_current_member: isMember,
             user_alias: anonymousName(),
           },
         ])
