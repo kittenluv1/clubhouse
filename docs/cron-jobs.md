@@ -9,6 +9,11 @@ Managed in `vercel.json`
 - Hits `/api` and runs on the **first of the month**
 - Updates the list of clubs using the UCLA API
 - **Runs only on production**
+- Requires the `CRON_SECRET` environment variable. Vercel sends it as
+  `Authorization: Bearer $CRON_SECRET`; requests without it get `401`, and the
+  route returns `500` without syncing if `CRON_SECRET` is unset.
+- To trigger a sync by hand:
+  `curl -H "Authorization: Bearer $CRON_SECRET" https://<host>/api`
 
 Reference: [Vercel Cron Jobs Docs](https://vercel.com/docs/cron-jobs)
 

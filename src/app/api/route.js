@@ -1,7 +1,17 @@
 import { supabaseServer } from "../lib/server-db.js";
+import { hasCronSecret } from "../lib/server/cron.js";
 
 // keep all logic in GET route - Vercel cron jobs only support GET requests
 export async function GET(req) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    console.error("CRON_SECRET is not set; refusing to run the club sync.");
+    return Response.json({ error: "Server configuration error" }, { status: 500 });
+  }
+  if (!hasCronSecret(req, cronSecret)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   if (!supabaseServer) {
     console.error("supabaseServer client is not initialized.");
     return new Response(
@@ -125,8 +135,7 @@ export async function GET(req) {
         totalClubs: sanitizedOrgList.length,
         regularClubs: orgList.length,
         clubSports: clubSportsOrgList.length,
-        clubs: sanitizedOrgList,
-      }, null, 2),
+      }),
       { status: 200 }
     );
   } catch (error) {
