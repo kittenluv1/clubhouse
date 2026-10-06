@@ -45,4 +45,15 @@ describe("sanitizeClub", () => {
       c: 3,
     });
   });
+
+  it("drops blank strings so a sync never wipes a stored description", () => {
+    expect(
+      sanitizeClub({
+        OrganizationID: "1",
+        OrganizationDescription: "  ",
+        OrganizationEmail: "",
+        OrganizationName: "A",
+      }),
+    ).toEqual({ OrganizationID: "1", OrganizationName: "A" });
+  });
 });
