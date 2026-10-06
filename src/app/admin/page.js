@@ -52,11 +52,7 @@ const Page = () => {
         return;
       }
 
-      const res = await fetch(`/api/pendingReviews?sort=${sortType}`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const res = await fetch(`/api/pendingReviews?sort=${sortType}`);
       if (!res.ok) throw new Error("Failed to load");
 
       const { pendingReviews } = await res.json();
@@ -127,7 +123,6 @@ const Page = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({ reviewID: record.id, approve: true }),
       });
@@ -192,7 +187,6 @@ const Page = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           reviewID: selectedReview.id,

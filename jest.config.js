@@ -24,10 +24,10 @@ const customJestConfig = {
   // regression guard; ratchet these up as coverage grows.
   coverageThreshold: {
     global: {
-      statements: 22,
-      branches: 20,
-      functions: 18,
-      lines: 22,
+      statements: 34,
+      branches: 27,
+      functions: 32,
+      lines: 34,
     },
   },
 }

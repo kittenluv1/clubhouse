@@ -1,161 +1,30 @@
-import { createServerClient } from "@/app/lib/server-db";
+import { supabaseServer } from "@/app/lib/server-db";
+import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
+import { HttpError, readJson, withAdmin } from "@/app/lib/server/route";
 
-export async function GET(req) {
-  const sortType = req.nextUrl.searchParams.get("sort");
-  const orderBy = sortType === "newest" ? false : true;
+export const GET = withAdmin(async (req, { supabase }) => {
+  const newestFirst = req.nextUrl.searchParams.get("sort") === "newest";
+  const pendingReviews = await createReviewsRepository(supabase).listPending({
+    newestFirst,
+  });
+  return Response.json({ pendingReviews });
+});
 
-  try {
-    const authHeader = req.headers.get('authorization');
-
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401 }
-      );
-    }
-
-    const supabase = createServerClient(authHeader);
-
-    // Verify the token is valid and user is admin
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401 }
-      );
-    }
-
-    if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-      return new Response(
-        JSON.stringify({ error: "Forbidden" }),
-        { status: 403 }
-      );
-    }
-
-    const { data, error } = await supabase
-      .from("pending_reviews")
-      .select("*")
-      .order("created_at", { ascending: orderBy });
-
-    // query has failed
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-      });
-    }
-    return new Response(JSON.stringify({ pendingReviews: data }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (err) {
-    // internal supabase error!
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-    });
-  }
-}
-
-export async function POST(req) {
-  const authHeader = req.headers.get('authorization');
-
-  if (!authHeader) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
-  }
-
-  const supabase = createServerClient(authHeader);
-
-  // Verify the token is valid and user is admin
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized" }),
-      { status: 401 }
+export const POST = withAdmin(async (req, { supabase }) => {
+  const { reviewID, approve } = await readJson(req);
+  if (!reviewID || typeof approve !== "boolean") {
+    throw new HttpError(
+      400,
+      "Invalid request: issue with id or approve boolean",
     );
   }
 
-  if (user.email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) {
-    return new Response(
-      JSON.stringify({ error: "Forbidden" }),
-      { status: 403 }
-    );
-  }
-
-  try {
-    const { reviewID, approve } = await req.json();
-
-    if (!reviewID || typeof approve !== "boolean") {
-      return new Response(
-        JSON.stringify({
-          error: "Invalid request: issue with id or approve boolean",
-        }),
-        { status: 400 },
-      );
-    }
-
-    // Approve flow: insert into reviews → delete
-    if (approve) {
-      const { data: review, error } = await supabase
-        .from("pending_reviews")
-        .select("*")
-        .eq("id", reviewID)
-        .single();
-
-      if (error || !review) {
-        throw new Error(error?.message || "Review not found");
-      }
-
-      const { error: insertError } = await supabase
-        .from("reviews")
-        .insert(review);
-
-      if (insertError) {
-        throw new Error(insertError.message);
-      }
-    }
-    // Reject flow: insert into rejected_review → delete
-    else {
-      const { data: review, error } = await supabase
-        .from("pending_reviews")
-        .select("*")
-        .eq("id", reviewID)
-        .single();
-
-      if (error || !review) {
-        throw new Error(error?.message || "Review not found");
-      }
-
-      const { error: rejectError } = await supabase
-        .from("rejected_reviews")
-        .insert({ ...review, updated_at: new Date().toISOString() });
-
-      if (rejectError) {
-        throw new Error(rejectError.message);
-      }
-    }
-
-    // Delete the pending review (always, regardless of approve or reject)
-    const { error: deleteError } = await supabase
-      .from("pending_reviews")
-      .delete()
-      .eq("id", reviewID);
-
-    if (deleteError) {
-      throw new Error(deleteError.message);
-    }
-
-    return new Response(
-      JSON.stringify({
-        message: approve
-          ? "Review approved and moved to reviews table"
-          : "Review rejected and moved to rejected reviews table",
-      }),
-      { status: 200 },
-    );
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-    });
-  }
-}
+  await createReviewsRepository(supabase, {
+    serviceClient: supabaseServer,
+  }).moderate(reviewID, approve);
+  return Response.json({
+    message: approve
+      ? "Review approved and moved to reviews table"
+      : "Review rejected and moved to rejected reviews table",
+  });
+});

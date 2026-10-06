@@ -2,43 +2,100 @@
  * @jest-environment node
  */
 import { GET } from "@/app/api/recommendations/route";
-import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
+let userDb;
+let serviceDb;
 jest.mock("@/app/lib/server-db", () => ({
-  createAuthenticatedClient: jest.fn(),
-  supabaseServer: { from: jest.fn() },
+  get supabaseServer() {
+    return serviceDb;
+  },
+  createAuthenticatedClient: jest.fn(async () => userDb),
 }));
 
-const request = () => ({ url: "http://localhost/api/recommendations?limit=5" });
+const club = (id, name, category) => ({
+  OrganizationID: id,
+  OrganizationName: name,
+  Category1Name: category,
+});
+const allClubs = [
+  club(1, "Chess", "Games"),
+  club(2, "Go", "Games"),
+  club(3, "Dance", "Arts"),
+  club(4, "Robotics", "Engineering"),
+  ...Array.from({ length: 30 }, (_, i) => club(100 + i, `Club ${i}`, "Misc")),
+];
 
-beforeEach(() => jest.clearAllMocks());
+function setup({
+  user = { id: "u1" },
+  profile = {
+    majors: ["Computer Science"],
+    minors: [],
+    current_clubs: ["dance "],
+  },
+} = {}) {
+  const tables = {
+    profiles: { data: profile },
+    user_interests: { data: [{ category: "Games" }] },
+    club_likes: { data: [{ club_id: 1, clubs: allClubs[0] }] },
+    club_saves: { data: [{ club_id: 2, clubs: allClubs[1] }] },
+  };
+  userDb = createSupabaseMock({
+    user,
+    respond: ({ table }) => tables[table] ?? { data: [] },
+  });
+  serviceDb = createSupabaseMock({ respond: () => ({ data: allClubs }) });
+}
+
+const get = (query = "") =>
+  GET(makeRequest({ url: `http://localhost/api/recommendations${query}` }));
+const ids = (body) => body.recommendations.map((c) => c.OrganizationID);
 
 describe("GET /api/recommendations", () => {
-  it("returns 401 when the user is not authenticated", async () => {
-    createAuthenticatedClient.mockResolvedValue({
-      auth: {
-        getUser: jest.fn().mockResolvedValue({ data: { user: null }, error: null }),
-      },
-    });
-    const res = await GET(request());
-    expect(res.status).toBe(401);
+  it("401 when nobody is signed in", async () => {
+    setup({ user: null });
+    expect((await get()).status).toBe(401);
   });
 
-  it("returns 401 when auth returns an error", async () => {
-    createAuthenticatedClient.mockResolvedValue({
-      auth: {
-        getUser: jest
-          .fn()
-          .mockResolvedValue({ data: { user: null }, error: { message: "bad token" } }),
-      },
-    });
-    expect((await GET(request())).status).toBe(401);
+  it("excludes clubs the user liked, saved or is a member of", async () => {
+    setup();
+    const body = await (await get("?limit=100")).json();
+
+    expect(ids(body)).not.toContain(1);
+    expect(ids(body)).not.toContain(2);
+    expect(ids(body)).not.toContain(3);
+    expect(body.total).toBe(allClubs.length - 3);
   });
 
-  it("returns 500 on an unexpected thrown error", async () => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
-    createAuthenticatedClient.mockRejectedValue(new Error("boom"));
-    expect((await GET(request())).status).toBe(500);
-    console.error.mockRestore();
+  it("attaches a score and breakdown to each recommendation", async () => {
+    setup();
+    const [first] = (await (await get("?limit=1")).json()).recommendations;
+
+    expect(first).toEqual(
+      expect.objectContaining({ recommendation_score: expect.any(Number) }),
+    );
+    expect(first).toHaveProperty("recommendation_breakdown");
+  });
+
+  it("reports whether the profile has enough data", async () => {
+    setup({ profile: { majors: [], minors: [], current_clubs: [] } });
+    userDb = createSupabaseMock({
+      user: { id: "u1" },
+      respond: () => ({ data: [] }),
+    });
+
+    expect((await (await get()).json()).profileComplete).toBe(false);
+  });
+
+  it.each([
+    ["", 20],
+    ["?limit=5", 5],
+    ["?limit=500", 31],
+    ["?limit=abc", 20],
+    ["?limit=-5", 20],
+  ])("limit %s returns %i clubs", async (query, expected) => {
+    setup();
+    const body = await (await get(query)).json();
+    expect(body.recommendations).toHaveLength(expected);
   });
 });

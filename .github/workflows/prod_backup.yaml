@@ -10,6 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Require an encryption passphrase
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::Set the BACKUP_PASSPHRASE secret. Backups contain user emails and are never uploaded unencrypted."
+            exit 1
+          fi
+
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
@@ -17,16 +26,23 @@ jobs:
         id: date
         run: echo "date=$(date +'%F')" >> $GITHUB_OUTPUT
 
-      - name: Dump Prod DB
+      - name: Dump and encrypt Prod DB
         env:
-          PG_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          PGPASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          DB_USER: postgres.${{ secrets.PROD_DB_URL }}
+          BACKUP_FILE: backups/prod_backup_${{ steps.date.outputs.date }}.sql
         run: |
+          set -euo pipefail
           mkdir -p backups
-          pg_dump postgresql://postgres.${{ secrets.PROD_DB_URL }}:${PG_PASSWORD}@aws-0-us-west-1.pooler.supabase.com:5432/postgres -f backups/prod_backup_${{ steps.date.outputs.date }}.sql
+          pg_dump "postgresql://${DB_USER}@aws-0-us-west-1.pooler.supabase.com:5432/postgres" -f "$BACKUP_FILE"
+          gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 --output "$BACKUP_FILE.gpg" "$BACKUP_FILE" <<< "$BACKUP_PASSPHRASE"
+          shred -u "$BACKUP_FILE"
 
-      - name: Upload backup artifact
+      - name: Upload encrypted backup artifact
         uses: actions/upload-artifact@v4
         with:
           name: prod-backup-${{ steps.date.outputs.date }}
-          path: backups/prod_backup_${{ steps.date.outputs.date }}.sql
+          path: backups/prod_backup_${{ steps.date.outputs.date }}.sql.gpg
           retention-days: 90
