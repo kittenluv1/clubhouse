@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   lint:
-    name: ESLint
+    name: ESLint, Prettier and dependency audit
     runs-on: ubuntu-latest
 
     steps:
@@ -30,6 +30,33 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+
+      # Directories that are fully formatted; widen as the rest is formatted.
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  typecheck:
+    name: Type check (server and API layer)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tsc
+        run: npm run typecheck
 
   test:
     name: Jest test suite (with coverage gate)

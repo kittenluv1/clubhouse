@@ -93,7 +93,6 @@ export default function EditReviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [dateError, setDateError] = useState(null);
-  const [userAlias, setUserAlias] = useState("");
 
   // Get review data and set form fields
   useEffect(() => {
@@ -136,7 +135,6 @@ export default function EditReviewPage() {
           setCompetitiveness(review.competitiveness_rating);
           setOverallSatisfaction(review.overall_satisfaction);
           setReviewText(review.review_text);
-          setUserAlias(review.user_alias);
           setReviewAuthorId(review.user_id);
         } else if (isActiveReview) {
           console.error("Error fetching rejected review:", result.error);
@@ -247,8 +245,6 @@ export default function EditReviewPage() {
 
       const reviewData = {
         club_id: clubId,
-        user_id: user?.id,
-        user_email: user?.email,
         membership_start_quarter: startQuarter,
         membership_start_year: parseInt(startYear),
         membership_end_quarter: endQuarter,
@@ -260,7 +256,6 @@ export default function EditReviewPage() {
         overall_satisfaction: overallSatisfaction,
         review_text: reviewText,
         club_name: selectedClub,
-        user_alias: userAlias,
       };
 
       const apiBase =
@@ -292,7 +287,7 @@ export default function EditReviewPage() {
             club_name: reviewData.club_name,
             overall_satisfaction: reviewData.overall_satisfaction,
             review_text: reviewData.review_text,
-            user_email: reviewData.user_email,
+            user_email: user?.email,
           }),
         },
       );

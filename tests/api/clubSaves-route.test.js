@@ -60,7 +60,10 @@ describe("POST /api/clubSaves", () => {
     authed();
     mockChain.select.mockResolvedValue({
       data: null,
-      error: { message: "duplicate key value violates unique constraint" },
+      error: {
+        code: "23505",
+        message: "duplicate key value violates unique constraint",
+      },
     });
     const res = await POST(req({ club_id: 5 }));
     expect(res.status).toBe(200);
@@ -74,6 +77,22 @@ describe("POST /api/clubSaves", () => {
     });
     const res = await POST(req({ club_id: 5 }));
     expect(res.status).toBe(500);
+  });
+
+  it("does not leak the database error message", async () => {
+    authed();
+    mockChain.select.mockResolvedValue({
+      data: null,
+      error: { code: "XX000", message: "relation club_saves secret detail" },
+    });
+    const res = await POST(req({ club_id: 5 }));
+    expect(JSON.stringify(await res.json())).not.toMatch(/secret detail/);
+  });
+
+  it("returns 400 when club_id is not an id", async () => {
+    authed();
+    const res = await POST(req({ club_id: { evil: true } }));
+    expect(res.status).toBe(400);
   });
 
   it("returns 500 when an unexpected error is thrown", async () => {

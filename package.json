@@ -8,38 +8,42 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
+    "format:check": "prettier --check src/app/api src/app/lib/server src/app/lib/reviews src/app/lib/profiles src/app/lib/clubs tests/api tests/helpers tests/repositories tests/reviews tests/clubs",
+    "typecheck": "tsc -p tsconfig.typecheck.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@next/font": "^14.2.15",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.49.4",
     "@vercel/analytics": "^1.5.0",
     "framer-motion": "^12.12.2",
-    "next": "^16.3.5",
+    "next": "^16.3.8",
     "posthog-js": "^1.430.3",
     "posthog-node": "^5.29.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-icons": "^5.5.0",
     "react-slick": "^0.31.0",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
+    "@types/node": "^26.6.4",
     "dotenv-cli": "^8.0.0",
     "eslint": "^9.39.2",
-    "eslint-config-next": "^16.3.5",
+    "eslint-config-next": "^16.3.8",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "typescript": "^6.0.3"
   },
   "allowScripts": {
     "unrs-resolver@1.11.1": true,

@@ -185,7 +185,6 @@ export default function ClubDetailsPage() {
   const [userSavedClub, setUserSavedClub] = useState(false);
   const [reviewLikesMap, setReviewLikesMap] = useState({});
   const [userLikedReviews, setUserLikedReviews] = useState([]);
-  const [currentUserId, setCurrentUserId] = useState(null);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = !isDesktop;
   const [isProcessing, setIsProcessing] = useState(false);
@@ -226,7 +225,6 @@ export default function ClubDetailsPage() {
           setClublikeCount(data.likeCount || 0);
           setUserLikedClub(data.currentUserLiked || false);
           setUserSavedClub(data.currentUserSaved || false);
-          setCurrentUserId(data.currentUserId || null);
         } else {
           setError(`No club found with name containing: ${id}`);
         }
@@ -694,9 +692,7 @@ export default function ClubDetailsPage() {
                   status="displayed"
                   clickable={false}
                   onLike={handleLike}
-                  isCurrentUser={
-                    currentUserId && review.user_id === currentUserId
-                  }
+                  isCurrentUser={review.is_own_review}
                 />
               ))}
             </div>

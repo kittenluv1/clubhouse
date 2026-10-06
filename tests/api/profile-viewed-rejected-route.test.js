@@ -8,11 +8,19 @@ jest.mock("@/app/lib/server-db", () => ({
   createAuthenticatedClient: jest.fn(),
 }));
 
-function mockClient({ user = { id: "u1" }, authError = null, updateError = null }) {
+function mockClient({
+  user = { id: "u1" },
+  authError = null,
+  updateError = null,
+}) {
   const eq = jest.fn().mockResolvedValue({ error: updateError });
   const update = jest.fn(() => ({ eq }));
   createAuthenticatedClient.mockResolvedValue({
-    auth: { getUser: jest.fn().mockResolvedValue({ data: { user }, error: authError }) },
+    auth: {
+      getUser: jest
+        .fn()
+        .mockResolvedValue({ data: { user }, error: authError }),
+    },
     from: jest.fn(() => ({ update })),
   });
 }

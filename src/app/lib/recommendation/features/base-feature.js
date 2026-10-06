@@ -3,6 +3,7 @@
  * Each feature computes a score between 0.0 and 1.0 for a user-club pair.
  */
 export class BaseFeature {
+  /** @returns {string} */
   get name() {
     throw new Error('Feature must implement get name()');
   }

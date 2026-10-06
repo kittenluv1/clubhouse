@@ -56,7 +56,7 @@ describe("POST /api/reviewLikes", () => {
     authed();
     mockChain.select.mockResolvedValue({
       data: null,
-      error: { message: "unique constraint" },
+      error: { code: "23505", message: "unique constraint" },
     });
     expect((await POST(req({ review_id: 3 }))).status).toBe(200);
   });
