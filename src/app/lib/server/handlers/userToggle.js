@@ -6,8 +6,7 @@ import { getPostHogClient } from "@/app/lib/posthog-server";
 import { createUserToggleRepository } from "@/app/lib/server/repositories/userToggles";
 import { HttpError, readJson, withUser } from "@/app/lib/server/route";
 
-// Club ids are text (club sports use ids like "V3Q2-L6L95"); review ids are
-// uuids. Numbers are still accepted from older clients.
+// Club ids are text, review ids are uuids. Numbers are still accepted
 const targetId = z.union([
   z.number().int().positive(),
   z.string().trim().min(1).max(64),
