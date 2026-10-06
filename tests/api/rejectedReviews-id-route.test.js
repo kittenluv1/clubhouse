@@ -96,7 +96,9 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
   const clubLookup = (exists) =>
     createSupabaseMock({
       respond: () => ({
-        data: exists ? [{ OrganizationID: edit.club_id }] : [],
+        data: exists
+          ? [{ OrganizationID: edit.club_id, OrganizationName: "Archery" }]
+          : [],
       }),
     });
 
@@ -126,6 +128,7 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     expect(res.status).toBe(200);
     const row = db.callsTo("insert")[0][0];
     expect(row.user_alias).toBe("@WiseOwl");
+    expect(row.club_name).toBe("Archery");
     expect(row).not.toHaveProperty("is_current_member");
   });
 

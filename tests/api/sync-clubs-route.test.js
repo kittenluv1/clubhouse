@@ -95,8 +95,8 @@ describe("GET /api (club sync cron)", () => {
 
     await call({ authorization: `Bearer ${SECRET}` });
 
-    const [[row]] = db.callsTo("upsert");
-    expect(row).toEqual({ OrganizationID: 1, OrganizationName: "A" });
+    const [[rows]] = db.callsTo("upsert");
+    expect(rows).toEqual([{ OrganizationID: 1, OrganizationName: "A" }]);
   });
 
   it("upserts each club on OrganizationID instead of inserting it", async () => {
@@ -113,14 +113,73 @@ describe("GET /api (club sync cron)", () => {
     expect(res.status).toBe(200);
     expect(db.callsTo("insert")).toHaveLength(0);
     const upserts = db.callsTo("upsert");
-    expect(upserts.map(([row]) => row.OrganizationID)).toEqual([
-      "1",
-      "V3Q2-L6L95",
-    ]);
-    for (const [row, options] of upserts) {
-      expect(row).not.toHaveProperty("id");
+    expect(
+      upserts.flatMap(([rows]) => rows.map((row) => row.OrganizationID)),
+    ).toEqual(["1", "V3Q2-L6L95"]);
+    for (const [rows, options] of upserts) {
+      for (const row of rows) expect(row).not.toHaveProperty("id");
       expect(options).toEqual({ onConflict: "OrganizationID" });
     }
+  });
+
+  const syncOrgs = async (orgList) => {
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({ orgList, clubSportsOrgList: [] }),
+    }));
+    const res = await call({ authorization: `Bearer ${SECRET}` });
+    expect(res.status).toBe(200);
+    return db.callsTo("upsert").map(([rows]) => rows);
+  };
+
+  it("batches clubs that have the same fields into one upsert", async () => {
+    // A batched upsert writes every column it names for every row, so rows
+    // missing a field would have it set to null. Only rows with identical
+    // fields share a batch.
+    const batches = await syncOrgs([
+      { OrganizationID: "1", OrganizationName: "A" },
+      {
+        OrganizationID: "2",
+        OrganizationName: "B",
+        OrganizationDescription: "d",
+      },
+      { OrganizationID: "3", OrganizationName: "C" },
+    ]);
+
+    expect(batches).toHaveLength(2);
+    for (const rows of batches) {
+      const fields = Object.keys(rows[0]).sort();
+      for (const row of rows) expect(Object.keys(row).sort()).toEqual(fields);
+    }
+    expect(
+      batches
+        .flat()
+        .map((row) => row.OrganizationID)
+        .sort(),
+    ).toEqual(["1", "2", "3"]);
+  });
+
+  it("splits large batches", async () => {
+    const orgs = Array.from({ length: 1201 }, (_, i) => ({
+      OrganizationID: String(i),
+      OrganizationName: `Club ${i}`,
+    }));
+
+    const batches = await syncOrgs(orgs);
+
+    expect(batches.map((rows) => rows.length)).toEqual([500, 500, 201]);
+  });
+
+  it("keeps the last copy of a club listed twice", async () => {
+    // Postgres rejects an upsert that touches the same row twice.
+    const batches = await syncOrgs([
+      { OrganizationID: "1", OrganizationName: "Old" },
+      { OrganizationID: "1", OrganizationName: "New" },
+    ]);
+
+    expect(batches.flat()).toEqual([
+      { OrganizationID: "1", OrganizationName: "New" },
+    ]);
   });
 
   it("returns 500 when saving a club fails", async () => {

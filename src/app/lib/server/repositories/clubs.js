@@ -132,17 +132,18 @@ export function createClubsRepository(supabase) {
     },
 
     /**
-     * Update a club from the UCLA directory, inserting it if it is new. Only
-     * the columns present in `club` are written, so omitted fields keep their
+     * Update clubs from the UCLA directory, inserting new ones. Only the
+     * columns present in each row are written, so omitted fields keep their
      * stored values.
-     * @param {Record<string, unknown>} club row keyed by OrganizationID
+     * @param {Record<string, unknown>[]} clubs rows keyed by OrganizationID
      */
-    async saveClub(club) {
-      const { id: _localId, ...row } = club;
-      const { error } = await supabase
-        .from("clubs")
-        .upsert(row, { onConflict: "OrganizationID" });
-      if (error) throw error;
+    async saveClubs(clubs) {
+      for (const rows of upsertBatches(clubs)) {
+        const { error } = await supabase
+          .from("clubs")
+          .upsert(rows, { onConflict: "OrganizationID" });
+        if (error) throw error;
+      }
     },
 
     /**
@@ -168,16 +169,16 @@ export function createClubsRepository(supabase) {
 
     /**
      * @param {string} clubId
-     * @returns {Promise<boolean>}
+     * @returns {Promise<Club | null>}
      */
-    async exists(clubId) {
+    async findById(clubId) {
       const { data, error } = await supabase
         .from("clubs")
-        .select("OrganizationID")
+        .select("OrganizationID, OrganizationName")
         .eq("OrganizationID", clubId)
         .limit(1);
       if (error) throw error;
-      return (data ?? []).length > 0;
+      return data?.[0] ?? null;
     },
 
     /**
@@ -194,6 +195,36 @@ export function createClubsRepository(supabase) {
       return data?.[0] ?? null;
     },
   };
+}
+
+const UPSERT_BATCH_SIZE = 500;
+
+/**
+ * Split clubs into upsert batches. A batched upsert writes every column it
+ * names for every row, filling gaps with null, so only rows with the same
+ * fields share a batch. Duplicate ids keep their last row, since Postgres
+ * rejects an upsert that touches the same row twice.
+ * @param {Record<string, unknown>[]} clubs
+ * @returns {Record<string, unknown>[][]}
+ */
+function upsertBatches(clubs) {
+  const byId = new Map();
+  for (const { id: _localId, ...row } of clubs)
+    byId.set(row.OrganizationID, row);
+
+  const byFields = new Map();
+  for (const row of byId.values()) {
+    const fields = Object.keys(row).sort().join(",");
+    if (!byFields.has(fields)) byFields.set(fields, []);
+    byFields.get(fields).push(row);
+  }
+
+  const batches = [];
+  for (const rows of byFields.values()) {
+    for (let i = 0; i < rows.length; i += UPSERT_BATCH_SIZE)
+      batches.push(rows.slice(i, i + UPSERT_BATCH_SIZE));
+  }
+  return batches;
 }
 
 /**

@@ -34,7 +34,9 @@ const validReview = {
 function setup({ signedIn = true, clubExists = true } = {}) {
   clubsDb = createSupabaseMock({
     respond: () => ({
-      data: clubExists ? [{ OrganizationID: validReview.club_id }] : [],
+      data: clubExists
+        ? [{ OrganizationID: validReview.club_id, OrganizationName: "Archery" }]
+        : [],
     }),
   });
   db = createSupabaseMock({
@@ -136,5 +138,13 @@ describe("POST /api/reviews", () => {
     expect(res.status).toBe(400);
     expect((await res.json()).error).toMatch("club_id");
     expect(db.callsTo("insert")).toHaveLength(0);
+  });
+
+  it("stores the club's real name, not the one in the request", async () => {
+    setup();
+
+    await post({ ...validReview, club_name: "Totally Real Club" });
+
+    expect(insertedRow().club_name).toBe("Archery");
   });
 });
