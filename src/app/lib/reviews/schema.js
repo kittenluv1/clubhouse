@@ -28,7 +28,8 @@ const quarterIndex = (quarter, yr) =>
 // is_current_member (used for analytics only); no review table stores it.
 const reviewInputSchema = z
   .object({
-    club_id: z.number().int().positive(),
+    // clubs."OrganizationID" is text; club sports use ids like "V3Q2-L6L95".
+    club_id: z.string().trim().min(1).max(64),
     club_name: z.string().trim().min(1).max(200),
     review_text: z.string().trim().min(1).max(MAX_REVIEW_LENGTH),
     membership_start_quarter: z.enum(QUARTERS),
