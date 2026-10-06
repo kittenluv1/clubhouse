@@ -8,7 +8,7 @@ import { createClubsRepository } from "@/app/lib/server/repositories/clubs";
 /**
  * Validate a review body and check that its club exists. Only reviews.club_id
  * has a foreign key to clubs, so without this check a review for a missing
- * club would wait in pending_reviews and fail when an admin approved it.
+ * club would wait in pending_reviews and fail when an admin approved it
  * @param {unknown} body
  * @returns {Promise<import("@/app/lib/reviews/schema").ReviewInput>}
  */
