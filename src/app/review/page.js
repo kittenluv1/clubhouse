@@ -140,7 +140,7 @@ export default function ReviewPage() {
   useEffect(() => {
     if (clubIdFromUrl) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setClubId(parseInt(clubIdFromUrl));
+      setClubId(clubIdFromUrl);
     }
   }, [clubIdFromUrl]);
 

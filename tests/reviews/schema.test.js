@@ -1,7 +1,8 @@
 import { parseReviewInput } from "@/app/lib/reviews/schema";
 
+// Club ids are text in the database; club sports use ids like this one.
 const valid = {
-  club_id: 7,
+  club_id: "V3Q2-L6L95",
   club_name: "Chess Club",
   review_text: "  Great people.  ",
   membership_start_quarter: "Fall",
@@ -91,6 +92,16 @@ describe("parseReviewInput", () => {
       membership_end_year: 2024,
     };
     expect(parseReviewInput(sameQuarter).success).toBe(true);
+  });
+
+  it("keeps a numeric-looking club id as a string", () => {
+    expect(parseReviewInput({ ...valid, club_id: "12345" }).data.club_id).toBe(
+      "12345",
+    );
+  });
+
+  it.each([7, "", "   ", "x".repeat(65)])("rejects club_id = %p", (clubId) => {
+    expect(errorFor({ ...valid, club_id: clubId })).toMatch("club_id");
   });
 
   it("rejects a missing club", () => {

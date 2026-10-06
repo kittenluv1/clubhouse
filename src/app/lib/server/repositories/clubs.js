@@ -171,6 +171,20 @@ export function createClubsRepository(supabase) {
     },
 
     /**
+     * @param {string} clubId
+     * @returns {Promise<boolean>}
+     */
+    async exists(clubId) {
+      const { data, error } = await supabase
+        .from("clubs")
+        .select("OrganizationID")
+        .eq("OrganizationID", clubId)
+        .limit(1);
+      if (error) throw error;
+      return (data ?? []).length > 0;
+    },
+
+    /**
      * @param {string} name exact club name
      * @returns {Promise<Club | null>}
      */

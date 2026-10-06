@@ -7,7 +7,7 @@ import { createSupabaseMock } from "../helpers/supabaseMock";
 
 const user = { id: "u1", email: "student@ucla.edu" };
 const input = {
-  club_id: 7,
+  club_id: "V3Q2-L6L95",
   club_name: "Chess Club",
   review_text: "Edited text",
   membership_start_quarter: "Fall",

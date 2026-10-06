@@ -10,7 +10,7 @@ import {
 } from "@/app/lib/server/repositories/reviews";
 
 const fullInput = {
-  club_id: 7,
+  club_id: "V3Q2-L6L95",
   club_name: "Chess Club",
   review_text: "Great",
   membership_start_quarter: "Fall",
@@ -27,7 +27,8 @@ const fullInput = {
 
 describe("review columns", () => {
   it("validated review input only contains stored columns", () => {
-    const { data } = parseReviewInput(fullInput);
+    const { success, data } = parseReviewInput(fullInput);
+    expect(success).toBe(true);
     for (const key of Object.keys(data))
       expect(REVIEW_TABLE_COLUMNS).toContain(key);
   });

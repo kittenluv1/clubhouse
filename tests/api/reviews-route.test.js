@@ -6,13 +6,17 @@ import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 import { ALIAS_ADJECTIVES, ALIAS_NOUNS } from "@/app/lib/reviews/alias";
 
 let db;
+let clubsDb;
 jest.mock("@/app/lib/server-db", () => ({
   createAuthenticatedClient: jest.fn(async () => db),
+  get supabaseServer() {
+    return clubsDb;
+  },
 }));
 
 const user = { id: "u1", email: "student@ucla.edu" };
 const validReview = {
-  club_id: 7,
+  club_id: "V3Q2-L6L95",
   club_name: "Chess Club",
   review_text: "Great people.",
   membership_start_quarter: "Fall",
@@ -27,7 +31,12 @@ const validReview = {
   is_current_member: false,
 };
 
-function setup({ signedIn = true } = {}) {
+function setup({ signedIn = true, clubExists = true } = {}) {
+  clubsDb = createSupabaseMock({
+    respond: () => ({
+      data: clubExists ? [{ OrganizationID: validReview.club_id }] : [],
+    }),
+  });
   db = createSupabaseMock({
     user: signedIn ? user : null,
     respond: ({ calls }) => {
@@ -104,5 +113,28 @@ describe("POST /api/reviews", () => {
       user_id: "u1",
       user_email: "student@ucla.edu",
     });
+  });
+
+  it("stores a club sports review under its text club id", async () => {
+    setup();
+
+    expect((await post(validReview)).status).toBe(201);
+    expect(insertedRow().club_id).toBe("V3Q2-L6L95");
+    const lookup = clubsDb.queries[0];
+    expect(lookup.table).toBe("clubs");
+    expect(lookup.calls).toContainEqual({
+      method: "eq",
+      args: ["OrganizationID", "V3Q2-L6L95"],
+    });
+  });
+
+  it("400 for a club that does not exist, without inserting", async () => {
+    setup({ clubExists: false });
+
+    const res = await post(validReview);
+
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toMatch("club_id");
+    expect(db.callsTo("insert")).toHaveLength(0);
   });
 });

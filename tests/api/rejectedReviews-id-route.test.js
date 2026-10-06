@@ -5,8 +5,12 @@ import { DELETE } from "@/app/api/rejectedReviews/[id]/route";
 import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
 let db;
+let clubsDb;
 jest.mock("@/app/lib/server-db", () => ({
   createAuthenticatedClient: jest.fn(async () => db),
+  get supabaseServer() {
+    return clubsDb;
+  },
 }));
 
 const params = { params: Promise.resolve({ id: "10" }) };
@@ -73,7 +77,7 @@ describe("DELETE /api/rejectedReviews/[id]", () => {
 describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
   const { POST } = require("@/app/api/rejectedReviews/[id]/route");
   const edit = {
-    club_id: 7,
+    club_id: "V3Q2-L6L95",
     club_name: "Chess Club",
     review_text: "Edited",
     membership_start_quarter: "Fall",
@@ -89,7 +93,15 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
   };
   const post = (body) => POST(makeRequest({ body }), params);
 
+  const clubLookup = (exists) =>
+    createSupabaseMock({
+      respond: () => ({
+        data: exists ? [{ OrganizationID: edit.club_id }] : [],
+      }),
+    });
+
   beforeEach(() => {
+    clubsDb = clubLookup(true);
     db = createSupabaseMock({
       user: { id: "u1", email: "student@ucla.edu" },
       respond: ({ calls }) =>
@@ -113,5 +125,15 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     const row = db.callsTo("insert")[0][0];
     expect(row.user_alias).toBe("@WiseOwl");
     expect(row).not.toHaveProperty("is_current_member");
+  });
+
+  it("400 when the edit points at a club that does not exist", async () => {
+    clubsDb = clubLookup(false);
+
+    const res = await post(edit);
+
+    expect(res.status).toBe(400);
+    expect(db.callsTo("insert")).toHaveLength(0);
+    expect(db.callsTo("delete")).toHaveLength(0);
   });
 });
