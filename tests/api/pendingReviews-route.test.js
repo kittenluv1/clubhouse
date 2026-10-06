@@ -25,6 +25,7 @@ function setup({
   db = createSupabaseMock({
     user,
     respond: (query) => {
+      if (op(query) === "delete") return { data: [{ id: 1 }] };
       if (op(query) !== "select") return { data: { id: 1 } };
       const isSingle = query.calls.some((c) => c.method === "single");
       if (!isSingle) return { data: pending };

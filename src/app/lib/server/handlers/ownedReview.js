@@ -1,6 +1,7 @@
 // Route handlers shared by /api/approvedReviews/[id] and /api/rejectedReviews/[id]:
 // a reviewer can read, edit (resubmit for moderation) and delete their own review.
 
+import { supabaseServer } from "@/app/lib/server-db";
 import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
 import { validateReviewInput } from "@/app/lib/server/reviewInput";
 import { readJson, withUser } from "@/app/lib/server/route";
@@ -20,12 +21,9 @@ export function ownedReviewHandlers(status) {
     POST: withUser(async (req, { supabase, user, params }) => {
       const input = await validateReviewInput(await readJson(req));
 
-      await createReviewsRepository(supabase).resubmit(
-        status,
-        params.id,
-        user,
-        input,
-      );
+      await createReviewsRepository(supabase, {
+        serviceClient: supabaseServer,
+      }).resubmit(status, params.id, user, input);
       return Response.json({ message: "Review resubmitted for approval" });
     }),
 

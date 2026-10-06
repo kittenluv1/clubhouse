@@ -23,7 +23,7 @@ function setup({
     user,
     respond: ({ calls }) => {
       const isDelete = calls.some((c) => c.method === "delete");
-      if (isDelete) return { error: null };
+      if (isDelete) return { data: [{ id: 10 }] };
       return review
         ? { data: review }
         : { data: null, error: { code: "PGRST116", message: "no rows" } };
@@ -104,10 +104,12 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     clubsDb = clubLookup(true);
     db = createSupabaseMock({
       user: { id: "u1", email: "student@ucla.edu" },
-      respond: ({ calls }) =>
-        calls.some((c) => c.method === "insert" || c.method === "delete")
-          ? { data: { id: 11 } }
-          : { data: { id: 10, user_id: "u1", user_alias: "@WiseOwl" } },
+      respond: ({ calls }) => {
+        const method = (name) => calls.some((c) => c.method === name);
+        if (method("delete")) return { data: [{ id: 10 }] };
+        if (method("insert")) return { data: { id: 11 } };
+        return { data: { id: 10, user_id: "u1", user_alias: "@WiseOwl" } };
+      },
     });
   });
 

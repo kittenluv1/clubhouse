@@ -5,6 +5,9 @@
 // A review lives in one of three tables depending on its moderation state.
 // Moving it means inserting a copy and deleting the original; PostgREST has no
 // transactions, so if the delete fails the copy is removed again.
+//
+// Row-level security turns a forbidden delete into one that matches no rows
+// and reports no error, so deletes check how many rows they removed.
 
 import { HttpError } from "@/app/lib/server/errors";
 
@@ -23,8 +26,15 @@ const NOT_FOUND_CODES = new Set(["PGRST116", "22P02"]);
 
 /**
  * @param {any} supabase a Supabase client; RLS applies as that client's user
+ * @param {{ serviceClient?: any }} [options] service-role client used only to
+ *   roll back a copy this repository just inserted. Users cannot delete
+ *   pending reviews and the admin cannot delete approved or rejected ones, so
+ *   a rollback through `supabase` would match no rows.
  */
-export function createReviewsRepository(supabase) {
+export function createReviewsRepository(
+  supabase,
+  { serviceClient = supabase } = {},
+) {
   async function findById(table, id, columns = "*") {
     const { data, error } = await supabase
       .from(table)
@@ -37,6 +47,25 @@ export function createReviewsRepository(supabase) {
     return data;
   }
 
+  /**
+   * Delete matching rows from `table`, failing if none were deleted.
+   * @param {any} client
+   * @param {string} table
+   * @param {Record<string, unknown>} filters
+   */
+  async function deleteRows(client, table, filters) {
+    let remove = client.from(table).delete();
+    for (const [column, value] of Object.entries(filters))
+      remove = remove.eq(column, value);
+    const { data, error } = await remove.select("id");
+    if (error) throw error;
+    if (!data?.length) {
+      throw new Error(
+        `Deleting review ${filters.id} from ${table} matched no rows (missing row-level security policy?)`,
+      );
+    }
+  }
+
   /** Insert `row` into `toTable`, then delete `id` from `fromTable`. */
   async function move(fromTable, toTable, id, row, deleteFilters = {}) {
     const { data: inserted, error: insertError } = await supabase
@@ -46,17 +75,12 @@ export function createReviewsRepository(supabase) {
       .single();
     if (insertError) throw insertError;
 
-    let remove = supabase.from(fromTable).delete().eq("id", id);
-    for (const [column, value] of Object.entries(deleteFilters))
-      remove = remove.eq(column, value);
-    const { error: deleteError } = await remove;
-
-    if (deleteError) {
-      const { error: rollbackError } = await supabase
-        .from(toTable)
-        .delete()
-        .eq("id", inserted.id);
-      if (rollbackError) {
+    try {
+      await deleteRows(supabase, fromTable, { id, ...deleteFilters });
+    } catch (deleteError) {
+      try {
+        await deleteRows(serviceClient, toTable, { id: inserted.id });
+      } catch (rollbackError) {
         console.error(
           `Rollback failed: review ${inserted.id} is now in both ${fromTable} and ${toTable}`,
           rollbackError,
@@ -127,12 +151,10 @@ export function createReviewsRepository(supabase) {
      */
     async deleteOwned(status, id, userId) {
       await this.getOwned(status, id, userId);
-      const { error } = await supabase
-        .from(REVIEW_TABLES[status])
-        .delete()
-        .eq("id", id)
-        .eq("user_id", userId);
-      if (error) throw error;
+      await deleteRows(supabase, REVIEW_TABLES[status], {
+        id,
+        user_id: userId,
+      });
     },
 
     /**
