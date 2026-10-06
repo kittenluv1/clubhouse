@@ -28,11 +28,16 @@ const eqs = (query) =>
   query.calls.filter((c) => c.method === "eq").map((c) => c.args);
 
 /**
- * respond(table, op) → result. Defaults: selects return `existing`, writes succeed.
+ * respond(table, op) → result. Defaults: selects return `existing`, writes
+ * succeed and deletes report one deleted row. `deletesNothing` lists tables
+ * whose deletes match no rows, which is what row-level security does to a
+ * delete the user is not allowed to make.
  */
 function setup({
   existing = { id: 10, user_id: "u1", user_alias: "@WiseOwl" },
   fail = {},
+  deletesNothing = [],
+  serviceDeletesNothing = false,
 } = {}) {
   const db = createSupabaseMock({
     respond: (query) => {
@@ -45,10 +50,22 @@ function setup({
           : { data: null, error: { code: "PGRST116", message: "no rows" } };
       }
       if (kind === "insert") return { data: { id: 99 } };
+      if (kind === "delete") {
+        return {
+          data: deletesNothing.includes(query.table) ? [] : [{ id: 1 }],
+        };
+      }
       return { data: null };
     },
   });
-  return { db, repo: createReviewsRepository(db) };
+  const serviceDb = createSupabaseMock({
+    respond: () => ({ data: serviceDeletesNothing ? [] : [{ id: 99 }] }),
+  });
+  return {
+    db,
+    serviceDb,
+    repo: createReviewsRepository(db, { serviceClient: serviceDb }),
+  };
 }
 
 describe("getOwned", () => {
@@ -156,19 +173,52 @@ describe("resubmit", () => {
   });
 
   it("rolls back the pending copy when removing the original fails", async () => {
-    const { db, repo } = setup({
-      fail: { "rejected_reviews:delete": { message: "rls" } },
+    const { serviceDb, repo } = setup({
+      fail: { "rejected_reviews:delete": { message: "boom" } },
     });
 
     await expect(
       repo.resubmit("rejected", "10", user, input),
     ).rejects.toBeDefined();
 
-    const rollback = db.queries.find(
-      (q) => q.table === "pending_reviews" && op(q) === "delete",
+    const [rollback] = serviceDb.queries;
+    expect(rollback.table).toBe("pending_reviews");
+    expect(op(rollback)).toBe("delete");
+    expect(eqs(rollback)).toEqual([["id", 99]]);
+  });
+
+  it("fails and rolls back when row-level security blocks removing the original", async () => {
+    // Prod has no owner-delete policy on reviews: the delete "succeeds" with
+    // zero rows and used to leave the review in both tables.
+    const { serviceDb, repo } = setup({ deletesNothing: ["reviews"] });
+
+    await expect(repo.resubmit("approved", "10", user, input)).rejects.toThrow(
+      /reviews/,
     );
-    expect(rollback).toBeDefined();
-    expect(eqs(rollback)).toContainEqual(["id", 99]);
+
+    const [rollback] = serviceDb.queries;
+    expect(rollback.table).toBe("pending_reviews");
+    expect(eqs(rollback)).toEqual([["id", 99]]);
+  });
+
+  it("logs a review left in both tables when the rollback deletes nothing", async () => {
+    const consoleError = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    const { repo } = setup({
+      deletesNothing: ["reviews"],
+      serviceDeletesNothing: true,
+    });
+
+    await expect(
+      repo.resubmit("approved", "10", user, input),
+    ).rejects.toBeDefined();
+
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining("99 is now in both reviews and pending_reviews"),
+      expect.anything(),
+    );
+    consoleError.mockRestore();
   });
 
   it("does not touch the original when the review belongs to someone else", async () => {
@@ -182,6 +232,20 @@ describe("resubmit", () => {
 });
 
 describe("deleteOwned", () => {
+  it("deletes the owner's review", async () => {
+    const { repo } = setup();
+    await expect(
+      repo.deleteOwned("rejected", "10", user.id),
+    ).resolves.toBeUndefined();
+  });
+
+  it("fails instead of reporting success when nothing was deleted", async () => {
+    const { repo } = setup({ deletesNothing: ["reviews"] });
+    await expect(repo.deleteOwned("approved", "10", user.id)).rejects.toThrow(
+      /reviews/,
+    );
+  });
+
   it("deletes only after confirming ownership", async () => {
     const { db, repo } = setup({ existing: { id: 10, user_id: "other" } });
 
@@ -229,16 +293,28 @@ describe("moderate", () => {
   });
 
   it("rolls back the copy when deleting the pending review fails", async () => {
-    const { db, repo } = setup({
+    const { serviceDb, repo } = setup({
       existing: pending,
       fail: { "pending_reviews:delete": { message: "x" } },
     });
 
     await expect(repo.moderate("5", true)).rejects.toBeDefined();
 
-    const rollback = db.queries.find(
-      (q) => q.table === "reviews" && op(q) === "delete",
-    );
-    expect(eqs(rollback)).toContainEqual(["id", 99]);
+    const [rollback] = serviceDb.queries;
+    expect(rollback.table).toBe("reviews");
+    expect(eqs(rollback)).toEqual([["id", 99]]);
+  });
+
+  it("fails and rolls back when the pending review could not be deleted", async () => {
+    const { serviceDb, repo } = setup({
+      existing: pending,
+      deletesNothing: ["pending_reviews"],
+    });
+
+    await expect(repo.moderate("5", false)).rejects.toThrow(/pending_reviews/);
+
+    const [rollback] = serviceDb.queries;
+    expect(rollback.table).toBe("rejected_reviews");
+    expect(eqs(rollback)).toEqual([["id", 99]]);
   });
 });

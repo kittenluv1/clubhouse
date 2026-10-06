@@ -1,3 +1,4 @@
+import { supabaseServer } from "@/app/lib/server-db";
 import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
 import { HttpError, readJson, withAdmin } from "@/app/lib/server/route";
 
@@ -18,7 +19,9 @@ export const POST = withAdmin(async (req, { supabase }) => {
     );
   }
 
-  await createReviewsRepository(supabase).moderate(reviewID, approve);
+  await createReviewsRepository(supabase, {
+    serviceClient: supabaseServer,
+  }).moderate(reviewID, approve);
   return Response.json({
     message: approve
       ? "Review approved and moved to reviews table"
