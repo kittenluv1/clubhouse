@@ -16,8 +16,7 @@ export async function GET(req) {
 
   try {
     const { clubs, regularCount, sportsCount } = await fetchUclaClubs();
-    const repo = createClubsRepository(supabaseServer);
-    for (const club of clubs) await repo.saveClub(club);
+    await createClubsRepository(supabaseServer).saveClubs(clubs);
 
     return Response.json({
       totalClubs: clubs.length,
