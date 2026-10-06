@@ -132,21 +132,17 @@ export function createClubsRepository(supabase) {
     },
 
     /**
-     * Update a club from the UCLA directory, inserting it if it is new.
+     * Update a club from the UCLA directory, inserting it if it is new. Only
+     * the columns present in `club` are written, so omitted fields keep their
+     * stored values.
      * @param {Record<string, unknown>} club row keyed by OrganizationID
      */
     async saveClub(club) {
-      const { id: _localId, ...fields } = club;
-      const { count, error } = await supabase
+      const { id: _localId, ...row } = club;
+      const { error } = await supabase
         .from("clubs")
-        .update(fields)
-        .eq("OrganizationID", club.OrganizationID)
-        .select("OrganizationID", { count: "exact", head: true });
+        .upsert(row, { onConflict: "OrganizationID" });
       if (error) throw error;
-      if (count > 0) return;
-
-      const { error: insertError } = await supabase.from("clubs").insert(club);
-      if (insertError) throw insertError;
     },
 
     /**

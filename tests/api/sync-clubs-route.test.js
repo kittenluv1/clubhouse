@@ -17,7 +17,7 @@ const call = (headers) =>
 
 beforeEach(() => {
   process.env.CRON_SECRET = SECRET;
-  db = createSupabaseMock({ respond: () => ({ count: 1 }) });
+  db = createSupabaseMock();
   global.fetch = jest.fn(async () => ({
     ok: true,
     json: async () => ({
@@ -95,7 +95,43 @@ describe("GET /api (club sync cron)", () => {
 
     await call({ authorization: `Bearer ${SECRET}` });
 
-    const updates = db.callsTo("update").map(([fields]) => fields);
-    expect(updates).toEqual([{ OrganizationID: 1, OrganizationName: "A" }]);
+    const [[row]] = db.callsTo("upsert");
+    expect(row).toEqual({ OrganizationID: 1, OrganizationName: "A" });
+  });
+
+  it("upserts each club on OrganizationID instead of inserting it", async () => {
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        orgList: [{ OrganizationID: "1", OrganizationName: "A", id: 99 }],
+        clubSportsOrgList: [{ id: "V3Q2-L6L95", name: "Archery" }],
+      }),
+    }));
+
+    const res = await call({ authorization: `Bearer ${SECRET}` });
+
+    expect(res.status).toBe(200);
+    expect(db.callsTo("insert")).toHaveLength(0);
+    const upserts = db.callsTo("upsert");
+    expect(upserts.map(([row]) => row.OrganizationID)).toEqual([
+      "1",
+      "V3Q2-L6L95",
+    ]);
+    for (const [row, options] of upserts) {
+      expect(row).not.toHaveProperty("id");
+      expect(options).toEqual({ onConflict: "OrganizationID" });
+    }
+  });
+
+  it("returns 500 when saving a club fails", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    db = createSupabaseMock({
+      respond: () => ({ error: { code: "XX000", message: "boom" } }),
+    });
+
+    const res = await call({ authorization: `Bearer ${SECRET}` });
+
+    expect(res.status).toBe(500);
+    console.error.mockRestore();
   });
 });

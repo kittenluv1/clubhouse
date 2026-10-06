@@ -37,18 +37,21 @@ export function mapClubSport(sport) {
 }
 
 /**
- * Drop null fields (so a sync never blanks stored values) and remove NUL
- * characters, which Postgres text columns reject.
+ * Drop null and blank fields (so a sync never blanks stored values) and
+ * remove NUL characters, which Postgres text columns reject.
  * @param {Record<string, unknown>} club
  */
 export function sanitizeClub(club) {
   return Object.fromEntries(
     Object.entries(club)
-      .filter(([, value]) => value !== null)
       .map(([key, value]) => [
         key,
         typeof value === "string" ? value.replace(/\u0000/g, "") : value,
-      ]),
+      ])
+      .filter(
+        ([, value]) =>
+          value !== null && !(typeof value === "string" && !value.trim()),
+      ),
   );
 }
 
