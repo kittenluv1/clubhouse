@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
 import Button from "./components/button";
 import ClubCarousel from "./components/ClubCarousel";
+import { useSearch } from "./context/SearchContext";
 
 const CATEGORIES = [
   "Academic",
@@ -71,6 +72,7 @@ function useIsMobile(breakpoint = 1024) {
 
 function Home() {
   const router = useRouter();
+  const { searchByCategories } = useSearch();
   const searchRef = useRef();
   const isMobile = useIsMobile();
 
@@ -106,10 +108,7 @@ function Home() {
               <Button
                 style="drop-shadow-xs"
                 key={category}
-                onClick={() => {
-                  const encoded = encodeURIComponent(category);
-                  router.push(`/clubs?categories=${encoded}`);
-                }}
+                onClick={() => searchByCategories([category])}
               >
                 {category}
               </Button>
