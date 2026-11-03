@@ -1,7 +1,10 @@
 /**
  * @jest-environment node
  */
-import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
+import {
+  createReviewsRepository,
+  listPublicReviews,
+} from "@/app/lib/server/repositories/reviews";
 import { HttpError } from "@/app/lib/server/errors";
 import { createSupabaseMock } from "../helpers/supabaseMock";
 
@@ -26,46 +29,37 @@ const op = (query) =>
   query.calls.find((c) => WRITE_METHODS.includes(c.method))?.method ?? "select";
 const eqs = (query) =>
   query.calls.filter((c) => c.method === "eq").map((c) => c.args);
+const writes = (db) => db.queries.filter((q) => op(q) !== "select");
 
 /**
- * respond(table, op) → result. Defaults: selects return `existing`, writes
- * succeed and deletes report one deleted row. `deletesNothing` lists tables
- * whose deletes match no rows, which is what row-level security does to a
- * delete the user is not allowed to make.
+ * Selects return `existing`; updates and deletes match a row unless listed in
+ * `matchesNothing`, which is what a stale status filter or row-level security
+ * does to a write.
  */
 function setup({
   existing = { id: 10, user_id: "u1", user_alias: "@WiseOwl" },
   fail = {},
-  deletesNothing = [],
-  serviceDeletesNothing = false,
+  matchesNothing = [],
 } = {}) {
   const db = createSupabaseMock({
     respond: (query) => {
       const kind = op(query);
-      const failure = fail[`${query.table}:${kind}`];
+      const failure = fail[kind];
       if (failure) return { data: null, error: failure };
       if (kind === "select") {
-        return existing
-          ? { data: existing }
-          : { data: null, error: { code: "PGRST116", message: "no rows" } };
+        if (existing) return { data: existing };
+        const isSingle = query.calls.some((c) => c.method === "single");
+        return isSingle
+          ? { data: null, error: { code: "PGRST116", message: "no rows" } }
+          : { data: null };
       }
       if (kind === "insert") return { data: { id: 99 } };
-      if (kind === "delete") {
-        return {
-          data: deletesNothing.includes(query.table) ? [] : [{ id: 1 }],
-        };
-      }
-      return { data: null };
+      if (kind === "update")
+        return { data: matchesNothing.includes("update") ? null : { id: 10 } };
+      return { data: matchesNothing.includes("delete") ? [] : [{ id: 10 }] };
     },
   });
-  const serviceDb = createSupabaseMock({
-    respond: () => ({ data: serviceDeletesNothing ? [] : [{ id: 99 }] }),
-  });
-  return {
-    db,
-    serviceDb,
-    repo: createReviewsRepository(db, { serviceClient: serviceDb }),
-  };
+  return { db, repo: createReviewsRepository(db) };
 }
 
 describe("getOwned", () => {
@@ -76,7 +70,18 @@ describe("getOwned", () => {
     ).resolves.toMatchObject({ id: 10 });
   });
 
-  it("throws 404 when the review does not exist", async () => {
+  it("reads the review only in the requested status", async () => {
+    const { db, repo } = setup();
+    await repo.getOwned("approved", "10", user.id);
+
+    expect(db.queries[0].table).toBe("reviews");
+    expect(eqs(db.queries[0])).toEqual([
+      ["id", "10"],
+      ["status", "approved"],
+    ]);
+  });
+
+  it("throws 404 when the review does not exist in that status", async () => {
     const { repo } = setup({ existing: null });
     await expect(
       repo.getOwned("rejected", "10", user.id),
@@ -85,12 +90,7 @@ describe("getOwned", () => {
 
   it("throws 404 for an id that is not valid for the column", async () => {
     const { repo } = setup({
-      fail: {
-        "rejected_reviews:select": {
-          code: "22P02",
-          message: "invalid input syntax",
-        },
-      },
+      fail: { select: { code: "22P02", message: "invalid input syntax" } },
     });
     await expect(
       repo.getOwned("rejected", "abc", user.id),
@@ -99,12 +99,7 @@ describe("getOwned", () => {
 
   it("lets other database errors through as unexpected", async () => {
     const { repo } = setup({
-      fail: {
-        "rejected_reviews:select": {
-          code: "08006",
-          message: "connection failure",
-        },
-      },
+      fail: { select: { code: "08006", message: "connection failure" } },
     });
     const err = await repo.getOwned("rejected", "10", user.id).catch((e) => e);
     expect(err).not.toBeInstanceOf(HttpError);
@@ -117,133 +112,115 @@ describe("getOwned", () => {
       repo.getOwned("approved", "10", user.id),
     ).rejects.toMatchObject({ status: 403 });
   });
-
-  it("reads from the table for the requested status", async () => {
-    const { db, repo } = setup();
-    await repo.getOwned("approved", "10", user.id);
-    expect(db.queries[0].table).toBe("reviews");
-  });
 });
 
 describe("submit", () => {
-  it("queues the review in pending_reviews under the session user", async () => {
+  it("inserts a pending review under the session user", async () => {
     const { db, repo } = setup();
 
     await repo.submit(user, input, "@CleverOtter");
 
-    const [insert] = db.queries.filter((q) => op(q) === "insert");
-    expect(insert.table).toBe("pending_reviews");
+    const [insert] = writes(db);
+    expect(insert.table).toBe("reviews");
     expect(db.callsTo("insert")[0][0]).toEqual({
       ...input,
       user_id: "u1",
       user_email: "student@ucla.edu",
       user_alias: "@CleverOtter",
+      status: "pending",
     });
   });
 });
 
 describe("resubmit", () => {
-  it("copies the edit into pending_reviews, keeping the original alias", async () => {
-    const { db, repo } = setup();
+  it.each(["approved", "rejected"])(
+    "updates the %s review in place and sends it back to pending",
+    async (status) => {
+      const { db, repo } = setup();
 
-    await repo.resubmit("rejected", "10", user, input);
+      await repo.resubmit(status, "10", user, input);
 
-    expect(db.callsTo("insert")[0][0]).toEqual({
-      ...input,
-      user_id: "u1",
-      user_email: "student@ucla.edu",
-      user_alias: "@WiseOwl",
-    });
-  });
-
-  it("removes the original, scoped to the owner", async () => {
-    const { db, repo } = setup();
-
-    await repo.resubmit("approved", "10", user, input);
-
-    const [del] = db.queries.filter(
-      (q) => op(q) === "delete" && q.table === "reviews",
-    );
-    expect(eqs(del)).toEqual(
-      expect.arrayContaining([
+      const [update] = writes(db);
+      expect(op(update)).toBe("update");
+      expect(update.table).toBe("reviews");
+      expect(db.callsTo("update")[0][0]).toEqual({
+        ...input,
+        status: "pending",
+      });
+      expect(eqs(update)).toEqual([
         ["id", "10"],
         ["user_id", "u1"],
-      ]),
-    );
-  });
+        ["status", status],
+      ]);
+    },
+  );
 
-  it("rolls back the pending copy when removing the original fails", async () => {
-    const { serviceDb, repo } = setup({
-      fail: { "rejected_reviews:delete": { message: "boom" } },
-    });
-
-    await expect(
-      repo.resubmit("rejected", "10", user, input),
-    ).rejects.toBeDefined();
-
-    const [rollback] = serviceDb.queries;
-    expect(rollback.table).toBe("pending_reviews");
-    expect(op(rollback)).toBe("delete");
-    expect(eqs(rollback)).toEqual([["id", 99]]);
-  });
-
-  it("fails and rolls back when row-level security blocks removing the original", async () => {
-    // Prod has no owner-delete policy on reviews: the delete "succeeds" with
-    // zero rows and used to leave the review in both tables.
-    const { serviceDb, repo } = setup({ deletesNothing: ["reviews"] });
-
-    await expect(repo.resubmit("approved", "10", user, input)).rejects.toThrow(
-      /reviews/,
-    );
-
-    const [rollback] = serviceDb.queries;
-    expect(rollback.table).toBe("pending_reviews");
-    expect(eqs(rollback)).toEqual([["id", 99]]);
-  });
-
-  it("logs a review left in both tables when the rollback deletes nothing", async () => {
-    const consoleError = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-    const { repo } = setup({
-      deletesNothing: ["reviews"],
-      serviceDeletesNothing: true,
-    });
-
-    await expect(
-      repo.resubmit("approved", "10", user, input),
-    ).rejects.toBeDefined();
-
-    expect(consoleError).toHaveBeenCalledWith(
-      expect.stringContaining("99 is now in both reviews and pending_reviews"),
-      expect.anything(),
-    );
-    consoleError.mockRestore();
-  });
-
-  it("does not touch the original when the review belongs to someone else", async () => {
+  it("does not write when the review belongs to someone else", async () => {
     const { db, repo } = setup({ existing: { id: 10, user_id: "other" } });
 
     await expect(
       repo.resubmit("rejected", "10", user, input),
     ).rejects.toMatchObject({ status: 403 });
-    expect(db.queries.filter((q) => op(q) !== "select")).toHaveLength(0);
+    expect(writes(db)).toHaveLength(0);
+  });
+
+  it("does not write when the review is not in that status", async () => {
+    const { db, repo } = setup({ existing: null });
+
+    await expect(
+      repo.resubmit("approved", "10", user, input),
+    ).rejects.toMatchObject({ status: 404 });
+    expect(writes(db)).toHaveLength(0);
+  });
+
+  it("409 when the review changed between the read and the update", async () => {
+    const { repo } = setup({ matchesNothing: ["update"] });
+
+    await expect(
+      repo.resubmit("approved", "10", user, input),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it("lets update errors through as unexpected", async () => {
+    const { repo } = setup({ fail: { update: { message: "boom" } } });
+
+    const err = await repo
+      .resubmit("approved", "10", user, input)
+      .catch((e) => e);
+    expect(err).not.toBeInstanceOf(HttpError);
   });
 });
 
 describe("deleteOwned", () => {
-  it("deletes the owner's review", async () => {
-    const { repo } = setup();
+  it("deletes the owner's review, scoped to owner and status", async () => {
+    const { db, repo } = setup();
+
     await expect(
       repo.deleteOwned("rejected", "10", user.id),
     ).resolves.toBeUndefined();
+
+    const [del] = writes(db);
+    expect(op(del)).toBe("delete");
+    expect(eqs(del)).toEqual([
+      ["id", "10"],
+      ["user_id", "u1"],
+      ["status", "rejected"],
+    ]);
   });
 
   it("fails instead of reporting success when nothing was deleted", async () => {
-    const { repo } = setup({ deletesNothing: ["reviews"] });
-    await expect(repo.deleteOwned("approved", "10", user.id)).rejects.toThrow(
-      /reviews/,
-    );
+    const { repo } = setup({ matchesNothing: ["delete"] });
+    await expect(
+      repo.deleteOwned("rejected", "10", user.id),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it("lets delete errors through as unexpected", async () => {
+    const { repo } = setup({ fail: { delete: { message: "boom" } } });
+    const err = await repo
+      .deleteOwned("rejected", "10", user.id)
+      .catch((e) => e);
+    expect(err).not.toBeInstanceOf(HttpError);
   });
 
   it("deletes only after confirming ownership", async () => {
@@ -252,69 +229,131 @@ describe("deleteOwned", () => {
     await expect(
       repo.deleteOwned("rejected", "10", user.id),
     ).rejects.toMatchObject({ status: 403 });
-    expect(db.queries.filter((q) => op(q) === "delete")).toHaveLength(0);
+    expect(writes(db)).toHaveLength(0);
   });
 });
 
-describe("moderate", () => {
-  const pending = { id: 5, user_id: "u2", review_text: "hi" };
+describe("listForUser", () => {
+  it("reads the user's reviews once and groups them by status", async () => {
+    const rows = [
+      { id: 1, status: "approved" },
+      { id: 2, status: "pending" },
+      { id: 3, status: "rejected" },
+      { id: 4, status: "approved" },
+    ];
+    const db = createSupabaseMock({ respond: () => ({ data: rows }) });
 
-  it("approving moves the pending review into reviews", async () => {
-    const { db, repo } = setup({ existing: pending });
+    const grouped = await createReviewsRepository(db).listForUser("u1");
 
-    await repo.moderate("5", true);
-
-    expect(db.queries.find((q) => op(q) === "insert").table).toBe("reviews");
-    expect(db.callsTo("insert")[0][0]).toEqual(pending);
-    expect(db.queries.find((q) => op(q) === "delete").table).toBe(
-      "pending_reviews",
-    );
-  });
-
-  it("rejecting moves it into rejected_reviews with a fresh updated_at", async () => {
-    const { db, repo } = setup({ existing: pending });
-
-    await repo.moderate("5", false);
-
-    expect(db.queries.find((q) => op(q) === "insert").table).toBe(
-      "rejected_reviews",
-    );
-    expect(db.callsTo("insert")[0][0]).toMatchObject({
-      ...pending,
-      updated_at: expect.any(String),
+    expect(db.queries).toHaveLength(1);
+    expect(eqs(db.queries[0])).toEqual([["user_id", "u1"]]);
+    expect(grouped).toEqual({
+      approved: [rows[0], rows[3]],
+      pending: [rows[1]],
+      rejected: [rows[2]],
     });
   });
 
-  it("throws 404 for an unknown pending review", async () => {
-    const { repo } = setup({ existing: null });
+  it("returns empty groups when the user has no reviews", async () => {
+    const db = createSupabaseMock({ respond: () => ({ data: null }) });
+    await expect(
+      createReviewsRepository(db).listForUser("u1"),
+    ).resolves.toEqual({ approved: [], pending: [], rejected: [] });
+  });
+
+  it("lets database errors through", async () => {
+    const db = createSupabaseMock({
+      respond: () => ({ error: { message: "boom" } }),
+    });
+    await expect(
+      createReviewsRepository(db).listForUser("u1"),
+    ).rejects.toMatchObject({ message: "boom" });
+  });
+});
+
+describe("listPending", () => {
+  it.each([
+    [false, true],
+    [true, false],
+  ])(
+    "lists pending reviews by last submission (newestFirst=%p)",
+    async (newestFirst, ascending) => {
+      const db = createSupabaseMock({ respond: () => ({ data: [{ id: 1 }] }) });
+
+      const pending = await createReviewsRepository(db).listPending({
+        newestFirst,
+      });
+
+      expect(pending).toEqual([{ id: 1 }]);
+      expect(eqs(db.queries[0])).toEqual([["status", "pending"]]);
+      expect(db.callsTo("order")[0]).toEqual(["updated_at", { ascending }]);
+    },
+  );
+});
+
+describe("moderate", () => {
+  it("approving updates the review only while it is pending", async () => {
+    const { db, repo } = setup();
+
+    await repo.moderate("5", true);
+
+    const [update] = writes(db);
+    expect(op(update)).toBe("update");
+    expect(db.callsTo("update")[0][0]).toEqual({ status: "approved" });
+    expect(eqs(update)).toEqual([
+      ["id", "5"],
+      ["status", "pending"],
+    ]);
+  });
+
+  it("rejecting only changes the status (the database sets updated_at)", async () => {
+    const { db, repo } = setup();
+
+    await repo.moderate("5", false);
+
+    expect(db.callsTo("update")[0][0]).toEqual({ status: "rejected" });
+  });
+
+  it("404 when the review does not exist", async () => {
+    const { repo } = setup({ existing: null, matchesNothing: ["update"] });
     await expect(repo.moderate("5", true)).rejects.toMatchObject({
       status: 404,
     });
   });
 
-  it("rolls back the copy when deleting the pending review fails", async () => {
-    const { serviceDb, repo } = setup({
-      existing: pending,
-      fail: { "pending_reviews:delete": { message: "x" } },
+  it("404 for an id that is not a valid uuid", async () => {
+    const { repo } = setup({ fail: { update: { code: "22P02" } } });
+    await expect(repo.moderate("abc", true)).rejects.toMatchObject({
+      status: 404,
     });
-
-    await expect(repo.moderate("5", true)).rejects.toBeDefined();
-
-    const [rollback] = serviceDb.queries;
-    expect(rollback.table).toBe("reviews");
-    expect(eqs(rollback)).toEqual([["id", 99]]);
   });
 
-  it("fails and rolls back when the pending review could not be deleted", async () => {
-    const { serviceDb, repo } = setup({
-      existing: pending,
-      deletesNothing: ["pending_reviews"],
+  it("409 when the review is no longer pending", async () => {
+    const { repo } = setup({ matchesNothing: ["update"] });
+    await expect(repo.moderate("5", false)).rejects.toMatchObject({
+      status: 409,
     });
+  });
 
-    await expect(repo.moderate("5", false)).rejects.toThrow(/pending_reviews/);
+  it("lets errors from the existence check through", async () => {
+    const { repo } = setup({
+      matchesNothing: ["update"],
+      fail: { select: { code: "08006" } },
+    });
+    const err = await repo.moderate("5", true).catch((e) => e);
+    expect(err).not.toBeInstanceOf(HttpError);
+  });
+});
 
-    const [rollback] = serviceDb.queries;
-    expect(rollback.table).toBe("rejected_reviews");
-    expect(eqs(rollback)).toEqual([["id", 99]]);
+describe("listPublicReviews", () => {
+  it("lists only approved reviews for the club", async () => {
+    const db = createSupabaseMock({ respond: () => ({ data: [] }) });
+
+    await listPublicReviews(db, "V3Q2-L6L95", null);
+
+    expect(eqs(db.queries[0])).toEqual([
+      ["club_id", "V3Q2-L6L95"],
+      ["status", "approved"],
+    ]);
   });
 });

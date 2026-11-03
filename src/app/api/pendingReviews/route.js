@@ -2,15 +2,17 @@ import { supabaseServer } from "@/app/lib/server-db";
 import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
 import { HttpError, readJson, withAdmin } from "@/app/lib/server/route";
 
-export const GET = withAdmin(async (req, { supabase }) => {
+// withAdmin checks the admin server-side, so the queries run as the service
+// role and the reviews table needs no admin policies.
+export const GET = withAdmin(async (req) => {
   const newestFirst = req.nextUrl.searchParams.get("sort") === "newest";
-  const pendingReviews = await createReviewsRepository(supabase).listPending({
-    newestFirst,
-  });
+  const pendingReviews = await createReviewsRepository(
+    supabaseServer,
+  ).listPending({ newestFirst });
   return Response.json({ pendingReviews });
 });
 
-export const POST = withAdmin(async (req, { supabase }) => {
+export const POST = withAdmin(async (req) => {
   const { reviewID, approve } = await readJson(req);
   if (!reviewID || typeof approve !== "boolean") {
     throw new HttpError(
@@ -19,12 +21,8 @@ export const POST = withAdmin(async (req, { supabase }) => {
     );
   }
 
-  await createReviewsRepository(supabase, {
-    serviceClient: supabaseServer,
-  }).moderate(reviewID, approve);
+  await createReviewsRepository(supabaseServer).moderate(reviewID, approve);
   return Response.json({
-    message: approve
-      ? "Review approved and moved to reviews table"
-      : "Review rejected and moved to rejected reviews table",
+    message: approve ? "Review approved" : "Review rejected",
   });
 });

@@ -61,7 +61,7 @@ describe("DELETE /api/rejectedReviews/[id]", () => {
 
     expect((await DELETE(makeRequest(), params)).status).toBe(200);
     const [query] = deleteQueries();
-    expect(query.table).toBe("rejected_reviews");
+    expect(query.table).toBe("reviews");
     const filters = query.calls
       .filter((c) => c.method === "eq")
       .map((c) => c.args);
@@ -69,6 +69,7 @@ describe("DELETE /api/rejectedReviews/[id]", () => {
       expect.arrayContaining([
         ["id", "10"],
         ["user_id", "u1"],
+        ["status", "rejected"],
       ]),
     );
   });
@@ -109,7 +110,7 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
       respond: ({ calls }) => {
         const method = (name) => calls.some((c) => c.method === name);
         if (method("delete")) return { data: [{ id: 10 }] };
-        if (method("insert")) return { data: { id: 11 } };
+        if (method("update")) return { data: { id: 10 } };
         return { data: { id: 10, user_id: "u1", user_alias: "@WiseOwl" } };
       },
     });
@@ -119,17 +120,20 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     const res = await post({ ...edit, review_text: "" });
 
     expect(res.status).toBe(400);
-    expect(db.callsTo("insert")).toHaveLength(0);
+    expect(db.callsTo("update")).toHaveLength(0);
   });
 
-  it("queues the edit under the original alias", async () => {
+  it("updates the review in place and sends it back to pending", async () => {
     const res = await post({ ...edit, user_alias: "@Other" });
 
     expect(res.status).toBe(200);
-    const row = db.callsTo("insert")[0][0];
-    expect(row.user_alias).toBe("@WiseOwl");
-    expect(row.club_name).toBe("Archery");
-    expect(row).not.toHaveProperty("is_current_member");
+    expect(db.callsTo("insert")).toHaveLength(0);
+    expect(db.callsTo("delete")).toHaveLength(0);
+    const changes = db.callsTo("update")[0][0];
+    expect(changes.status).toBe("pending");
+    expect(changes).not.toHaveProperty("user_alias");
+    expect(changes.club_name).toBe("Archery");
+    expect(changes).not.toHaveProperty("is_current_member");
   });
 
   it("400 when the edit points at a club that does not exist", async () => {
@@ -138,7 +142,6 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     const res = await post(edit);
 
     expect(res.status).toBe(400);
-    expect(db.callsTo("insert")).toHaveLength(0);
-    expect(db.callsTo("delete")).toHaveLength(0);
+    expect(db.callsTo("update")).toHaveLength(0);
   });
 });

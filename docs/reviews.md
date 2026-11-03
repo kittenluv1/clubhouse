@@ -10,27 +10,15 @@
 
 ### Implementation
 
-A **private SQL function** `update_club_review_stats()` handles the rating logic (defined under "Update Club Overall Ratings" in Supabase).
-
-**Why a SQL function?** Ensures all updates to the `clubs` table happen only when a review is successfully posted, reducing the need to manually update in the repo.
+The trigger function `update_club_review_stats()` (AFTER INSERT, UPDATE and DELETE on `reviews`) keeps the totals on `clubs` in step with the **approved** reviews. On every change it subtracts the old row if it was approved and adds the new row if it is approved, so approvals, edits that send a review back to pending, rating edits, club changes and deletes all keep the totals right. The function is defined in `supabase/migrations/20261104_1_review_status_expand.sql`.
 
 ### Database Columns on `clubs` Table
 
 | Column | Type | Description |
 |--------|------|-------------|
-| `satisfaction_sum` | float (unrounded) | Sum of all overall satisfaction ratings. Kept unrounded to preserve accuracy. |
-| `total_num_reviews` | integer | Number of reviews the club has |
-| `average_satisfaction` | float (rounded to nearest tenth) | Calculated average satisfaction rating |
-
-### SQL Function Logic (`update_club_review_stats`)
-
-1. When a user submits a review, takes the associated `club_id`
-2. Finds the corresponding `OrganizationID` in the `clubs` table
-3. `satisfaction_sum += overall_satisfaction` (from the user review)
-4. `total_num_reviews += 1`
-5. `average_satisfaction` is automatically recalculated whenever `satisfaction_sum` or `total_num_reviews` changes
-
-This function is **triggered after successful insertion** in the `reviews` table.
+| `total_num_reviews` | integer | Number of approved reviews |
+| `satisfaction_sum`, `time_commitment_sum`, `inclusivity_sum`, `social_community_sum`, `competitiveness_sum` | float (unrounded) | Sums of the approved reviews' ratings |
+| `average_*` | generated column | `sum / total_num_reviews`, rounded; null when the club has no reviews |
 
 ## Sorting Reviews
 
@@ -54,34 +42,47 @@ The clubs API retrieves `sortType` from the URL (default: `"Highest Rating"`):
 
 The sort conditions are passed into the Supabase query request.
 
-## Pending Reviews & Approval (Emails)
+## Moderation
 
-### Submission Flow
+Every review is one row in `reviews`. Its `status` is `pending`, `approved` or `rejected`, and each change of state is one update to that row, so a review keeps its id, alias, `created_at` and likes for its whole life.
 
-1. Upon review creation, insert into the `pending_reviews` table (has the same fields and data types as the `reviews` table)
-2. **Trigger:** Upon insertion into `pending_reviews`, calls the Supabase edge function `send-review-email`
-   - Sends `clubhouseucla@gmail.com` an email that a new review has been added
-   - Sends the user an email about successful review submission
+| Action | Route | Change |
+|--------|-------|--------|
+| Submit | `POST /api/reviews` | Insert with `status = 'pending'` |
+| Approve | `POST /api/pendingReviews` (`approve: true`) | `pending → approved` |
+| Reject | `POST /api/pendingReviews` (`approve: false`) | `pending → rejected`, sets `updated_at` |
+| Edit | `POST /api/approvedReviews/[id]`, `POST /api/rejectedReviews/[id]` | New content, `approved/rejected → pending`. The review leaves the club page and ratings until it is approved again. |
+| Delete | `DELETE /api/rejectedReviews/[id]` | Owners can delete rejected reviews only |
+
+Moderating a review that is no longer pending returns 409.
 
 ### Admin Panel
 
 - **URL:** `www.clubhouseucla.com/admin`
-- **Access:** Only accessible to `clubhouseucla@gmail.com` (kicks others to the log-in page)
-- Displays all pending reviews from the `pending_reviews` table
-- Supports sorting by ascending or descending date
+- **Access:** only `NEXT_PUBLIC_ADMIN_EMAIL`. `withAdmin` checks the signed-in user on the server, then the admin routes read and update `reviews` with the service-role client.
+- Lists pending reviews ordered by `updated_at`, which is when the review was last submitted.
 
-### Approval / Denial
+### Emails
 
-| Action | What Happens |
-|--------|-------------|
-| **Approve** | Insert into `reviews` table (triggers rating update), then delete from `pending_reviews`. Triggers `send-user-approval-email` edge function, which notifies the user their review was approved with a link to the club page. |
-| **Deny** | Delete from `pending_reviews`. Triggers `send-user-disapproval-email` edge function, which notifies the user their review was removed, includes the review content, and links to submit a new review. |
+Emails are sent from the browser after the API call succeeds, through Supabase edge functions that use the **Resend API** (free plan: 100 emails a day). No database trigger sends email.
 
-### Email Service
+| When | Page | Edge function |
+|------|------|---------------|
+| Submit or edit | `/review`, `/review/edit/[id]` | `send-review-email` |
+| Approve | `/admin` | `send-user-approval-email` |
+| Reject | `/admin` (with the rejection reasons) | `send-user-disapprove-email` |
 
-- Uses the **Resend API**
-- **Free plan limit:** Max 100 emails per day
+Rejection reasons are only emailed, not stored. A rejected review counts as unread on the profile page while its `updated_at` is later than `profiles.last_viewed_rejected_at`.
 
 ### Row Level Security (RLS)
 
-RLS is configured on the relevant tables to secure access.
+On `reviews`, signed-in users can:
+
+- read their own reviews in any status
+- insert their own reviews as `pending`
+- update their own `approved` or `rejected` reviews, only to `pending`
+- delete their own `rejected` reviews
+
+A trigger stops users changing `id`, `user_id`, `user_email`, `user_alias` or `created_at`, and sets `updated_at` (and `created_at` on insert) on the server. Anonymous visitors cannot read `reviews` at all. The public club page reads approved reviews through the service role and returns only `PUBLIC_REVIEW_FIELDS`, never `user_email` or `user_id`. A review can only be liked while it is approved.
+
+The old `pending_reviews` and `rejected_reviews` tables are read-only after the import and are dropped two weeks later.

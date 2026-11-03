@@ -22,12 +22,12 @@ function setup({
 } = {}) {
   const tables = {
     profiles: { data: profile },
-    reviews: { data: [{ id: 1, review_text: "approved" }] },
-    pending_reviews: { data: [{ id: 2 }] },
-    rejected_reviews: {
+    reviews: {
       data: [
-        { id: 3, updated_at: "2026-01-01T00:00:00Z" },
-        { id: 4, updated_at: "2026-01-03T00:00:00Z" },
+        { id: 1, status: "approved", review_text: "approved" },
+        { id: 2, status: "pending" },
+        { id: 3, status: "rejected", updated_at: "2026-01-01T00:00:00Z" },
+        { id: 4, status: "rejected", updated_at: "2026-01-03T00:00:00Z" },
       ],
     },
     club_likes: { data: [{ club_id: 1, clubs: chess }] },
@@ -59,8 +59,10 @@ describe("GET /api/profile", () => {
     const body = await (await get()).json();
 
     expect(body.profile).toMatchObject({ id: "u1" });
-    expect(body.approvedReviews).toEqual([{ id: 1, review_text: "approved" }]);
-    expect(body.pendingReviews).toEqual([{ id: 2 }]);
+    expect(body.approvedReviews).toEqual([
+      { id: 1, status: "approved", review_text: "approved" },
+    ]);
+    expect(body.pendingReviews).toEqual([{ id: 2, status: "pending" }]);
     expect(body.rejectedReviews.map((r) => r.id)).toEqual([3, 4]);
     expect(body.userInterests).toEqual(["Games"]);
   });
