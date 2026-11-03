@@ -3,6 +3,7 @@
 // update, so there is nothing to roll back.
 
 import { HttpError } from "@/app/lib/server/errors";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 
 /** @typedef {"approved" | "pending" | "rejected"} ReviewStatus */
 /** @typedef {import("@/app/lib/reviews/schema").ReviewInput} ReviewInput */
@@ -12,12 +13,11 @@ const TABLE = "reviews";
 // `.single()` matched no rows / the id is not valid for the column type.
 const NOT_FOUND_CODES = new Set(["PGRST116", "22P02"]);
 
-const notFound = () => new HttpError(404, "Review not found");
+const notFound = () => new HttpError(404, REVIEW_MESSAGES.notFound);
 const conflict = (message) => new HttpError(409, message);
 
 /**
- * @param {any} supabase owner actions use the user's client (RLS applies);
- *   moderation and the pending queue use the service-role client.
+ * @param {any} supabase the signed-in user's client, so RLS applies
  */
 export function createReviewsRepository(supabase) {
   /**
@@ -48,6 +48,7 @@ export function createReviewsRepository(supabase) {
 
   return {
     /**
+     * Someone else's review is reported as missing, not forbidden.
      * @param {ReviewStatus} status
      * @param {string} id
      * @param {string} userId
@@ -62,7 +63,7 @@ export function createReviewsRepository(supabase) {
       if (NOT_FOUND_CODES.has(error?.code) || (!error && !data))
         throw notFound();
       if (error) throw error;
-      if (data.user_id !== userId) throw new HttpError(403, "Forbidden");
+      if (data.user_id !== userId) throw notFound();
       return data;
     },
 
@@ -93,16 +94,16 @@ export function createReviewsRepository(supabase) {
      * moderation, keeping its id, owner, alias and created_at.
      * @param {"approved" | "rejected"} status
      * @param {string} id
-     * @param {{ id: string }} user
+     * @param {string} userId
      * @param {ReviewInput} input
      */
-    async resubmit(status, id, user, input) {
-      await this.getOwned(status, id, user.id);
+    async resubmit(status, id, userId, input) {
+      await this.getOwned(status, id, userId);
       const updated = await updateWhere(
-        { id, user_id: user.id, status },
+        { id, user_id: userId, status },
         { ...input, status: "pending" },
       );
-      if (!updated) throw conflict("Review changed; reload and try again");
+      if (!updated) throw conflict(REVIEW_MESSAGES.changed);
     },
 
     /**
@@ -121,7 +122,7 @@ export function createReviewsRepository(supabase) {
         .eq("status", status)
         .select("id");
       if (error) throw error;
-      if (!data?.length) throw conflict("Review changed; reload and try again");
+      if (!data?.length) throw conflict(REVIEW_MESSAGES.changed);
     },
 
     /**
@@ -155,7 +156,8 @@ export function createReviewsRepository(supabase) {
     },
 
     /**
-     * Approve or reject a pending review. Admin only; the caller checks.
+     * Approve or reject a pending review. Admin only: the caller checks and
+     * RLS enforces it.
      * @param {string} id
      * @param {boolean} approve
      */
@@ -163,7 +165,7 @@ export function createReviewsRepository(supabase) {
       const status = approve ? "approved" : "rejected";
       if (await updateWhere({ id, status: "pending" }, { status })) return;
       if (!(await exists(id))) throw notFound();
-      throw conflict("Review is no longer pending");
+      throw conflict(REVIEW_MESSAGES.notPending);
     },
   };
 }

@@ -59,7 +59,7 @@ Moderating a review that is no longer pending returns 409.
 ### Admin Panel
 
 - **URL:** `www.clubhouseucla.com/admin`
-- **Access:** only `NEXT_PUBLIC_ADMIN_EMAIL`. `withAdmin` checks the signed-in user on the server, then the admin routes read and update `reviews` with the service-role client.
+- **Access:** only `NEXT_PUBLIC_ADMIN_EMAIL`. `withAdmin` checks the signed-in user on the server, and the admin routes then use the admin's own session, so RLS checks it again.
 - Lists pending reviews ordered by `updated_at`, which is when the review was last submitted.
 
 ### Emails
@@ -82,6 +82,8 @@ On `reviews`, signed-in users can:
 - insert their own reviews as `pending`
 - update their own `approved` or `rejected` reviews, only to `pending`
 - delete their own `rejected` reviews
+
+The admin (`clubhouseucla@gmail.com`) can also read every review and change a `pending` review to `approved` or `rejected`.
 
 A trigger stops users changing `id`, `user_id`, `user_email`, `user_alias` or `created_at`, and sets `updated_at` (and `created_at` on insert) on the server. Anonymous visitors cannot read `reviews` at all. The public club page reads approved reviews through the service role and returns only `PUBLIC_REVIEW_FIELDS`, never `user_email` or `user_id`. A review can only be liked while it is approved.
 

@@ -6,6 +6,7 @@ import {
   listPublicReviews,
 } from "@/app/lib/server/repositories/reviews";
 import { HttpError } from "@/app/lib/server/errors";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 import { createSupabaseMock } from "../helpers/supabaseMock";
 
 const user = { id: "u1", email: "student@ucla.edu" };
@@ -106,11 +107,11 @@ describe("getOwned", () => {
     expect(err.code).toBe("08006");
   });
 
-  it("throws 403 when someone else owns it", async () => {
+  it("throws the same 404 when someone else owns it, so ids do not leak", async () => {
     const { repo } = setup({ existing: { id: 10, user_id: "other" } });
     await expect(
       repo.getOwned("approved", "10", user.id),
-    ).rejects.toMatchObject({ status: 403 });
+    ).rejects.toMatchObject({ status: 404, message: REVIEW_MESSAGES.notFound });
   });
 });
 
@@ -138,7 +139,7 @@ describe("resubmit", () => {
     async (status) => {
       const { db, repo } = setup();
 
-      await repo.resubmit(status, "10", user, input);
+      await repo.resubmit(status, "10", user.id, input);
 
       const [update] = writes(db);
       expect(op(update)).toBe("update");
@@ -159,8 +160,8 @@ describe("resubmit", () => {
     const { db, repo } = setup({ existing: { id: 10, user_id: "other" } });
 
     await expect(
-      repo.resubmit("rejected", "10", user, input),
-    ).rejects.toMatchObject({ status: 403 });
+      repo.resubmit("rejected", "10", user.id, input),
+    ).rejects.toMatchObject({ status: 404 });
     expect(writes(db)).toHaveLength(0);
   });
 
@@ -168,7 +169,7 @@ describe("resubmit", () => {
     const { db, repo } = setup({ existing: null });
 
     await expect(
-      repo.resubmit("approved", "10", user, input),
+      repo.resubmit("approved", "10", user.id, input),
     ).rejects.toMatchObject({ status: 404 });
     expect(writes(db)).toHaveLength(0);
   });
@@ -177,15 +178,15 @@ describe("resubmit", () => {
     const { repo } = setup({ matchesNothing: ["update"] });
 
     await expect(
-      repo.resubmit("approved", "10", user, input),
-    ).rejects.toMatchObject({ status: 409 });
+      repo.resubmit("approved", "10", user.id, input),
+    ).rejects.toMatchObject({ status: 409, message: REVIEW_MESSAGES.changed });
   });
 
   it("lets update errors through as unexpected", async () => {
     const { repo } = setup({ fail: { update: { message: "boom" } } });
 
     const err = await repo
-      .resubmit("approved", "10", user, input)
+      .resubmit("approved", "10", user.id, input)
       .catch((e) => e);
     expect(err).not.toBeInstanceOf(HttpError);
   });
@@ -212,7 +213,7 @@ describe("deleteOwned", () => {
     const { repo } = setup({ matchesNothing: ["delete"] });
     await expect(
       repo.deleteOwned("rejected", "10", user.id),
-    ).rejects.toMatchObject({ status: 409 });
+    ).rejects.toMatchObject({ status: 409, message: REVIEW_MESSAGES.changed });
   });
 
   it("lets delete errors through as unexpected", async () => {
@@ -228,7 +229,7 @@ describe("deleteOwned", () => {
 
     await expect(
       repo.deleteOwned("rejected", "10", user.id),
-    ).rejects.toMatchObject({ status: 403 });
+    ).rejects.toMatchObject({ status: 404 });
     expect(writes(db)).toHaveLength(0);
   });
 });
@@ -332,6 +333,7 @@ describe("moderate", () => {
     const { repo } = setup({ matchesNothing: ["update"] });
     await expect(repo.moderate("5", false)).rejects.toMatchObject({
       status: 409,
+      message: REVIEW_MESSAGES.notPending,
     });
   });
 

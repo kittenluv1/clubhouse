@@ -2,6 +2,7 @@
  * @jest-environment node
  */
 import { DELETE } from "@/app/api/rejectedReviews/[id]/route";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
 let db;
@@ -49,17 +50,19 @@ describe("DELETE /api/rejectedReviews/[id]", () => {
     expect(deleteQueries()).toHaveLength(0);
   });
 
-  it("403 when the review belongs to another user, without deleting it", async () => {
+  it("404 when the review belongs to another user, without deleting it", async () => {
     setup({ review: { id: 10, user_id: "someone-else" } });
 
-    expect((await DELETE(makeRequest(), params)).status).toBe(403);
+    expect((await DELETE(makeRequest(), params)).status).toBe(404);
     expect(deleteQueries()).toHaveLength(0);
   });
 
   it("deletes the owner's review, scoped to their user id", async () => {
     setup();
 
-    expect((await DELETE(makeRequest(), params)).status).toBe(200);
+    const res = await DELETE(makeRequest(), params);
+    expect(res.status).toBe(200);
+    expect((await res.json()).message).toBe(REVIEW_MESSAGES.deleted);
     const [query] = deleteQueries();
     expect(query.table).toBe("reviews");
     const filters = query.calls

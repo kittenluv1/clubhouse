@@ -1,28 +1,23 @@
-import { supabaseServer } from "@/app/lib/server-db";
 import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 import { HttpError, readJson, withAdmin } from "@/app/lib/server/route";
 
-// withAdmin checks the admin server-side, so the queries run as the service
-// role and the reviews table needs no admin policies.
-export const GET = withAdmin(async (req) => {
+export const GET = withAdmin(async (req, { supabase }) => {
   const newestFirst = req.nextUrl.searchParams.get("sort") === "newest";
-  const pendingReviews = await createReviewsRepository(
-    supabaseServer,
-  ).listPending({ newestFirst });
+  const pendingReviews = await createReviewsRepository(supabase).listPending({
+    newestFirst,
+  });
   return Response.json({ pendingReviews });
 });
 
-export const POST = withAdmin(async (req) => {
+export const POST = withAdmin(async (req, { supabase }) => {
   const { reviewID, approve } = await readJson(req);
   if (!reviewID || typeof approve !== "boolean") {
-    throw new HttpError(
-      400,
-      "Invalid request: issue with id or approve boolean",
-    );
+    throw new HttpError(400, REVIEW_MESSAGES.invalidModeration);
   }
 
-  await createReviewsRepository(supabaseServer).moderate(reviewID, approve);
+  await createReviewsRepository(supabase).moderate(reviewID, approve);
   return Response.json({
-    message: approve ? "Review approved" : "Review rejected",
+    message: approve ? REVIEW_MESSAGES.approved : REVIEW_MESSAGES.rejected,
   });
 });

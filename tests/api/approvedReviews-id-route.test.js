@@ -3,6 +3,7 @@
  */
 import { GET, POST } from "@/app/api/approvedReviews/[id]/route";
 import { createAuthenticatedClient } from "@/app/lib/server-db";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
 let db;
@@ -58,9 +59,9 @@ describe("GET /api/approvedReviews/[id]", () => {
     });
   });
 
-  it("403 when the review belongs to another user", async () => {
+  it("404 when the review belongs to another user", async () => {
     setup({ review: { id: 10, user_id: "someone-else" } });
-    expect((await GET({}, params)).status).toBe(403);
+    expect((await GET({}, params)).status).toBe(404);
   });
 
   it("200 and returns the review to its owner", async () => {
@@ -105,6 +106,7 @@ describe("POST /api/approvedReviews/[id] (edit)", () => {
     const res = await POST(makeRequest({ body: edit }), params);
 
     expect(res.status).toBe(200);
+    expect((await res.json()).message).toBe(REVIEW_MESSAGES.resubmitted);
     expect(db.callsTo("insert")).toHaveLength(0);
     expect(db.callsTo("delete")).toHaveLength(0);
     const [update] = db.queries.filter((q) =>

@@ -2,6 +2,7 @@
 // a reviewer can read, edit (resubmit for moderation) and delete their own review.
 
 import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 import { validateReviewInput } from "@/app/lib/server/reviewInput";
 import { readJson, withUser } from "@/app/lib/server/route";
 
@@ -23,10 +24,10 @@ export function ownedReviewHandlers(status) {
       await createReviewsRepository(supabase).resubmit(
         status,
         params.id,
-        user,
+        user.id,
         input,
       );
-      return Response.json({ message: "Review resubmitted for approval" });
+      return Response.json({ message: REVIEW_MESSAGES.resubmitted });
     }),
 
     DELETE: withUser(async (_req, { supabase, user, params }) => {
@@ -35,7 +36,7 @@ export function ownedReviewHandlers(status) {
         params.id,
         user.id,
       );
-      return Response.json({ message: "Review deleted" });
+      return Response.json({ message: REVIEW_MESSAGES.deleted });
     }),
   };
 }

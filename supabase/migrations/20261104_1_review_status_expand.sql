@@ -118,6 +118,12 @@ create policy "Users can delete own rejected reviews"
   on public.reviews for delete to authenticated
   using ((select auth.uid()) = user_id and status = 'rejected');
 
+drop policy if exists "Admin can moderate pending reviews" on public.reviews;
+create policy "Admin can moderate pending reviews"
+  on public.reviews for update to authenticated
+  using ((select auth.jwt() ->> 'email') = 'clubhouseucla@gmail.com' and status = 'pending')
+  with check ((select auth.jwt() ->> 'email') = 'clubhouseucla@gmail.com' and status in ('approved', 'rejected'));
+
 create or replace function public.is_approved_review(review_id uuid)
 returns boolean
 language sql

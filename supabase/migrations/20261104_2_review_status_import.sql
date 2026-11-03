@@ -67,7 +67,6 @@ alter table public.reviews
 drop policy if exists "Users can delete their own reviews" on public.reviews;
 drop policy if exists "Admins can insert reviews" on public.reviews;
 drop policy if exists "Admin can insert reviews" on public.reviews;
-drop policy if exists "Admin can view reviews" on public.reviews;
 
 create or replace function public.reviews_before_insert()
 returns trigger
