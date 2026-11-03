@@ -5,11 +5,9 @@ function SignInPage() {
     <div className="relative pt-10 md:pt-20 bg-transparent">
       <div className="pointer-events-none absolute -left-20 top-16 h-64 w-64 rounded-full bg-[#CDE5FC]/50 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#F7D7E2]/40 blur-3xl" />
-      
+      {/** This div is for mobile viewers */}
       <div className="relative z-10 flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-10 md:hidden">
-        <div 
-        className="flex w-full max-w-sm flex-col items-center text-center"
-        >
+        <div className="flex w-full max-w-sm flex-col items-center text-center">
           <h1 className="text-[clamp(3rem,12vw,4.75rem)] font-bold tracking-tight text-black">
             Hello!
           </h1>
@@ -51,7 +49,7 @@ function SignInPage() {
           </div>
         </div>
       </div>
-      {/** The code below is for when the screen is >= 1280px */}
+      {/** This div is for desktop viewers */}
        <div className="relative z-10 hidden min-h-[calc(100vh-84px)] grid-cols-2 items-center gap-10 px-6 md:grid lg:px-12 xl:px-20">
         <div className="flex flex-col items-start justify-center pl-4 lg:pl-16">
           <h1 className="text-[clamp(2.75rem,4vw,5rem)] font-bold tracking-tight text-black">
