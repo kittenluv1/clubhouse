@@ -116,9 +116,8 @@ export default function GoogleSignIn() {
         }}
       />
       <div className="flex flex-col items-center justify-center gap-3">
-        {/* When the email is invalid this will only show for viewers not on mobile*/}
         {userEmail === "INVALID" && (
-          <p>Please sign in with a valid UCLA email.</p>
+          <p className="font-bold">Please sign in with a valid UCLA email.</p>
         )}
         <div className="group relative inline-block">
           <Button
