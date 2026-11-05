@@ -2,61 +2,7 @@
 
 import Button from "../../components/button"
 import { useEffect, useState } from "react";
-
-
- const grouped_options = {
-        "Academic & Pre-Professional": [
-            "Academic",
-            "Business",
-            "Career Planning",
-            "Dental",
-            "Educational",
-            "Engineering",
-            "Honor Societies",
-            "Journals",
-            "Law",
-            "Leadership",
-            "Medical",
-            "Pre-Professional",
-            "Technology",
-        ],
-        "Cultural & Identity-Based": [
-            "Cultural",
-            "African American",
-            "Asian",
-            "Asian Pacific Islander",
-            "Latino/Latina",
-            "Ethnic",
-            "International Students",
-            "Out-of-state Students",
-        ],
-        "Community & Advocacy": [
-            "Community Service",
-            "Social Activism",
-            "Service",
-            "LGBTQI",
-            "GSA Affiliated",
-            "Transfer Students",
-            "Faculty/Staff",
-        ],
-        "Arts & Media": ["Arts", "Dance", "Film", "Music", "Media", "Theater"],
-        "Health & Wellness": [
-            "Club Sports",
-            "Fitness",
-            "Health and Wellness",
-            "Self Improvement",
-            "Sports",
-            "Martial Arts",
-        ],
-        "Spiritual & Religious": ["Religious", "Spiritual"],
-        "Campus Life & Social": [
-            "Greek Life",
-            "Student Government",
-            "Social",
-            "Spirit/Booster",
-            "Recreation",
-        ],
-    };
+import GROUPED_OPTIONS from "@/app/onboarding/data/interests.json";
 
 export default function Avocations({ formData, onUpdate, onValidChange }) {
    
@@ -64,7 +10,7 @@ export default function Avocations({ formData, onUpdate, onValidChange }) {
 
     const interestsData = formData.interests;
 
-    const filtered = Object.fromEntries(Object.entries(grouped_options).filter(([allowed]) => interestsData.includes(allowed)));
+    const filtered = Object.fromEntries(Object.entries(GROUPED_OPTIONS).filter(([allowed]) => interestsData.includes(allowed)));
 
     useEffect(() => {
         onValidChange(selected.length >= 2);

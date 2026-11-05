@@ -1,26 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import INTERESTS from "@/app/onboarding/data/interests.json";
 
-const INTERESTS = [
-    "Academic & Pre-Professional",
-    "Arts & Media",
-    "Community & Advocacy",
-    "Health & Wellness",
-    "Spiritual & Religious",
-    "Cultural & Identity-Based",
-    "Campus Life & Social",
-];
+const BROAD_CATEGORIES = Object.keys(INTERESTS);
 
-const ICONS = {
-    "Academic & Pre-Professional": "/onboarding/academic-and-pre-professional.svg",
-    "Arts & Media": "/onboarding/arts-and-media.svg",
-    "Community & Advocacy": "/onboarding/community-and-advocacy.svg",
-    "Health & Wellness": "/onboarding/health-and-wellness.svg",
-    "Spiritual & Religious": "/onboarding/spiritual-and-religious.svg",
-    "Cultural & Identity-Based": "/onboarding/cultural-and-identity-based.svg",
-    "Campus Life & Social": "/onboarding/campus-and-social.svg",
-};
+const ICONS = BROAD_CATEGORIES.reduce((acc, interest) => {
+    const iconName = interest.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-");
+    acc[interest] = `/onboarding/${iconName}.svg`;
+    return acc;
+}, {});
 
 export default function Interests({ formData, onUpdate, onValidChange }) {
     const [selected, setSelected] = useState(formData.interests ?? []);
@@ -51,7 +40,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                 </div>
             </div>
             <div className="mt-8 mx-auto flex max-w-[728px] flex-wrap justify-center gap-10 sm:gap-14">
-                {INTERESTS.map((interest) => {
+                {BROAD_CATEGORIES.map((interest) => {
                     const isSelected = selected.includes(interest);
 
                     return (
@@ -59,15 +48,15 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                             key={interest}
                             onClick={() => toggle(interest)}
                             className={`
-  mx-0 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px]
-  flex flex-col items-center justify-center
-  gap-2 sm:gap-3 rounded-xl px-2 py-2 sm:px-3 sm:py-4
-  text-[10px] sm:text-sm leading-snug text-center text-gray-900
-  ${isSelected
+                                mx-0 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px]
+                                flex flex-col items-center justify-center
+                                gap-2 sm:gap-3 rounded-xl px-2 py-2 sm:px-3 sm:py-4
+                                text-[10px] sm:text-sm leading-snug text-center text-gray-900
+                                ${isSelected
                                     ? "bg-[#E2E5F0] ring-2 ring-[#C4C9DC]"
                                     : "bg-[#F0F2F9] ring-1 ring-[#D9D9D9] hover:bg-[#E5EBF1]"
                                 }
-`}
+                            `}
                         >
                             <img src={ICONS[interest]} alt={interest} className="w-8 h-8 sm:w-12 sm:h-12 shrink-0" />
                             {interest}

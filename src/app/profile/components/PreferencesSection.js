@@ -11,16 +11,11 @@ import { splitUserInterests } from "../../lib/utils/splitUserInterests";
 
 const BROAD_CATEGORIES = Object.keys(INTERESTS);
 
-const ICONS = {
-  "Academic & Pre-Professional":
-    "/onboarding/academic-and-pre-professional.svg",
-  "Arts & Media": "/onboarding/arts-and-media.svg",
-  "Community & Advocacy": "/onboarding/community-and-advocacy.svg",
-  "Health & Wellness": "/onboarding/health-and-wellness.svg",
-  "Spiritual & Religious": "/onboarding/spiritual-and-religious.svg",
-  "Cultural & Identity-Based": "/onboarding/cultural-and-identity-based.svg",
-  "Campus Life & Social": "/onboarding/campus-and-social.svg",
-};
+const ICONS = BROAD_CATEGORIES.reduce((acc, interest) => {
+    const iconName = interest.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-");
+    acc[interest] = `/onboarding/${iconName}.svg`;
+    return acc;
+}, {});
 
 export default function PreferencesSection({
   majors: initialMajors = [],
