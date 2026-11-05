@@ -5,10 +5,9 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import posthog from "posthog-js";
-
 import ErrorScreen from "@/app/components/ErrorScreen";
 import LoadingScreen from "@/app/components/LoadingScreen";
-import { AiFillStar } from "react-icons/ai";
+
 import Tooltip from "@/app/components/tooltip";
 import Button from "@/app/components/button";
 import SortModal from "@/app/components/sortModal";
@@ -545,7 +544,11 @@ export default function ClubDetailsPage() {
                   ? club.average_satisfaction.toFixed(1)
                   : "N/A"}
               </span>
-              <AiFillStar className="mr-1 ml-1 shrink-0 text-2xl text-yellow-400" />
+              <img
+                src="/interactions/reviewStarFilled.svg"
+                alt=""
+                className="mr-1 ml-1 shrink-0 w-6 h-6"
+              />
               <h2 className="text-2xl font-bold">Satisfaction Rating</h2>
             </div>
             <p className="mb-4 text-sm text-[#6E808D]">
