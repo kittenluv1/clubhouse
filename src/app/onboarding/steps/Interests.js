@@ -1,78 +1,43 @@
 "use client";
 
 import Button from "../../components/button"
-import { useEffect, useState } from "react";
-
-
- const grouped_options = {
-        "Academic & Pre-Professional": [
-            "Academic",
-            "Business",
-            "Career Planning",
-            "Dental",
-            "Educational",
-            "Engineering",
-            "Honor Societies",
-            "Journals",
-            "Law",
-            "Leadership",
-            "Medical",
-            "Pre-Professional",
-            "Technology",
-        ],
-        "Cultural & Identity-Based": [
-            "Cultural",
-            "African American",
-            "Asian",
-            "Asian Pacific Islander",
-            "Latino/Latina",
-            "Ethnic",
-            "International Students",
-            "Out-of-state Students",
-        ],
-        "Community & Advocacy": [
-            "Community Service",
-            "Social Activism",
-            "Service",
-            "LGBTQI",
-            "GSA Affiliated",
-            "Transfer Students",
-            "Faculty/Staff",
-        ],
-        "Arts & Media": ["Arts", "Dance", "Film", "Music", "Media", "Theater"],
-        "Health & Wellness": [
-            "Club Sports",
-            "Fitness",
-            "Health and Wellness",
-            "Self Improvement",
-            "Sports",
-            "Martial Arts",
-        ],
-        "Spiritual & Religious": ["Religious", "Spiritual"],
-        "Campus Life & Social": [
-            "Greek Life",
-            "Student Government",
-            "Social",
-            "Spirit/Booster",
-            "Recreation",
-        ],
-    };
+import { useEffect, useMemo, useState } from "react";
 
 export default function Avocations({ formData, onUpdate, onValidChange }) {
-   
     const [selected, setSelected] = useState([]);
+    const [grouped_options, setGroupedOptions] = useState({});
 
-    const interestsData = formData.interests;
+    const interestsData = useMemo(() => formData?.interests ?? [], [formData?.interests]);
 
-    const filtered = Object.fromEntries(Object.entries(grouped_options).filter(([allowed]) => interestsData.includes(allowed)));
-
+    
     useEffect(() => {
         onValidChange(selected.length >= 2);
         // Report validity when the selection changes; onValidChange is a parent
         // callback intentionally excluded to avoid re-run loops.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selected])
-
+    
+    useEffect(() => {
+        const loadInterests = async () => {
+            try {
+                const res = await fetch("/api/interests");
+                if (!res.ok) {
+                    throw new Error("Failed to fetch interests");
+                }
+                const data = await res.json();
+                setGroupedOptions(data.groupedInterests);
+            } catch (error) {
+                console.error("Error loading interests:", error);
+            }
+        };
+        
+        if (interestsData.length > 0) {
+            loadInterests();
+        }
+    }, [interestsData]);
+    
+    const filtered = Object.fromEntries(Object.entries(grouped_options).filter(([allowed]) => interestsData.includes(allowed)));
+    
     const select = (interest) => {
         const updated = selected.includes(interest)
             ? selected.filter((t) => t !== interest)
