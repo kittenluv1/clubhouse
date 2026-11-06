@@ -20,7 +20,7 @@ export default function OnboardingFinish() {
                         <p className="text-[0.7rem]">Browse Club Recommendations</p>
                     </div>
                 </button>
-                <button className="rounded-xl w-32 border border-[#B5BFC6] bg-[#F0F2F9]" onClick={() => { router.push("/profile") }}>
+                <button className="rounded-xl w-32 border border-[#B5BFC6] bg-[#F0F2F9]" onClick={() => { router.push("/profile?section=preferences") }}>
                     <div className="flex p-3 flex-wrap flex-col">
                         <img className="self-center mb-2 w-12" src="/onboarding/pinkProfileIcon.svg" alt="" />
                         <p className="text-[0.7rem]">View My Profile Page</p>
