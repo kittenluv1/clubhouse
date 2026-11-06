@@ -250,7 +250,10 @@ function ProfilePage() {
             </h2>
             {approvedReviews.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-[#B5BEC7]">No approved reviews</p>
+                <p className="mb-4 text-[#B5BEC7]">No approved reviews</p>
+                <Button type="CTA" onClick={attemptReview}>
+                  Write a Review
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
@@ -332,7 +335,10 @@ function ProfilePage() {
             </h2>
             {rejectedReviews.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-[#B5BEC7]">No rejected reviews</p>
+                <p className="mb-4 text-[#B5BEC7]">No rejected reviews</p>
+                <Button type="CTA" onClick={attemptReview}>
+                  Write a Review
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
@@ -411,7 +417,10 @@ function ProfilePage() {
             </h2>
             {savedClubs.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-[#B5BEC7]">No saved clubs</p>
+                <p className="mb-4 text-[#B5BEC7]">No saved clubs</p>
+                <Button type="CTA" onClick={() => router.push("/clubs")}>
+                  Browse Clubs
+                </Button>
               </div>
             ) : (
               <>
