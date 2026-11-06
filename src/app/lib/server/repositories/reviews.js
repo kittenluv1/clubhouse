@@ -1,105 +1,70 @@
-// Data access for reviews. Route handlers call these functions instead of
-// building Supabase queries, so table names, column lists and the rules for
-// moving a review between states live in one place.
-//
-// A review lives in one of three tables depending on its moderation state.
-// Moving it means inserting a copy and deleting the original; PostgREST has no
-// transactions, so if the delete fails the copy is removed again.
-//
-// Row-level security turns a forbidden delete into one that matches no rows
-// and reports no error, so deletes check how many rows they removed.
+// Data access for reviews. Every review is one row in `reviews` whose
+// `status` is its moderation state; each state change is one conditional
+// update, so there is nothing to roll back.
 
 import { HttpError } from "@/app/lib/server/errors";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 
 /** @typedef {"approved" | "pending" | "rejected"} ReviewStatus */
 /** @typedef {import("@/app/lib/reviews/schema").ReviewInput} ReviewInput */
 
-/** @type {Record<ReviewStatus, string>} */
-export const REVIEW_TABLES = {
-  approved: "reviews",
-  pending: "pending_reviews",
-  rejected: "rejected_reviews",
-};
+const TABLE = "reviews";
 
 // `.single()` matched no rows / the id is not valid for the column type.
 const NOT_FOUND_CODES = new Set(["PGRST116", "22P02"]);
 
+const notFound = () => new HttpError(404, REVIEW_MESSAGES.notFound);
+const conflict = (message) => new HttpError(409, message);
+
 /**
- * @param {any} supabase a Supabase client; RLS applies as that client's user
- * @param {{ serviceClient?: any }} [options] service-role client used only to
- *   roll back a copy this repository just inserted. Users cannot delete
- *   pending reviews and the admin cannot delete approved or rejected ones, so
- *   a rollback through `supabase` would match no rows.
+ * @param {any} supabase the signed-in user's client, so RLS applies
  */
-export function createReviewsRepository(
-  supabase,
-  { serviceClient = supabase } = {},
-) {
-  async function findById(table, id, columns = "*") {
-    const { data, error } = await supabase
-      .from(table)
-      .select(columns)
-      .eq("id", id)
-      .single();
-    if (NOT_FOUND_CODES.has(error?.code) || (!error && !data))
-      throw new HttpError(404, "Review not found");
+export function createReviewsRepository(supabase) {
+  /**
+   * @param {Record<string, unknown>} filters
+   * @param {Record<string, unknown>} changes
+   * @returns {Promise<{ id: string } | null>} null when no row matched
+   */
+  async function updateWhere(filters, changes) {
+    let query = supabase.from(TABLE).update(changes);
+    for (const [column, value] of Object.entries(filters))
+      query = query.eq(column, value);
+    const { data, error } = await query.select("id").maybeSingle();
+    if (NOT_FOUND_CODES.has(error?.code)) throw notFound();
     if (error) throw error;
     return data;
   }
 
-  /**
-   * Delete matching rows from `table`, failing if none were deleted.
-   * @param {any} client
-   * @param {string} table
-   * @param {Record<string, unknown>} filters
-   */
-  async function deleteRows(client, table, filters) {
-    let remove = client.from(table).delete();
-    for (const [column, value] of Object.entries(filters))
-      remove = remove.eq(column, value);
-    const { data, error } = await remove.select("id");
-    if (error) throw error;
-    if (!data?.length) {
-      throw new Error(
-        `Deleting review ${filters.id} from ${table} matched no rows (missing row-level security policy?)`,
-      );
-    }
-  }
-
-  /** Insert `row` into `toTable`, then delete `id` from `fromTable`. */
-  async function move(fromTable, toTable, id, row, deleteFilters = {}) {
-    const { data: inserted, error: insertError } = await supabase
-      .from(toTable)
-      .insert(row)
+  /** @param {string} id */
+  async function exists(id) {
+    const { data, error } = await supabase
+      .from(TABLE)
       .select("id")
-      .single();
-    if (insertError) throw insertError;
-
-    try {
-      await deleteRows(supabase, fromTable, { id, ...deleteFilters });
-    } catch (deleteError) {
-      try {
-        await deleteRows(serviceClient, toTable, { id: inserted.id });
-      } catch (rollbackError) {
-        console.error(
-          `Rollback failed: review ${inserted.id} is now in both ${fromTable} and ${toTable}`,
-          rollbackError,
-        );
-      }
-      throw deleteError;
-    }
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw error;
+    return Boolean(data);
   }
 
   return {
     /**
+     * Someone else's review is reported as missing, not forbidden.
      * @param {ReviewStatus} status
      * @param {string} id
      * @param {string} userId
      */
     async getOwned(status, id, userId) {
-      const review = await findById(REVIEW_TABLES[status], id);
-      if (review.user_id !== userId) throw new HttpError(403, "Forbidden");
-      return review;
+      const { data, error } = await supabase
+        .from(TABLE)
+        .select("*")
+        .eq("id", id)
+        .eq("status", status)
+        .single();
+      if (NOT_FOUND_CODES.has(error?.code) || (!error && !data))
+        throw notFound();
+      if (error) throw error;
+      if (data.user_id !== userId) throw notFound();
+      return data;
     },
 
     /**
@@ -110,12 +75,13 @@ export function createReviewsRepository(
      */
     async submit(user, input, alias) {
       const { data, error } = await supabase
-        .from(REVIEW_TABLES.pending)
+        .from(TABLE)
         .insert({
           ...input,
           user_id: user.id,
           user_email: user.email,
           user_alias: alias,
+          status: "pending",
         })
         .select()
         .single();
@@ -124,89 +90,87 @@ export function createReviewsRepository(
     },
 
     /**
-     * Replace an approved or rejected review with an edited copy awaiting
-     * moderation. The reviewer keeps their alias.
+     * Replace an approved or rejected review's content and send it back to
+     * moderation, keeping its id, owner, alias and created_at.
      * @param {"approved" | "rejected"} status
      * @param {string} id
-     * @param {{ id: string, email?: string }} user
+     * @param {string} userId
      * @param {ReviewInput} input
      */
-    async resubmit(status, id, user, input) {
-      const existing = await this.getOwned(status, id, user.id);
-      const row = {
-        ...input,
-        user_id: user.id,
-        user_email: user.email,
-        user_alias: existing.user_alias,
-      };
-      await move(REVIEW_TABLES[status], REVIEW_TABLES.pending, id, row, {
-        user_id: user.id,
-      });
+    async resubmit(status, id, userId, input) {
+      await this.getOwned(status, id, userId);
+      const updated = await updateWhere(
+        { id, user_id: userId, status },
+        { ...input, status: "pending" },
+      );
+      if (!updated) throw conflict(REVIEW_MESSAGES.changed);
     },
 
     /**
-     * @param {ReviewStatus} status
+     * Only rejected reviews can be deleted (enforced by RLS).
+     * @param {"approved" | "rejected"} status
      * @param {string} id
      * @param {string} userId
      */
     async deleteOwned(status, id, userId) {
       await this.getOwned(status, id, userId);
-      await deleteRows(supabase, REVIEW_TABLES[status], {
-        id,
-        user_id: userId,
-      });
+      const { data, error } = await supabase
+        .from(TABLE)
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId)
+        .eq("status", status)
+        .select("id");
+      if (error) throw error;
+      if (!data?.length) throw conflict(REVIEW_MESSAGES.changed);
     },
 
     /**
-     * The user's reviews in every moderation state.
+     * The user's reviews grouped by moderation state.
      * @param {string} userId
      */
     async listForUser(userId) {
-      const list = async (table) => {
-        const { data, error } = await supabase
-          .from(table)
-          .select("*")
-          .eq("user_id", userId);
-        if (error) throw error;
-        return data ?? [];
-      };
-      const [approved, pending, rejected] = await Promise.all([
-        list(REVIEW_TABLES.approved),
-        list(REVIEW_TABLES.pending),
-        list(REVIEW_TABLES.rejected),
-      ]);
-      return { approved, pending, rejected };
+      const { data, error } = await supabase
+        .from(TABLE)
+        .select("*")
+        .eq("user_id", userId);
+      if (error) throw error;
+      /** @type {Record<ReviewStatus, any[]>} */
+      const groups = { approved: [], pending: [], rejected: [] };
+      for (const review of data ?? []) groups[review.status]?.push(review);
+      return groups;
     },
 
-    /** @param {{ newestFirst?: boolean }} [options] */
+    /**
+     * Pending reviews ordered by when they were (re)submitted.
+     * @param {{ newestFirst?: boolean }} [options]
+     */
     async listPending({ newestFirst = false } = {}) {
       const { data, error } = await supabase
-        .from(REVIEW_TABLES.pending)
+        .from(TABLE)
         .select("*")
-        .order("created_at", { ascending: !newestFirst });
+        .eq("status", "pending")
+        .order("updated_at", { ascending: !newestFirst });
       if (error) throw error;
       return data ?? [];
     },
 
     /**
-     * Approve or reject a pending review (admin only; enforced by caller and RLS).
+     * Approve or reject a pending review. Admin only: the caller checks and
+     * RLS enforces it.
      * @param {string} id
      * @param {boolean} approve
      */
     async moderate(id, approve) {
-      const review = await findById(REVIEW_TABLES.pending, id);
-      if (approve) {
-        await move(REVIEW_TABLES.pending, REVIEW_TABLES.approved, id, review);
-      } else {
-        const row = { ...review, updated_at: new Date().toISOString() };
-        await move(REVIEW_TABLES.pending, REVIEW_TABLES.rejected, id, row);
-      }
+      const status = approve ? "approved" : "rejected";
+      if (await updateWhere({ id, status: "pending" }, { status })) return;
+      if (!(await exists(id))) throw notFound();
+      throw conflict(REVIEW_MESSAGES.notPending);
     },
   };
 }
 
-// Columns of the reviews, pending_reviews and rejected_reviews tables
-// (rejected_reviews also has updated_at). Keep in sync with the database.
+// Columns of the reviews table. Keep in sync with the database.
 export const REVIEW_TABLE_COLUMNS = [
   "id",
   "club_id",
@@ -224,6 +188,7 @@ export const REVIEW_TABLE_COLUMNS = [
   "user_alias",
   "user_id",
   "user_email",
+  "status",
   "created_at",
   "updated_at",
 ];
@@ -271,15 +236,16 @@ function toPublicReview(row, viewerId) {
 /**
  * Approved reviews for a club, safe to show to anyone. `is_own_review` marks
  * the viewer's own reviews.
- * @param {any} supabase service-role client (reviews are public once approved)
+ * @param {any} supabase service-role client
  * @param {string | number} clubId
  * @param {string | null} viewerId
  */
 export async function listPublicReviews(supabase, clubId, viewerId) {
   const { data, error } = await supabase
-    .from(REVIEW_TABLES.approved)
+    .from(TABLE)
     .select(REVIEW_COLUMNS)
     .eq("club_id", clubId)
+    .eq("status", "approved")
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map((row) => toPublicReview(row, viewerId));
