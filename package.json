@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:lan": "next dev --hostname 0.0.0.0",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "format:check": "prettier --check src/app/api src/app/lib/server src/app/lib/reviews src/app/lib/profiles src/app/lib/clubs tests/api tests/helpers tests/repositories tests/reviews tests/clubs",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.1",
     "@types/node": "^26.6.5",
     "dotenv-cli": "^11.0.0",
