@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
 import Button from "./components/button";
 import ClubCarousel from "./components/ClubCarousel";
 import { useSearch } from "./context/SearchContext";
+
 const CATEGORIES = [
   "Academic",
   "Business",
@@ -70,10 +70,9 @@ function useIsMobile(breakpoint = 1024) {
 }
 
 function Home() {
-  const router = useRouter();
   const searchRef = useRef();
   const isMobile = useIsMobile();
-  const {searchBySingleCategory } = useSearch();
+  const { searchBySingleCategory } = useSearch();
 
   function getRandomItems(arr, count) {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
@@ -108,7 +107,7 @@ function Home() {
                 style="drop-shadow-xs"
                 key={category}
                 onClick={() => {
-                  // Uses Context method to clear search bars and category tags
+                  // Uses context method to clear search bars and category tags
                   searchBySingleCategory(category);
                 }}
               >
