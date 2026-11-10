@@ -8,7 +8,6 @@ import CustomSlider from "../../../components/custom-slider";
 import { useRequireAuth } from "../../../context/AuthContext";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { AiFillStar } from "react-icons/ai";
 import Tooltip from "../../../components/tooltip";
 import LoadingScreen from "../../../components/LoadingScreen";
 import ErrorScreen from "../../../components/ErrorScreen";
@@ -42,20 +41,32 @@ const getCurrentQuarter = () => {
 };
 
 function StarRating({ rating, setRating }) {
+  const handleClick = (event, star) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    setRating(x < rect.width / 2 ? star - 0.5 : star);
+  };
+
   return (
     <div className="flex">
       {[1, 2, 3, 4, 5].map((star) => (
         <button
           key={star}
           type="button"
-          onClick={() => setRating(star)}
+          onClick={(event) => handleClick(event, star)}
           className="text-6xl focus:outline-none"
         >
-          {star <= (rating || 0) ? (
-            <AiFillStar className="mr-2 text-4xl text-yellow-400" />
-          ) : (
-            <AiFillStar className="mr-2 text-4xl" />
-          )}
+          <img
+            src={
+              star <= (rating || 0)
+                ? "/interactions/reviewStarFilled.svg"
+                : star - 0.5 <= (rating || 0)
+                  ? "/interactions/reviewStarHalf.svg"
+                  : "/interactions/reviewStarUnfilled.svg"
+            }
+              alt=""
+              className="h-9 w-9"
+          />
         </button>
       ))}
     </div>
