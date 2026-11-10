@@ -2,28 +2,32 @@
 
 import { useEffect, useState } from "react";
 
-const INTERESTS = [
-    "Academic & Pre-Professional",
-    "Arts & Media",
-    "Community & Advocacy",
-    "Health & Wellness",
-    "Spiritual & Religious",
-    "Cultural & Identity-Based",
-    "Campus Life & Social",
-];
-
-const ICONS = {
-    "Academic & Pre-Professional": "/onboarding/academic-and-pre-professional.svg",
-    "Arts & Media": "/onboarding/arts-and-media.svg",
-    "Community & Advocacy": "/onboarding/community-and-advocacy.svg",
-    "Health & Wellness": "/onboarding/health-and-wellness.svg",
-    "Spiritual & Religious": "/onboarding/spiritual-and-religious.svg",
-    "Cultural & Identity-Based": "/onboarding/cultural-and-identity-based.svg",
-    "Campus Life & Social": "/onboarding/campus-and-social.svg",
-};
-
 export default function Interests({ formData, onUpdate, onValidChange }) {
-    const [selected, setSelected] = useState(formData.interests ?? []);
+    const [selected, setSelected] = useState(formData?.interests ?? []);
+    const [interests, setInterests] = useState([]);
+    const [icons, setIcons] = useState({});
+
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                const res = await fetch("/api/interestCategories");
+                if (!res.ok) {
+                    throw new Error("Failed to fetch interest categories");
+                }
+                const data = await res.json();
+                setInterests(data.map((item) => item.name));
+                const iconsMap = {};
+                data.forEach((item) => {
+                    iconsMap[item.name] = item.icon_path;
+                });
+                setIcons(iconsMap);
+            } catch (error) {
+                console.error("Error loading interest categories:", error);
+            }
+        };
+
+        loadCategories();
+    }, []);
 
     useEffect(() => {
         onValidChange(selected.length >= 2);
@@ -51,7 +55,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                 </div>
             </div>
             <div className="mt-8 mx-auto flex max-w-[728px] flex-wrap justify-center gap-10 sm:gap-14">
-                {INTERESTS.map((interest) => {
+                {interests.map((interest) => {
                     const isSelected = selected.includes(interest);
 
                     return (
@@ -69,7 +73,7 @@ export default function Interests({ formData, onUpdate, onValidChange }) {
                                 }
 `}
                         >
-                            <img src={ICONS[interest]} alt={interest} className="w-8 h-8 sm:w-12 sm:h-12 shrink-0" />
+                            <img src={icons[interest]} alt={interest} className="w-8 h-8 sm:w-12 sm:h-12 shrink-0" />
                             {interest}
                         </button>
                     );
