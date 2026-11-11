@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useRequireAuth } from "../context/AuthContext";
 import { getAvatarUrl } from "../lib/avatars";
 import posthog from "posthog-js";
@@ -17,10 +17,12 @@ import SectionToggle from "./components/SectionToggle";
 function ProfilePage() {
   const router = useRouter();
   const { user } = useRequireAuth();
-  const [activeSection, setActiveSection] = useState("approved");
+  const [activeSection, setActiveSection] = useState(
+    useSearchParams().get("section") === "preferences" ? "preferences" : "approved",
+  );  
   const [reviewsExpanded, setReviewsExpanded] = useState(true);
   const [clubsExpanded, setClubsExpanded] = useState(false);
-  const [settingsExpanded, setSettingsExpanded] = useState(false);
+  const [settingsExpanded, setSettingsExpanded] = useState(activeSection === "preferences");
   const [userProfile, setUserProfile] = useState(null);
   const [approvedReviews, setApprovedReviews] = useState([]);
   const [pendingReviews, setPendingReviews] = useState([]);
