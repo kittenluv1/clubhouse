@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import SearchBar from "./components/search-bar";
 import Button from "./components/button";
 import ClubCarousel from "./components/ClubCarousel";
@@ -70,10 +71,10 @@ function useIsMobile(breakpoint = 1024) {
 }
 
 function Home() {
+  const router = useRouter();
   const searchRef = useRef();
   const isMobile = useIsMobile();
   const { searchBySingleCategory } = useSearch();
-
   function getRandomItems(arr, count) {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
