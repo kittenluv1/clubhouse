@@ -14,11 +14,11 @@ The trigger function `update_club_review_stats()` (AFTER INSERT, UPDATE and DELE
 
 ### Database Columns on `clubs` Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `total_num_reviews` | integer | Number of approved reviews |
-| `satisfaction_sum`, `time_commitment_sum`, `inclusivity_sum`, `social_community_sum`, `competitiveness_sum` | float (unrounded) | Sums of the approved reviews' ratings |
-| `average_*` | generated column | `sum / total_num_reviews`, rounded; null when the club has no reviews |
+| Column                                                                                                      | Type              | Description                                                           |
+| ----------------------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------- |
+| `total_num_reviews`                                                                                         | integer           | Number of approved reviews                                            |
+| `satisfaction_sum`, `time_commitment_sum`, `inclusivity_sum`, `social_community_sum`, `competitiveness_sum` | float (unrounded) | Sums of the approved reviews' ratings                                 |
+| `average_*`                                                                                                 | generated column  | `sum / total_num_reviews`, rounded; null when the club has no reviews |
 
 ## Sorting Reviews
 
@@ -34,11 +34,11 @@ The trigger function `update_club_review_stats()` (AFTER INSERT, UPDATE and DELE
 
 The clubs API retrieves `sortType` from the URL (default: `"Highest Rating"`):
 
-| Sort Type | Column | Order | Notes |
-|-----------|--------|-------|-------|
+| Sort Type      | Column                 | Order      | Notes                                                                                          |
+| -------------- | ---------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
 | Highest Rating | `average_satisfaction` | Descending | Uses `nullsFirst: false` so clubs with no reviews appear last (nulls default to showing first) |
-| Most Reviewed | `total_num_reviews` | Descending | |
-| A-Z | `OrganizationName` | Ascending | |
+| Most Reviewed  | `total_num_reviews`    | Descending |                                                                                                |
+| A-Z            | `OrganizationName`     | Ascending  |                                                                                                |
 
 The sort conditions are passed into the Supabase query request.
 
@@ -46,13 +46,13 @@ The sort conditions are passed into the Supabase query request.
 
 Every review is one row in `reviews`. Its `status` is `pending`, `approved` or `rejected`, and each change of state is one update to that row, so a review keeps its id, alias, `created_at` and likes for its whole life.
 
-| Action | Route | Change |
-|--------|-------|--------|
-| Submit | `POST /api/reviews` | Insert with `status = 'pending'` |
-| Approve | `POST /api/pendingReviews` (`approve: true`) | `pending → approved` |
-| Reject | `POST /api/pendingReviews` (`approve: false`) | `pending → rejected`, sets `updated_at` |
-| Edit | `POST /api/approvedReviews/[id]`, `POST /api/rejectedReviews/[id]` | New content, `approved/rejected → pending`. The review leaves the club page and ratings until it is approved again. |
-| Delete | `DELETE /api/rejectedReviews/[id]` | Owners can delete rejected reviews only |
+| Action  | Route                                                              | Change                                                                                                              |
+| ------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Submit  | `POST /api/reviews`                                                | Insert with `status = 'pending'`                                                                                    |
+| Approve | `POST /api/pendingReviews` (`approve: true`)                       | `pending → approved`                                                                                                |
+| Reject  | `POST /api/pendingReviews` (`approve: false`)                      | `pending → rejected`, sets `updated_at`                                                                             |
+| Edit    | `POST /api/approvedReviews/[id]`, `POST /api/rejectedReviews/[id]` | New content, `approved/rejected → pending`. The review leaves the club page and ratings until it is approved again. |
+| Delete  | `DELETE /api/rejectedReviews/[id]`                                 | Owners can delete rejected reviews only                                                                             |
 
 Moderating a review that is no longer pending returns 409.
 
@@ -66,11 +66,11 @@ Moderating a review that is no longer pending returns 409.
 
 Emails are sent from the browser after the API call succeeds, through Supabase edge functions that use the **Resend API** (free plan: 100 emails a day). No database trigger sends email.
 
-| When | Page | Edge function |
-|------|------|---------------|
-| Submit or edit | `/review`, `/review/edit/[id]` | `send-review-email` |
-| Approve | `/admin` | `send-user-approval-email` |
-| Reject | `/admin` (with the rejection reasons) | `send-user-disapprove-email` |
+| When           | Page                                  | Edge function                |
+| -------------- | ------------------------------------- | ---------------------------- |
+| Submit or edit | `/review`, `/review/edit/[id]`        | `send-review-email`          |
+| Approve        | `/admin`                              | `send-user-approval-email`   |
+| Reject         | `/admin` (with the rejection reasons) | `send-user-disapprove-email` |
 
 Rejection reasons are only emailed, not stored. A rejected review counts as unread on the profile page while its `updated_at` is later than `profiles.last_viewed_rejected_at`.
 
