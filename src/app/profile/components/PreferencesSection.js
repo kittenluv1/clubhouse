@@ -225,14 +225,14 @@ export default function PreferencesSection({
             To help us get better club recommendations, tell us what you’re
             interested in. Please select at least 2 categories to continue.
           </p>
-          <div className="mx-auto flex max-w-[650px] flex-wrap justify-center gap-3 sm:gap-4">
+          <div className="mx-auto flex max-w-162.5 flex-wrap justify-center gap-3 sm:gap-4">
             {BROAD_CATEGORIES.map((category) => {
               const isSelected = broadCategories.includes(category);
               return (
                 <button
                   key={category}
                   onClick={() => toggleCategory(category)}
-                  className={`flex h-[90px] w-[90px] flex-col items-center justify-center gap-2 rounded-xl p-1 text-center text-[10px] font-medium text-gray-900 sm:h-[120px] sm:w-[120px] sm:text-xs md:h-[140px] md:w-[140px] ${
+                  className={`flex h-22.5 w-22.5 flex-col items-center justify-center gap-2 rounded-xl p-1 text-center text-[10px] font-medium text-gray-900 sm:h-30 sm:w-30 sm:text-xs md:h-35 md:w-35 ${
                     isSelected
                       ? "bg-[#D6EEFF] ring-2 ring-[#7BBFEE]"
                       : "bg-[#F4F5F6] hover:bg-[#E5EBF1]"

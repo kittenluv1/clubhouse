@@ -1,6 +1,6 @@
-import { ScoringEngine } from './scoring-engine';
-import { WeightRegistry } from './weight-registry';
-import { createDefaultFeatures } from './features';
+import { ScoringEngine } from "./scoring-engine";
+import { WeightRegistry } from "./weight-registry";
+import { createDefaultFeatures } from "./features";
 
 /**
  * Orchestrator that wires features, weights, and scoring engine.
@@ -26,7 +26,7 @@ export class RecommendationService {
    * @returns {{ club: Object, score: number, breakdown: Object }[]}
    */
   rankClubs(user, clubs, context = {}) {
-    const scored = clubs.map(club => {
+    const scored = clubs.map((club) => {
       const { score, breakdown } = this.engine.score(user, club, context);
       return { club, score, breakdown };
     });
