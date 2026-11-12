@@ -35,15 +35,15 @@ score = (membership_similarity × 0.28)
 
 Each feature returns a raw score between 0.0 and 1.0:
 
-| Feature | What it checks | How it scores |
-|---|---|---|
-| `membership_similarity` | Categories of clubs user is **in** vs candidate's categories | Fraction of candidate's categories that match |
-| `major_match` | User's major vs club category/description | 1.0 = category match, 0.5 = description mention, 0.0 = no match |
-| `interest_overlap` | User's interests array vs club categories | Jaccard similarity (`\|intersection\| / \|union\|`) |
-| `category_overlap` | User's preferred categories vs club categories | Fraction of club categories that match |
-| `minor_match` | Same as major_match but for minor | Same logic |
-| `like_history` | Categories from user's **liked** clubs vs candidate | Fraction of candidate's categories that match |
-| `save_history` | Categories from user's **saved** clubs vs candidate | Fraction of candidate's categories that match |
+| Feature                 | What it checks                                               | How it scores                                                   |
+| ----------------------- | ------------------------------------------------------------ | --------------------------------------------------------------- |
+| `membership_similarity` | Categories of clubs user is **in** vs candidate's categories | Fraction of candidate's categories that match                   |
+| `major_match`           | User's major vs club category/description                    | 1.0 = category match, 0.5 = description mention, 0.0 = no match |
+| `interest_overlap`      | User's interests array vs club categories                    | Jaccard similarity (`\|intersection\| / \|union\|`)             |
+| `category_overlap`      | User's preferred categories vs club categories               | Fraction of club categories that match                          |
+| `minor_match`           | Same as major_match but for minor                            | Same logic                                                      |
+| `like_history`          | Categories from user's **liked** clubs vs candidate          | Fraction of candidate's categories that match                   |
+| `save_history`          | Categories from user's **saved** clubs vs candidate          | Fraction of candidate's categories that match                   |
 
 ## Response Shape
 
@@ -93,7 +93,7 @@ Run the migration (`supabase/migrations/002_add_profile_recommendation_fields.sq
 
 ```js
 // Fetch recommendations (auth cookie is sent automatically)
-const res = await fetch('/api/recommendations?limit=20');
+const res = await fetch("/api/recommendations?limit=20");
 const { recommendations, profileComplete } = await res.json();
 
 if (!profileComplete) {
@@ -101,7 +101,7 @@ if (!profileComplete) {
 }
 
 // recommendations is an array of club objects with scores attached
-recommendations.forEach(club => {
+recommendations.forEach((club) => {
   console.log(club.OrganizationName, club.recommendation_score);
 });
 ```
