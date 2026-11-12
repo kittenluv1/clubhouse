@@ -22,7 +22,7 @@ describe("Button", () => {
     render(
       <Button disabled onClick={onClick}>
         Nope
-      </Button>
+      </Button>,
     );
     const btn = screen.getByRole("button", { name: "Nope" });
     expect(btn).toBeDisabled();
@@ -33,12 +33,16 @@ describe("Button", () => {
   it("applies a custom style string to the className", () => {
     render(<Button style="my-custom-class">Styled</Button>);
     expect(screen.getByRole("button", { name: "Styled" })).toHaveClass(
-      "my-custom-class"
+      "my-custom-class",
     );
   });
 
   it("passes through the type attribute when provided via props", () => {
-    render(<Button data-testid="submit-btn" type="CTA">Submit</Button>);
+    render(
+      <Button data-testid="submit-btn" type="CTA">
+        Submit
+      </Button>,
+    );
     // `type` here is the styling variant prop, not the DOM type; the button still renders.
     expect(screen.getByTestId("submit-btn")).toBeInTheDocument();
   });

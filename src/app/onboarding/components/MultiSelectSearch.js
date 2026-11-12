@@ -11,7 +11,7 @@ export default function MultiSelectSearch({
   onSelect,
   onRemove,
   required = false,
-  onQueryChange,   // optional: called with the raw query string on every keystroke
+  onQueryChange, // optional: called with the raw query string on every keystroke
   serverSearch = false, // when true, skip client-side filtering (parent provides pre-filtered options)
 }) {
   const [query, setQuery] = useState("");
@@ -33,10 +33,10 @@ export default function MultiSelectSearch({
     : query.trim() === ""
       ? []
       : sortByMatchIndex(
-        options
-          .filter((o) => !selected.includes(o))
-          .filter((o) => o.toLowerCase().includes(lowerQuery))
-      ).slice(0, 8);
+          options
+            .filter((o) => !selected.includes(o))
+            .filter((o) => o.toLowerCase().includes(lowerQuery)),
+        ).slice(0, 8);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -60,7 +60,7 @@ export default function MultiSelectSearch({
       <label className="text-sm font-semibold text-[#1C350F]">
         {label}
         {/* previously text-[#FFA1CD] */}
-        {required && <span className="text-black ml-0.5">*</span>}
+        {required && <span className="ml-0.5 text-black">*</span>}
       </label>
 
       <div className="relative" ref={containerRef}>
@@ -74,11 +74,21 @@ export default function MultiSelectSearch({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
-          className="w-full rounded-full bg-[#F4F5F6] py-3 pl-5 pr-12 text-sm text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#E5EBF1] focus:outline-none"
+          className="w-full rounded-full bg-[#F4F5F6] py-3 pr-12 pl-5 text-sm text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#E5EBF1] focus:outline-none"
         />
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
-          <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg
+            className="h-4 w-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
         </div>
 
@@ -113,7 +123,10 @@ export default function MultiSelectSearch({
             >
               {item}
               <button
-                onClick={() => { onRemove(item); if (onQueryChange) onQueryChange(""); }}
+                onClick={() => {
+                  onRemove(item);
+                  if (onQueryChange) onQueryChange("");
+                }}
                 className="ml-0.5 text-gray-500 hover:text-gray-700"
                 aria-label={`Remove ${item}`}
               >
