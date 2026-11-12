@@ -5,7 +5,12 @@ import { IoClose } from "react-icons/io5";
 import ConfirmationModal from "@/app/components/confirmationModal";
 import { useState } from "react";
 
-export default function OnboardingCard({ progressStep, totalSteps, showProgress = true, children }) {
+export default function OnboardingCard({
+  progressStep,
+  totalSteps,
+  showProgress = true,
+  children,
+}) {
   const router = useRouter();
   const clampedStep = Math.max(progressStep, 0);
   const progressPct = ((clampedStep + 1) / totalSteps) * 100;
@@ -14,7 +19,7 @@ export default function OnboardingCard({ progressStep, totalSteps, showProgress 
   const onExitConfirm = () => {
     setConfirmationModalOpen(false);
     router.push("/clubs");
-  }
+  };
 
   return (
     <div className="w-full overflow-hidden rounded-[30px] bg-white shadow-[0px_-1px_8.6px_0px_#0000000D]">
@@ -31,7 +36,7 @@ export default function OnboardingCard({ progressStep, totalSteps, showProgress 
       {/* Content */}
       <div className="relative flex min-h-[585px] flex-col px-12 py-10">
         {progressStep != 4 && (
-            <button
+          <button
             onClick={() => setConfirmationModalOpen(true)}
             className="absolute top-6 right-6 flex h-9 w-9 items-center justify-center rounded-full border border-[#6E808D] text-[black] transition-colors duration-200 hover:bg-[#E5EBF1]"
             aria-label="Exit onboarding"

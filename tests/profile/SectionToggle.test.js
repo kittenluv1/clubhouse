@@ -22,14 +22,14 @@ describe("SectionToggle", () => {
 
   it("rotates the chevron when expanded", () => {
     const { container } = render(
-      <SectionToggle sectionName="Saved" isExpanded={true} />
+      <SectionToggle sectionName="Saved" isExpanded={true} />,
     );
     expect(container.querySelector("svg")).toHaveClass("rotate-180");
   });
 
   it("does not rotate the chevron when collapsed", () => {
     const { container } = render(
-      <SectionToggle sectionName="Saved" isExpanded={false} />
+      <SectionToggle sectionName="Saved" isExpanded={false} />,
     );
     expect(container.querySelector("svg")).not.toHaveClass("rotate-180");
   });

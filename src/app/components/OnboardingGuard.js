@@ -28,7 +28,9 @@ export default function OnboardingGuard() {
       let startResponse = null;
       if (!profile?.onboarding_started) {
         try {
-          startResponse = await fetch("/api/onboarding/start", { method: "POST" });
+          startResponse = await fetch("/api/onboarding/start", {
+            method: "POST",
+          });
         } catch (error) {
           console.error("Failed to update onboarding_started:", error);
         }
