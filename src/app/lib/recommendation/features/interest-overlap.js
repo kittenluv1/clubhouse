@@ -1,4 +1,4 @@
-import { BaseFeature } from './base-feature';
+import { BaseFeature } from "./base-feature";
 
 /**
  * Jaccard similarity between user interests and club categories.
@@ -6,17 +6,18 @@ import { BaseFeature } from './base-feature';
  */
 export class InterestOverlap extends BaseFeature {
   get name() {
-    return 'interest_overlap';
+    return "interest_overlap";
   }
 
   compute(user, club, context) {
-    const interests = (user.interests || []).map(i => i.toLowerCase().trim()).filter(Boolean);
+    const interests = (user.interests || [])
+      .map((i) => i.toLowerCase().trim())
+      .filter(Boolean);
     if (interests.length === 0) return 0.0;
 
-    const clubCategories = [
-      club.Category1Name,
-      club.Category2Name,
-    ].filter(Boolean).map(c => c.toLowerCase().trim());
+    const clubCategories = [club.Category1Name, club.Category2Name]
+      .filter(Boolean)
+      .map((c) => c.toLowerCase().trim());
 
     if (clubCategories.length === 0) return 0.0;
 

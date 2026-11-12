@@ -1,12 +1,20 @@
-import { BaseFeature } from './base-feature';
-import { MajorMatch } from './major-match';
-import { MinorMatch } from './minor-match';
-import { InterestOverlap } from './interest-overlap';
-import { LikeHistory } from './like-history';
-import { SaveHistory } from './save-history';
-import { MembershipSimilarity } from './membership-similarity';
+import { BaseFeature } from "./base-feature";
+import { MajorMatch } from "./major-match";
+import { MinorMatch } from "./minor-match";
+import { InterestOverlap } from "./interest-overlap";
+import { LikeHistory } from "./like-history";
+import { SaveHistory } from "./save-history";
+import { MembershipSimilarity } from "./membership-similarity";
 
-export { BaseFeature, MajorMatch, MinorMatch, InterestOverlap, LikeHistory, SaveHistory, MembershipSimilarity };
+export {
+  BaseFeature,
+  MajorMatch,
+  MinorMatch,
+  InterestOverlap,
+  LikeHistory,
+  SaveHistory,
+  MembershipSimilarity,
+};
 
 /**
  * Creates the default set of feature extractors.

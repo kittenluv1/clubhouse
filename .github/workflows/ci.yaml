@@ -1,8 +1,11 @@
 name: CI
 
 on:
-  push:
   pull_request:
+  push:
+    branches:
+      - main
+      - dev
 
 # Cancel an in-progress run when a newer commit is pushed to the same ref,
 # so obsolete runs don't hold up runners.

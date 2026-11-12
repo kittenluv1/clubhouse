@@ -16,17 +16,17 @@ const Decorations = () => (
     <img
       src="/onboarding/blueflower.svg"
       alt="Blue flower decoration"
-      className="absolute left-[2vw] top-[2vw] h-[9vw] w-[10vw] min-h-24 min-w-28 max-h-40 max-w-44 transition-transform duration-500 ease-in-out hover:-rotate-90 max-md:left-[-8vw] max-md:top-[-6vw] max-md:h-[18vw] max-md:w-[18vw] max-md:min-h-24 max-md:min-w-24 max-md:max-h-40 max-md:max-w-40"
+      className="absolute top-[2vw] left-[2vw] h-[9vw] max-h-40 min-h-24 w-[10vw] max-w-44 min-w-28 transition-transform duration-500 ease-in-out hover:-rotate-90 max-md:top-[-6vw] max-md:left-[-8vw] max-md:h-[18vw] max-md:max-h-40 max-md:min-h-24 max-md:w-[18vw] max-md:max-w-40 max-md:min-w-24"
     />
     <img
       src="/onboarding/greenflower.svg"
       alt="Green flower decoration"
-      className="absolute left-[12vw] top-0 h-[8vw] w-[9vw] min-h-20 min-w-24 max-h-36 max-w-40 transition-transform duration-500 ease-in-out hover:-rotate-90 max-md:bottom-[-6vw] max-md:left-auto max-md:right-[-4vw] max-md:top-auto max-md:h-[16vw] max-md:w-[16vw] max-md:min-h-20 max-md:min-w-20 max-md:max-h-36 max-md:max-w-36"
+      className="absolute top-0 left-[12vw] h-[8vw] max-h-36 min-h-20 w-[9vw] max-w-40 min-w-24 transition-transform duration-500 ease-in-out hover:-rotate-90 max-md:top-auto max-md:right-[-4vw] max-md:bottom-[-6vw] max-md:left-auto max-md:h-[16vw] max-md:max-h-36 max-md:min-h-20 max-md:w-[16vw] max-md:max-w-36 max-md:min-w-20"
     />
     <img
       src="/onboarding/pinkflower.svg"
       alt="Pink flower decoration"
-      className="absolute left-[8vw] top-[9vw] h-[8vw] w-[10vw] min-h-20 min-w-28 max-h-36 max-w-44 transition-transform duration-500 ease-in-out hover:-rotate-90 max-md:hidden"
+      className="absolute top-[9vw] left-[8vw] h-[8vw] max-h-36 min-h-20 w-[10vw] max-w-44 min-w-28 transition-transform duration-500 ease-in-out hover:-rotate-90 max-md:hidden"
     />
   </>
 );
@@ -43,9 +43,11 @@ const SignInCard = () => (
     </h2>
     <p className="mt-3 max-w-md text-[clamp(0.95rem,3.2vw,1rem)] leading-6 text-[#6E808D] md:text-base">
       To keep reviews accurate and trustworthy,{" "}
-      <span className="lg:block">only verified UCLA students can contribute.</span>
+      <span className="lg:block">
+        only verified UCLA students can contribute.
+      </span>
     </p>
-    <div className="pb-2 pt-6 md:mt-8 md:p-0">
+    <div className="pt-6 pb-2 md:mt-8 md:p-0">
       <GoogleSignIn />
     </div>
   </div>
@@ -53,13 +55,13 @@ const SignInCard = () => (
 
 function SignInPage() {
   return (
-    <div className="relative pt-10 md:pt-20 bg-transparent">
-      <div className="pointer-events-none absolute -left-20 top-16 h-64 w-64 rounded-full bg-[#CDE5FC]/50 blur-3xl" />
+    <div className="relative bg-transparent pt-10 md:pt-20">
+      <div className="pointer-events-none absolute top-16 -left-20 h-64 w-64 rounded-full bg-[#CDE5FC]/50 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#F7D7E2]/40 blur-3xl" />
       <div className="relative z-10 flex min-h-[calc(100vh-84px)] flex-col items-center justify-center px-4 py-10 md:grid md:grid-cols-2 md:items-center md:gap-10 md:px-6 lg:px-12 xl:px-20">
         <div className="flex w-full max-w-sm flex-col items-center text-center md:max-w-none md:items-start md:pl-4 md:text-left lg:pl-16">
           <Intro />
-          <div className="relative mt-8 h-[18vw] min-h-56 w-[min(82vw,22rem)] min-w-[18rem] max-w-120 max-md:hidden md:mt-10 md:w-[22vw]">
+          <div className="relative mt-8 h-[18vw] min-h-56 w-[min(82vw,22rem)] max-w-120 min-w-[18rem] max-md:hidden md:mt-10 md:w-[22vw]">
             <Decorations />
           </div>
         </div>

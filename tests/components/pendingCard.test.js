@@ -20,29 +20,55 @@ const review = {
 
 describe("PendingCard", () => {
   it("renders review metadata and text", () => {
-    render(<PendingCard review={review} handleApprove={jest.fn()} handleReject={jest.fn()} />);
+    render(
+      <PendingCard
+        review={review}
+        handleApprove={jest.fn()}
+        handleReject={jest.fn()}
+      />,
+    );
     expect(screen.getByText("2025-01-15")).toBeInTheDocument();
     expect(screen.getByText("student@ucla.edu")).toBeInTheDocument();
     expect(screen.getByText("Chess Club")).toBeInTheDocument();
-    expect(screen.getByText("Great club with welcoming people.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Great club with welcoming people."),
+    ).toBeInTheDocument();
   });
 
   it("calls handleApprove with the review (buttons rendered for both layouts)", () => {
     const handleApprove = jest.fn();
-    render(<PendingCard review={review} handleApprove={handleApprove} handleReject={jest.fn()} />);
+    render(
+      <PendingCard
+        review={review}
+        handleApprove={handleApprove}
+        handleReject={jest.fn()}
+      />,
+    );
     fireEvent.click(screen.getAllByText("Approve")[0]);
     expect(handleApprove).toHaveBeenCalledWith(review);
   });
 
   it("calls handleReject with the review", () => {
     const handleReject = jest.fn();
-    render(<PendingCard review={review} handleApprove={jest.fn()} handleReject={handleReject} />);
+    render(
+      <PendingCard
+        review={review}
+        handleApprove={jest.fn()}
+        handleReject={handleReject}
+      />,
+    );
     fireEvent.click(screen.getAllByText("Reject")[0]);
     expect(handleReject).toHaveBeenCalledWith(review);
   });
 
   it("renders both mobile and desktop button sets", () => {
-    render(<PendingCard review={review} handleApprove={jest.fn()} handleReject={jest.fn()} />);
+    render(
+      <PendingCard
+        review={review}
+        handleApprove={jest.fn()}
+        handleReject={jest.fn()}
+      />,
+    );
     expect(screen.getAllByText("Approve")).toHaveLength(2);
     expect(screen.getAllByText("Reject")).toHaveLength(2);
   });
