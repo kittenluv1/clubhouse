@@ -65,6 +65,19 @@ describe("GET /api/profile", () => {
     expect(body.userInterests).toEqual(["Games"]);
   });
 
+  it("orders each review list by date written, newest first", async () => {
+    setup();
+    await get();
+
+    for (const table of ["reviews", "pending_reviews", "rejected_reviews"]) {
+      const query = userDb.queries.find((q) => q.table === table);
+      expect(query.calls).toContainEqual({
+        method: "order",
+        args: ["created_at", { ascending: false }],
+      });
+    }
+  });
+
   it("counts rejected reviews updated since the last view", async () => {
     setup();
     expect((await (await get()).json()).unreadRejectedCount).toBe(1);
