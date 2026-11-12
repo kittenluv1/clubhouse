@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
+import { useListbox } from "../../lib/hooks/useListbox";
 
 export default function MultiSelectSearch({
   label,
@@ -55,6 +56,13 @@ export default function MultiSelectSearch({
     setIsOpen(false);
   };
 
+  const listbox = useListbox(
+    isOpen ? filtered : [],
+    handleSelect,
+    () => setIsOpen(false),
+    () => setIsOpen(true),
+  );
+
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-semibold text-[#1C350F]">
@@ -70,9 +78,11 @@ export default function MultiSelectSearch({
           onChange={(e) => {
             setQuery(e.target.value);
             setIsOpen(true);
+            listbox.reset();
             if (onQueryChange) onQueryChange(e.target.value);
           }}
           onFocus={() => setIsOpen(true)}
+          {...listbox.inputProps}
           placeholder={placeholder}
           className="w-full rounded-full bg-[#F4F5F6] py-3 pr-12 pl-5 text-sm text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#E5EBF1] focus:outline-none"
         />
@@ -93,13 +103,17 @@ export default function MultiSelectSearch({
         </div>
 
         {isOpen && filtered.length > 0 && (
-          <ul className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-xl bg-white py-1 text-sm shadow-lg">
-            {filtered.map((option) => (
+          <ul
+            {...listbox.listProps}
+            className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-xl bg-white py-1 text-sm shadow-lg"
+          >
+            {filtered.map((option, index) => (
               <li
                 key={option}
+                {...listbox.optionProps(index)}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handleSelect(option)}
-                className="cursor-pointer truncate px-4 py-2 hover:bg-[#F4F5F6]"
+                className={`cursor-pointer truncate px-4 py-2 hover:bg-[#F4F5F6] ${listbox.active === index ? "bg-[#F4F5F6]" : ""}`}
               >
                 {option}
               </li>
