@@ -35,6 +35,18 @@ describe("PendingCard", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows when the review was last submitted, not first created", () => {
+    render(
+      <PendingCard
+        review={{ ...review, updated_at: "2025-03-02T08:00:00" }}
+        handleApprove={jest.fn()}
+        handleReject={jest.fn()}
+      />,
+    );
+    expect(screen.getByText("2025-03-02")).toBeInTheDocument();
+    expect(screen.queryByText("2025-01-15")).not.toBeInTheDocument();
+  });
+
   it("calls handleApprove with the review (buttons rendered for both layouts)", () => {
     const handleApprove = jest.fn();
     render(
