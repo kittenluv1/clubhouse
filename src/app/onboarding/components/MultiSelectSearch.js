@@ -56,8 +56,11 @@ export default function MultiSelectSearch({
     setIsOpen(false);
   };
 
-  const listbox = useListbox(isOpen ? filtered : [], handleSelect, () =>
-    setIsOpen(false),
+  const listbox = useListbox(
+    isOpen ? filtered : [],
+    handleSelect,
+    () => setIsOpen(false),
+    () => setIsOpen(true),
   );
 
   return (

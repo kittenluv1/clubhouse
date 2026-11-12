@@ -49,6 +49,16 @@ describe("MultiSelectSearch keyboard", () => {
     expect(onSelect).not.toHaveBeenCalled();
   });
 
+  test("a highlight does not survive closing and reopening the list", () => {
+    const { input } = setup();
+    fireEvent.change(input, { target: { value: "comp" } });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.keyDown(input, { key: "Escape" });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+    expect(input).not.toHaveAttribute("aria-activedescendant");
+  });
+
   test("two instances get distinct listbox ids", () => {
     const { input, otherInput } = setup();
     fireEvent.change(input, { target: { value: "comp" } });

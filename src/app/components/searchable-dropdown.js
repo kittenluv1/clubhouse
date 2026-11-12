@@ -94,6 +94,7 @@ const SearchableDropdown = ({
     isOpen ? filteredOptions : [],
     handleOptionClick,
     () => setIsOpen(false),
+    () => setIsOpen(true),
   );
 
   return (

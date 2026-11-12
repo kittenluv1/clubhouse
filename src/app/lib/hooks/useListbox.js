@@ -1,19 +1,27 @@
 import { useId, useState } from "react";
 
-export function useListbox(options, onPick, onClose) {
+export function useListbox(options, onPick, onClose, onOpen) {
   const listId = useId();
   const [active, setActive] = useState(-1);
+  if (options.length === 0 && active !== -1) setActive(-1);
   const current = active < options.length ? active : -1;
   const optionId = (i) => `${listId}-${i}`;
 
   const onKeyDown = (e) => {
-    if (e.key === "ArrowDown") {
+    if (e.key === "ArrowDown" && options.length === 0) {
+      e.preventDefault();
+      onOpen();
+    } else if (e.key === "ArrowDown") {
       e.preventDefault();
       setActive(Math.min(current + 1, options.length - 1));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setActive(Math.max(current - 1, -1));
-    } else if (e.key === "Enter" && current >= 0) {
+    } else if (
+      e.key === "Enter" &&
+      current >= 0 &&
+      !e.nativeEvent?.isComposing
+    ) {
       e.preventDefault();
       setActive(-1);
       onPick(options[current]);
@@ -29,7 +37,7 @@ export function useListbox(options, onPick, onClose) {
     inputProps: {
       role: "combobox",
       "aria-expanded": options.length > 0,
-      "aria-controls": listId,
+      "aria-controls": options.length > 0 ? listId : undefined,
       "aria-autocomplete": "list",
       "aria-activedescendant": current >= 0 ? optionId(current) : undefined,
       onKeyDown,

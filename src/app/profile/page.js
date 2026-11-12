@@ -45,6 +45,7 @@ function ProfilePage() {
         if (!userProfile) {
           setLoading(true);
         }
+        setLoadError(null);
 
         // No userId param needed - API gets it from session cookies
         const response = await fetch(`/api/profile`);

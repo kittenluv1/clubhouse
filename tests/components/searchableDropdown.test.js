@@ -85,5 +85,9 @@ describe("SearchableDropdown keyboard", () => {
     fireEvent.keyDown(input, { key: "Escape" });
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     expect(input).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(await screen.findByRole("listbox")).toBeInTheDocument();
+    expect(input).not.toHaveAttribute("aria-activedescendant");
   });
 });
