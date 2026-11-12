@@ -146,7 +146,7 @@ test("creates a review with the shared form values", async () => {
   fireEvent.change(dates[0], { target: { value: "Fall|2024" } });
   fireEvent.change(dates[1], { target: { value: "Spring|2025" } });
   fireEvent.click(
-    screen.getAllByRole("button").find((button) => button.querySelector("svg")),
+    screen.getAllByRole("button").find((button) => button.querySelector("img")),
   );
   const text = screen.getByPlaceholderText(/Write about the recruitment/);
   fireEvent.change(text, { target: { value: "New review" } });

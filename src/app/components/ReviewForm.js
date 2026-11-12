@@ -73,15 +73,17 @@ function StarRating({ rating, setRating, inputRef, hasError }) {
               onClick={(event) => handleClick(event, star)}
               className="relative float-left mr-1 inline-block focus:outline-none"
             >
-              <AiFillStar className="text-5xl text-[#E5EBF1]" />
-              {fill !== "empty" && (
-                <span
-                  className="absolute top-0 left-0 overflow-hidden"
-                  style={{ width: fill === "half" ? "50%" : "100%" }}
-                >
-                  <AiFillStar className="text-5xl text-yellow-400" />
-                </span>
-              )}
+              <img
+                src={
+                  fill === "full"
+                    ? "/interactions/reviewStarFilled.svg"
+                    : fill === "half"
+                      ? "/interactions/reviewStarHalf.svg"
+                      : "/interactions/reviewStarUnfilled.svg"
+                }
+                alt=""
+                className="h-12 w-12"
+              />
             </button>
           );
         })}
