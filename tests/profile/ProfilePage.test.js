@@ -1,13 +1,17 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { act, render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ProfilePage from "@/app/profile/page";
 
+// Stable objects, like the real AuthContext and router; new ones each render
+// would re-run the pages' [user] / [user, router] effects in a loop.
+const mockRouter = { push: jest.fn() };
+const mockAuth = { user: { id: "u1" }, loading: false };
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => mockRouter,
 }));
 jest.mock("@/app/context/AuthContext", () => ({
-  useRequireAuth: () => ({ user: { id: "u1" } }),
+  useRequireAuth: () => mockAuth,
 }));
 jest.mock("posthog-js", () => ({ capture: jest.fn() }));
 jest.mock("@/app/components/clubCard", () => {
@@ -83,4 +87,7 @@ test("saved preferences survive switching sections", async () => {
   fireEvent.click(screen.getByRole("button", { name: "Approved" }));
   fireEvent.click(screen.getByRole("button", { name: "Preferences" }));
   expect(screen.getByText("Majors: History")).toBeInTheDocument();
+  await act(() => new Promise((r) => setTimeout(r, 30)));
+  expect(screen.getByText("Majors: History")).toBeInTheDocument();
+  expect(global.fetch).toHaveBeenCalledTimes(1);
 });

@@ -78,6 +78,18 @@ describe("SearchableDropdown keyboard", () => {
     expect(onSelect).not.toHaveBeenCalled();
   });
 
+  test("typing more clears the highlight", async () => {
+    const onSelect = jest.fn();
+    render(<Harness onSelect={onSelect} onSubmit={jest.fn()} />);
+    const input = await typeQuery("ch");
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    fireEvent.change(input, { target: { value: "chess" } });
+    expect(input).not.toHaveAttribute("aria-activedescendant");
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
   test("Escape closes the list", async () => {
     render(<Harness onSelect={jest.fn()} onSubmit={jest.fn()} />);
     const input = await typeQuery("chess");

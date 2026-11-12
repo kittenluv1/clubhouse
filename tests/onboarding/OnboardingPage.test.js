@@ -3,11 +3,15 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import OnboardingPage from "@/app/onboarding/page";
 
+// Stable objects, like the real AuthContext and router; new ones each render
+// would re-run the pages' [user] / [user, router] effects in a loop.
+const mockRouter = { push: jest.fn() };
+const mockAuth = { user: { id: "u1" }, loading: false };
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => mockRouter,
 }));
 jest.mock("@/app/context/AuthContext", () => ({
-  useRequireAuth: () => ({ user: { id: "u1" }, loading: false }),
+  useRequireAuth: () => mockAuth,
 }));
 
 function mockStep(name) {
@@ -66,6 +70,20 @@ test("a failed save shows an error and lets the user retry", async () => {
   fireEvent.click(finish);
   expect(await screen.findByText("Finish step")).toBeInTheDocument();
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
+test("Finish and Prev are ignored while the save is in flight", async () => {
+  let resolvePost;
+  postResponse = new Promise((r) => (resolvePost = r));
+  const finish = goToFinishButton();
+  fireEvent.click(finish);
+  expect(finish).toBeDisabled();
+  fireEvent.click(screen.getByRole("button", { name: /prev/i }));
+  expect(screen.getByText("Interests step")).toBeInTheDocument();
+
+  resolvePost({ ok: true, json: async () => ({}) });
+  expect(await screen.findByText("Finish step")).toBeInTheDocument();
+  expect(posts()).toHaveLength(1);
 });
 
 test("a network error shows the error message", async () => {

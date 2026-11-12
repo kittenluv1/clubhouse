@@ -115,6 +115,7 @@ export default function OnboardingPage() {
                 isFinishStep ? handleFinish : () => setScreen((s) => s + 1)
               }
               onBack={() => {
+                if (submitting) return;
                 setFinishError(null);
                 setScreen((s) => s - 1);
                 setCanAdvance(true);

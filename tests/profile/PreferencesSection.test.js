@@ -33,12 +33,8 @@ test("reports the saved preferences to the parent after a successful save", asyn
     majors: ["Math"],
     minors: [],
     currentClubs: [],
-    userInterests: [
-      "Academic & Pre-Professional",
-      "Cultural & Identity-Based",
-      "Academic",
-      "Cultural",
-    ],
+    // Only subcategories, as the server stores them
+    userInterests: ["Academic", "Cultural"],
   });
 });
 

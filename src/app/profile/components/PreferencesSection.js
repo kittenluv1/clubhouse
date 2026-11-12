@@ -156,7 +156,7 @@ export default function PreferencesSection({
           majors,
           minors,
           currentClubs: clubs,
-          userInterests: [...broadCategories, ...subcategories],
+          userInterests: subcategories,
         });
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => setSaveStatus(null), 3000);
