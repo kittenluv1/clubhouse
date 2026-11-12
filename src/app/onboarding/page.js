@@ -29,6 +29,8 @@ export default function OnboardingPage() {
   const [formData, setFormData] = useState({});
   const [canAdvance, setCanAdvance] = useState(true);
   const [clubOptions, setClubOptions] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [finishError, setFinishError] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -62,19 +64,28 @@ export default function OnboardingPage() {
   const progressStep = screen - 1;
 
   const handleFinish = async () => {
-    const res = await fetch("/api/onboarding", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        majors: formData.majors ?? [],
-        minors: formData.minors ?? [],
-        broadCategories: formData.interests ?? [],
-        subcategories: formData.subcategories ?? [],
-        currentClubs: formData.clubs ?? [],
-      }),
-    });
-    if (res.ok) {
-      setScreen((s) => s + 1);
+    if (submitting) return;
+    setSubmitting(true);
+    setFinishError(null);
+    try {
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          majors: formData.majors ?? [],
+          minors: formData.minors ?? [],
+          broadCategories: formData.interests ?? [],
+          subcategories: formData.subcategories ?? [],
+          currentClubs: formData.clubs ?? [],
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setScreen(SCREENS.length - 1);
+    } catch (err) {
+      console.error("Error finishing onboarding:", err);
+      setFinishError("Could not save your answers. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -92,6 +103,11 @@ export default function OnboardingPage() {
             onValidChange={setCanAdvance}
             clubOptions={clubOptions}
           />
+          {finishError && (
+            <p role="alert" className="mt-4 text-sm text-red-500">
+              {finishError}
+            </p>
+          )}
           {/* Confirmation step (last) uses its own CTAs instead of standard nav */}
           {!isLastScreen && (
             <OnboardingNav
@@ -99,11 +115,12 @@ export default function OnboardingPage() {
                 isFinishStep ? handleFinish : () => setScreen((s) => s + 1)
               }
               onBack={() => {
+                setFinishError(null);
                 setScreen((s) => s - 1);
                 setCanAdvance(true);
               }}
               isFirstStep={isWelcomeScreen}
-              canAdvance={canAdvance}
+              canAdvance={canAdvance && !submitting}
               nextLabel={isFinishStep ? "Finish" : "Next"}
             />
           )}
