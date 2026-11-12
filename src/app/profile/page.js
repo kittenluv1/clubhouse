@@ -9,6 +9,7 @@ import ClubCard from "../components/clubCard";
 import Link from "next/link";
 import ReviewCard from "../components/reviewCard";
 import LoadingScreen from "../components/LoadingScreen";
+import ErrorScreen from "../components/ErrorScreen";
 import ConfirmationModal from "../components/confirmationModal";
 import Button from "../components/button";
 import PreferencesSection from "./components/PreferencesSection";
@@ -28,6 +29,7 @@ function ProfilePage() {
   const [likedClubs, setLikedClubs] = useState([]);
   const [savedClubs, setSavedClubs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
   const [reviewToDelete, setReviewToDelete] = useState(null);
   const [unreadRejectedCount, setUnreadRejectedCount] = useState(0);
@@ -74,9 +76,11 @@ function ProfilePage() {
           setSavedClubs(data.savedClubs || []);
         } else {
           console.error("Error fetching profile data:", data.error);
+          setLoadError("Failed to load profile");
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
+        setLoadError("Failed to load profile");
       } finally {
         setLoading(false);
       }
@@ -89,6 +93,10 @@ function ProfilePage() {
 
   if (loading) {
     return <LoadingScreen />;
+  }
+
+  if (loadError) {
+    return <ErrorScreen error={loadError} />;
   }
 
   const displayName = userProfile?.full_name || "Anonymous Bruin";
@@ -442,6 +450,7 @@ function ProfilePage() {
             minors={profilePreferences.minors}
             currentClubs={profilePreferences.currentClubs}
             userInterests={profilePreferences.userInterests}
+            onSaved={setProfilePreferences}
           />
         ) : (
           <LoadingScreen />
@@ -504,7 +513,7 @@ function ProfilePage() {
         </div>
         <div className="absolute -bottom-17 left-1/2 flex h-35 w-35 -translate-x-1/2 items-center justify-center rounded-full border border-lime-300 bg-white md:h-35 md:w-35 lg:-bottom-22 lg:left-52 lg:h-45 lg:w-45">
           <img
-            src={getAvatarUrl(userProfile.avatar_id)}
+            src={getAvatarUrl(userProfile?.avatar_id)}
             alt="Profile"
             className="h-full w-full rounded-full object-cover p-2"
           />

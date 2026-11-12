@@ -27,6 +27,7 @@ export default function PreferencesSection({
   minors: initialMinors = [],
   currentClubs: initialClubs = [],
   userInterests = [],
+  onSaved = () => {},
 }) {
   const { broadCategories: storedBroad, subcategories: initialSub } =
     splitUserInterests(userInterests);
@@ -150,6 +151,12 @@ export default function PreferencesSection({
           clubs,
           broadCategories,
           subcategories,
+        });
+        onSaved({
+          majors,
+          minors,
+          currentClubs: clubs,
+          userInterests: [...broadCategories, ...subcategories],
         });
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => setSaveStatus(null), 3000);
