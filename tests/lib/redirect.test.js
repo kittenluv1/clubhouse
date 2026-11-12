@@ -94,6 +94,19 @@ describe("isValidReturnUrl", () => {
     });
   });
 
+  describe("Invalid URLs - Control characters", () => {
+    test("should reject tab, newline and CR that browsers strip into //", () => {
+      expect(isValidReturnUrl("/\t/evil.com")).toBe(false);
+      expect(isValidReturnUrl("/\n/evil.com")).toBe(false);
+      expect(isValidReturnUrl("/\r/evil.com")).toBe(false);
+    });
+
+    test("should reject other control characters", () => {
+      expect(isValidReturnUrl("/path\u0000x")).toBe(false);
+      expect(isValidReturnUrl("/path\u007Fx")).toBe(false);
+    });
+  });
+
   describe("Invalid URLs - Backslash tricks", () => {
     test("should reject URLs with backslashes", () => {
       expect(isValidReturnUrl("/\\evil.com")).toBe(false);
