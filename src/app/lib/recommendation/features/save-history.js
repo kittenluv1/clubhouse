@@ -1,4 +1,4 @@
-import { BaseFeature } from './base-feature';
+import { BaseFeature } from "./base-feature";
 
 /**
  * Scores based on overlap between categories of the user's saved clubs
@@ -6,17 +6,18 @@ import { BaseFeature } from './base-feature';
  */
 export class SaveHistory extends BaseFeature {
   get name() {
-    return 'save_history';
+    return "save_history";
   }
 
   compute(user, club, context) {
-    const savedCategories = (context?.savedCategories || []).map(c => c.toLowerCase().trim()).filter(Boolean);
+    const savedCategories = (context?.savedCategories || [])
+      .map((c) => c.toLowerCase().trim())
+      .filter(Boolean);
     if (savedCategories.length === 0) return 0.0;
 
-    const clubCategories = [
-      club.Category1Name,
-      club.Category2Name,
-    ].filter(Boolean).map(c => c.toLowerCase().trim());
+    const clubCategories = [club.Category1Name, club.Category2Name]
+      .filter(Boolean)
+      .map((c) => c.toLowerCase().trim());
 
     if (clubCategories.length === 0) return 0.0;
 

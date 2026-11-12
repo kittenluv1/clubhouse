@@ -16,11 +16,11 @@ A **private SQL function** `update_club_review_stats()` handles the rating logic
 
 ### Database Columns on `clubs` Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `satisfaction_sum` | float (unrounded) | Sum of all overall satisfaction ratings. Kept unrounded to preserve accuracy. |
-| `total_num_reviews` | integer | Number of reviews the club has |
-| `average_satisfaction` | float (rounded to nearest tenth) | Calculated average satisfaction rating |
+| Column                 | Type                             | Description                                                                   |
+| ---------------------- | -------------------------------- | ----------------------------------------------------------------------------- |
+| `satisfaction_sum`     | float (unrounded)                | Sum of all overall satisfaction ratings. Kept unrounded to preserve accuracy. |
+| `total_num_reviews`    | integer                          | Number of reviews the club has                                                |
+| `average_satisfaction` | float (rounded to nearest tenth) | Calculated average satisfaction rating                                        |
 
 ### SQL Function Logic (`update_club_review_stats`)
 
@@ -46,11 +46,11 @@ This function is **triggered after successful insertion** in the `reviews` table
 
 The clubs API retrieves `sortType` from the URL (default: `"Highest Rating"`):
 
-| Sort Type | Column | Order | Notes |
-|-----------|--------|-------|-------|
+| Sort Type      | Column                 | Order      | Notes                                                                                          |
+| -------------- | ---------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
 | Highest Rating | `average_satisfaction` | Descending | Uses `nullsFirst: false` so clubs with no reviews appear last (nulls default to showing first) |
-| Most Reviewed | `total_num_reviews` | Descending | |
-| A-Z | `OrganizationName` | Ascending | |
+| Most Reviewed  | `total_num_reviews`    | Descending |                                                                                                |
+| A-Z            | `OrganizationName`     | Ascending  |                                                                                                |
 
 The sort conditions are passed into the Supabase query request.
 
@@ -72,10 +72,10 @@ The sort conditions are passed into the Supabase query request.
 
 ### Approval / Denial
 
-| Action | What Happens |
-|--------|-------------|
+| Action      | What Happens                                                                                                                                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Approve** | Insert into `reviews` table (triggers rating update), then delete from `pending_reviews`. Triggers `send-user-approval-email` edge function, which notifies the user their review was approved with a link to the club page. |
-| **Deny** | Delete from `pending_reviews`. Triggers `send-user-disapproval-email` edge function, which notifies the user their review was removed, includes the review content, and links to submit a new review. |
+| **Deny**    | Delete from `pending_reviews`. Triggers `send-user-disapproval-email` edge function, which notifies the user their review was removed, includes the review content, and links to submit a new review.                        |
 
 ### Email Service
 

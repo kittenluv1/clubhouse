@@ -11,7 +11,9 @@ describe("OnboardingNav", () => {
 
   it("shows the Prev button on later steps and calls onBack", () => {
     const onBack = jest.fn();
-    render(<OnboardingNav isFirstStep={false} onNext={jest.fn()} onBack={onBack} />);
+    render(
+      <OnboardingNav isFirstStep={false} onNext={jest.fn()} onBack={onBack} />,
+    );
     fireEvent.click(screen.getByText("Prev"));
     expect(onBack).toHaveBeenCalledTimes(1);
   });
@@ -24,13 +26,27 @@ describe("OnboardingNav", () => {
   });
 
   it("renders a custom next label", () => {
-    render(<OnboardingNav isFirstStep nextLabel="Finish" onNext={jest.fn()} onBack={jest.fn()} />);
+    render(
+      <OnboardingNav
+        isFirstStep
+        nextLabel="Finish"
+        onNext={jest.fn()}
+        onBack={jest.fn()}
+      />,
+    );
     expect(screen.getByText("Finish")).toBeInTheDocument();
   });
 
   it("disables the next button when canAdvance is false", () => {
     const onNext = jest.fn();
-    render(<OnboardingNav isFirstStep canAdvance={false} onNext={onNext} onBack={jest.fn()} />);
+    render(
+      <OnboardingNav
+        isFirstStep
+        canAdvance={false}
+        onNext={onNext}
+        onBack={jest.fn()}
+      />,
+    );
     const nextBtn = screen.getByText("Next").closest("button");
     expect(nextBtn).toBeDisabled();
     fireEvent.click(nextBtn);
