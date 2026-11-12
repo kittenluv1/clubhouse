@@ -135,7 +135,7 @@ const reviewBox = () =>
   screen.getByPlaceholderText(/Write about the recruitment/);
 
 const firstStar = () =>
-  screen.getAllByRole("button").find((button) => button.querySelector("svg"));
+  screen.getAllByRole("button").find((button) => button.querySelector("img"));
 const sentBody = (call) => JSON.parse(global.fetch.mock.calls[call][1].body);
 
 const clickFirstStar = (half) => {
