@@ -418,7 +418,7 @@ export default function ReviewForm({ reviewId, source = "rejected" }) {
           <hr className="border-t border-gray-300" />
         </div>
 
-        <form onSubmit={handleSubmit} className="px-16">
+        <form onSubmit={handleSubmit} className="px-6 lg:px-16">
           <fieldset disabled={isEditing} className="mt-14">
             {/* Search for a club to review */}
             <div>
