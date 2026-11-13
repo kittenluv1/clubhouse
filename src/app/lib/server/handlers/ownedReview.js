@@ -1,0 +1,42 @@
+// Route handlers shared by /api/approvedReviews/[id] and /api/rejectedReviews/[id]:
+// a reviewer can read, edit (resubmit for moderation) and delete their own review.
+
+import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
+import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
+import { validateReviewInput } from "@/app/lib/server/reviewInput";
+import { readJson, withUser } from "@/app/lib/server/route";
+
+/** @param {"approved" | "rejected"} status */
+export function ownedReviewHandlers(status) {
+  return {
+    GET: withUser(async (_req, { supabase, user, params }) => {
+      const review = await createReviewsRepository(supabase).getOwned(
+        status,
+        params.id,
+        user.id,
+      );
+      return Response.json({ review });
+    }),
+
+    POST: withUser(async (req, { supabase, user, params }) => {
+      const input = await validateReviewInput(await readJson(req));
+
+      await createReviewsRepository(supabase).resubmit(
+        status,
+        params.id,
+        user.id,
+        input,
+      );
+      return Response.json({ message: REVIEW_MESSAGES.resubmitted });
+    }),
+
+    DELETE: withUser(async (_req, { supabase, user, params }) => {
+      await createReviewsRepository(supabase).deleteOwned(
+        status,
+        params.id,
+        user.id,
+      );
+      return Response.json({ message: REVIEW_MESSAGES.deleted });
+    }),
+  };
+}

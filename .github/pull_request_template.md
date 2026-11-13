@@ -11,6 +11,6 @@ Fixes # <!-- Add issue number here (e.g., #142) -->
 
 ## Checklist
 
-- [ ] I performed a self-review of my code
 - [ ] I commented my code where necessary
+- [ ] Code follows responsiveness and accessibility standards
 - [ ] I updated the documentation

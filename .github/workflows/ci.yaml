@@ -1,8 +1,11 @@
 name: CI
 
 on:
-  push:
   pull_request:
+  push:
+    branches:
+      - main
+      - dev
 
 # Cancel an in-progress run when a newer commit is pushed to the same ref,
 # so obsolete runs don't hold up runners.
@@ -12,15 +15,15 @@ concurrency:
 
 jobs:
   lint:
-    name: ESLint
+    name: ESLint, Prettier and dependency audit
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -31,16 +34,43 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      # Directories that are fully formatted; widen as the rest is formatted.
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+  typecheck:
+    name: Type check (server and API layer)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tsc
+        run: npm run typecheck
+
   test:
     name: Jest test suite (with coverage gate)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -67,10 +97,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm

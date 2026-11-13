@@ -21,7 +21,9 @@ export default function PendingCard({ review, handleApprove, handleReject }) {
         <div>
           <div className="space-y-[4px]">
             <div>
-              <label>{review.created_at.split("T")[0]}</label>
+              <label>
+                {(review.updated_at ?? review.created_at).split("T")[0]}
+              </label>
             </div>
             <div className="flex flex-row items-center gap-[4px]">
               <label className="text-[24px] font-[var(--font-dm-sans)] font-bold text-black md:text-[28px]">

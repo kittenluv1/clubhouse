@@ -1,20 +1,28 @@
-import { splitUserInterests } from '@/app/utils/splitUserInterests';
+import { splitUserInterests } from "@/app/lib/utils/splitUserInterests";
 
-describe('splitUserInterests', () => {
-  test('separates broad categories from subcategories', () => {
-    const input = ["Arts & Media", "Dance", "Pre-Law", "Academic & Pre-Professional"];
+describe("splitUserInterests", () => {
+  test("separates broad categories from subcategories", () => {
+    const input = [
+      "Arts & Media",
+      "Dance",
+      "Pre-Law",
+      "Academic & Pre-Professional",
+    ];
     const { broadCategories, subcategories } = splitUserInterests(input);
-    expect(broadCategories).toEqual(["Arts & Media", "Academic & Pre-Professional"]);
+    expect(broadCategories).toEqual([
+      "Arts & Media",
+      "Academic & Pre-Professional",
+    ]);
     expect(subcategories).toEqual(["Dance", "Pre-Law"]);
   });
 
-  test('handles empty array', () => {
+  test("handles empty array", () => {
     const { broadCategories, subcategories } = splitUserInterests([]);
     expect(broadCategories).toEqual([]);
     expect(subcategories).toEqual([]);
   });
 
-  test('handles all broad categories', () => {
+  test("handles all broad categories", () => {
     const input = [
       "Academic & Pre-Professional",
       "Cultural & Identity-Based",
@@ -29,7 +37,7 @@ describe('splitUserInterests', () => {
     expect(subcategories).toHaveLength(0);
   });
 
-  test('handles all subcategories (nothing matching broad categories)', () => {
+  test("handles all subcategories (nothing matching broad categories)", () => {
     const input = ["Pre-Law", "Dance", "Jewish"];
     const { broadCategories, subcategories } = splitUserInterests(input);
     expect(broadCategories).toHaveLength(0);

@@ -56,7 +56,7 @@ describe("POST /api/clubLikes", () => {
     authed();
     mockChain.select.mockResolvedValue({
       data: null,
-      error: { message: "duplicate" },
+      error: { code: "23505", message: "duplicate" },
     });
     expect((await POST(req({ club_id: 9 }))).status).toBe(200);
   });

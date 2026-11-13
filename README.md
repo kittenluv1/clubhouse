@@ -24,6 +24,9 @@ This project requires environment variables to be set up for local development.
    ```bash
    cp .env.example .env.local
    ```
+2. Fill in the values. `.env.example` explains each one; the Supabase keys
+   should come from the **development** project (see
+   [`docs/environments.md`](docs/environments.md)).
 
 ## Testing & Linting
 
@@ -34,19 +37,30 @@ npm test              # run the full test suite once
 npm run test:watch    # re-run tests on file changes
 npm run test:coverage # run tests and generate a coverage report
 npm run lint          # run ESLint across the project
+npm run format:check  # Prettier check on the formatted directories
+npm run typecheck     # type-check the server/API layer's JSDoc types
 ```
 
 All tests live in the top-level `tests/` directory, organized by feature (`api/`, `authentication/`, `components/`, `lib/`, `middleware/`, `onboarding/`, `profile/`, `recommendation/`, `search/`) and import source via the `@/` alias. The suite covers pure helpers (`clubCardHelpers`, `avatars`, `splitUserInterests`, the recommendation engine and its features), API route handlers, React components (`Button`, `Footer`, `ConfirmationModal`, `LoadingScreen`/`ErrorScreen`, `SectionToggle`, `Gradient`, `OnboardingGuard`), and the `AuthContext` / `SearchContext` providers. See [`docs/testing.md`](docs/testing.md) for conventions.
 
+## Server Code Layout
+
+API routes in `src/app/api/` stay thin: they authenticate with
+`withUser`/`withAdmin` (`src/app/lib/server/route.js`), validate input with zod
+schemas, and call a repository. Every database query lives in
+`src/app/lib/server/repositories/`; routes do not build Supabase queries
+themselves.
+
 ## Continuous Integration
 
-A GitHub Actions workflow (`.github/workflows/ci.yaml`) runs automatically on every push and pull request. It installs dependencies with `npm ci` (Node.js version pinned in `.nvmrc`) and runs three jobs in parallel:
+A GitHub Actions workflow (`.github/workflows/ci.yaml`) runs automatically on every push and pull request. It installs dependencies with `npm ci` (Node.js version pinned in `.nvmrc`) and runs four jobs in parallel:
 
-- **lint** — `npm run lint` (ESLint, warnings fail the build)
+- **lint** — `npm run lint` (ESLint, warnings fail the build), `npm run format:check`, and `npm audit --omit=dev --audit-level=high`
+- **typecheck** — `npm run typecheck`
 - **test** — `npm run test:coverage` (Jest with an enforced coverage threshold)
 - **build** — `npm run build` (Next.js production build)
 
-Make sure all three pass locally before pushing. Coverage thresholds are defined in `jest.config.js`; see [`docs/testing.md`](docs/testing.md).
+Make sure these pass locally before pushing. Dependabot opens weekly dependency update PRs. Coverage thresholds are defined in `jest.config.js`; see [`docs/testing.md`](docs/testing.md).
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 

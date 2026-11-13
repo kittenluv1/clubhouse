@@ -153,11 +153,11 @@ export default function ReviewCard({
                       : "/profile.svg"
                   }
                   alt="Profile"
-                  className="h-12 w-12 flex-shrink-0 rounded-full object-cover pb-2 md:h-18 md:w-18"
+                  className="h-12 w-12 shrink-0 rounded-full object-cover pb-2 md:h-18 md:w-18"
                 />
               )}
               <div className="flex min-w-0 flex-col gap-1 md:gap-2">
-                <h2 className="m-0 text-sm leading-tight font-bold break-words text-black sm:text-lg md:text-xl">
+                <h2 className="m-0 text-sm leading-tight font-bold wrap-break-word text-black sm:text-lg md:text-xl">
                   {status === "displayed"
                     ? review.user_alias || "Anonymous"
                     : review.club_name}
@@ -184,14 +184,14 @@ export default function ReviewCard({
             {canLike && (
               <button
                 onClick={toggleLike}
-                className="-m-2 flex min-h-[44px] min-w-[44px] flex-shrink-0 items-center gap-1 p-2 transition-all md:hidden"
+                className="-m-2 flex min-h-11 min-w-11 shrink-0 items-center gap-1 p-2 transition-all md:hidden"
                 aria-label={liked ? "Unlike review" : "Like review"}
               >
                 <img
                   src={`/${liked ? "interactions/likeFilled" : "interactions/likeUnfilled"}.svg`}
                   alt="Heart Icon"
                 />
-                <span className="inline-block min-w-[1rem] text-left text-gray-700">
+                <span className="inline-block min-w-4 text-left text-gray-700">
                   {likeCount}
                 </span>
               </button>
@@ -211,7 +211,7 @@ export default function ReviewCard({
               {renderStars(review.overall_satisfaction, "")}
             </div>
             <span className="mt-1 hidden text-[#7F7F7F] md:inline">•</span>
-            <span className="mt-1 break-words">
+            <span className="mt-1 wrap-break-word">
               Member from {review.membership_start_quarter}{" "}
               {review.membership_start_year} - {review.membership_end_quarter}{" "}
               {review.membership_end_year}
@@ -220,7 +220,7 @@ export default function ReviewCard({
         </div>
 
         {/* Right side */}
-        <div className="hidden flex-shrink-0 flex-col items-end gap-2 md:flex">
+        <div className="hidden shrink-0 flex-col items-end gap-2 md:flex">
           {status !== "displayed" && (
             <span className="text-sm font-medium italic">
               Reviewed on {formatDate(review.created_at)}
@@ -229,14 +229,14 @@ export default function ReviewCard({
           {canLike && (
             <button
               onClick={toggleLike}
-              className="-m-2 flex min-h-[44px] min-w-[44px] items-center gap-1"
+              className="-m-2 flex min-h-11 min-w-11 items-center gap-1"
               aria-label={liked ? "Unlike review" : "Like review"}
             >
               <img
                 src={`/${liked ? "interactions/likeFilled" : "interactions/likeUnfilled"}.svg`}
                 alt="Heart Icon"
               />
-              <span className="text-md inline-block min-w-[1rem] text-left text-gray-700">
+              <span className="inline-block min-w-4 text-left text-base text-gray-700">
                 {likeCount}
               </span>
             </button>

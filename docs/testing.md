@@ -6,9 +6,9 @@ The core idea of testing is to make sure the application can be used as intended
 
 ## Packages
 
-| Package | Purpose |
-|---------|---------|
-| Jest | Test runner |
+| Package               | Purpose                      |
+| --------------------- | ---------------------------- |
+| Jest                  | Test runner                  |
 | React Testing Library | Renders and tests components |
 
 ## What to Test
@@ -20,14 +20,34 @@ The core idea of testing is to make sure the application can be used as intended
 
 **Avoid** testing internal states directly.
 
+## Flows
+
+- **Search and filtering** - Users can search by name, filter by one or more categories, sort results, paginate through results, and see appropriate empty states. Name search and category filtering are mutually exclusive through `SearchContext`.
+- **Anonymous users** - Visitors can browse clubs and public reviews. Actions that require an account, such as liking, saving, writing a review, viewing a profile, or receiving recommendations, redirect to sign-in and preserve the intended destination.
+- **Sign in/out** - Users can sign in with a valid UCLA email. Invalid email attempts are rejected and are not inserted into the database. Signing out clears user-specific UI state and prevents authenticated actions until the user signs in again.
+- **Authentication** - Protected pages and actions redirect unauthenticated users to sign-in, then return them to the original destination after authentication. Authenticated users can access only the features allowed for their account.
+- **Club interactions** - Signed-in users can like and save clubs, undo those actions, like and unlike reviews, and see the updated state when navigating away and back.
+- **Write and edit reviews** - Signed-in users can submit a review for a club. New reviews enter the pending state. Authors can edit their own approved or rejected reviews, while users cannot edit another user’s review.
+- **Review moderation** - Pending reviews are not public until approved. Approved reviews appear publicly, while rejected reviews are visible to the author in their profile with appropriate unread/read notification behavior.
+- **Admin access** - The configured admin user can access moderation tools and approve or reject pending reviews. Regular users and anonymous visitors cannot perform admin actions.
+- **User profiles** - Signed-in users can load their profile, view saved clubs and reviews, see unread rejected-review notifications, and update profile preferences. Profile editing follows the required onboarding/profile completion rules.
+- **Onboarding and recommendations** - Different user states have different interactions with the onboarding page.
+  - First time users are automatically redirected to start onboarding
+  - Returning users who have started but not completed onboarding are prompted to start the flow from the beginning when they click on the club recommendations prompt.
+  - We do not save partial onboarding states - either the user is fully onboarded, or not
+  - Users who complete onboarding will have their preferences saved, can see personalized recommendations on the clubs page, and see the relevant profile information populated.
+  - Users who have completed onboarding cannot re-enter the setup flow as if they were new users.
+- **Error and empty states** - Failed requests, missing clubs, no search results, no reviews, unavailable recommendations, unauthorized access, and incomplete profile data show an appropriate fallback without breaking the surrounding page.
+- **Desktop and mobile** - Navigation, filters, sorting controls, review cards, sliders, club details, recommendations, profiles, and onboarding remain usable across desktop and mobile layouts.
+
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm run test` | Runs all tests once |
-| `npm run test:watch` | Watches for file changes and runs relevant tests. Use during development/debugging. |
+| Command                 | Description                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| `npm run test`          | Runs all tests once                                                                  |
+| `npm run test:watch`    | Watches for file changes and runs relevant tests. Use during development/debugging.  |
 | `npm run test:coverage` | Runs tests and measures coverage (which lines ran, how much of each file was tested) |
-| `npm run lint` | Runs ESLint (`eslint-config-next`) across the project for static analysis |
+| `npm run lint`          | Runs ESLint (`eslint-config-next`) across the project for static analysis            |
 
 ## Directory Structure
 
@@ -52,14 +72,14 @@ Jest discovers these automatically via its `testMatch` glob (`**/?(*.)+(spec|tes
 
 Everything in the suite runs on **Jest** (with React Testing Library for components). Choose the right environment/approach per feature:
 
-| Feature type | Approach |
-|--------------|----------|
-| Pure functions / helpers (`lib/`) | Plain Jest unit tests — assert inputs → outputs and edge cases |
-| React components (`components/`, `profile/`) | React Testing Library — render, query by role/text, fire events |
-| Context providers (`authentication/`, `search/`) | RTL with a test consumer; mock `next/navigation` and data layer |
-| API route handlers (`api/`) | `@jest-environment node`; mock the DB layer (`server-db`) and `fetch` |
-| Middleware (`middleware/`) | Jest with `next/server` and `@supabase/ssr` mocked |
-| Recommendation engine (`recommendation/`) | Plain Jest unit tests over deterministic scoring logic |
+| Feature type                                     | Approach                                                              |
+| ------------------------------------------------ | --------------------------------------------------------------------- |
+| Pure functions / helpers (`lib/`)                | Plain Jest unit tests — assert inputs → outputs and edge cases        |
+| React components (`components/`, `profile/`)     | React Testing Library — render, query by role/text, fire events       |
+| Context providers (`authentication/`, `search/`) | RTL with a test consumer; mock `next/navigation` and data layer       |
+| API route handlers (`api/`)                      | `@jest-environment node`; mock the DB layer (`server-db`) and `fetch` |
+| Middleware (`middleware/`)                       | Jest with `next/server` and `@supabase/ssr` mocked                    |
+| Recommendation engine (`recommendation/`)        | Plain Jest unit tests over deterministic scoring logic                |
 
 ## Linting
 
@@ -79,21 +99,21 @@ ESLint runs against a flat config (`eslint.config.mjs`) extending `next/core-web
 ## Template
 
 ```jsx
-import { render, screen, fireEvent } from '@testing-library/react'
-import Component from '@/app/components/Component'
+import { render, screen, fireEvent } from "@testing-library/react";
+import Component from "@/app/components/Component";
 
-describe('Component', () => {
-  test('renders expected text', () => {
-    render(<Component />)
-    expect(screen.getByText('Hello')).toBeInTheDocument()
-  })
+describe("Component", () => {
+  test("renders expected text", () => {
+    render(<Component />);
+    expect(screen.getByText("Hello")).toBeInTheDocument();
+  });
 
-  test('handles user interaction', () => {
-    render(<Component />)
-    fireEvent.click(screen.getByRole('button'))
-    expect(screen.getByText('Clicked')).toBeInTheDocument()
-  })
-})
+  test("handles user interaction", () => {
+    render(<Component />);
+    fireEvent.click(screen.getByRole("button"));
+    expect(screen.getByText("Clicked")).toBeInTheDocument();
+  });
+});
 ```
 
 ## Continuous Integration
@@ -110,12 +130,12 @@ All three must pass before code is merged, so run them locally before pushing. S
 
 `jest.config.js` defines a `coverageThreshold` that `npm run test:coverage` enforces. The build fails if global coverage drops below:
 
-| Metric | Floor |
-|--------|-------|
-| Statements | 22% |
-| Branches | 20% |
-| Functions | 18% |
-| Lines | 22% |
+| Metric     | Floor |
+| ---------- | ----- |
+| Statements | 22%   |
+| Branches   | 20%   |
+| Functions  | 18%   |
+| Lines      | 22%   |
 
 These are set just under the current levels to act as a **regression guard** — coverage can't silently erode. When you add tests and raise coverage, ratchet these numbers up so the floor keeps rising.
 

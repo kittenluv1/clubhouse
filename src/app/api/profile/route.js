@@ -1,167 +1,50 @@
-import { createAuthenticatedClient } from "../../lib/server-db";
+import { supabaseServer } from "@/app/lib/server-db";
+import { countUnreadRejected } from "@/app/lib/reviews/unread";
+import {
+  createClubsRepository,
+  listMarkedClubs,
+} from "@/app/lib/server/repositories/clubs";
+import { createProfilesRepository } from "@/app/lib/server/repositories/profiles";
+import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
+import { withUser } from "@/app/lib/server/route";
 
-export async function GET(req) {
-  try {
-    // Create authenticated Supabase client (reads from cookies)
-    const supabase = await createAuthenticatedClient();
+// Everything the profile page shows for the signed-in user.
+export const GET = withUser(async (_req, { supabase, user }) => {
+  const profiles = createProfilesRepository(supabase);
 
-    // Get the authenticated user from the session
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      console.error('[Profile API] Authentication failed:', authError);
-      return new Response(
-        JSON.stringify({ error: "Unauthorized - please sign in" }),
-        { status: 401 }
-      );
-    }
+  const [profile, reviews, likedClubs, savedClubs, userInterests] =
+    await Promise.all([
+      profiles.getProfile(user.id),
+      createReviewsRepository(supabase).listForUser(user.id),
+      listMarkedClubs(supabase, user.id, "liked"),
+      listMarkedClubs(supabase, user.id, "saved"),
+      profiles.listInterests(user.id),
+    ]);
 
-    // Now use the verified user.id from the session (not from client)
-    const userId = user.id;
+  // Counts span every user's likes, so they need the service-role client.
+  const clubIds = [
+    ...new Set(
+      [...likedClubs, ...savedClubs].map((club) => club.OrganizationID),
+    ),
+  ];
+  const likeCounts =
+    await createClubsRepository(supabaseServer).likeCounts(clubIds);
+  const withLikeCount = (club) => ({
+    ...club,
+    like_count: likeCounts.get(club.OrganizationID) ?? 0,
+  });
 
-    // Fetch user profile
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-
-    if (profileError) {
-      console.error('Error fetching profile:', profileError);
-    }
-
-    // Fetch approved reviews
-    const { data: approvedReviews, error: approvedError } = await supabase
-      .from('reviews')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (approvedError) {
-      console.error('Error fetching approved reviews:', approvedError);
-    }
-
-    // Fetch pending reviews
-    const { data: pendingReviews, error: pendingError } = await supabase
-      .from('pending_reviews')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (pendingError) {
-      console.error('Error fetching pending reviews:', pendingError);
-    }
-
-    // Fetch rejected reviews
-    const { data: rejectedReviews, error: rejectedError } = await supabase
-      .from('rejected_reviews')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (rejectedError) {
-      console.error('Error fetching rejected reviews:', rejectedError);
-    }
-
-    // Fetch liked clubs
-    const { data: likedClubsData, error: likedClubsError } = await supabase
-      .from('club_likes')
-      .select(`
-        club_id,
-        clubs!club_likes_club_id_fkey(*)
-      `)
-      .eq('user_id', userId);
-
-    if (likedClubsError) {
-      console.error('Error fetching liked clubs:', likedClubsError);
-    }
-
-    // Fetch saved clubs
-    const { data: savedClubsData, error: savedClubsError } = await supabase
-      .from('club_saves')
-      .select(`
-        club_id,
-        clubs!saved_clubs_club_id_fkey(*)
-      `)
-      .eq('user_id', userId);
-
-    if (savedClubsError) {
-      console.error('Error fetching saved clubs:', savedClubsError);
-    }
-
-    // Fetch user interests
-    const { data: userInterestsData, error: interestsError } = await supabase
-      .from('user_interests')
-      .select('category')
-      .eq('user_id', userId);
-
-    if (interestsError) {
-      console.error('Error fetching user interests:', interestsError);
-    }
-
-    // Transform liked clubs data to match the format in the original code
-    const likedClubs = likedClubsData ? likedClubsData.map(item => item.clubs) : [];
-    const savedClubs = savedClubsData ? savedClubsData.map(item => item.clubs) : [];
-
-    // Get all unique club IDs to fetch like counts
-    const allClubIds = [...new Set([
-      ...likedClubs.map(c => c?.OrganizationID),
-      ...savedClubs.map(c => c?.OrganizationID)
-    ])].filter(Boolean);
-
-    // Fetch like counts for all clubs
-    let likeCounts = {};
-    if (allClubIds.length > 0) {
-      const { data: likeCountsData, error: likeCountsError } = await supabase
-        .from('club_likes')
-        .select('club_id')
-        .in('club_id', allClubIds);
-
-      if (likeCountsError) {
-        console.error('Error fetching like counts:', likeCountsError);
-      } else if (likeCountsData) {
-        // Count likes per club
-        likeCountsData.forEach(like => {
-          likeCounts[like.club_id] = (likeCounts[like.club_id] || 0) + 1;
-        });
-      }
-    }
-
-    // Attach like counts to clubs
-    const likedClubsWithCounts = likedClubs.map(club => ({
-      ...club,
-      like_count: likeCounts[club?.OrganizationID] || 0
-    }));
-    const savedClubsWithCounts = savedClubs.map(club => ({
-      ...club,
-      like_count: likeCounts[club?.OrganizationID] || 0
-    }));
-
-    const lastViewedRejectedAt = profileData?.last_viewed_rejected_at;
-    const unreadRejectedCount = (rejectedReviews || []).filter(review => {
-      if (!lastViewedRejectedAt) return true;
-      // Ensure consistent timezone parsing - append Z if no timezone info present
-      const updatedAt = review.updated_at.endsWith('Z') || review.updated_at.includes('+')
-        ? review.updated_at
-        : review.updated_at + 'Z';
-      return new Date(updatedAt) > new Date(lastViewedRejectedAt);
-    }).length;
-
-    // Return all data
-    return new Response(
-      JSON.stringify({
-        profile: profileData,
-        approvedReviews: approvedReviews || [],
-        pendingReviews: pendingReviews || [],
-        rejectedReviews: rejectedReviews || [],
-        likedClubs: likedClubsWithCounts,
-        savedClubs: savedClubsWithCounts,
-        unreadRejectedCount,
-        userInterests: (userInterestsData || []).map((row) => row.category),
-      }),
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Error in profile API:', error);
-    return new Response(
-      JSON.stringify({ error: 'Failed to fetch profile data' }),
-      { status: 500 }
-    );
-  }
-}
+  return Response.json({
+    profile,
+    approvedReviews: reviews.approved,
+    pendingReviews: reviews.pending,
+    rejectedReviews: reviews.rejected,
+    likedClubs: likedClubs.map(withLikeCount),
+    savedClubs: savedClubs.map(withLikeCount),
+    unreadRejectedCount: countUnreadRejected(
+      reviews.rejected,
+      profile?.last_viewed_rejected_at,
+    ),
+    userInterests,
+  });
+});

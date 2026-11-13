@@ -29,7 +29,7 @@ function renderSearch() {
   render(
     <SearchProvider>
       <Consumer />
-    </SearchProvider>
+    </SearchProvider>,
   );
   return captured;
 }
@@ -49,7 +49,7 @@ describe("useSearch", () => {
     // Silence the expected React error boundary logging
     const spy = jest.spyOn(console, "error").mockImplementation(() => {});
     expect(() => render(<Orphan />)).toThrow(
-      "useSearch must be used within a SearchProvider"
+      "useSearch must be used within a SearchProvider",
     );
     spy.mockRestore();
   });
@@ -107,16 +107,14 @@ describe("SearchProvider search actions", () => {
   it("searchBySingleCategory pushes an encoded category query", () => {
     const ctx = renderSearch();
     act(() => ctx.searchBySingleCategory("Arts & Music"));
-    expect(mockPush).toHaveBeenCalledWith(
-      "/clubs?category=Arts%20%26%20Music"
-    );
+    expect(mockPush).toHaveBeenCalledWith("/clubs?category=Arts%20%26%20Music");
   });
 
   it("searchByCategories pushes a comma-joined encoded query", () => {
     const ctx = renderSearch();
     act(() => ctx.searchByCategories(["Academic", "Sports"]));
     expect(mockPush).toHaveBeenCalledWith(
-      `/clubs?categories=${encodeURIComponent("Academic,Sports")}`
+      `/clubs?categories=${encodeURIComponent("Academic,Sports")}`,
     );
   });
 

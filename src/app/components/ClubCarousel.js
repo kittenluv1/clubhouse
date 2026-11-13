@@ -106,12 +106,11 @@ function ClubCarousel() {
     if (!user) {
       setData([]);
       setFetchError(null);
-       
+
       setIsFetchingRecommendations(false);
       return;
     }
 
-     
     setIsFetchingRecommendations(true);
 
     async function fetchRecommendations() {
@@ -179,7 +178,7 @@ function ClubCarousel() {
         <img
           src="/decorative/recommendations-decal.svg"
           alt="Recommendations decal"
-          className="pointer-events-none absolute right-0 bottom-0 left-auto w-[170px] md:w-[280px] lg:w-[340px]"
+          className="pointer-events-none absolute right-0 bottom-0 left-auto w-42.5 md:w-70 lg:w-85"
         />
       </div>
     );
@@ -222,7 +221,7 @@ function ClubCarousel() {
                       <div className="flex h-full animate-pulse flex-col">
                         <div className="flex flex-col items-start gap-2 lg:flex-row lg:justify-between lg:gap-3">
                           <div className="h-6 w-3/4 rounded-full bg-gray-300" />
-                          <div className="flex items-center gap-1 lg:flex-shrink-0 lg:pt-0.5">
+                          <div className="flex items-center gap-1 lg:shrink-0 lg:pt-0.5">
                             {Array.from({ length: 5 }).map((__, starIndex) => (
                               <div
                                 key={starIndex}
@@ -275,7 +274,7 @@ function ClubCarousel() {
                       <h3 className="line-clamp-2 min-w-0 flex-1 text-lg leading-tight font-bold text-black">
                         {title}
                       </h3>
-                      <div className="flex items-center lg:flex-shrink-0 lg:pt-0.5">
+                      <div className="flex items-center lg:shrink-0 lg:pt-0.5">
                         {renderRatingStars(d.average_satisfaction)}
                       </div>
                     </div>

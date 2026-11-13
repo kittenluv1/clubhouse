@@ -18,40 +18,17 @@ jest.mock("@/app/context/AuthContext", () => ({
   useAuth: () => mockAuth,
 }));
 
-const mockSelect = jest.fn();
-const mockUpdate = jest.fn();
-const mockFrom = jest.fn(() => ({
-  select: mockSelect,
-  update: mockUpdate,
-}));
+const mockFetch = jest.fn();
 
-jest.mock("@/app/lib/db", () => ({
-  supabase: {
-    from: (...args) => mockFrom(...args),
-  },
-}));
-
-// Helper to wire the chained query builder for `select`
-function mockProfileSelect(result) {
-  const chain = {
-    eq: jest.fn().mockReturnThis(),
-    single: jest.fn().mockResolvedValue(result),
-  };
-  mockSelect.mockReturnValue(chain);
-  return chain;
-}
-
-// Helper to wire the chained query builder for `update`
-function mockProfileUpdate() {
-  const chain = { eq: jest.fn().mockResolvedValue({}) };
-  mockUpdate.mockReturnValue(chain);
-  return chain;
+function jsonResponse(body, ok = true) {
+  return Promise.resolve({ ok, json: () => Promise.resolve(body) });
 }
 
 // --- Tests ---
 
 beforeEach(() => {
   jest.clearAllMocks();
+  global.fetch = mockFetch;
   mockPathname = "/";
   mockAuth = { user: null, loading: false };
 });
@@ -67,27 +44,29 @@ describe("OnboardingGuard", () => {
     render(<OnboardingGuard />);
     // Give any async effects a chance to run
     await waitFor(() => {});
-    expect(mockFrom).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("does nothing when user is not logged in", async () => {
     mockAuth = { user: null, loading: false };
     render(<OnboardingGuard />);
     await waitFor(() => {});
-    expect(mockFrom).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   describe("excluded paths", () => {
-    it.each(["/sign-in", "/sign-in/callback", "/onboarding", "/onboarding/step2"])(
-      "skips onboarding check on %s",
-      async (path) => {
-        mockPathname = path;
-        mockAuth = { user: { id: "u1" }, loading: false };
-        render(<OnboardingGuard />);
-        await waitFor(() => {});
-        expect(mockFrom).not.toHaveBeenCalled();
-      }
-    );
+    it.each([
+      "/sign-in",
+      "/sign-in/callback",
+      "/onboarding",
+      "/onboarding/step2",
+    ])("skips onboarding check on %s", async (path) => {
+      mockPathname = path;
+      mockAuth = { user: { id: "u1" }, loading: false };
+      render(<OnboardingGuard />);
+      await waitFor(() => {});
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
   });
 
   describe("when user is logged in on a protected path", () => {
@@ -97,66 +76,70 @@ describe("OnboardingGuard", () => {
     });
 
     it("does nothing when onboarding is already started", async () => {
-      mockProfileSelect({ data: { onboarding_started: true } });
-      mockProfileUpdate();
+      mockFetch.mockReturnValueOnce(jsonResponse({ onboarding_started: true }));
 
       render(<OnboardingGuard />);
 
       await waitFor(() => {
-        expect(mockFrom).toHaveBeenCalledWith("profiles");
-        expect(mockSelect).toHaveBeenCalledWith("onboarding_started");
+        expect(mockFetch).toHaveBeenCalledWith("/api/onboarding");
       });
 
-      // update should NOT have been called
-      expect(mockUpdate).not.toHaveBeenCalled();
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockRouter.replace).not.toHaveBeenCalled();
     });
 
-    it("marks onboarding_started and logs when onboarding has not started", async () => {
-      const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
-      mockProfileSelect({ data: { onboarding_started: false } });
-      const updateChain = mockProfileUpdate();
+    it("marks onboarding_started and redirects when onboarding has not started", async () => {
+      mockFetch
+        .mockReturnValueOnce(jsonResponse({ onboarding_started: false }))
+        .mockReturnValueOnce(jsonResponse({ success: true }));
 
       render(<OnboardingGuard />);
 
       await waitFor(() => {
-        expect(mockUpdate).toHaveBeenCalledWith({ onboarding_started: true });
-        expect(updateChain.eq).toHaveBeenCalledWith("id", "user-123");
+        expect(mockRouter.replace).toHaveBeenCalledWith("/onboarding");
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith("pushing to onboarding");
-      consoleSpy.mockRestore();
+      expect(mockFetch).toHaveBeenNthCalledWith(2, "/api/onboarding/start", {
+        method: "POST",
+      });
     });
 
     it("marks onboarding_started when profile field is null", async () => {
-      mockProfileSelect({ data: { onboarding_started: null } });
-      mockProfileUpdate();
+      mockFetch
+        .mockReturnValueOnce(jsonResponse({ onboarding_started: null }))
+        .mockReturnValueOnce(jsonResponse({ success: true }));
 
       render(<OnboardingGuard />);
 
       await waitFor(() => {
-        expect(mockUpdate).toHaveBeenCalledWith({ onboarding_started: true });
+        expect(mockFetch).toHaveBeenCalledWith("/api/onboarding/start", {
+          method: "POST",
+        });
       });
     });
 
     it("marks onboarding_started when profile is null (no row)", async () => {
-      mockProfileSelect({ data: null });
-      mockProfileUpdate();
+      mockFetch
+        .mockReturnValueOnce(jsonResponse({ onboarding_started: false }))
+        .mockReturnValueOnce(jsonResponse({ success: true }));
 
       render(<OnboardingGuard />);
 
       await waitFor(() => {
-        expect(mockUpdate).toHaveBeenCalledWith({ onboarding_started: true });
+        expect(mockFetch).toHaveBeenCalledWith("/api/onboarding/start", {
+          method: "POST",
+        });
       });
     });
 
     it("queries the correct user id", async () => {
       mockAuth = { user: { id: "different-user" }, loading: false };
-      const selectChain = mockProfileSelect({ data: { onboarding_started: true } });
+      mockFetch.mockReturnValueOnce(jsonResponse({ onboarding_started: true }));
 
       render(<OnboardingGuard />);
 
       await waitFor(() => {
-        expect(selectChain.eq).toHaveBeenCalledWith("id", "different-user");
+        expect(mockFetch).toHaveBeenCalledWith("/api/onboarding");
       });
     });
   });

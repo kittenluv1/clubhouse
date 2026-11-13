@@ -189,12 +189,12 @@ export default function Filter({
         </Button>
 
         {!isMobile && selectedCategories.length > 0 && (
-          <div className="flex-grow overflow-x-auto pb-2">
+          <div className="grow overflow-x-auto pb-2">
             <div className="flex flex-wrap gap-2">
               {selectedCategories.map((tag) => (
                 <div
                   key={tag}
-                  className="flex items-center rounded-full border-1 border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
+                  className="flex items-center rounded-full border border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
                 >
                   <span>{tag}</span>
                   <button onClick={() => handleRemoveTag(tag)} className="ml-2">
@@ -225,7 +225,7 @@ export default function Filter({
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <motion.div
-                className="flex-shrink-0 bg-white px-10 pt-6 pb-2"
+                className="shrink-0 bg-white px-10 pt-6 pb-2"
                 drag="y"
                 dragConstraints={{ top: 0, bottom: 0 }}
                 dragElastic={{ top: 0.05, bottom: 0 }}
@@ -248,7 +248,7 @@ export default function Filter({
                         {tempSelectedTags.map((tag) => (
                           <div
                             key={tag}
-                            className="flex items-center rounded-full border-1 border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
+                            className="flex items-center rounded-full border border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
                           >
                             <span>{tag}</span>
                             <button
@@ -292,14 +292,14 @@ export default function Filter({
                 <div className="fixed bottom-0 left-0 flex w-full justify-between border-t bg-white px-6 py-4">
                   <Button
                     style="font-bold"
-                    className="text-md px-4 py-2 font-semibold"
+                    className="px-4 py-2 text-base font-semibold"
                     onClick={handleClose}
                   >
                     Cancel
                   </Button>
                   <Button
                     type="CTA"
-                    className="text-md ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-white"
+                    className="ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-base text-white"
                     onClick={handleSearch}
                   >
                     Search
@@ -323,7 +323,7 @@ export default function Filter({
                     {tempSelectedTags.map((tag) => (
                       <div
                         key={tag}
-                        className="flex items-center rounded-full border-1 border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
+                        className="flex items-center rounded-full border border-[#FFA1CD] bg-[#FFCEE5] px-4 py-2 text-sm"
                       >
                         <span>{tag}</span>
                         <button onClick={() => toggleTag(tag)} className="ml-1">
@@ -364,14 +364,14 @@ export default function Filter({
             <div className="flex justify-end pt-4 pb-2">
               <Button
                 style="font-bold"
-                className="text-md px-4 py-2 font-semibold"
+                className="px-4 py-2 text-base font-semibold"
                 onClick={handleClose}
               >
                 Cancel
               </Button>
               <Button
                 type="CTA"
-                className="text-md ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-white"
+                className="ml-2 rounded-xl bg-[#5086E1] px-4 py-2 text-base text-white"
                 onClick={handleSearch}
               >
                 Search

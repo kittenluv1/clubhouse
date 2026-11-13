@@ -24,8 +24,18 @@ describe("getPostHogClient", () => {
     });
   });
 
+  it("returns null in production when no PostHog token is configured", () => {
+    process.env.NODE_ENV = "production";
+    delete process.env.NEXT_PUBLIC_POSTHOG_TOKEN;
+    jest.isolateModules(() => {
+      const { getPostHogClient } = require("@/app/lib/posthog-server");
+      expect(getPostHogClient()).toBeNull();
+    });
+  });
+
   it("returns a singleton client in production", () => {
     process.env.NODE_ENV = "production";
+    process.env.NEXT_PUBLIC_POSTHOG_TOKEN = "phc_test";
     jest.isolateModules(() => {
       const { getPostHogClient } = require("@/app/lib/posthog-server");
       const a = getPostHogClient();
