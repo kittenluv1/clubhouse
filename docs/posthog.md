@@ -9,13 +9,15 @@ send events from this app.
 
 ## How it works
 
-- The browser SDK is initialized in `instrumentation.js`.
+- The browser SDK is initialized in `instrumentation-client.js`.
 - API routes use `posthog-node` for server-side events.
-- Google sign-in connects anonymous activity to the user's Supabase ID and
-  email.
+- Google sign-in connects anonymous activity to the user's Supabase ID only.
+  No email or name is sent.
+- Signing out calls `posthog.reset()`, so the next person on the same browser
+  starts a new anonymous identity.
 - Exception capture is enabled for diagnosing failures.
-- Session recording is not explicitly enabled in the app code; its availability
-  depends on PostHog project settings.
+- Session recording is turned on in PostHog project settings. The masking rules
+  are set in code (see [Privacy and scope](#privacy-and-scope)).
 
 ## What is captured
 
@@ -58,7 +60,8 @@ Identity distinguishes an anonymous browser from a known user:
 
 - Before sign-in: activity uses an anonymous PostHog identity.
 - After Google sign-in: Clubhouse calls `posthog.identify()` with the Supabase
-  user ID and email, then records `user_signed_in`.
+  user ID only, then records `user_signed_in`.
+- After sign-out: `posthog.reset()` clears the identity.
 
 This connects relevant activity to the signed-in account without adding a user
 ID to every browser event.
@@ -91,8 +94,27 @@ answers "what did the person do?"
 
 The app sends PostHog product context rather than the contents of a review. The
 main properties are identifiers, search terms, categories, ratings, and
-membership status. The sign-in event includes the user's email to associate the
-activity with the authenticated account.
+membership status. Users are identified by their Supabase user ID. Their email
+and name are never sent.
+
+The browser SDK limits collection in `instrumentation-client.js`:
+
+| Setting                                 | Effect                                                                |
+| --------------------------------------- | --------------------------------------------------------------------- |
+| `mask_all_text`                         | Autocapture records which element was clicked, but not its text       |
+| `mask_personal_data_properties`         | Ad click IDs such as `gclid` and `fbclid` are masked in captured URLs |
+| `enable_recording_console_log: false`   | Session replay does not record browser console output                 |
+| `session_recording.maskTextSelector: *` | Session replay masks all page text                                    |
+| `session_recording.maskAllInputs`       | Session replay masks everything typed into form fields                |
+
+These settings override the "Privacy and masking" options in PostHog project
+settings, so changing those dashboard toggles has no effect.
+
+Some protections can only be set in the PostHog dashboard:
+
+- **Discard client IP data** (Project settings). The SDK's `ip` option no longer
+  does anything.
+- **Data retention** for events and recordings.
 
 The browser and server integrations both use the production PostHog project;
 the browser sends through the `/ingest` proxy and the server uses the configured
