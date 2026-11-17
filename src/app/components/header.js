@@ -132,7 +132,10 @@ function Header() {
                       />
                       <div className="mr-2 flex min-w-0 flex-col items-start">
                         <p className="m-0 leading-tight">View Profile</p>
-                        <p className="m-0 max-w-[120px] truncate text-sm leading-tight text-[#A6B0B8] md:max-w-none">
+                        <p
+                          className="m-0 max-w-[120px] truncate text-sm leading-tight text-[#A6B0B8] md:max-w-none"
+                          data-ph-mask
+                        >
                           {user?.email}
                         </p>
                       </div>
