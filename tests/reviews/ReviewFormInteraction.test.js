@@ -272,6 +272,21 @@ test("a current member is sent with today's date as the end date", async () => {
   });
 });
 
+test("a failed notification email still reaches the thank-you page", async () => {
+  jest.spyOn(console, "error").mockImplementation(() => {});
+  global.fetch
+    .mockResolvedValueOnce(ok({ review: {} }))
+    .mockRejectedValueOnce(new TypeError("Failed to fetch"));
+  render(<ReviewForm />);
+  fillForm();
+  fireEvent.submit(reviewBox().closest("form"));
+
+  await waitFor(() =>
+    expect(mockPush).toHaveBeenCalledWith("/review/thankyou"),
+  );
+  expect(screen.queryByText("Failed to fetch")).not.toBeInTheDocument();
+});
+
 test("edit sends the saved ratings and tracks the edit event", async () => {
   global.fetch
     .mockResolvedValueOnce(ok({ review })) // first call loads the review

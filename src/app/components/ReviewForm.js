@@ -342,7 +342,7 @@ export default function ReviewForm({ reviewId, source = "rejected" }) {
             user_email: review?.user_email || user?.email,
           }),
         },
-      );
+      ).catch((err) => console.error("Error sending review email:", err));
 
       router.push("/review/thankyou");
     } catch (error) {

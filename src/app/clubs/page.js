@@ -32,6 +32,13 @@ function AllClubsPage() {
   const [showSortModal, setShowSortModal] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
 
+  const filterKey = `${nameParam}|${singleCategoryParam}|${multiCategoriesParam}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setCurrPage(1);
+  }
+
   const router = useRouter();
   const { user } = useAuth();
 
@@ -76,6 +83,7 @@ function AllClubsPage() {
         return res.json();
       })
       .then((data) => {
+        setError(null);
         setClubs(data.orgList || []);
         setLikesMap(data.likesMap || {});
         setUserLikedClubs(data.userLikedClubs || []);

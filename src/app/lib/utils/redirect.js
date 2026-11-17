@@ -48,6 +48,10 @@ export function isValidReturnUrl(url) {
     return false;
   }
 
+  if (/[\u0000-\u001F\u007F]/.test(trimmed)) {
+    return false;
+  }
+
   // Check for backslash tricks (/\evil.com)
   if (trimmed.includes("\\")) {
     return false;

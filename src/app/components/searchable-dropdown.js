@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useListbox } from "../lib/hooks/useListbox";
 
 const SearchableDropdown = ({
   placeholder = "Search for your club here...",
@@ -79,6 +80,7 @@ const SearchableDropdown = ({
     const nextValue = e.target.value;
     setInternalValue(nextValue);
     setIsOpen(true);
+    listbox.reset();
     onInputChange(nextValue);
   };
 
@@ -88,6 +90,13 @@ const SearchableDropdown = ({
     onSelect(option);
   };
 
+  const listbox = useListbox(
+    isOpen ? filteredOptions : [],
+    handleOptionClick,
+    () => setIsOpen(false),
+    () => setIsOpen(true),
+  );
+
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <div className="relative">
@@ -96,6 +105,7 @@ const SearchableDropdown = ({
           value={inputValue}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
+          {...listbox.inputProps}
           placeholder={placeholder}
           className="placeholder-custom w-full overflow-hidden rounded-full bg-[#F4F5F6] py-3 pr-12 pl-5 text-base text-ellipsis text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#B5BFC6] focus:outline-none active:bg-[#B5BFC6]"
           required={required}
@@ -126,12 +136,16 @@ const SearchableDropdown = ({
       {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
 
       {isOpen && filteredOptions.length > 0 && (
-        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg focus:outline-none sm:text-sm">
+        <ul
+          {...listbox.listProps}
+          className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg focus:outline-none sm:text-sm"
+        >
           {filteredOptions.map((option, index) => (
             <li
               key={index}
+              {...listbox.optionProps(index)}
               onClick={() => handleOptionClick(option)}
-              className="relative cursor-pointer truncate py-2 pr-3 pl-3 select-none hover:bg-gray-100"
+              className={`relative cursor-pointer truncate py-2 pr-3 pl-3 select-none hover:bg-gray-100 ${listbox.active === index ? "bg-gray-100" : ""}`}
               title={option}
             >
               {option}
