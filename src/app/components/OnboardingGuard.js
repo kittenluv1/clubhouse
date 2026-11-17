@@ -23,8 +23,6 @@ export default function OnboardingGuard() {
 
       if (!response.ok) return;
 
-      console.log(profile);
-
       let startResponse = null;
       if (!profile?.onboarding_started) {
         try {

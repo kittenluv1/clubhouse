@@ -60,8 +60,8 @@ export default function GoogleSignIn() {
 
       const email = data.user.email;
       setUserEmail(email);
-      posthog.identify(data.user.id, { email });
-      posthog.capture("user_signed_in", { provider: "google", email });
+      posthog.identify(data.user.id);
+      posthog.capture("user_signed_in", { provider: "google" });
     };
 
     if (window.google) {
