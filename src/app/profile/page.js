@@ -98,9 +98,8 @@ function ProfilePage() {
   };
 
   // Handler functions for review actions
-  const handleLike = async (reviewId, isLiked) => {
+  const handleLike = async () => {
     // TODO: Implement API call to like/unlike review
-    console.log("Like review:", reviewId, isLiked);
   };
 
   const handleEdit = (review, source) => {
@@ -120,7 +119,6 @@ function ProfilePage() {
       method: "DELETE",
     });
     if (response.ok) {
-      // console.log('Deleted review: ', reviewToDelete);
       posthog.capture("review_deleted", { review_id: reviewToDelete });
       // Remove from local state
       setRejectedReviews((prev) => prev.filter((r) => r.id !== reviewToDelete));
@@ -453,7 +451,7 @@ function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" data-ph-mask>
       <ConfirmationModal
         isOpen={confirmationModalOpen}
         onClose={() => {
