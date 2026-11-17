@@ -20,12 +20,14 @@ export const SearchProvider = ({ children }) => {
   const initialName = searchParams.get("name") || "";
   const initialSingleCategory = searchParams.get("category") || "";
   const initialCategories = searchParams.get("categories") || "";
+  const initialSort = searchParams.get("sort") ?? "";
 
   const [searchTerm, setSearchTerm] = useState(initialName);
   const [selectedCategories, setSelectedCategories] = useState(
     initialCategories ? initialCategories.split(",") : [],
   );
   const [singleCategory, setSingleCategory] = useState(initialSingleCategory);
+  const [sortType, setSortType] = useState(initialSort || "rating");
 
   // Clear all search states
   const clearAllSearch = () => {
@@ -108,6 +110,7 @@ export const SearchProvider = ({ children }) => {
     selectedCategories,
     singleCategory,
     isOnClubsPage,
+    sortType,
 
     // Actions
     searchByName,
@@ -120,6 +123,7 @@ export const SearchProvider = ({ children }) => {
     setSearchTerm,
     setSelectedCategories,
     setSingleCategory,
+    setSortType,
   };
 
   return (
