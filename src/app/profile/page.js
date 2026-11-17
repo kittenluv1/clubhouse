@@ -451,7 +451,7 @@ function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" data-ph-mask>
       <ConfirmationModal
         isOpen={confirmationModalOpen}
         onClose={() => {

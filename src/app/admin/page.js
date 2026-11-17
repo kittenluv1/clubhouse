@@ -253,7 +253,7 @@ const Page = () => {
   }
 
   return (
-    <>
+    <div className="ph-no-capture">
       <div className="space-y-6 p-6 md:p-20">
         <div className="flex flex-row items-center justify-between gap-4">
           <div className="flex flex-row items-center space-x-1">
@@ -393,7 +393,7 @@ const Page = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

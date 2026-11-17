@@ -99,13 +99,27 @@ and name are never sent.
 
 The browser SDK limits collection in `instrumentation-client.js`:
 
-| Setting                                 | Effect                                                                |
-| --------------------------------------- | --------------------------------------------------------------------- |
-| `mask_all_text`                         | Autocapture records which element was clicked, but not its text       |
-| `mask_personal_data_properties`         | Ad click IDs such as `gclid` and `fbclid` are masked in captured URLs |
-| `enable_recording_console_log: false`   | Session replay does not record browser console output                 |
-| `session_recording.maskTextSelector: *` | Session replay masks all page text                                    |
-| `session_recording.maskAllInputs`       | Session replay masks everything typed into form fields                |
+| Setting                               | Effect                                                                |
+| ------------------------------------- | --------------------------------------------------------------------- |
+| `mask_all_text`                       | Autocapture records which element was clicked, but not its text       |
+| `mask_personal_data_properties`       | Ad click IDs such as `gclid` and `fbclid` are masked in captured URLs |
+| `enable_recording_console_log: false` | Session replay does not record browser console output                 |
+| `session_recording.maskTextSelector`  | Session replay masks text inside elements marked `data-ph-mask`       |
+| `session_recording.maskAllInputs`     | Session replay masks everything typed into form fields                |
+
+Public content such as club pages stays readable in replays. Personal data is
+hidden by marking the element or page that shows it:
+
+| Where                     | Marker                      | Effect                              |
+| ------------------------- | --------------------------- | ----------------------------------- |
+| Header profile menu email | `data-ph-mask`              | Text masked                         |
+| `/profile` page           | `data-ph-mask` on the page  | All text on the page masked         |
+| `/onboarding` page        | `data-ph-mask` on the page  | All text on the page masked         |
+| `/admin` page             | `ph-no-capture` on the page | Not recorded at all, no autocapture |
+
+Masking applies to everything inside a marked element. When a new page or
+component shows a name, email, review the user hasn't published, or onboarding
+answer, mark it with `data-ph-mask`.
 
 These settings override the "Privacy and masking" options in PostHog project
 settings, so changing those dashboard toggles has no effect.

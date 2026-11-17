@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === "production") {
     enable_recording_console_log: false,
     session_recording: {
       maskAllInputs: true,
-      maskTextSelector: "*",
+      maskTextSelector: "[data-ph-mask]",
     },
   });
 }
