@@ -12,6 +12,8 @@ const TABLE = "reviews";
 
 // `.single()` matched no rows / the id is not valid for the column type.
 const NOT_FOUND_CODES = new Set(["PGRST116", "22P02"]);
+// Raised by the reviews_rate_limit trigger (migration 20261119).
+const RATE_LIMITED_CODE = "P0429";
 
 const notFound = () => new HttpError(404, REVIEW_MESSAGES.notFound);
 const conflict = (message) => new HttpError(409, message);
@@ -85,6 +87,8 @@ export function createReviewsRepository(supabase) {
         })
         .select()
         .single();
+      if (error?.code === RATE_LIMITED_CODE)
+        throw new HttpError(429, REVIEW_MESSAGES.rateLimited);
       if (error) throw error;
       return data;
     },
