@@ -33,6 +33,10 @@ beforeEach(() => {
   mockAuth = { user: null, loading: false };
 });
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("OnboardingGuard", () => {
   it("renders nothing (returns null)", () => {
     const { container } = render(<OnboardingGuard />);
@@ -85,6 +89,56 @@ describe("OnboardingGuard", () => {
       });
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockRouter.replace).not.toHaveBeenCalled();
+    });
+
+    it("handles a successful response whose JSON cannot be parsed", async () => {
+      const parseError = new SyntaxError("Invalid JSON");
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockRejectedValue(parseError),
+      });
+
+      render(<OnboardingGuard />);
+
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith(
+          "Failed to check onboarding:",
+          parseError,
+        );
+      });
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockRouter.replace).not.toHaveBeenCalled();
+    });
+
+    it("does not parse JSON from a non-OK response", async () => {
+      const json = jest.fn().mockRejectedValue(new SyntaxError("Not JSON"));
+      mockFetch.mockResolvedValueOnce({ ok: false, json });
+
+      render(<OnboardingGuard />);
+
+      await waitFor(() => {
+        expect(mockFetch).toHaveBeenCalledWith("/api/onboarding");
+      });
+      expect(json).not.toHaveBeenCalled();
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockRouter.replace).not.toHaveBeenCalled();
+    });
+
+    it("handles a rejected initial fetch", async () => {
+      const fetchError = new Error("Network error");
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+      mockFetch.mockRejectedValueOnce(fetchError);
+
+      render(<OnboardingGuard />);
+
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith(
+          "Failed to check onboarding:",
+          fetchError,
+        );
+      });
       expect(mockRouter.replace).not.toHaveBeenCalled();
     });
 

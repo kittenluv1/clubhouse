@@ -18,24 +18,28 @@ export default function OnboardingGuard() {
     if (EXCLUDED_PATHS.some((p) => pathname.startsWith(p))) return;
 
     const checkOnboarding = async () => {
-      const response = await fetch("/api/onboarding");
-      const profile = await response.json();
+      try {
+        const response = await fetch("/api/onboarding");
+        if (!response.ok) return;
 
-      if (!response.ok) return;
+        const profile = await response.json();
 
-      let startResponse = null;
-      if (!profile?.onboarding_started) {
-        try {
-          startResponse = await fetch("/api/onboarding/start", {
-            method: "POST",
-          });
-        } catch (error) {
-          console.error("Failed to update onboarding_started:", error);
+        let startResponse = null;
+        if (!profile?.onboarding_started) {
+          try {
+            startResponse = await fetch("/api/onboarding/start", {
+              method: "POST",
+            });
+          } catch (error) {
+            console.error("Failed to update onboarding_started:", error);
+          }
         }
-      }
 
-      if (!profile?.onboarding_started && startResponse?.ok) {
-        router.replace("/onboarding");
+        if (!profile?.onboarding_started && startResponse?.ok) {
+          router.replace("/onboarding");
+        }
+      } catch (error) {
+        console.error("Failed to check onboarding:", error);
       }
     };
 
