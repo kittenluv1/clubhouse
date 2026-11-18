@@ -1,7 +1,7 @@
 name: Deploy Edge Functions
 on:
   push:
-    branches: [main]
+    branches: [dev, main]
     paths: ["supabase/functions/**"]
   workflow_dispatch:
 jobs:
@@ -12,6 +12,16 @@ jobs:
       - uses: supabase/setup-cli@v3
         with:
           version: latest
-      - run: supabase functions deploy --remote=${{ secrets.SUPABASE_PROD_PROJECT_REF }} --yes
+      - name: Deploy to development
+        if: github.ref == 'refs/heads/dev'
+        run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_REF" --yes
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_EDGE_FUNCTIONS_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_DEV_PROJECT_REF }}
+
+      - name: Deploy to production
+        if: github.ref == 'refs/heads/main'
+        run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_REF" --yes
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_EDGE_FUNCTIONS_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROD_PROJECT_REF }}
