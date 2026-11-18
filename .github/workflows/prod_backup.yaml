@@ -41,7 +41,7 @@ jobs:
           shred -u "$BACKUP_FILE"
 
       - name: Upload encrypted backup artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: prod-backup-${{ steps.date.outputs.date }}
           path: backups/prod_backup_${{ steps.date.outputs.date }}.sql.gpg

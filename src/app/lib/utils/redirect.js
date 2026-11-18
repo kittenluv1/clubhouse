@@ -21,7 +21,7 @@ const MAX_URL_LENGTH = 2048;
  */
 export function isValidReturnUrl(url) {
   // Check for null/undefined/empty
-  if (!url || typeof url !== 'string') {
+  if (!url || typeof url !== "string") {
     return false;
   }
 
@@ -39,17 +39,17 @@ export function isValidReturnUrl(url) {
   }
 
   // Must start with / (relative URL)
-  if (!trimmed.startsWith('/')) {
+  if (!trimmed.startsWith("/")) {
     return false;
   }
 
   // Must NOT be a protocol-relative URL (//example.com)
-  if (trimmed.startsWith('//')) {
+  if (trimmed.startsWith("//")) {
     return false;
   }
 
   // Check for backslash tricks (/\evil.com)
-  if (trimmed.includes('\\')) {
+  if (trimmed.includes("\\")) {
     return false;
   }
 
@@ -58,11 +58,11 @@ export function isValidReturnUrl(url) {
   // e.g., /search?q=javascript:alert(1) is safe - it's just a search query
   const lowerUrl = trimmed.toLowerCase();
   const dangerousProtocols = [
-    'javascript:',
-    'data:',
-    'vbscript:',
-    'file:',
-    'about:',
+    "javascript:",
+    "data:",
+    "vbscript:",
+    "file:",
+    "about:",
   ];
 
   for (const protocol of dangerousProtocols) {
@@ -73,7 +73,7 @@ export function isValidReturnUrl(url) {
 
   // Check for absolute URLs at the start (protocol-based)
   // Note: Similar to above, we only check the start of the URL
-  if (lowerUrl.startsWith('http://') || lowerUrl.startsWith('https://')) {
+  if (lowerUrl.startsWith("http://") || lowerUrl.startsWith("https://")) {
     return false;
   }
 
@@ -102,7 +102,7 @@ export function decodeReturnUrl(encodedUrl) {
     return decodeURIComponent(encodedUrl);
   } catch (e) {
     // If decoding fails, return empty string
-    console.error('Failed to decode returnUrl:', e);
-    return '';
+    console.error("Failed to decode returnUrl:", e);
+    return "";
   }
 }

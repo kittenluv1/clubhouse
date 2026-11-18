@@ -1,0 +1,17 @@
+name: Deploy Edge Functions
+on:
+  push:
+    branches: [main]
+    paths: ["supabase/functions/**"]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: supabase functions deploy --remote=${{ secrets.SUPABASE_PROD_PROJECT_REF }} --yes
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_EDGE_FUNCTIONS_ACCESS_TOKEN }}

@@ -69,8 +69,8 @@ docker compose down
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile.dev` | `node:20-alpine` image — installs deps, binds source, starts dev server |
-| `docker-compose.yml` | Single `next` service — reads `.env.local`, mounts project directory |
-| `.dockerignore` | Excludes `node_modules`, `.next`, `.env*`, `.git` from build context |
+| File                 | Purpose                                                                 |
+| -------------------- | ----------------------------------------------------------------------- |
+| `Dockerfile.dev`     | `node:20-alpine` image — installs deps, binds source, starts dev server |
+| `docker-compose.yml` | Single `next` service — reads `.env.local`, mounts project directory    |
+| `.dockerignore`      | Excludes `node_modules`, `.next`, `.env*`, `.git` from build context    |

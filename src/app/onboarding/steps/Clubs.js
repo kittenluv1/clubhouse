@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import MultiSelectSearch from "../components/MultiSelectSearch";
 
-export default function Clubs({ formData, onUpdate, onValidChange, clubOptions = [] }) {
+export default function Clubs({
+  formData,
+  onUpdate,
+  onValidChange,
+  clubOptions = [],
+}) {
   const [selectedClubs, setSelectedClubs] = useState(formData.clubs ?? []);
 
   useEffect(() => {
@@ -25,11 +30,14 @@ export default function Clubs({ formData, onUpdate, onValidChange, clubOptions =
   };
 
   return (
-    <div className="flex flex-col gap-8 mx-15">
+    <div className="mx-15 flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#1C350F]">Which clubs are you in?</h1>
+        <h1 className="text-2xl font-bold text-[#1C350F]">
+          Which clubs are you in?
+        </h1>
         <p className="mt-1 text-sm text-gray-500">
-          We&apos;ll be using this information to personalize club recommendations for you.
+          We&apos;ll be using this information to personalize club
+          recommendations for you.
         </p>
       </div>
 

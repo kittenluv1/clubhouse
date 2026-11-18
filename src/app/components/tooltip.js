@@ -21,18 +21,18 @@ export default function Tooltip({ rating }) {
   // Close tooltip when clicking/touching outside
   useEffect(() => {
     if (!open) return;
-    
+
     function handleOutsideInteraction(e) {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target)) {
         setOpen(false);
         wasClicked.current = false; // Reset click state when closing
       }
     }
-    
+
     // Listen for both click and touchstart to handle all devices
     document.addEventListener("click", handleOutsideInteraction);
     document.addEventListener("touchstart", handleOutsideInteraction);
-    
+
     return () => {
       document.removeEventListener("click", handleOutsideInteraction);
       document.removeEventListener("touchstart", handleOutsideInteraction);
@@ -55,7 +55,7 @@ export default function Tooltip({ rating }) {
   const handleMouseEnter = () => {
     // Don't show on hover if it was opened by click
     if (wasClicked.current) return;
-    
+
     isHovering.current = true;
     // Small delay to avoid flickering on quick mouse movements
     setTimeout(() => {
@@ -68,7 +68,7 @@ export default function Tooltip({ rating }) {
   const handleMouseLeave = () => {
     // Don't close on mouse leave if it was opened by click
     if (wasClicked.current) return;
-    
+
     isHovering.current = false;
     // Delay closing to allow moving to tooltip content
     setTimeout(() => {
@@ -102,23 +102,23 @@ export default function Tooltip({ rating }) {
       onMouseLeave={handleMouseLeave}
     >
       <div
-        className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-gray-400 text-xs font-semibold text-white select-none hover:bg-gray-500 transition-colors"
+        className="mx-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-gray-400 text-xs font-semibold text-white transition-colors select-none hover:bg-gray-500"
         onClick={handleClick}
         aria-label="More information"
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            setOpen(prev => !prev);
+            setOpen((prev) => !prev);
           }
         }}
       >
         i
       </div>
       {open && (
-        <div 
-          className="pointer-events-auto absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-100 transition-opacity duration-200 shadow-lg"
+        <div
+          className="pointer-events-auto absolute bottom-full left-1/2 z-10 mb-2 w-64 -translate-x-1/2 transform rounded-lg bg-gray-800 px-3 py-2 text-center text-xs whitespace-pre-line text-white opacity-100 shadow-lg transition-opacity duration-200"
           onMouseEnter={handleTooltipMouseEnter}
           onMouseLeave={handleTooltipMouseLeave}
           role="tooltip"

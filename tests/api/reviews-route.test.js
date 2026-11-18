@@ -67,7 +67,16 @@ describe("POST /api/reviews", () => {
     const [query] = db.queries.filter((q) =>
       q.calls.some((c) => c.method === "insert"),
     );
-    expect(query.table).toBe("pending_reviews");
+    expect(query.table).toBe("reviews");
+    expect(insertedRow().status).toBe("pending");
+  });
+
+  it("ignores a status sent by the client", async () => {
+    setup();
+
+    await post({ ...validReview, status: "approved" });
+
+    expect(insertedRow().status).toBe("pending");
   });
 
   it("generates the alias on the server and ignores one sent by the client", async () => {

@@ -15,7 +15,7 @@ describe("Welcome", () => {
     render(<Welcome />);
     expect(screen.getByText("Welcome to Clubhouse!")).toBeInTheDocument();
     expect(
-      screen.getByAltText("Welcome bear illustration")
+      screen.getByAltText("Welcome bear illustration"),
     ).toBeInTheDocument();
   });
 });
@@ -25,7 +25,7 @@ describe("OnboardingCard", () => {
     render(
       <OnboardingCard progressStep={0} totalSteps={5}>
         <p>step content</p>
-      </OnboardingCard>
+      </OnboardingCard>,
     );
     expect(screen.getByText("step content")).toBeInTheDocument();
   });
@@ -34,11 +34,11 @@ describe("OnboardingCard", () => {
     render(
       <OnboardingCard progressStep={1} totalSteps={5}>
         <p>content</p>
-      </OnboardingCard>
+      </OnboardingCard>,
     );
     fireEvent.click(screen.getByLabelText("Exit onboarding"));
     expect(
-      screen.getByText("Are you sure you want to exit?")
+      screen.getByText("Are you sure you want to exit?"),
     ).toBeInTheDocument();
   });
 
@@ -46,7 +46,7 @@ describe("OnboardingCard", () => {
     render(
       <OnboardingCard progressStep={4} totalSteps={5}>
         <p>content</p>
-      </OnboardingCard>
+      </OnboardingCard>,
     );
     expect(screen.queryByLabelText("Exit onboarding")).not.toBeInTheDocument();
   });
@@ -55,7 +55,7 @@ describe("OnboardingCard", () => {
     render(
       <OnboardingCard progressStep={1} totalSteps={5}>
         <p>content</p>
-      </OnboardingCard>
+      </OnboardingCard>,
     );
     fireEvent.click(screen.getByLabelText("Exit onboarding"));
     fireEvent.click(screen.getByRole("button", { name: "Confirm" }));

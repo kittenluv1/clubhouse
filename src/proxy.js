@@ -6,7 +6,7 @@ const PROTECTED_ROUTES = ["/profile", "/review", "/admin"];
 
 function isProtectedRoute(pathname) {
   return PROTECTED_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + "/")
+    (route) => pathname === route || pathname.startsWith(route + "/"),
   );
 }
 
@@ -31,17 +31,17 @@ export async function proxy(request) {
         setAll(cookiesToSet) {
           // Set cookies on the request (for downstream server components)
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           // Re-create response so it carries the updated request cookies
           supabaseResponse = NextResponse.next({ request });
           // Set cookies on the response (sent back to browser)
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   const {

@@ -9,14 +9,22 @@ function GuidelinesPage() {
       </p>
       <h2 className="my-4 text-2xl">Be Specific and Relevant</h2>
       <p>
-        Share clear, helpful insights about your experience with the club. Reviews that are too brief, vague, or off-topic may be rejected to keep feedback meaningful for all students.
+        Share clear, helpful insights about your experience with the club.
+        Reviews that are too brief, vague, or off-topic may be rejected to keep
+        feedback meaningful for all students.
       </p>
       <h2 className="my-4 text-2xl">Respect Others</h2>
       <p>
-        Do not name or identify individuals, including club leaders or members. Discriminatory, harassing, or hateful language of any kind is strictly prohibited.
+        Do not name or identify individuals, including club leaders or members.
+        Discriminatory, harassing, or hateful language of any kind is strictly
+        prohibited.
       </p>
       <h2 className="my-4 text-2xl">Stay On Topic</h2>
-      <p>Ensure that all content is relevant to the club or organization being reviewed. Irrelevant or repetitive posts may be removed to maintain clarity and usefulness.</p>
+      <p>
+        Ensure that all content is relevant to the club or organization being
+        reviewed. Irrelevant or repetitive posts may be removed to maintain
+        clarity and usefulness.
+      </p>
     </div>
   );
 }

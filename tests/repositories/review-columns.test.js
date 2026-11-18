@@ -33,6 +33,10 @@ describe("review columns", () => {
       expect(REVIEW_TABLE_COLUMNS).toContain(key);
   });
 
+  it("the moderation status is a stored column", () => {
+    expect(REVIEW_TABLE_COLUMNS).toContain("status");
+  });
+
   it("public review fields are stored columns (plus the avatar join)", () => {
     for (const field of PUBLIC_REVIEW_FIELDS.filter((f) => f !== "profiles")) {
       expect(REVIEW_TABLE_COLUMNS).toContain(field);

@@ -5,7 +5,7 @@
 export class BaseFeature {
   /** @returns {string} */
   get name() {
-    throw new Error('Feature must implement get name()');
+    throw new Error("Feature must implement get name()");
   }
 
   /**
@@ -15,6 +15,6 @@ export class BaseFeature {
    * @returns {number} Score between 0.0 and 1.0
    */
   compute(user, club, context) {
-    throw new Error('Feature must implement compute(user, club, context)');
+    throw new Error("Feature must implement compute(user, club, context)");
   }
 }

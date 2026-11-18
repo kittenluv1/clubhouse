@@ -5,7 +5,9 @@ import Tooltip from "@/app/components/tooltip";
 describe("Tooltip", () => {
   it("renders the info trigger", () => {
     render(<Tooltip rating="inclusivity" />);
-    expect(screen.getByRole("button", { name: "More information" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "More information" }),
+    ).toBeInTheDocument();
   });
 
   it("does not show the tooltip content until opened", () => {
@@ -32,9 +34,12 @@ describe("Tooltip", () => {
 
   it("opens via keyboard (Enter)", () => {
     render(<Tooltip rating="timeCommitment" />);
-    fireEvent.keyDown(screen.getByRole("button", { name: "More information" }), {
-      key: "Enter",
-    });
+    fireEvent.keyDown(
+      screen.getByRole("button", { name: "More information" }),
+      {
+        key: "Enter",
+      },
+    );
     expect(screen.getByRole("tooltip")).toBeInTheDocument();
   });
 });

@@ -18,25 +18,25 @@ export const QuarterYearDropdown = ({
   const endYear = currentYear;
   const quarters = ["Fall", "Spring", "Winter"];
 
-const getCurrentQuarter = () => {
-  const month = new Date().getMonth() + 1;
+  const getCurrentQuarter = () => {
+    const month = new Date().getMonth() + 1;
 
-  if (month >= 9 && month <= 12) {
-    return "Fall";
-  } else if (month >= 1 && month <= 3) {
-    return "Winter";
-  } else {
-    return "Spring";
-  }
-};
+    if (month >= 9 && month <= 12) {
+      return "Fall";
+    } else if (month >= 1 && month <= 3) {
+      return "Winter";
+    } else {
+      return "Spring";
+    }
+  };
 
   const currentQuarter = getCurrentQuarter();
 
   const isQuarterValid = (quarter, year) => {
     if (year < currentYear) return true;
     if (year > currentYear) return false;
-    
-    const quarterOrder = { "Winter": 1, "Spring": 2, "Fall": 3 };
+
+    const quarterOrder = { Winter: 1, Spring: 2, Fall: 3 };
     return quarterOrder[quarter] <= quarterOrder[currentQuarter];
   };
 
@@ -68,15 +68,7 @@ const getCurrentQuarter = () => {
       <select
         value={selectedValue}
         onChange={handleChange}
-        className={`w-full appearance-none rounded-full
-          bg-[#F4F5F6] 
-          hover:bg-[#E5EBF1] 
-          active:bg-[#B5BFC6] 
-          focus:bg-[#B5BFC6]
-          px-5 py-3 text-gray-700 
-          [&>option]:bg-white
-          [&>option:checked]:bg-white 
-          focus:outline-none ${className}`}
+        className={`w-full appearance-none rounded-full bg-[#F4F5F6] px-5 py-3 text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#B5BFC6] focus:outline-none active:bg-[#B5BFC6] [&>option]:bg-white [&>option:checked]:bg-white ${className}`}
         required={required}
       >
         <option value="" disabled>
@@ -121,13 +113,7 @@ export const QuarterDropdown = ({
       <select
         value={value}
         onChange={onChange}
-        className={`w-full appearance-none rounded-full border 
-          bg-[#F4F5F6] 
-          hover:bg-[#E5EBF1] 
-          active:bg-[#B5BFC6]
-          focus:bg-[#B5BFC6] 
-          px-3 py-2 text-gray-700 
-           ${className}`}
+        className={`w-full appearance-none rounded-full border bg-[#F4F5F6] px-3 py-2 text-gray-700 hover:bg-[#E5EBF1] focus:bg-[#B5BFC6] active:bg-[#B5BFC6] ${className}`}
         required={required}
       >
         <option value="" disabled>

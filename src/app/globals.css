@@ -60,7 +60,8 @@ body {
   float: left;
 }
 
-.left, .right {
+.left,
+.right {
   width: 5%;
   transform: translateY(600%);
 }
@@ -76,4 +77,3 @@ body {
   display: flex;
   clear: both;
 }
-

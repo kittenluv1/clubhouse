@@ -46,7 +46,11 @@ function makeRequest(pathname) {
       pathname,
       clone() {
         // Return a mutable object that acts like a URL
-        return { pathname: url.pathname, search: url.search, toString: () => `${this.pathname}${this.search}` };
+        return {
+          pathname: url.pathname,
+          search: url.search,
+          toString: () => `${this.pathname}${this.search}`,
+        };
       },
     },
     cookies: {
@@ -97,22 +101,25 @@ describe("proxy", () => {
       mockGetUser.mockResolvedValue({ data: { user: null } });
     });
 
-    it.each(["/profile", "/review", "/review/thankyou", "/review/edit/123", "/admin"])(
-      "redirects %s to /sign-in with returnUrl",
-      async (path) => {
-        const req = makeRequest(path);
-        await proxy(req);
+    it.each([
+      "/profile",
+      "/review",
+      "/review/thankyou",
+      "/review/edit/123",
+      "/admin",
+    ])("redirects %s to /sign-in with returnUrl", async (path) => {
+      const req = makeRequest(path);
+      await proxy(req);
 
-        expect(mockGetUser).toHaveBeenCalled();
-        expect(mockRedirect).toHaveBeenCalledTimes(1);
+      expect(mockGetUser).toHaveBeenCalled();
+      expect(mockRedirect).toHaveBeenCalledTimes(1);
 
-        const redirectArg = mockRedirect.mock.calls[0][0];
-        expect(redirectArg.pathname).toBe("/sign-in");
-        expect(redirectArg.search).toContain(
-          `returnUrl=${encodeURIComponent(path)}`
-        );
-      }
-    );
+      const redirectArg = mockRedirect.mock.calls[0][0];
+      expect(redirectArg.pathname).toBe("/sign-in");
+      expect(redirectArg.search).toContain(
+        `returnUrl=${encodeURIComponent(path)}`,
+      );
+    });
 
     it("redirects /profile/settings to /sign-in", async () => {
       const req = makeRequest("/profile/settings");
@@ -141,7 +148,7 @@ describe("proxy", () => {
 
         expect(result.type).toBe("next");
         expect(mockRedirect).not.toHaveBeenCalled();
-      }
+      },
     );
 
     it("redirects /admin to / for non-admin user", async () => {
@@ -210,7 +217,7 @@ describe("proxy", () => {
             getAll: expect.any(Function),
             setAll: expect.any(Function),
           }),
-        })
+        }),
       );
     });
   });
@@ -224,7 +231,7 @@ describe("proxy", () => {
           "/profile/:path*",
           "/review/:path*",
           "/admin/:path*",
-        ])
+        ]),
       );
     });
   });

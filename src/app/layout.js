@@ -8,7 +8,7 @@ import { SearchProvider } from "./context/SearchContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Suspense } from "react";
 import LoadingScreen from "./components/LoadingScreen";
-import { Analytics } from '@vercel/analytics/next';
+import { Analytics } from "@vercel/analytics/next";
 import OnboardingGuard from "./components/OnboardingGuard";
 
 const inter = Inter({
@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
             <SearchProvider>
               <OnboardingGuard />
               <Header />
-              <main className="relative min-h-screen overflow-hidden pt-[84px]">
+              <main className="relative min-h-screen overflow-hidden pt-21">
                 <Gradient />
                 {children}
                 <Analytics />

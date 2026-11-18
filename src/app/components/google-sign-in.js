@@ -60,8 +60,8 @@ export default function GoogleSignIn() {
 
       const email = data.user.email;
       setUserEmail(email);
-      posthog.identify(data.user.id, { email });
-      posthog.capture("user_signed_in", { provider: "google", email });
+      posthog.identify(data.user.id);
+      posthog.capture("user_signed_in", { provider: "google" });
     };
 
     if (window.google) {
@@ -116,9 +116,10 @@ export default function GoogleSignIn() {
         }}
       />
       <div className="flex flex-col items-center justify-center gap-3">
-        {/* this doesn't show, even when the email is invalid */}
         {userEmail === "INVALID" && (
-          <p>Please sign in with a valid UCLA email.</p>
+          <p className="font-semibold text-red-500">
+            Please sign in with a valid UCLA email.
+          </p>
         )}
         <div className="group relative inline-block">
           <Button

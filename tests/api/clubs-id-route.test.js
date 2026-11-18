@@ -85,6 +85,17 @@ describe("GET /api/clubs/[id] reviewer privacy", () => {
     expect(columns).not.toMatch(/user_email/);
   });
 
+  it("lists only approved reviews", async () => {
+    setup();
+    await call();
+
+    const reviewsQuery = serviceDb.queries.find((q) => q.table === "reviews");
+    expect(reviewsQuery.calls).toContainEqual({
+      method: "eq",
+      args: ["status", "approved"],
+    });
+  });
+
   it("flags only the signed-in user's own reviews", async () => {
     setup({ user: { id: "me" } });
     const body = await (await call()).json();

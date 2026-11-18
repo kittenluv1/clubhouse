@@ -1,4 +1,4 @@
-import { BaseFeature } from './base-feature';
+import { BaseFeature } from "./base-feature";
 
 /**
  * Scores based on overlap between categories of clubs the user is already
@@ -7,17 +7,18 @@ import { BaseFeature } from './base-feature';
  */
 export class MembershipSimilarity extends BaseFeature {
   get name() {
-    return 'membership_similarity';
+    return "membership_similarity";
   }
 
   compute(user, club, context) {
-    const memberCategories = (context?.memberCategories || []).map(c => c.toLowerCase().trim()).filter(Boolean);
+    const memberCategories = (context?.memberCategories || [])
+      .map((c) => c.toLowerCase().trim())
+      .filter(Boolean);
     if (memberCategories.length === 0) return 0.0;
 
-    const clubCategories = [
-      club.Category1Name,
-      club.Category2Name,
-    ].filter(Boolean).map(c => c.toLowerCase().trim());
+    const clubCategories = [club.Category1Name, club.Category2Name]
+      .filter(Boolean)
+      .map((c) => c.toLowerCase().trim());
 
     if (clubCategories.length === 0) return 0.0;
 

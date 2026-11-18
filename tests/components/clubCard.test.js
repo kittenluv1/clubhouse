@@ -6,7 +6,9 @@ const mockGetSession = jest.fn();
 jest.mock("@/app/lib/db", () => ({
   supabase: { auth: { getSession: (...a) => mockGetSession(...a) } },
 }));
-jest.mock("next/navigation", () => ({ useRouter: () => ({ push: jest.fn() }) }));
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: jest.fn() }),
+}));
 
 const club = {
   OrganizationID: 42,
@@ -20,7 +22,9 @@ const club = {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockGetSession.mockResolvedValue({ data: { session: { user: { id: "u1" } } } });
+  mockGetSession.mockResolvedValue({
+    data: { session: { user: { id: "u1" } } },
+  });
 });
 
 describe("ClubCard", () => {
@@ -39,7 +43,11 @@ describe("ClubCard", () => {
   });
 
   it("shows N/A when there is no satisfaction score", () => {
-    render(<ClubCard club={{ ...club, average_satisfaction: null, total_num_reviews: 0 }} />);
+    render(
+      <ClubCard
+        club={{ ...club, average_satisfaction: null, total_num_reviews: 0 }}
+      />,
+    );
     expect(screen.getByText("N/A")).toBeInTheDocument();
     expect(screen.getByText("(0 reviews)")).toBeInTheDocument();
   });

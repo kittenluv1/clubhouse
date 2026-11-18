@@ -98,9 +98,8 @@ function ProfilePage() {
   };
 
   // Handler functions for review actions
-  const handleLike = async (reviewId, isLiked) => {
+  const handleLike = async () => {
     // TODO: Implement API call to like/unlike review
-    console.log("Like review:", reviewId, isLiked);
   };
 
   const handleEdit = (review, source) => {
@@ -120,7 +119,6 @@ function ProfilePage() {
       method: "DELETE",
     });
     if (response.ok) {
-      // console.log('Deleted review: ', reviewToDelete);
       posthog.capture("review_deleted", { review_id: reviewToDelete });
       // Remove from local state
       setRejectedReviews((prev) => prev.filter((r) => r.id !== reviewToDelete));
@@ -462,7 +460,7 @@ function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" data-ph-mask>
       <ConfirmationModal
         isOpen={confirmationModalOpen}
         onClose={() => {
@@ -523,7 +521,7 @@ function ProfilePage() {
       {/* Main Content with Sidebar */}
       <div className="flex flex-col gap-8 p-6 pt-0 md:p-12 md:pt-0 lg:flex-row lg:p-20 lg:pt-0">
         {/* Sidebar Navigation */}
-        <div className="flex-shrink-0 lg:w-64">
+        <div className="shrink-0 lg:w-64">
           <div className="mt-2 flex-1 self-center text-center">
             <h1 className="mb-2 font-['DM-Sans'] text-2xl font-bold md:text-3xl">
               {displayName}
