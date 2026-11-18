@@ -15,6 +15,11 @@ function Header() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileRef = React.useRef(null);
 
+  const handleSignOut = async () => {
+    const succeeded = await signOut();
+    if (succeeded) router.replace("/");
+  };
+
   const attemptReview = () => {
     if (user) {
       router.push("/review");
@@ -186,7 +191,7 @@ function Header() {
                     <hr className="w-full bg-gray-300" />
                     <button
                       className="flex w-full items-center rounded-b-lg px-2 py-2 hover:bg-[#F0F2F9]"
-                      onClick={signOut}
+                      onClick={handleSignOut}
                     >
                       <img
                         src="/profile/sign-out.svg"
