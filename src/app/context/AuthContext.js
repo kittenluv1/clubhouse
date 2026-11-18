@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   Fragment,
 } from "react";
@@ -14,10 +15,13 @@ import { supabase } from "../lib/db";
 const AuthContext = createContext(undefined);
 
 export function AuthProvider({ children }) {
+  const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [signOutStatus, setSignOutStatus] = useState("idle");
+  const signOutPathname = useRef(null);
 
   const isAdmin =
     !!user?.email && user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
@@ -50,6 +54,13 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (signOutStatus === "succeeded" && pathname !== signOutPathname.current) {
+      signOutPathname.current = null;
+      setSignOutStatus("idle");
+    }
+  }, [pathname, signOutStatus]);
+
   // Fetch profile row when user changes. Depends on user?.id (primitive)
   // so token refreshes don't re-trigger this.
   useEffect(() => {
@@ -77,13 +88,23 @@ export function AuthProvider({ children }) {
   }, [user?.id]);
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error("Sign out error:", error.message);
+    signOutPathname.current = pathname;
+    setSignOutStatus("pending");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setSignOutStatus("succeeded");
+      return true;
+    } catch (error) {
+      setSignOutStatus("idle");
+      console.error("Sign out error:", error.message);
+      return false;
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, session, profile, isAdmin, loading, signOut }}
+      value={{ user, session, profile, isAdmin, loading, signOut, signOutStatus }}
     >
       <Fragment key={user?.id ?? "signed-out"}>{children}</Fragment>
     </AuthContext.Provider>
@@ -103,10 +124,10 @@ export function useRequireAuth() {
   const pathname = usePathname();
   const router = useRouter();
   useEffect(() => {
-    if (!auth.loading && !auth.user) {
+    if (!auth.loading && !auth.user && auth.signOutStatus === "idle") {
       const returnUrl = encodeURIComponent(pathname);
       router.replace(`/sign-in?returnUrl=${returnUrl}`);
     }
-  }, [auth.user, auth.loading, pathname, router]);
+  }, [auth.user, auth.loading, auth.signOutStatus, pathname, router]);
   return auth;
 }
