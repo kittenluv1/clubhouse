@@ -8,4 +8,5 @@ export const REVIEW_MESSAGES = Object.freeze({
   rejected: "Review rejected",
   resubmitted: "Review resubmitted for approval",
   deleted: "Review deleted",
+  rateLimited: "You're submitting reviews too quickly. Try again later.",
 });
