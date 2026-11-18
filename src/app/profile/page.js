@@ -98,9 +98,8 @@ function ProfilePage() {
   };
 
   // Handler functions for review actions
-  const handleLike = async (reviewId, isLiked) => {
+  const handleLike = async () => {
     // TODO: Implement API call to like/unlike review
-    console.log("Like review:", reviewId, isLiked);
   };
 
   const handleEdit = (review, source) => {
@@ -120,7 +119,6 @@ function ProfilePage() {
       method: "DELETE",
     });
     if (response.ok) {
-      // console.log('Deleted review: ', reviewToDelete);
       posthog.capture("review_deleted", { review_id: reviewToDelete });
       // Remove from local state
       setRejectedReviews((prev) => prev.filter((r) => r.id !== reviewToDelete));
@@ -250,7 +248,10 @@ function ProfilePage() {
             </h2>
             {approvedReviews.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-[#B5BEC7]">No approved reviews</p>
+                <p className="mb-4 text-[#B5BEC7]">No approved reviews</p>
+                <Button type="CTA" onClick={attemptReview}>
+                  Write a Review
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
@@ -332,7 +333,10 @@ function ProfilePage() {
             </h2>
             {rejectedReviews.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-[#B5BEC7]">No rejected reviews</p>
+                <p className="mb-4 text-[#B5BEC7]">No rejected reviews</p>
+                <Button type="CTA" onClick={attemptReview}>
+                  Write a Review
+                </Button>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
@@ -411,7 +415,10 @@ function ProfilePage() {
             </h2>
             {savedClubs.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-[#B5BEC7]">No saved clubs</p>
+                <p className="mb-4 text-[#B5BEC7]">No saved clubs</p>
+                <Button type="CTA" onClick={() => router.push("/clubs")}>
+                  Browse Clubs
+                </Button>
               </div>
             ) : (
               <>
@@ -453,7 +460,7 @@ function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" data-ph-mask>
       <ConfirmationModal
         isOpen={confirmationModalOpen}
         onClose={() => {

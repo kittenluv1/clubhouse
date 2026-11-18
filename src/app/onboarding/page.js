@@ -79,7 +79,10 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-8">
+    <div
+      className="flex min-h-[calc(100vh-84px)] items-center justify-center px-4 py-8"
+      data-ph-mask
+    >
       <div className="w-full max-w-[1116px]">
         <OnboardingCard
           progressStep={progressStep}
