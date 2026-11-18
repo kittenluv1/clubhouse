@@ -18,6 +18,11 @@ export default function ThankYouPage() {
         Your review has been sent! <br /> You will receive an email once your
         submission has been approved.
       </p>
+      <img
+        src="/review/review-submitted.svg"
+        alt="Thank you illustration"
+        className="mb-10 w-40 lg:w-60"
+      />
       <Button type="CTA" onClick={() => router.push("/clubs")}>
         Browse More Clubs
       </Button>
