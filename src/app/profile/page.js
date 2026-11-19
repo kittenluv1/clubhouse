@@ -13,6 +13,7 @@ import ConfirmationModal from "../components/confirmationModal";
 import Button from "../components/button";
 import PreferencesSection from "./components/PreferencesSection";
 import SectionToggle from "./components/SectionToggle";
+import { toggleReviewLike } from "../lib/reviewLikes";
 
 function ProfilePage() {
   const router = useRouter();
@@ -97,9 +98,8 @@ function ProfilePage() {
     router.push("/review");
   };
 
-  // Handler functions for review actions
-  const handleLike = async () => {
-    // TODO: Implement API call to like/unlike review
+  const handleLike = async (reviewId, isLiked) => {
+    await toggleReviewLike(reviewId, isLiked);
   };
 
   const handleEdit = (review, source) => {

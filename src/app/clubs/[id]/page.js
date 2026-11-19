@@ -13,6 +13,8 @@ import Button from "@/app/components/button";
 import SortModal from "@/app/components/sortModal";
 import ReviewCard from "@/app/components/reviewCard";
 
+import { toggleReviewLike } from "@/app/lib/reviewLikes";
+
 function IconImg({ media }) {
   return (
     <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#EC9304] hover:opacity-80">
@@ -277,23 +279,7 @@ export default function ClubDetailsPage() {
       return;
     }
 
-    try {
-      if (!isLiked) {
-        await fetch("/api/reviewLikes", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ review_id: reviewId }),
-        });
-      } else {
-        await fetch("/api/reviewLikes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ review_id: reviewId }),
-        });
-      }
-    } catch (error) {
-      console.error("Error toggling like:", error);
-    }
+    await toggleReviewLike(reviewId, isLiked);
   };
 
   const getRatingColor = (rating) => {
@@ -536,7 +522,7 @@ export default function ClubDetailsPage() {
               <img
                 src="/interactions/reviewStarFilled.svg"
                 alt=""
-                className="mr-1 ml-1 shrink-0 w-6 h-6"
+                className="mr-1 ml-1 h-6 w-6 shrink-0"
               />
               <h2 className="text-2xl font-bold">Satisfaction Rating</h2>
             </div>
