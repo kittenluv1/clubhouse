@@ -96,7 +96,7 @@ export default function ReviewCard({
 
   const toggleLike = async () => {
     if (isProcessing) return; // Ignore clicks while processing
-    if (status !== "displayed" || !onLike) return;
+    if ((status !== "displayed" && status !== "approved") || !onLike) return;
 
     // Check if user is authenticated
     const {
@@ -130,7 +130,7 @@ export default function ReviewCard({
   };
 
   // Determine what actions are available based on status
-  const canLike = status === "displayed" && onLike;
+  const canLike = (status === "displayed" || status === "approved") && onLike;
   const canEdit = (status === "rejected" || status === "approved") && onEdit;
   const canDelete = status === "rejected" && onDelete;
 
