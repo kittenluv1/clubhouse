@@ -204,10 +204,9 @@ export default function ReviewCard({
               {formatDate(review.created_at)}
             </div>
           )}
-
           {/* Stars and Membership */}
-          <div className="flex flex-col gap-2 text-sm font-medium text-[#6E808D] md:flex-row md:items-center md:gap-2">
-            <div className="flex items-center gap-1">
+          <div className="flex flex-col gap-2 text-sm font-medium text-[#6E808D] md:flex-row md:items-center md:gap-2 md:flex-wrap">
+            <div className="flex shrink-0 items-center gap-1">
               {renderStars(review.overall_satisfaction, "")}
             </div>
             <span className="mt-1 hidden text-[#7F7F7F] md:inline">•</span>
@@ -217,8 +216,6 @@ export default function ReviewCard({
               {review.membership_end_year}
             </span>
           </div>
-        </div>
-
         {/* Right side */}
         <div className="hidden shrink-0 flex-col items-end gap-2 md:flex">
           {status !== "displayed" && (
@@ -325,7 +322,7 @@ export default function ReviewCard({
         </div>
       )}
     </div>
-  );
+  </div>);
 
   return cardContent;
 }
