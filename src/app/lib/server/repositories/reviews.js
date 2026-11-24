@@ -133,7 +133,8 @@ export function createReviewsRepository(supabase) {
       const { data, error } = await supabase
         .from(TABLE)
         .select("*")
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
       if (error) throw error;
       /** @type {Record<ReviewStatus, any[]>} */
       const groups = { approved: [], pending: [], rejected: [] };
