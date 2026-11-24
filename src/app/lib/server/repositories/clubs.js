@@ -266,7 +266,8 @@ export async function listMarkedClubs(supabase, userId, kind, columns = "*") {
   const { data, error } = await supabase
     .from(table)
     .select(`club_id, ${join}(${columns})`)
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map((row) => row.clubs).filter(Boolean);
 }
