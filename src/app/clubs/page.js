@@ -11,8 +11,10 @@ import Button from "../components/button";
 import ClubCarousel from "../components/ClubCarousel";
 import { useAuth } from "../context/AuthContext";
 import posthog from "posthog-js";
+import { useSearch } from "../context/SearchContext";
 
 function AllClubsPage() {
+  const {sortType, setSortType} = useSearch();
   const searchParams = useSearchParams();
   const nameParam = searchParams.get("name") ?? null;
   const singleCategoryParam = searchParams.get("category") ?? null;
@@ -27,7 +29,6 @@ function AllClubsPage() {
   const [error, setError] = useState(null);
   const [pageTotal, setPageTotal] = useState(1);
   const [currPage, setCurrPage] = useState(1);
-  const [sortType, setSortType] = useState("rating");
   const [isMobile, setIsMobile] = useState(false);
   const [showSortModal, setShowSortModal] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState(false);
