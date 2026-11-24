@@ -1,6 +1,7 @@
 import { render, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { SearchProvider, useSearch } from "@/app/context/SearchContext";
+import { alpha } from "framer-motion";
 
 // --- next/navigation mocks ---
 const mockPush = jest.fn();
@@ -170,5 +171,36 @@ describe("getCurrentSearchState", () => {
   it("reports no active search by default", () => {
     const ctx = renderSearch();
     expect(ctx.getCurrentSearchState()).toEqual({ type: "none", value: null });
+  });
+});
+
+describe("SearchProvider sortType", () => {
+  it("defaults to 'rating'", () => {
+    const ctx = renderSearch();
+    expect(ctx.sortType).toBe("rating");
+  });
+
+  it("setSortType updates on sortType", () => {
+    const ctx = renderSearch();
+    act(() => ctx.setSortType("alphabetical"));
+    expect(ctx.sortType).toBe("alphabetical");
+  });
+
+  it("keeps sortType when the page using it unmounts and remounts", () => {
+    const captured = {}
+    function Consumer() {
+      Object.assign(captured, useSearch());
+      return null;
+    }
+  
+    const { rerender } = render(
+      <SearchProvider><Consumer /></SearchProvider>,
+    );
+    act(() => captured.setSortType("alphabetical"));
+
+    rerender(<SearchProvider>{null}</SearchProvider>);
+    rerender(<SearchProvider><Consumer /></SearchProvider>);
+
+    expect(captured.sortType).toBe("alphabetical");
   });
 });
