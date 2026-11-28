@@ -285,7 +285,6 @@ export default function ClubDetailsPage() {
           body: JSON.stringify({ review_id: reviewId }),
         });
         if (response.ok) {
-          // console.log("review unliked!");
           // setUserLikedClub(false);
           // setClublikeCount((prev) => Math.max(0, prev - 1));
         }
@@ -297,7 +296,6 @@ export default function ClubDetailsPage() {
           body: JSON.stringify({ review_id: reviewId }),
         });
         if (response.ok) {
-          // console.log("review liked!");
           // setUserLikedClub(true);
           // setClublikeCount((prev) => prev + 1);
         }

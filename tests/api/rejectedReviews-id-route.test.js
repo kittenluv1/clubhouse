@@ -3,6 +3,7 @@
  */
 import { DELETE } from "@/app/api/rejectedReviews/[id]/route";
 import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
+import { sendReviewSubmittedEmail } from "@/app/lib/server/email/reviewEmails";
 import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
 let db;
@@ -15,6 +16,10 @@ jest.mock("@/app/lib/server-db", () => ({
 }));
 
 const params = { params: Promise.resolve({ id: "10" }) };
+
+jest.mock("@/app/lib/server/email/reviewEmails", () => ({
+  sendReviewSubmittedEmail: jest.fn(async () => true),
+}));
 
 function setup({
   user = { id: "u1" },
@@ -107,6 +112,7 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     });
 
   beforeEach(() => {
+    jest.clearAllMocks();
     clubsDb = clubLookup(true);
     db = createSupabaseMock({
       user: { id: "u1", email: "student@ucla.edu" },
@@ -124,6 +130,7 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
 
     expect(res.status).toBe(400);
     expect(db.callsTo("update")).toHaveLength(0);
+    expect(sendReviewSubmittedEmail).not.toHaveBeenCalled();
   });
 
   it("updates the review in place and sends it back to pending", async () => {
@@ -137,6 +144,7 @@ describe("POST /api/rejectedReviews/[id] (resubmit)", () => {
     expect(changes).not.toHaveProperty("user_alias");
     expect(changes.club_name).toBe("Archery");
     expect(changes).not.toHaveProperty("is_current_member");
+    expect(sendReviewSubmittedEmail).toHaveBeenCalledWith({ id: 10 });
   });
 
   it("400 when the edit points at a club that does not exist", async () => {

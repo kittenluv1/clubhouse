@@ -24,6 +24,10 @@ Allows users to search clubs by name, or filter clubs by category. The logic is 
 - Searching for a club in the search bar **clears selected tags**
 - Selecting tags **clears any existing search query** and overrides any existing search results
 
+## Sorting
+
+The options (Highest Rated, Most Liked, Most Reviewed, A – Z) and their tie-breakers are defined in `CLUB_SORTS` in `src/app/lib/server/repositories/clubs.js`. When sorting by rating, clubs with no reviews come last.
+
 ## Notes
 
 - "Club Sports" clubs had their second category renamed to "Sports", since the original second category was just the sport's name (which is already covered by the club name)

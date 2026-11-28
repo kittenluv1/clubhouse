@@ -1,4 +1,5 @@
 import { randomAlias } from "@/app/lib/reviews/alias";
+import { sendReviewSubmittedEmail } from "@/app/lib/server/email/reviewEmails";
 import { createReviewsRepository } from "@/app/lib/server/repositories/reviews";
 import { validateReviewInput } from "@/app/lib/server/reviewInput";
 import { readJson, withUser } from "@/app/lib/server/route";
@@ -12,5 +13,6 @@ export const POST = withUser(async (req, { supabase, user }) => {
     input,
     randomAlias(),
   );
+  await sendReviewSubmittedEmail(review);
   return Response.json({ review }, { status: 201 });
 });

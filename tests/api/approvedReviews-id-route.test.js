@@ -4,6 +4,7 @@
 import { GET, POST } from "@/app/api/approvedReviews/[id]/route";
 import { createAuthenticatedClient } from "@/app/lib/server-db";
 import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
+import { sendReviewSubmittedEmail } from "@/app/lib/server/email/reviewEmails";
 import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 
 let db;
@@ -16,6 +17,10 @@ jest.mock("@/app/lib/server-db", () => ({
 }));
 
 const params = { params: Promise.resolve({ id: "10" }) };
+
+jest.mock("@/app/lib/server/email/reviewEmails", () => ({
+  sendReviewSubmittedEmail: jest.fn(async () => true),
+}));
 
 function setup({
   user = { id: "u1", email: "student@ucla.edu" },
@@ -120,5 +125,6 @@ describe("POST /api/approvedReviews/[id] (edit)", () => {
       ]),
     );
     expect(db.callsTo("update")[0][0]).toMatchObject({ status: "pending" });
+    expect(sendReviewSubmittedEmail).toHaveBeenCalledWith({ id: 10 });
   });
 });

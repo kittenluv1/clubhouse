@@ -7,11 +7,29 @@ import { REVIEW_MESSAGES } from "@/app/lib/server/reviewMessages";
 
 /** @typedef {"approved" | "pending" | "rejected"} ReviewStatus */
 /** @typedef {import("@/app/lib/reviews/schema").ReviewInput} ReviewInput */
+/** @typedef {import("@/app/lib/server/email/reviewEmails").EmailReview & { id: string }} UpdatedReview */
 
 const TABLE = "reviews";
 
 // `.single()` matched no rows / the id is not valid for the column type.
 const NOT_FOUND_CODES = new Set(["PGRST116", "22P02"]);
+
+// What updates return: enough for the follow-up email.
+const UPDATED_COLUMNS = [
+  "id",
+  "club_name",
+  "review_text",
+  "user_email",
+  "membership_start_quarter",
+  "membership_start_year",
+  "membership_end_quarter",
+  "membership_end_year",
+  "time_commitment_rating",
+  "inclusivity_rating",
+  "social_community_rating",
+  "competitiveness_rating",
+  "overall_satisfaction",
+].join(", ");
 
 const notFound = () => new HttpError(404, REVIEW_MESSAGES.notFound);
 const conflict = (message) => new HttpError(409, message);
@@ -23,13 +41,13 @@ export function createReviewsRepository(supabase) {
   /**
    * @param {Record<string, unknown>} filters
    * @param {Record<string, unknown>} changes
-   * @returns {Promise<{ id: string } | null>} null when no row matched
+   * @returns {Promise<UpdatedReview | null>} null when no row matched
    */
   async function updateWhere(filters, changes) {
     let query = supabase.from(TABLE).update(changes);
     for (const [column, value] of Object.entries(filters))
       query = query.eq(column, value);
-    const { data, error } = await query.select("id").maybeSingle();
+    const { data, error } = await query.select(UPDATED_COLUMNS).maybeSingle();
     if (NOT_FOUND_CODES.has(error?.code)) throw notFound();
     if (error) throw error;
     return data;
@@ -96,6 +114,7 @@ export function createReviewsRepository(supabase) {
      * @param {string} id
      * @param {string} userId
      * @param {ReviewInput} input
+     * @returns {Promise<UpdatedReview>} the updated review
      */
     async resubmit(status, id, userId, input) {
       await this.getOwned(status, id, userId);
@@ -104,6 +123,7 @@ export function createReviewsRepository(supabase) {
         { ...input, status: "pending" },
       );
       if (!updated) throw conflict(REVIEW_MESSAGES.changed);
+      return updated;
     },
 
     /**
@@ -160,10 +180,12 @@ export function createReviewsRepository(supabase) {
      * RLS enforces it.
      * @param {string} id
      * @param {boolean} approve
+     * @returns {Promise<UpdatedReview>} the moderated review
      */
     async moderate(id, approve) {
       const status = approve ? "approved" : "rejected";
-      if (await updateWhere({ id, status: "pending" }, { status })) return;
+      const updated = await updateWhere({ id, status: "pending" }, { status });
+      if (updated) return updated;
       if (!(await exists(id))) throw notFound();
       throw conflict(REVIEW_MESSAGES.notPending);
     },

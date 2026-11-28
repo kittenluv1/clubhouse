@@ -206,7 +206,7 @@ test("clicking the left half of a star saves a half rating", async () => {
   expect(sentBody(0).overall_satisfaction).toBe(0.5);
 });
 
-test("clicking create sends review, tracks analystics and emails", async () => {
+test("clicking create sends review and tracks analytics", async () => {
   global.fetch.mockResolvedValue(ok());
   render(<ReviewForm />);
   fillForm();
@@ -234,12 +234,7 @@ test("clicking create sends review, tracks analystics and emails", async () => {
     }),
   );
 
-  expect(sentBody(1)).toEqual({
-    club_name: "Chess",
-    overall_satisfaction: 1,
-    review_text: "This is a review",
-    user_email: "owner@example.com",
-  });
+  expect(global.fetch).toHaveBeenCalledTimes(1);
 });
 
 test("review text stops at 2500 characters", () => {
