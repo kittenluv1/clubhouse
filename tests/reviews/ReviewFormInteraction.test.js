@@ -83,8 +83,22 @@ jest.mock("../../src/app/components/dropdowns", () => ({
 jest.mock(
   "../../src/app/components/searchable-dropdown",
   () =>
-    function Dropdown() {
-      return <input aria-label="Club search" />;
+    function Dropdown({ value = "", onSelect, onInputChange }) {
+      return (
+        <div>
+          <input
+            aria-label="Club search"
+            value={value}
+            onChange={(e) => onInputChange?.(e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => onSelect?.({ id: 42, name: "Robotics Club" })}
+          >
+            Pick Robotics Club
+          </button>
+        </div>
+      );
     },
 );
 
@@ -120,6 +134,7 @@ const review = {
 };
 
 beforeEach(() => {
+  mockSearch = "club=Chess&clubId=7";
   global.fetch = jest.fn();
   mockPush.mockClear();
   posthog.capture.mockClear();
@@ -294,4 +309,40 @@ test("edit sends the saved ratings and tracks the edit event", async () => {
     "review_edit_submitted",
     expect.objectContaining({ club_id: 7 }),
   );
+});
+
+test("selecting a club uses its id directly without fetching /api/clubs/names", async () => {
+  mockSearch = "";
+  global.fetch.mockResolvedValue(ok());
+  render(<ReviewForm />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Pick Robotics Club" }));
+  expect(global.fetch).not.toHaveBeenCalled();
+
+  fillForm("Great robotics team");
+  fireEvent.submit(reviewBox().closest("form"));
+
+  await waitFor(() =>
+    expect(mockPush).toHaveBeenCalledWith("/review/thankyou"),
+  );
+  expect(global.fetch.mock.calls[0][0]).toBe("/api/reviews");
+  expect(sentBody(0)).toMatchObject({
+    club_id: 42,
+    club_name: "Robotics Club",
+    review_text: "Great robotics team",
+  });
+});
+
+test("typing in the club input clears the previously selected club id", () => {
+  mockSearch = "";
+  render(<ReviewForm />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Pick Robotics Club" }));
+  fireEvent.change(screen.getByLabelText("Club search"), {
+    target: { value: "Rob" },
+  });
+  fillForm("Edited club name");
+  fireEvent.click(screen.getByRole("button", { name: "Submit Review" }));
+
+  expect(global.fetch).not.toHaveBeenCalled();
 });
