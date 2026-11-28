@@ -229,20 +229,9 @@ export default function ReviewForm({ reviewId, source = "rejected" }) {
     setIsMember(checked);
   };
 
-  const handleClubSelect = async (club) => {
-    setSelectedClub(club);
-    try {
-      const response = await fetch(
-        `/api/clubs/names?search=${encodeURIComponent(club)}`,
-      );
-      const { clubs = [] } = await response.json();
-      const match = clubs.find((item) => item.OrganizationName === club);
-      if (!response.ok || !match) throw new Error("Club not found");
-      setClubId(match.OrganizationID);
-    } catch (error) {
-      console.error("Error fetching club ID:", error);
-      setError("Club not found.");
-    }
+  const handleClubSelect = ({ id, name }) => {
+    setSelectedClub(name);
+    setClubId(id);
   };
 
   // Keep selectedClub in sync with what's visible in the search box.

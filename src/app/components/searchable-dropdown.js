@@ -30,8 +30,11 @@ const SearchableDropdown = ({
         const { clubs } = await response.json();
         if (!response.ok) throw new Error("Failed to fetch clubs");
 
-        const clubNames = clubs.map((club) => club.OrganizationName);
-        setAllOptions(clubNames);
+        const clubOptions = clubs.map((club) => ({
+          id: club.OrganizationID,
+          name: club.OrganizationName,
+        }));
+        setAllOptions(clubOptions);
       } catch (err) {
         console.error("Error fetching club names:", err);
         setError("Failed to load clubs. Please try again later.");
@@ -48,15 +51,15 @@ const SearchableDropdown = ({
       return [];
     }
 
+    const query = inputValue.toLowerCase();
+
     return allOptions
-      .filter((option) =>
-        option.toLowerCase().includes(inputValue.toLowerCase()),
-      )
+      .filter((option) => option.name.toLowerCase().includes(query))
       .sort((a, b) => {
-        const lowerA = a.toLowerCase();
-        const lowerB = b.toLowerCase();
-        const indexA = lowerA.indexOf(inputValue.toLowerCase());
-        const indexB = lowerB.indexOf(inputValue.toLowerCase());
+        const lowerA = a.name.toLowerCase();
+        const lowerB = b.name.toLowerCase();
+        const indexA = lowerA.indexOf(query);
+        const indexB = lowerB.indexOf(query);
         if (indexA !== indexB) return indexA - indexB;
         return lowerA.localeCompare(lowerB);
       });
@@ -83,7 +86,7 @@ const SearchableDropdown = ({
   };
 
   const handleOptionClick = (option) => {
-    setInternalValue(option);
+    setInternalValue(option.name);
     setIsOpen(false);
     onSelect(option);
   };
@@ -129,12 +132,12 @@ const SearchableDropdown = ({
         <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg focus:outline-none sm:text-sm">
           {filteredOptions.map((option, index) => (
             <li
-              key={index}
+              key={option.id ?? index}
               onClick={() => handleOptionClick(option)}
               className="relative cursor-pointer truncate py-2 pr-3 pl-3 select-none hover:bg-gray-100"
-              title={option}
+              title={option.name}
             >
-              {option}
+              {option.name}
             </li>
           ))}
         </ul>
