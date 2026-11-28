@@ -8,12 +8,10 @@ import PendingCard from "../components/pendingCard";
 import SortModal from "../components/sortModal";
 import Button from "../components/button";
 import posthog from "posthog-js";
-
-const PRESET_REASONS = [
-  "The review is too brief, vague, or off-topic",
-  "The review names specific individuals or has discriminatory/harassing/hateful language.",
-  "The review content is not relevant to the club or organization being reviewed",
-];
+import {
+  MAX_REJECTION_MESSAGE_LENGTH,
+  PRESET_REJECTION_REASONS,
+} from "../lib/reviews/rejection";
 
 const Page = () => {
   const router = useRouter();
@@ -132,22 +130,11 @@ const Page = () => {
         return;
       }
 
-      const emailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-user-approval-email`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            club_name: record.club_name,
-            user_email: record.user_email,
-          }),
-        },
-      );
-
-      if (!emailRes.ok) {
-        const { error } = await emailRes.json().catch(() => ({}));
-        console.error("Error sending email:", error || emailRes.statusText);
-        return;
+      const { emailSent } = await approveRes.json();
+      if (!emailSent) {
+        window.alert(
+          "The review was approved, but the email to the reviewer failed to send.",
+        );
       }
 
       posthog.capture("review_approved", {
@@ -191,6 +178,8 @@ const Page = () => {
         body: JSON.stringify({
           reviewID: selectedReview.id,
           approve: false,
+          reasons: rejectionFeedback.preset_reasons,
+          message: rejectionFeedback.custom_message,
         }),
       });
 
@@ -200,34 +189,12 @@ const Page = () => {
         return;
       }
 
-      const emailRes = await fetch(
-        `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-user-disapprove-email`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            club_name: selectedReview.club_name,
-            membership_start_quarter: selectedReview.membership_start_quarter,
-            membership_start_year: selectedReview.membership_start_year,
-            membership_end_quarter: selectedReview.membership_end_quarter,
-            membership_end_year: selectedReview.membership_end_year,
-            time_commitment_rating: selectedReview.time_commitment_rating,
-            inclusivity_rating: selectedReview.inclusivity_rating,
-            social_community_rating: selectedReview.social_community_rating,
-            competitiveness_rating: selectedReview.competitiveness_rating,
-            overall_satisfaction: selectedReview.overall_satisfaction,
-            review_text: selectedReview.review_text,
-            user_email: selectedReview.user_email,
-            rejection_reasons: selectedReasons,
-            custom_message: customMessage.trim(),
-          }),
-        },
-      );
-
-      if (!emailRes.ok) {
-        const { error } = await emailRes.json().catch(() => ({}));
-        console.error("Error sending email:", error || emailRes.statusText);
-        return;
+      const { emailSent } = await disproveRes.json();
+      if (!emailSent) {
+        window.alert(
+          "The review was rejected, but the email to the reviewer failed to send. " +
+            "The rejection reasons are not saved anywhere, so follow up with the reviewer directly.",
+        );
       }
 
       posthog.capture("review_rejected", {
@@ -339,7 +306,7 @@ const Page = () => {
               <div>
                 <p className="text-sm font-semibold">Preset reasons</p>
                 <div className="mt-3 grid gap-3">
-                  {PRESET_REASONS.map((reason) => (
+                  {PRESET_REJECTION_REASONS.map((reason) => (
                     <label
                       key={reason}
                       className={`flex cursor-pointer items-start gap-3 rounded-xl border border-gray-300 px-4 py-3`}
@@ -367,6 +334,7 @@ const Page = () => {
                   id="custom-message"
                   value={customMessage}
                   onChange={(event) => setCustomMessage(event.target.value)}
+                  maxLength={MAX_REJECTION_MESSAGE_LENGTH}
                   placeholder="Add a short note for the reviewer..."
                   className="mt-3 min-h-30 w-full rounded-xl text-sm outline-none"
                   disabled={isRejecting}

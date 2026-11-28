@@ -4,6 +4,7 @@
 import { POST } from "@/app/api/reviews/route";
 import { createSupabaseMock, makeRequest } from "../helpers/supabaseMock";
 import { ALIAS_ADJECTIVES, ALIAS_NOUNS } from "@/app/lib/reviews/alias";
+import { sendReviewSubmittedEmail } from "@/app/lib/server/email/reviewEmails";
 
 let db;
 let clubsDb;
@@ -12,6 +13,10 @@ jest.mock("@/app/lib/server-db", () => ({
   get supabaseServer() {
     return clubsDb;
   },
+}));
+
+jest.mock("@/app/lib/server/email/reviewEmails", () => ({
+  sendReviewSubmittedEmail: jest.fn(async () => true),
 }));
 
 const user = { id: "u1", email: "student@ucla.edu" };
@@ -52,12 +57,33 @@ const post = (body) =>
   POST(makeRequest({ url: "http://localhost/api/reviews", body }));
 const insertedRow = () => db.callsTo("insert")[0]?.[0];
 
+beforeEach(() => jest.clearAllMocks());
+
 describe("POST /api/reviews", () => {
   it("401 when unauthenticated, without inserting", async () => {
     setup({ signedIn: false });
 
     expect((await post(validReview)).status).toBe(401);
     expect(db.callsTo("insert")).toHaveLength(0);
+    expect(sendReviewSubmittedEmail).not.toHaveBeenCalled();
+  });
+
+  it("emails the saved review, not the request body", async () => {
+    setup();
+    await post({ ...validReview, user_email: "attacker@example.com" });
+
+    expect(sendReviewSubmittedEmail).toHaveBeenCalledTimes(1);
+    expect(sendReviewSubmittedEmail.mock.calls[0][0]).toMatchObject({
+      id: 1,
+      club_name: "Archery",
+      user_email: user.email,
+    });
+  });
+
+  it("still returns 201 when the email fails", async () => {
+    setup();
+    sendReviewSubmittedEmail.mockResolvedValueOnce(false);
+    expect((await post(validReview)).status).toBe(201);
   });
 
   it("queues the review for moderation instead of publishing it", async () => {

@@ -316,7 +316,7 @@ export default function ReviewForm({ reviewId, source = "rejected" }) {
           }),
         },
       );
-      const { review, error: apiError } = await response.json();
+      const { error: apiError } = await response.json();
       if (!response.ok) throw new Error(apiError || "Failed to submit review.");
 
       posthog.capture(
@@ -326,21 +326,6 @@ export default function ReviewForm({ reviewId, source = "rejected" }) {
           club_name: selectedClub,
           overall_satisfaction: overallSatisfaction,
           is_current_member: isMember,
-        },
-      );
-
-      await fetch(
-        `${process.env.NEXT_PUBLIC_EDGE_FUNCTION_URL}/send-review-email`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            club_name: review?.club_name || selectedClub,
-            overall_satisfaction:
-              review?.overall_satisfaction ?? overallSatisfaction,
-            review_text: review?.review_text || reviewText,
-            user_email: review?.user_email || user?.email,
-          }),
         },
       );
 
