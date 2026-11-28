@@ -279,26 +279,17 @@ export default function ClubDetailsPage() {
 
     try {
       if (!isLiked) {
-        const response = await fetch("/api/reviewLikes", {
+        await fetch("/api/reviewLikes", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ review_id: reviewId }),
         });
-        if (response.ok) {
-          // setUserLikedClub(false);
-          // setClublikeCount((prev) => Math.max(0, prev - 1));
-        }
       } else {
-        // Like
-        const response = await fetch("/api/reviewLikes", {
+        await fetch("/api/reviewLikes", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ review_id: reviewId }),
         });
-        if (response.ok) {
-          // setUserLikedClub(true);
-          // setClublikeCount((prev) => prev + 1);
-        }
       }
     } catch (error) {
       console.error("Error toggling like:", error);

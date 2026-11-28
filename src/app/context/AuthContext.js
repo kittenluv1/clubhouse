@@ -8,6 +8,7 @@ import {
   Fragment,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { supabase } from "../lib/db";
 
 const AuthContext = createContext(undefined);
@@ -30,7 +31,8 @@ export function AuthProvider({ children }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") posthog.reset();
       setSession((prev) => {
         if (prev?.access_token === session?.access_token) return prev;
         return session;
